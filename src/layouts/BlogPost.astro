@@ -11,6 +11,8 @@ import type { Post } from "src/lib/interfaces";
 import type { Heading } from "@/types";
 import PostComments from "@/components/blog/PostComments";
 
+import { HOME_PAGE_SLUG, OG_SETUP, FULL_PREVIEW_COLLECTIONS } from "@/constants";
+
 //FIXME: so why is this this way?
 
 // interface Props {
@@ -30,10 +32,22 @@ interface Props {
 // } = post;
 
 const { post, ogImage, headings } = Astro.props;
-const socialImage = ogImage ?? `/og-image/${post.Slug}.png`;
-// const articleDate = updatedDate?.toISOString() ?? publishDate.toISOString();
+const differenceInTime = new Date().getTime() - new Date(post.Date).getTime();
+const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+const ogbeforecutoff =
+	OG_SETUP &&
+	OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"] &&
+	FULL_PREVIEW_COLLECTIONS &&
+	FULL_PREVIEW_COLLECTIONS.includes(post.Collection) &&
+	differenceInDays > OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"];
+
+const socialImage = ogImage
+	? ogImage
+	: ogbeforecutoff
+	? `/og-image/${HOME_PAGE_SLUG}.png`
+	: `/og-image/${post.Slug}.png`;
 const articleDate = new Date(post.Date).toISOString();
-// const { headings } = await post.render();
 ---
 
 <script>

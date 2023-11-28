@@ -9,6 +9,7 @@ import { GoogleAnalytics } from "astro-google-analytics";
 import { PUBLIC_GA_TRACKING_ID } from "@/constants";
 import { GoogleFontsOptimizer } from "astro-google-fonts-optimizer";
 import config from '../../constants-config.json';
+import { HOME_PAGE_SLUG } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 const key_value_from_json = { ...config };
 const theme_config_font_url = key_value_from_json["THEME"]['fontFamily-Google Fonts']['combined_url'];
@@ -20,7 +21,7 @@ const { title, description, ogImage, articleDate } = Astro.props;
 const titleSeparator = "•";
 const siteTitle = `${title} ${titleSeparator} ${siteInfo.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const socialImageURL = new URL(getNavLink(ogImage ? ogImage : "/social-card.png"), Astro.url).href;
+const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_PAGE_SLUG}.png`), Astro.url).href;
 
 ---
 

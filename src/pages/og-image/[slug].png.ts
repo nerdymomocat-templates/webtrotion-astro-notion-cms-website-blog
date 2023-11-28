@@ -16,7 +16,7 @@ import { getCollections } from "@/utils";
 
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { OG_SETUP } from "@/constants";
+import { OG_SETUP, FULL_PREVIEW_COLLECTIONS } from "@/constants";
 
 const ogOptions: SatoriOptions = {
   width: 1200,
@@ -911,6 +911,24 @@ export async function GET({ params: { slug } }: APIContext) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getAllPagesAndPosts();
+
+  // Assuming postsArray is an array of posts
+  const filteredPosts = posts.filter(post => {
+    const differenceInTime = new Date().getTime() - new Date(post.Date).getTime();
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+
+    const ogbeforecutoff =
+      OG_SETUP &&
+      OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"] &&
+      FULL_PREVIEW_COLLECTIONS &&
+      FULL_PREVIEW_COLLECTIONS.includes(post.Collection) &&
+      differenceInDays > OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"];
+
+    // Return true if the post should be kept, false if it should be removed
+    return !ogbeforecutoff;
+  });
+
+
   const postsMap = posts.map(({ Slug }) => ({ params: { slug: Slug } }));
 
   const collections = await getCollections();
