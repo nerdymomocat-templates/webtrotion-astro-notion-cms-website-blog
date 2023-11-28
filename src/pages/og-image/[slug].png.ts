@@ -929,7 +929,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   });
 
 
-  const postsMap = posts.map(({ Slug }) => ({ params: { slug: Slug } }));
+  const postsMap = filteredPosts.map(({ Slug }) => ({ params: { slug: Slug } }));
 
   const collections = await getCollections();
   const collectionMap = collections.map((collection) => ({
