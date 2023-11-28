@@ -92,7 +92,7 @@ const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_
 />
 
 {/* RSS auto-discovery */}
-<link rel="alternate" type="application/rss+xml" title={siteInfo.title} href="/rss.xml" />
+<link rel="alternate" type="application/rss+xml" title={siteInfo.title} href={getNavLink("/rss.xml")} />
 
 {/* Webmentions */}
 {

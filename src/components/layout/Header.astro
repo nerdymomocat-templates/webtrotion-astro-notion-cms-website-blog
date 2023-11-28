@@ -131,7 +131,12 @@ const rss_path = getNavLink("/rss.xml");
 	</div>
 	<div class="flex flex-row">
 		<div class="h-10 w-10 items-center justify-center rounded-md p-1.5 hover:text-accent">
-			<a href={rss_path}><Icon name={textToAstroIcon("rss")} class="h-7 w-7 hover:text-accent" /></a
+			<a href={rss_path}
+				><Icon
+					name={textToAstroIcon("rss")}
+					class="h-7 w-7 hover:text-accent"
+					aria-label="Open RSS Link"
+				/></a
 			>
 		</div>
 		<Search />
