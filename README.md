@@ -5,6 +5,8 @@
   Astro Cactus
 </h1>
 
+# Random readme change to see if it can be merged into a repo created using a template?
+
 Astro Cactus is a simple opinionated starter built with the Astro framework. Use it to create an easy-to-use blog or website.
 
 ## Table Of Contents
