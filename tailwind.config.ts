@@ -26,6 +26,7 @@ export default {
     textOpacity: false,
     fontVariantNumeric: false,
   },
+
   theme: {
     extend: {
       colors: {
@@ -35,6 +36,69 @@ export default {
         accent: "rgb(var(--theme-accent) / <alpha-value>)",
         "accent-2": "rgb(var(--theme-accent-2) / <alpha-value>)",
         quote: "rgb(var(--theme-quote) / <alpha-value>)",
+        ngray: {
+          'txt-light': '#9B9A97',
+          'txt-dark': '#979A9B',
+          'bg-light': '#EBECED',
+          // 'bg-dark': '#454B4E',
+          'bg-dark': '#606E72'
+        },
+        nbrown: {
+          'txt-light': '#64473A',
+          'txt-dark': '#937264',
+          'bg-light': '#ede4df',
+          // 'bg-dark': '#434040',
+          'bg-dark': '#5C5653'
+        },
+        norange: {
+          'txt-light': '#D9730D',
+          'txt-dark': '#FFA344',
+          'bg-light': '#FAEBDD',
+          // 'bg-dark': '#594A3A',
+          'bg-dark': '#7D5E4C'
+        },
+        nyellow: {
+          'txt-light': '#DFAB01',
+          'txt-dark': '#FFDC49',
+          'bg-light': '#FBF3DB',
+          // 'bg-dark': '#59563B',
+          'bg-dark': '#7D7A4C'
+        },
+        ngreen: {
+          'txt-light': '#0F7B6C',
+          'txt-dark': '#4DAB9A',
+          'bg-light': '#DDEDEA',
+          // 'bg-dark': '#354C4B',
+          'bg-dark': '#4C7D7A'
+        },
+        nblue: {
+          'txt-light': '#0B6E99',
+          'txt-dark': '#529CCA',
+          'bg-light': '#DDEBF1',
+          // 'bg-dark': '#364954',
+          'bg-dark': '#4C6D7D'
+        },
+        npurple: {
+          'txt-light': '#6940A5',
+          'txt-dark': '#9A6DD7',
+          'bg-light': '#EAE4F2',
+          // 'bg-dark': '#443F57',
+          'bg-dark': '#625C7A'
+        },
+        npink: {
+          'txt-light': '#AD1A72',
+          'txt-dark': '#E255A1',
+          'bg-light': '#F4DFEB',
+          // 'bg-dark': '#533B4C',
+          'bg-dark': '#7D4C6D'
+        },
+        nred: {
+          'txt-light': '#E03E3E',
+          'txt-dark': '#FF7369',
+          'bg-light': '#FBE4E4',
+          // 'bg-dark': '#594141',
+          'bg-dark': '#7D4C4C'
+        },
       },
       fontFamily: {
         // Add any custom fonts here
