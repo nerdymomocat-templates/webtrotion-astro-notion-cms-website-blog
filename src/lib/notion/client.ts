@@ -519,7 +519,7 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
   };
 
 
-  if (isImage && optimize_img) {
+  if (isImage && optimize_img && !filename.includes(".gif")) {
     // Process and write only the optimized WebP image
     // const webpPath = `${dir}/${filename.split('.')[0]}.webp`;
     const webpPath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
@@ -726,7 +726,7 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
           image.File = {
             Type: blockObject.image.type,
             Url: blockObject.image.file.url,
-            OptimizedUrl: blockObject.image.file.url.substring(0, blockObject.image.file.url.lastIndexOf('.')) + ".webp",
+            OptimizedUrl: blockObject.image.file.url.includes('.gif') ? blockObject.image.file.url : (blockObject.image.file.url.substring(0, blockObject.image.file.url.lastIndexOf('.')) + ".webp"),
             ExpiryTime: blockObject.image.file.expiry_time,
           };
         }
