@@ -6,15 +6,16 @@
   "WEBMENTION_LINK": "",
   "SOCIALS": {
     "email": "mailto:nerdymomocat@gmail.com",
-    "github": "",
+    "github": "https://github.com/nerdymomocat/",
     "googlescholar": "",
     "semanticscholar": "",
     "dblp": "",
     "facebook": "",
-    "twitter": "",
-    "threads": "",
+    "twitter": "https://twitter.com/nerdymomocat",
+    "threads": "https://www.threads.net/@nerdymomocat",
     "instagram": "",
-    "mastodon": ""
+    "mastodon": "",
+    "template-on": "https://github.com/nerdymomocat-templates"
   },
   "CUSTOM_DOMAIN": "",
   "BASE_PATH": "",
@@ -53,10 +54,10 @@
     }
   },
   "GISCUS": {
-    "data-repo": "nerdymomocat/nerdymomocat.github.io",
-    "data-repo-id": " R_kgDOJoxbeA",
+    "data-repo": "nerdymomocat-templates/blogtrotion-astro-notion-cms",
+    "data-repo-id": " R_kgDOKy6K2w",
     "data-category": "Announcements",
-    "data-category-id": "DIC_kwDOJoxbeM4CWzrO",
+    "data-category-id": "DIC_kwDOKy6K284CbUiH",
     "data-mapping": "pathname",
     "data-input-position": "top",
     "data-reactions-enabled": true
@@ -70,7 +71,7 @@
     "heading_2",
     "heading_3"
   ],
-  "PUBLISH_ON_FILTER": "nerdymomocat.github.io",
+  "PUBLISH_ON_FILTER": "",
   "FULL_PREVIEW_COLLECTIONS": [
     "Stream"
   ],
@@ -79,7 +80,7 @@
   "OG_SETUP": {
     "COLUMNS": 2,
     "EXCERPT": true,
-    "FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF": 60
+    "FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF": 100
   },
   "OPTIMIZE_IMAGES": true,
   "REDIRECTS": {}
