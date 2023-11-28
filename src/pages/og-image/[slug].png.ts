@@ -914,7 +914,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   // Assuming postsArray is an array of posts
   const filteredPosts = posts.filter(post => {
-    const differenceInTime = new Date().getTime() - new Date(post.Date).getTime();
+    const differenceInTime = new Date().getTime() - new Date(post.LastUpdatedDate).getTime();
     const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
 
     const ogbeforecutoff =
@@ -929,6 +929,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   });
 
 
+  // const postsMap = filteredPosts.map(({ Slug }) => ({ params: { slug: Slug } }));
   const postsMap = filteredPosts.map(({ Slug }) => ({ params: { slug: Slug } }));
 
   const collections = await getCollections();
