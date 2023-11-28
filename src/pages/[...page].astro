@@ -12,6 +12,8 @@ import {
 import { extractTargetBlocks } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
+import { HOME_PAGE_SLUG } from "@/constants";
+
 
 // import { siteConfig } from "@/site-config";
 // import { siteInfo } from "@/utils";
@@ -118,10 +120,15 @@ await Promise.all(
 		<article class="col-span-3 break-words" data-pagefind-body>
 			<div class="">
 				<NotionBlocks blocks={blocks} isRoot={true} />
-				<hr class="divider w-70 mx-auto my-4 h-1 rounded border-0 bg-accent/30" />
-
-				<WebMentions />
-				<PostComments />
+				{
+					page.Slug !== HOME_PAGE_SLUG && (
+						<>
+							<hr class="divider w-70 mx-auto my-4 h-1 rounded border-0 bg-accent/30" />
+							<WebMentions />
+							<PostComments />
+						</>
+					)
+				}
 			</div>
 		</article>
 		<!-- {!!headings.length && <TOC headings={headings} />} -->
