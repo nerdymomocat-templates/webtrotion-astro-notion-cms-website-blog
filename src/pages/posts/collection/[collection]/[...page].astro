@@ -76,13 +76,13 @@ const paginationProps = {
 					page.data.map((post) =>
 						FULL_PREVIEW_COLLECTIONS.includes(collection) ? (
 							<>
-								<li class="flex flex-col flex-wrap gap-2 sm:flex-row [&_q]:basis-full">
+								<li class="flex flex-col flex-wrap gap-2 [&_q]:basis-full">
 									<PostPreviewFull post_full_preview={post} as="h2" withDesc />
 								</li>
 								<hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/20" />
 							</>
 						) : (
-							<li class="flex flex-col flex-wrap gap-2 sm:flex-row [&_q]:basis-full">
+							<li class="flex flex-col flex-wrap gap-2 [&_q]:basis-full">
 								<PostPreview post={post} as="h2" withDesc />
 							</li>
 						),

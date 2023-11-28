@@ -28,7 +28,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 // const postDate = post.data.updatedDate ?? post.data.publishDate;
 ---
 
-<FormattedDate date={new Date(post.Date)} class="min-w-[120px] text-accent/70" />
+<FormattedDate date={new Date(post.Date)} class="min-w-[120px] text-xs text-accent/70" />
 <Tag>
 	<a href={postLink} class="cactus-link" rel="prefetch">
 		{post.Title}

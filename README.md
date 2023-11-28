@@ -1,13 +1,12 @@
 <div align="center">
-  <img alt="Astro Cactus logo" src="https://github.com/chrismwilliams/astro-theme-cactus/assets/12715988/85aa0d3c-ef6a-44e2-954d-ef035b4f4315" width="70" />
+  <img alt="Blogtrotion Logo" src="https://i.imgur.com/j68nWlD.png" width="70" />
 </div>
 <h1 align="center">
-  Astro Cactus
+  Blogtrotion
 </h1>
-
-# Random readme change to see if it can be merged into a repo created using a template?
-
 Astro Cactus is a simple opinionated starter built with the Astro framework. Use it to create an easy-to-use blog or website.
+Blogtrotion is a simple to install, configurable to n-th limit starter built with the Astro framework in conjunction with [Notion](www.notion.so). Use it to create an easy-to-use blog or website.
+
 
 ## Table Of Contents
 

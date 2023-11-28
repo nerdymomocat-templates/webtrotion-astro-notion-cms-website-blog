@@ -70,7 +70,10 @@ await Promise.all(
 // const postDate = post.data.updatedDate ?? post.data.publishDate;
 ---
 
-<FormattedDate date={new Date(post_full_preview.Date)} class="min-w-[120px] text-accent/70" />
+<FormattedDate
+	date={new Date(post_full_preview.Date)}
+	class="min-w-[120px] text-xs text-accent/70"
+/>
 
 <a
 	href={`#${post_full_preview.Slug}`}
