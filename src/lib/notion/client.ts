@@ -5,13 +5,15 @@ import sharp from "sharp";
 import retry from "async-retry";
 import ExifTransformer from "exif-be-gone";
 import pngToIco from "png-to-ico";
+import path from 'path';
 import {
   NOTION_API_SECRET,
   DATABASE_ID,
   NUMBER_OF_POSTS_PER_PAGE,
   REQUEST_TIMEOUT_MS,
   MENU_PAGES_COLLECTION,
-  OPTIMIZE_IMAGES
+  OPTIMIZE_IMAGES,
+  LAST_BUILD_TIME
 } from "../../constants";
 import type * as responses from "./responses";
 import type * as requestParams from "./request-params";
@@ -58,7 +60,7 @@ import type {
 } from "../interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
-import { ONLY_PAGES, ONLY_POSTS, FOR_THIS_SITE, filterBySlug, filterByTag, filterByPageID } from "../filters";
+import { FOR_THIS_SITE } from "../filters";
 import { getFormattedDateWithTime } from "../../utils/date";
 
 
@@ -66,19 +68,21 @@ const client = new Client({
   auth: NOTION_API_SECRET,
 });
 
-let postsCache: Post[] | null = null;
-const dbCache: Database | null = null;
+let allEntriesCache: Post[] | null = null;
+let dbCache: Database | null = null;
 
 const numberOfRetry = 2;
 
 type QueryFilters = requestParams.CompoundFilterObject;
 
-export async function getAllPosts(
-  queryFilters: QueryFilters = { and: [ONLY_POSTS, FOR_THIS_SITE] },
-): Promise<Post[]> {
-  // if (postsCache !== null) {
-  // 	return Promise.resolve(postsCache);
-  // }
+
+export async function getAllEntries(): Promise<Post[]> {
+  if (allEntriesCache !== null) {
+    return allEntriesCache;
+  }
+  // console.log("Did not find cache for getAllEntries");
+
+  const queryFilters: QueryFilters = { and: [FOR_THIS_SITE] };
 
   const params: requestParams.QueryDatabase = {
     database_id: DATABASE_ID,
@@ -144,33 +148,32 @@ export async function getAllPosts(
     params["start_cursor"] = res.next_cursor as string;
   }
 
-  postsCache = results
+  allEntriesCache = results
     .filter((pageObject) => _validPageObject(pageObject))
     .map((pageObject) => _buildPost(pageObject));
 
-  postsCache = postsCache.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
+  allEntriesCache = allEntriesCache.sort((a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime());
   //console.log("posts Cache", postsCache);
-  return postsCache;
+  return allEntriesCache;
 }
 
-export async function getAllPagesAndPosts() {
-  const pages = await getAllPosts({ and: [FOR_THIS_SITE] });
-
-  return pages;
+export async function getAllPosts(): Promise<Post[]> {
+  const allEntries = await getAllEntries();
+  return allEntries.filter(post => !MENU_PAGES_COLLECTION.includes(post.Collection));
 }
 
-export async function getPages() {
-  const pages = await getAllPosts({ and: [ONLY_PAGES, FOR_THIS_SITE] });
-
-  return pages;
+export async function getAllPages(): Promise<Post[]> {
+  const allEntries = await getAllEntries();
+  return allEntries.filter(post => MENU_PAGES_COLLECTION.includes(post.Collection));
 }
+
 export async function getPosts(pageSize = 10): Promise<Post[]> {
   const allPosts = await getAllPosts();
   return allPosts.slice(0, pageSize);
 }
 
 export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
-  const allPosts = await getAllPosts({ and: [ONLY_POSTS, FOR_THIS_SITE] });
+  const allPosts = await getAllPosts();
   return allPosts
     .filter((post) => !!post.Rank)
     .sort((a, b) => {
@@ -185,24 +188,24 @@ export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
 }
 
 export async function getPageBySlug(slug: string): Promise<Post | null> {
-  const allPosts = await getAllPosts({ and: [ONLY_PAGES, FOR_THIS_SITE, filterBySlug(slug)] });
+  const allPosts = await getAllPages();
   return allPosts.find((post) => post.Slug === slug) || null;
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  const allPosts = await getAllPosts({ and: [FOR_THIS_SITE, filterBySlug(slug)] });
+  const allPosts = await getAllEntries();
   return allPosts.find((post) => post.Slug === slug) || null;
 }
 
 export async function getPostByPageId(pageId: string): Promise<Post | null> {
-  const allPosts = await getAllPosts({ and: [FOR_THIS_SITE, filterByPageID(pageId)] });
+  const allPosts = await getAllEntries();
   return allPosts.find((post) => post.PageId === pageId) || null;
 }
 
 export async function getPostsByTag(tagName: string, pageSize = 10): Promise<Post[]> {
   if (!tagName) return [];
 
-  const allPosts = await getAllPosts({ and: [ONLY_POSTS, FOR_THIS_SITE, filterByTag(tagName)] });
+  const allPosts = await getAllPosts();
   return allPosts
     .filter((post) => post.Tags.find((tag) => tag.name === tagName))
     .slice(0, pageSize);
@@ -254,46 +257,68 @@ export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   );
 }
 
+export async function getPostContentByPostId(post: Post): Promise<Block[]> {
+  const tmpDir = './tmp';
+  const cacheFilePath = path.join(tmpDir, `${post.PageId}.json`);
+  const isPostUpdatedAfterLastBuild = LAST_BUILD_TIME ? post.LastUpdatedTimeStamp > LAST_BUILD_TIME : true;
+
+  // Ensure the tmp directory exists
+  if (!fs.existsSync(tmpDir)) {
+    fs.mkdirSync(tmpDir, { recursive: true });
+  }
+
+  if (!isPostUpdatedAfterLastBuild && fs.existsSync(cacheFilePath)) {
+    // If the post was not updated after the last build and cache file exists, return the cached data
+    console.log("Hit cache for", post.Slug);
+    const cachedData = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
+    return cachedData;
+  } else {
+    // If the post was updated after the last build or cache does not exist, fetch new data
+    const allBlocks = await getAllBlocksByBlockId(post.PageId);
+
+    // Write the new data to the cache file
+    fs.writeFileSync(cacheFilePath, JSON.stringify(allBlocks), 'utf-8');
+    return allBlocks;
+  }
+}
+
 export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
   let results: responses.BlockObject[] = [];
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, "utf-8"));
-  } else {
-    const params: requestParams.RetrieveBlockChildren = {
-      block_id: blockId,
-    };
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const res = await retry(
-        async (bail) => {
-          try {
-            return (await client.blocks.children.list(
-              params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-            )) as responses.RetrieveBlockChildrenResponse;
-          } catch (error: unknown) {
-            if (error instanceof APIResponseError) {
-              if (error.status && error.status >= 400 && error.status < 500) {
-                bail(error);
-              }
+  const params: requestParams.RetrieveBlockChildren = {
+    block_id: blockId,
+  };
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const res = await retry(
+      async (bail) => {
+        try {
+          return (await client.blocks.children.list(
+            params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          )) as responses.RetrieveBlockChildrenResponse;
+        } catch (error: unknown) {
+          if (error instanceof APIResponseError) {
+            if (error.status && error.status >= 400 && error.status < 500) {
+              bail(error);
             }
-            throw error;
           }
-        },
-        {
-          retries: numberOfRetry,
-        },
-      );
+          throw error;
+        }
+      },
+      {
+        retries: numberOfRetry,
+      },
+    );
 
-      results = results.concat(res.results);
+    results = results.concat(res.results);
 
-      if (!res.has_more) {
-        break;
-      }
-
-      params["start_cursor"] = res.next_cursor as string;
+    if (!res.has_more) {
+      break;
     }
+
+    params["start_cursor"] = res.next_cursor as string;
   }
 
   const allBlocks = results.map((blockObject) => _buildBlock(blockObject));
@@ -448,6 +473,28 @@ export async function getAllTagsWithCounts(): Promise<(SelectProperty & { count:
   return tagsWithCounts;
 }
 
+export function generateFilePath(url: URL, convertToWebP: boolean = false) {
+  const BASE_DIR = "./public/notion/";
+  if (!fs.existsSync(BASE_DIR)) {
+    fs.mkdirSync(BASE_DIR);
+  }
+
+  const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir);
+  }
+  const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
+  let filepath = `${dir}/${filename}`;
+
+  if (convertToWebP) {
+    if (filepath.includes('.png') || filepath.includes('.jpg') || filepath.includes('.jpeg')) {
+      filepath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
+    }
+  }
+
+  return filepath;
+}
+
 export async function downloadFile(url: URL, optimize_img: boolean = true, isFavicon: boolean = false) {
   optimize_img = optimize_img ? OPTIMIZE_IMAGES : optimize_img;
   let res!: AxiosResponse;
@@ -468,18 +515,9 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
     return Promise.resolve();
   }
 
-  const BASE_DIR = "./public/notion/";
-  if (!fs.existsSync(BASE_DIR)) {
-    fs.mkdirSync(BASE_DIR);
-  }
 
-  const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
-  }
-
-  const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
-  const filepath = `${dir}/${filename}`;
+  const filepath = generateFilePath(url);
+  // console.log('filePath in download', filepath);
   // const faviconPath = BASE_DIR + "/favicon.ico";
 
   let stream = res.data;
@@ -519,10 +557,12 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
   };
 
 
-  if (isImage && optimize_img && !filename.includes(".gif")) {
+  if (isImage && optimize_img && !filepath.includes(".gif")) {
     // Process and write only the optimized WebP image
     // const webpPath = `${dir}/${filename.split('.')[0]}.webp`;
-    const webpPath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
+    // const webpPath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
+    const webpPath = generateFilePath(url, true);
+    // console.log('Writing to', webpPath);
     stream.pipe(sharp()
       // .resize({ width: 1024 }) // Adjust the size as needed for "medium"
       .webp({ quality: 80 })) // Adjust quality as needed
@@ -549,6 +589,39 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
     });
   }
 }
+
+export async function processFileBlocks(fileAttachedBlocks: Block[]) {
+  await Promise.all(
+    fileAttachedBlocks.map(async (block) => {
+      const fileDetails = (block.NImage || block.File || block.Video || block.NAudio).File;
+      const expiryTime = fileDetails.ExpiryTime;
+      let url = new URL(fileDetails.Url);
+
+      const cacheFilePath = generateFilePath(url, true);
+      // console.log('checking for cache of block id: ', block.Id, cacheFilePath, block.LastUpdatedTimeStamp, LAST_BUILD_TIME);
+
+      const shouldDownload = LAST_BUILD_TIME ? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(cacheFilePath)) : true;
+
+      // const shouldDownload = LAST_BUILD_TIME ? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(`./public/notion/${fileDetails.Url.split('/').pop()}`)) : true;
+
+      if (shouldDownload) {
+        // console.log("Downloading for ", block.Id);
+
+        if (Date.parse(expiryTime) < Date.now()) {
+          // If the file is expired, get the block again and extract the new URL
+          const updatedBlock = await getBlock(block.Id);
+          url = new URL((updatedBlock.NImage || updatedBlock.File || updatedBlock.Video || updatedBlock.NAudio).File.Url);
+        }
+
+        return downloadFile(url); // Download the file
+      }
+      // console.log("Hit cache for download of ", block.Id);
+
+      return null;
+    })
+  );
+}
+
 
 export async function getDatabase(): Promise<Database> {
   if (dbCache !== null) {
@@ -613,9 +686,10 @@ export async function getDatabase(): Promise<Database> {
     Icon: icon,
     Cover: cover,
     propertiesRaw: res.properties,
+    LastUpdatedTimeStamp: new Date(res.last_edited_time)
   };
 
-  // dbCache = database;
+  dbCache = database;
 
   return database;
 }
@@ -625,6 +699,7 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
     Id: blockObject.id,
     Type: blockObject.type,
     HasChildren: blockObject.has_children,
+    LastUpdatedTimeStamp: new Date(blockObject.last_edited_time)
   };
 
   switch (blockObject.type) {
@@ -1112,6 +1187,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
   const post: Post = {
     PageId: pageObject.id,
     Title: prop.Page?.title ? prop.Page.title.map((richText) => richText.plain_text).join("") : "",
+    LastUpdatedTimeStamp: pageObject.last_edited_time ? new Date(pageObject.last_edited_time) : null,
     Icon: icon,
     Cover: cover,
     // Collection: prop.Collection?.select!.name,
@@ -1133,7 +1209,6 @@ function _buildPost(pageObject: responses.PageObject): Post {
       ? prop["Related Pages"].relation.map(item => ({ PageId: item.id, Type: "page" }))
       : null,
   };
-
   return post;
 }
 

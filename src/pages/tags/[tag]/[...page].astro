@@ -4,7 +4,6 @@ import type { Page, GetStaticPaths } from "astro";
 import PageLayout from "@/layouts/Base";
 import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
-// import { getAllPosts, getUniqueTags, sortMDByDate } from "@/utils";
 import { getAllPosts } from "@/lib/notion/client";
 import type { Post } from "@/lib/notion/interfaces";
 

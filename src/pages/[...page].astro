@@ -5,9 +5,11 @@ import WebMentions from "@/components/blog/webmentions/index";
 import {
 	downloadFile,
 	getAllBlocksByBlockId,
+	getAllPages,
 	getBlock,
-	getPages,
+	getPostContentByPostId,
 	getRankedPosts,
+	processFileBlocks,
 } from "@/lib/notion/client";
 import { extractTargetBlocks } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
@@ -20,7 +22,7 @@ import { siteInfo } from "@/siteInfo";
 import PostComments from "@/components/blog/PostComments.astro";
 
 export async function getStaticPaths() {
-	const pages = await getPages();
+	const pages = await getAllPages();
 
 	return pages.map((page) => ({
 		params: { page: page.Slug === siteInfo.homePageSlug ? undefined : `/${page.Slug}` },
@@ -44,7 +46,7 @@ if (!page) {
 // 	getRankedPosts(),
 // ]);
 
-const blocks = await getAllBlocksByBlockId(page.PageId);
+const blocks = await getPostContentByPostId(page);
 
 const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
 	.concat(extractTargetBlocks("video", blocks))
@@ -62,31 +64,7 @@ const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
 		);
 	});
 
-// Download files
-await Promise.all(
-	fileAtacchedBlocks
-		.map(async (block) => {
-			const expiryTime = (block.NImage || block.File || block.Video || block.NAudio).File
-				.ExpiryTime;
-			if (Date.parse(expiryTime) > Date.now()) {
-				return Promise.resolve(block);
-			}
-			return getBlock(block.Id);
-		})
-		.map((promise) =>
-			promise.then((block) => {
-				let url!: URL;
-				try {
-					url = new URL((block.NImage || block.File || block.Video || block.NAudio).File.Url);
-				} catch (err) {
-					console.log("Invalid file URL");
-					return Promise.reject();
-				}
-				return Promise.resolve(url);
-			}),
-		)
-		.map((promise) => promise.then(downloadFile)),
-);
+const processedFile = await processFileBlocks(fileAtacchedBlocks);
 ---
 
 <script>

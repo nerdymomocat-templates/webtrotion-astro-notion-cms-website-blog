@@ -325,6 +325,7 @@ export interface BlockObject {
   created_time: string;
   created_by: UserObject;
   last_edited_by: UserObject;
+  last_edited_time: string;
   has_children: boolean;
   archived: boolean;
   type: BlockTypes;

@@ -9,10 +9,15 @@
     "postbuild": "pagefind --site dist",
     "preview": "astro preview",
     "format": "prettier -w --cache .",
-    "check": "astro check"
+    "check": "astro check",
+    "build:cached": "npm run cache:fetch && astro build",
+    "cache:fetch": "node scripts/blog-contents-cache.cjs",
+    "cache:purge": "nx reset && rm -f tmp/*",
+    "_fetch-notion-blocks": "node scripts/retrieve-block-children.cjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^1.1.1",
+    "@astrojs/partytown": "^2.0.2",
     "@astrojs/prefetch": "^0.4.1",
     "@astrojs/rss": "^3.0.0",
     "@astrojs/sitemap": "^3.0.1",
@@ -21,7 +26,6 @@
     "@sindresorhus/slugify": "^2.2.1",
     "@types/prismjs": "^1.26.3",
     "astro": "^3.2.3",
-    "astro-google-analytics": "^1.0.3",
     "astro-google-fonts-optimizer": "^0.2.2",
     "astro-icon": "^0.8.1",
     "astro-robots-txt": "^1.0.0",
