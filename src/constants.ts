@@ -33,7 +33,7 @@ export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["FULL_PREVIEW_COLLEC
 
 export const HIDE_UNDERSCORE_SLUGS_IN_LISTS = key_value_from_json["HIDE_UNDERSCORE_SLUGS_IN_LISTS"] || false;
 
-export const HOME_PAGE_SLUG = key_value_from_json["HOME_PAGE_SLUG"] || "index";
+export const HOME_PAGE_SLUG = key_value_from_json["HOME_PAGE_SLUG"] || "home";
 
 export const OG_SETUP = key_value_from_json["OG_SETUP"] || {
   "COLUMNS": 2,

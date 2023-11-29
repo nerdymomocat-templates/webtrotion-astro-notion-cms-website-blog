@@ -77,7 +77,7 @@
     "Stream"
   ],
   "HIDE_UNDERSCORE_SLUGS_IN_LISTS": true,
-  "HOME_PAGE_SLUG": "index",
+  "HOME_PAGE_SLUG": "",
   "OG_SETUP": {
     "COLUMNS": 2,
     "EXCERPT": true
