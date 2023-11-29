@@ -19,6 +19,7 @@ import 'prismjs/components/prism-markup'
 import 'prismjs/components/prism-json'
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
+import { HTML_DIRECTIVE } from "@/constants";
 
 export interface Props {
 	block: interfaces.Block;
@@ -32,7 +33,8 @@ const code = block.Code.RichTexts.map(
 ).join("");
 const language = block.Code.Language.toLowerCase();
 const grammar = Prism.languages[language.toLowerCase()] || Prism.languages.javascript;
-const code_inject = code.startsWith("<!DOCTYPE html>");
+const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
+
 ---
 {
   code_inject ?

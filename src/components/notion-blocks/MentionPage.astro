@@ -3,6 +3,8 @@ import { Post } from "../../lib/interfaces.ts";
 import { getPostByPageId } from "../../lib/notion/client";
 import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION } from "@/constants";
+import { textToAstroIcon } from "@/lib/style-helpers";
+import { Icon } from "astro-icon";
 // import arrow from '../../images/icon-arrow-link.svg'
 
 export interface Props {
@@ -21,34 +23,41 @@ if (pageId) {
 	post ? (
 		<a
 			href={getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}
-			class="inline-flex items-center justify-center rounded-lg border-2 border-accent-2/20 p-2 hover:border-accent/40"
+			class="inline-flex items-center justify-center rounded-lg border border-accent-2/20 p-0.5 hover:border-accent/40"
 		>
 			<>
-				<span class="mx-2">
+				<span class="mx-1">
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class="relative h-5 w-5 flex-shrink-0 align-sub" />
+						<img src={post.Icon.Url} class="relative h-4 w-4 flex-shrink-0 align-sub" />
+					) : textToAstroIcon("document") ? (
+						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
 					) : (
 						"📄"
 					)}
 				</span>
 				<span class="w-full">{post.Title}</span>
-				<svg
-					class="ms-2 h-4 w-4"
-					aria-hidden="true"
-					xmlns="http://www.w3.org/2000/svg"
-					fill="none"
-					viewBox="0 0 14 10"
-				>
-					<path
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						d="M1 5h12m0 0L9 1m4 4L9 9"
-					/>
-				</svg>
+
+				{textToAstroIcon("page-mention-ne-arrow") ? (
+					<Icon name={textToAstroIcon("page-mention-ne-arrow")} class="inline h-4 w-4" />
+				) : (
+					<svg
+						class="h-4 w-4"
+						aria-hidden="true"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 14 10"
+					>
+						<path
+							stroke="currentColor"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M1 5h12m0 0L9 1m4 4L9 9"
+						/>
+					</svg>
+				)}
 			</>
 		</a>
 	) : null

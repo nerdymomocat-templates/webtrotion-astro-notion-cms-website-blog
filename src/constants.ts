@@ -43,6 +43,8 @@ export const OG_SETUP = key_value_from_json["OG_SETUP"] || {
 // export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] == null ? true : key_value_from_json["OPTIMIZE_IMAGES"];
 export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] || false;
 
+export const HTML_DIRECTIVE = key_value_from_json["HTML_DIRECTIVE"] || "";
+
 // Function to read the build start time from the file
 const readBuildStartTime = () => {
   const filePath = path.join('./tmp', 'build_start_timestamp.txt');

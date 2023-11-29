@@ -19,6 +19,16 @@
   },
   "CUSTOM_DOMAIN": "",
   "BASE_PATH": "",
+  "GISCUS": {
+    "data-repo": "nerdymomocat-templates/blogtrotion-astro-notion-cms",
+    "data-repo-id": " R_kgDOKy6K2w",
+    "data-category": "Announcements",
+    "data-category-id": "DIC_kwDOKy6K284CbUiH",
+    "data-mapping": "pathname",
+    "data-input-position": "top",
+    "data-reactions-enabled": true
+  },
+  "HTML_DIRECTIVE": "<!DOCTYPE html>",
   "THEME": {
     "colors": {
       "bg": {
@@ -52,15 +62,6 @@
       "serif_font_name": "",
       "mono_font_name": "Roboto\\ Mono"
     }
-  },
-  "GISCUS": {
-    "data-repo": "nerdymomocat-templates/blogtrotion-astro-notion-cms",
-    "data-repo-id": " R_kgDOKy6K2w",
-    "data-category": "Announcements",
-    "data-category-id": "DIC_kwDOKy6K284CbUiH",
-    "data-mapping": "pathname",
-    "data-input-position": "top",
-    "data-reactions-enabled": true
   },
   "NUMBER_OF_POSTS_PER_PAGE": 10,
   "ENABLE_LIGHTBOX": false,

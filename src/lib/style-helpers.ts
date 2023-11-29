@@ -75,7 +75,9 @@ export const textToAstroIcon = (text: string) => {
     "instagram": "mdi:instagram",
     "mastodon": "mdi:mastodon",
     "semanticscholar": "simple-icons:semantic-scholar",
-    "this-github-repo": "mdi:github-face"
+    "this-github-repo": "mdi:github-face",
+    "page-mention-ne-arrow": "mdi:arrow-top-right-thin-circle-outline",
+    "document": "mdi:file-document",
 
   }
   if (text in textIconMap) {
