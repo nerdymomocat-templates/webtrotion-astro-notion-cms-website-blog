@@ -25,6 +25,14 @@ jobs:
     runs-on: ubuntu-latest
     environment: github-pages
     steps:
+      - name: Put current date into a variable
+        run: |
+          $NOW=& Get-Date -format yyyy-MM-dd
+          echo "NOW=$NOW" >> $env:GITHUB_ENV
+      - name: Use variable
+        run: |
+          echo "${{env.NOW}}"
+
       - name: Checkout your repository using git
         uses: actions/checkout@v3
 
@@ -33,6 +41,8 @@ jobs:
         with:
           node-version: 21
 
+      # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+
       - name: Cache node manually
         id: npm-cache
         uses: actions/cache@v3
@@ -40,7 +50,6 @@ jobs:
           path: ./node_modules
           key: modules-${{ hashFiles(format('{0}/package_lock.json', env.BUILD_PATH)) }}
 
-      # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
         run: npm ci —ignore-scripts
@@ -55,14 +64,18 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./tmp
-          key: ${{ runner.os }}-tmp-blogtrotion
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{env.NOW}}
+          restore-keys:
+            ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-
 
       - name: Restore cached public
         id: cache-public-restore
         uses: actions/cache/restore@v3
         with:
           path: ./public
-          key: ${{ runner.os }}-public-blogtrotion
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{env.NOW}}
+          restore-keys:
+            ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
@@ -83,19 +96,19 @@ jobs:
           npx --no-install pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
 
-      - name: Save tmp cache
+      - name: Save new tmp cache
         id: cache-tmp-save
         uses: actions/cache/save@v3
         with:
           path: ./tmp
-          key: ${{ steps.cache-tmp-restore.outputs.cache-primary-key }}
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{env.NOW}}
 
-      - name: Save public cache
+      - name: Save new public cache
         id: cache-public-save
         uses: actions/cache/save@v3
         with:
-          path: ./tmp
-          key: ${{ steps.cache-public-restore.outputs.cache-primary-key }}
+          path: ./public
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{env.NOW}}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
