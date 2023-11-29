@@ -50,6 +50,20 @@ jobs:
         id: pages
         uses: actions/configure-pages@v3
 
+      - name: Restore cached tmp
+        id: cache-tmp-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ./tmp
+          key: ${{ runner.os }}-tmp-blogtrotion
+
+      - name: Restore cached public
+        id: cache-public-restore
+        uses: actions/cache/restore@v3
+        with:
+          path: ./public
+          key: ${{ runner.os }}-public-blogtrotion
+
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
           NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
@@ -68,6 +82,20 @@ jobs:
           # --base steps.pages.outputs.base_path"
           npx --no-install pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
+
+      - name: Save tmp cache
+        id: cache-tmp-save
+        uses: actions/cache/save@v3
+        with:
+          path: ./tmp
+          key: ${{ steps.cache-tmp-restore.outputs.cache-primary-key }}
+
+      - name: Save public cache
+        id: cache-public-save
+        uses: actions/cache/save@v3
+        with:
+          path: ./tmp
+          key: ${{ steps.cache-public-restore.outputs.cache-primary-key }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
