@@ -79,8 +79,7 @@
   "HOME_PAGE_SLUG": "index",
   "OG_SETUP": {
     "COLUMNS": 2,
-    "EXCERPT": true,
-    "FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF": 100
+    "EXCERPT": true
   },
   "OPTIMIZE_IMAGES": true,
   "REDIRECTS": {}

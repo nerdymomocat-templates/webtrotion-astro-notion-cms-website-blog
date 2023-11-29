@@ -1,6 +1,9 @@
 import config from '../constants-config.json';
 const key_value_from_json = { ...config };
 
+import fs from 'fs';
+import path from 'path';
+
 export const NOTION_API_SECRET =
   import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
 export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["DATABASE_ID"] || "";
@@ -39,3 +42,17 @@ export const OG_SETUP = key_value_from_json["OG_SETUP"] || {
 
 // export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] == null ? true : key_value_from_json["OPTIMIZE_IMAGES"];
 export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] || false;
+
+// Function to read the build start time from the file
+const readBuildStartTime = () => {
+  const filePath = path.join('./tmp', 'build_start_timestamp.txt');
+  if (fs.existsSync(filePath)) {
+    const buildTimestampStr = fs.readFileSync(filePath, 'utf8');
+    const buildTimestamp = parseInt(buildTimestampStr, 10);
+    return new Date(buildTimestamp);
+  }
+  return null;
+};
+
+export const LAST_BUILD_TIME = readBuildStartTime();
+console.log('Last Build Start Time:', LAST_BUILD_TIME);

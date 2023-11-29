@@ -4,7 +4,7 @@
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
 import type { Post } from "src/lib/interfaces";
-import { getPostBySlug } from "@/lib/notion/client";
+import { getPostBySlug, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { downloadFile, getAllBlocksByBlockId, getBlock } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
@@ -23,7 +23,7 @@ interface Props {
 }
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
-const blocks = await getAllBlocksByBlockId(post_full_preview.PageId);
+const blocks = await getPostContentByPostId(post_full_preview);
 const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
 	.concat(extractTargetBlocks("video", blocks))
 	.concat(extractTargetBlocks("file", blocks))
@@ -40,31 +40,7 @@ const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
 		);
 	});
 
-// Download files
-await Promise.all(
-	fileAtacchedBlocks
-		.map(async (block) => {
-			const expiryTime = (block.NImage || block.File || block.Video || block.NAudio).File
-				.ExpiryTime;
-			if (Date.parse(expiryTime) > Date.now()) {
-				return Promise.resolve(block);
-			}
-			return getBlock(block.Id);
-		})
-		.map((promise) =>
-			promise.then((block) => {
-				let url!: URL;
-				try {
-					url = new URL((block.NImage || block.File || block.Video || block.NAudio).File.Url);
-				} catch (err) {
-					console.log("Invalid file URL");
-					return Promise.reject();
-				}
-				return Promise.resolve(url);
-			}),
-		)
-		.map((promise) => promise.then(downloadFile)),
-);
+const processedFile = await processFileBlocks(fileAtacchedBlocks);
 
 //TODO: what is this?
 // const postDate = post.data.updatedDate ?? post.data.publishDate;

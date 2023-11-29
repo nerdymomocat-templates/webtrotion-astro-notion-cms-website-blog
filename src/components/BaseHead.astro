@@ -5,7 +5,7 @@ import "../styles/global.css";
 import "../styles/syntax-coloring.css";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { GoogleAnalytics } from "astro-google-analytics";
+// import { GoogleAnalytics } from "astro-google-analytics";
 import { PUBLIC_GA_TRACKING_ID } from "@/constants";
 import { GoogleFontsOptimizer } from "astro-google-fonts-optimizer";
 import config from '../../constants-config.json';
@@ -29,7 +29,15 @@ const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 {
-  PUBLIC_GA_TRACKING_ID && (	<GoogleAnalytics id={PUBLIC_GA_TRACKING_ID} />
+  PUBLIC_GA_TRACKING_ID && (
+  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA_TRACKING_ID}`}></script>
+  <script type="text/partytown">
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', {PUBLIC_GA_TRACKING_ID});
+  </script>
 )
 }
 {

@@ -7,6 +7,7 @@ export interface Database {
   Icon: FileObject | Emoji | null;
   Cover: FileObject | null;
   propertiesRaw: DatabaseProperties;
+  LastUpdatedTimeStamp: Date;
 }
 
 export interface Post {
@@ -23,6 +24,7 @@ export interface Post {
   Rank: number;
   LastUpdatedDate: string;
   RelatedPages: Reference[] | null;
+  LastUpdatedTimeStamp: Date;
 }
 
 // export interface DateProp {
@@ -35,6 +37,7 @@ export interface Block {
   Id: string;
   Type: BlockTypes;
   HasChildren: boolean;
+  LastUpdatedTimeStamp: Date;
 
   Paragraph?: Paragraph;
   Heading1?: Heading1;

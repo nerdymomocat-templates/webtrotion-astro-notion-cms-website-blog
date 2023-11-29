@@ -1,5 +1,5 @@
 //NOTE ADDED
-import { getDatabase, getPages } from "@/lib/notion/client";
+import { getAllPages, getDatabase } from "@/lib/notion/client";
 // import { siteConfig } from "@/site-config";
 import type { Block, BlockTypes } from "@/lib/interfaces";
 import { MENU_PAGES_COLLECTION, HOME_PAGE_SLUG } from "@/constants";
@@ -10,7 +10,6 @@ import { getNavLink } from "@/lib/blog-helpers";
 
 export { getFormattedDate, getFormattedDateWithTime, areDifferentDates } from "./date";
 export { elementHasClass, toggleClass, rootHasDarkClass } from "./domElement";
-// export { getAllPosts, sortMDByDate, getUniqueTags, getUniqueTagsWithCount } from "./post";
 // export { generateToc } from "./generateToc";
 export { generateToc, buildHeadings } from "./generateToc";
 export type { TocItem } from "./generateToc";
@@ -31,7 +30,7 @@ export async function getCollections() {
 export async function getMenu(): Promise<
   { title: string; path: string; children?: { title: string; path: string }[] }[]
 > {
-  const pages = await getPages();
+  const pages = await getAllPages();
   // console.log(pages);
   const collections = await getCollections();
 

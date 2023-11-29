@@ -8,6 +8,8 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import prefetch from "@astrojs/prefetch";
 // import { astroImageTools } from "astro-imagetools";
+import path from 'path';
+
 
 import { CUSTOM_DOMAIN, BASE_PATH, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "./src/constants";
 const getSite = function () {
@@ -28,18 +30,20 @@ const getSite = function () {
   }
   return new URL(BASE_PATH, 'http://localhost:4321').toString();
 };
-
-import CoverImageDownloader from './src/integrations/cover-image-downloader';
 import CustomIconDownloader from './src/integrations/custom-icon-downloader';
 import FeaturedImageDownloader from './src/integrations/featured-image-downloader';
 import PublicNotionCopier from './src/integrations/public-notion-copier';
+import buildTimestampRecorder from './src/integrations/build-timestamp-recorder.ts';
+
 import CSSWriter from './src/integrations/theme-constants-to-css';
-
 import robotsTxt from "astro-robots-txt";
-
 import config from "./constants-config.json";
-const key_value_from_json = { ...config };
+import partytown from "@astrojs/partytown";
+const key_value_from_json = {
+  ...config
+};
 
+// https://astro.build/config
 export default defineConfig({
   site: getSite(),
   base: process.env.BASE || BASE_PATH,
@@ -59,7 +63,12 @@ export default defineConfig({
       }
     }), prefetch(),
     // astroImageTools,
-    CoverImageDownloader(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt()],
+    buildTimestampRecorder(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
+      // Adds dataLayer.push as a forwarding-event.
+      config: {
+        forward: ["dataLayer.push"],
+      },
+    }),],
   image: {
     domains: ["webmention.io"]
   },
@@ -70,7 +79,6 @@ export default defineConfig({
     }
   }
 });
-
 function rawFonts(ext: Array<string>) {
   return {
     name: "vite-plugin-raw-fonts",

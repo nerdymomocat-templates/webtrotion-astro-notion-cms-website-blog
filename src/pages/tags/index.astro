@@ -1,11 +1,9 @@
 ---
 import PageLayout from "@/layouts/Base";
 import { getNavLink } from "@/lib/blog-helpers";
-// import { getAllPosts, getUniqueTagsWithCount } from "@/utils";
 import { getAllTagsWithCounts } from "@/lib/notion/client";
 
-// const allPosts = await getAllPosts();
-// const allTags = getUniqueTagsWithCount(allPosts);
+
 //FIXME: later for only getting tags used in posts
 const allTags = await getAllTagsWithCounts();
 

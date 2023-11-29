@@ -1,26 +1,17 @@
 ---
-// import type { GetStaticPaths, InferGetStaticPropsType } from "astro";
-// import PostLayout from "@/layouts/BlogPost";
-// import { getAllPosts } from "@/utils";
-
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import PostLayout from "@/layouts/BlogPost.astro";
 import { extractTargetBlocks, filePath } from "@/lib/blog-helpers";
-import { downloadFile, getAllBlocksByBlockId, getAllPosts, getBlock } from "@/lib/notion/client";
+import {
+	downloadFile,
+	getAllBlocksByBlockId,
+	getAllPosts,
+	getBlock,
+	getPostContentByPostId,
+	processFileBlocks,
+} from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
-// export const getStaticPaths = (async () => {
-// 	const blogEntries = await getAllPosts();
-// 	return blogEntries.map((entry) => ({
-// 		params: { slug: entry.slug },
-// 		props: { entry },
-// 	}));
-// }) satisfies GetStaticPaths;
-
-// type Props = InferGetStaticPropsType<typeof getStaticPaths>;
-
-// const { entry } = Astro.props;
-// const { Content } = await entry.render();
 
 export async function getStaticPaths() {
 	const posts = await getAllPosts();
@@ -39,7 +30,7 @@ if (!post) {
 	throw new Error("Post not found. slug: ${slug}");
 }
 
-const blocks = await getAllBlocksByBlockId(post.PageId);
+const blocks = await getPostContentByPostId(post);
 
 const headings = buildHeadings(blocks);
 
@@ -59,31 +50,33 @@ const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
 		);
 	});
 
-// Download files
-await Promise.all(
-	fileAtacchedBlocks
-		.map(async (block) => {
-			const expiryTime = (block.NImage || block.File || block.Video || block.NAudio).File
-				.ExpiryTime;
-			if (Date.parse(expiryTime) > Date.now()) {
-				return Promise.resolve(block);
-			}
-			return getBlock(block.Id);
-		})
-		.map((promise) =>
-			promise.then((block) => {
-				let url!: URL;
-				try {
-					url = new URL((block.NImage || block.File || block.Video || block.NAudio).File.Url);
-				} catch (err) {
-					console.log("Invalid file URL");
-					return Promise.reject();
-				}
-				return Promise.resolve(url);
-			}),
-		)
-		.map((promise) => promise.then(downloadFile)),
-);
+const processedFile = await processFileBlocks(fileAtacchedBlocks);
+
+// // Download files
+// await Promise.all(
+// 	fileAtacchedBlocks
+// 		.map(async (block) => {
+// 			const expiryTime = (block.NImage || block.File || block.Video || block.NAudio).File
+// 				.ExpiryTime;
+// 			if (Date.parse(expiryTime) > Date.now()) {
+// 				return Promise.resolve(block);
+// 			}
+// 			return getBlock(block.Id);
+// 		})
+// 		.map((promise) =>
+// 			promise.then((block) => {
+// 				let url!: URL;
+// 				try {
+// 					url = new URL((block.NImage || block.File || block.Video || block.NAudio).File.Url);
+// 				} catch (err) {
+// 					console.log("Invalid file URL");
+// 					return Promise.reject();
+// 				}
+// 				return Promise.resolve(url);
+// 			}),
+// 		)
+// 		.map((promise) => promise.then(downloadFile)),
+// );
 
 // let ogImage;
 // if (post.FeaturedImage) {
