@@ -5,10 +5,8 @@ import fs from "fs";
 // import remarkUnwrapImages from "remark-unwrap-images";
 // import { remarkReadingTime } from "./src/utils/remark-reading-time";
 import tailwind from "@astrojs/tailwind";
-import sitemap from "@astrojs/sitemap";
 import prefetch from "@astrojs/prefetch";
 // import { astroImageTools } from "astro-imagetools";
-import path from 'path';
 
 
 import { CUSTOM_DOMAIN, BASE_PATH, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "./src/constants";
@@ -52,15 +50,6 @@ export default defineConfig({
     // mdx({}),
     tailwind({
       applyBaseStyles: false
-    }), sitemap({
-      filter: page => {
-        console.log(page);
-        if (page.includes("/_") && HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-          console.log('Excluding page from sitemap:', page);
-          return false;
-        }
-        return true;
-      }
     }), prefetch(),
     // astroImageTools,
     buildTimestampRecorder(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({

@@ -36,7 +36,7 @@ export async function getMenu(): Promise<
 
   const collectionLinks = collections.map((name) => ({
     title: name,
-    path: getNavLink("/posts/collection/" + slugify(name)),
+    path: getNavLink("/collections/" + slugify(name)),
   }));
 
   const pageLinks = pages

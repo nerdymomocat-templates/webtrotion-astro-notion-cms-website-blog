@@ -915,6 +915,9 @@ export async function GET({ params: { slug } }: APIContext) {
   else if (type == "tagsindex") {
     chosen_markup = obj_img_none_without_desc("All topics I've written about", " ");
   }
+  else if (type == "collectionsindex") {
+    chosen_markup = obj_img_none_without_desc("All collections that hold my posts", " ");
+  }
   else if (type == "tagpage") {
     chosen_markup = obj_img_none_without_desc("All posts tagged with #" + keyStr, " ");
   }
@@ -987,8 +990,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const tagsindex = { params: { slug: "tagsindex---index" } };
   const postsindex = { params: { slug: "postsindex---index" } };
+  const collectionsindex = { params: { slug: "collections---index" } };
 
   //Note: using featured image to generate og!
   // return posts.map(({ Slug }) => ({ params: { slug: Slug } }));
-  return [...postsMap, ...collectionMap, ...tagMap, tagsindex, postsindex];
+  return [...postsMap, ...collectionMap, ...tagMap, tagsindex, postsindex, collectionsindex];
 };
