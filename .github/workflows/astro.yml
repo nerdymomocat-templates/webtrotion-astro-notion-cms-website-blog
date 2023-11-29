@@ -25,13 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: github-pages
     steps:
-      - name: Put current date into a variable
-        run: |
-          $NOW=& Get-Date -format yyyy-MM-dd
-          echo "NOW=$NOW" >> $env:GITHUB_ENV
-      - name: Use variable
-        run: |
-          echo "${{env.NOW}}"
 
       - name: Checkout your repository using git
         uses: actions/checkout@v3
@@ -64,7 +57,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./tmp
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{env.NOW}}
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys:
             ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-
 
@@ -73,7 +66,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./public
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{env.NOW}}
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys:
             ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-
 
@@ -101,14 +94,14 @@ jobs:
         uses: actions/cache/save@v3
         with:
           path: ./tmp
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{env.NOW}}
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save new public cache
         id: cache-public-save
         uses: actions/cache/save@v3
         with:
           path: ./public
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{env.NOW}}
+          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
