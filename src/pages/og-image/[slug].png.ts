@@ -297,7 +297,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "lineHeight": "3rem",
                                       "padding": "10px 0 50px 0",
                                       "color": "#374151",
-                                      "flex": "0.4",
+                                      "flex": "0.5",
                                       "display": "flex",
                                       "fontFamily": "monospace"
                                     },
@@ -608,7 +608,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                       "lineHeight": "4rem",
                                       "padding": "10px 50px",
                                       "color": "#374151",
-                                      "flex": "0.4",
+                                      "flex": "0.5",
                                       "display": "flex"
                                     },
                                     "children": title
