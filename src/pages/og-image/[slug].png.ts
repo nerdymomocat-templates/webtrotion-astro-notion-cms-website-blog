@@ -990,7 +990,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
   const tagsindex = { params: { slug: "tagsindex---index" } };
   const postsindex = { params: { slug: "postsindex---index" } };
-  const collectionsindex = { params: { slug: "collections---index" } };
+  const collectionsindex = { params: { slug: "collectionsindex---index" } };
 
   //Note: using featured image to generate og!
   // return posts.map(({ Slug }) => ({ params: { slug: Slug } }));
