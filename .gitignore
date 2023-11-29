@@ -21,10 +21,11 @@ pnpm-debug.log*
 .DS_Store
 
 # misc
+!**/.gitkeep
 *.pem
 .cache
 .astro
 .vscode/
 public/notion/**/*
-tmp/
-!**/.gitkeep
+tmp/*
+!tmp/.gitkeep
