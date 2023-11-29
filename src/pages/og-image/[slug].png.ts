@@ -890,7 +890,7 @@ export async function GET({ params: { slug } }: APIContext) {
       },
     });
   }
-  console.log("generating og image for slug", slug);
+  // console.log("generating og image for slug", slug);
 
   let chosen_markup;
   let fallback_markup;
