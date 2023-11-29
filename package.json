@@ -43,7 +43,8 @@
     "node-fetch": "^3.3.2",
     "png-to-ico": "^2.1.8",
     "prismjs": "^1.29.0",
-    "satori-html": "^0.3.2"
+    "satori-html": "^0.3.2",
+    "sharp": "^0.33.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.2.0",
