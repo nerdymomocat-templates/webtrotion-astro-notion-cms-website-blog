@@ -1,82 +1,18 @@
 ---
 const { order = 0 } = Astro.props;
+// https://docs.astro.build/en/tutorial/6-islands/2/
 ---
-
-<!-- <script>
-  class ThemeToggle extends HTMLElement {
-    constructor() {
-      super();
-      const button = this.querySelector("button") as HTMLButtonElement;
-
-      function setTheme(dark: boolean) {
-        // This could/should be a customEvent()
-        document.documentElement.classList.toggle("dark", dark);
-        // set the aria-pressed attribute, dark mode === aria-pressed=true
-        button.setAttribute("aria-pressed", String(dark));
-      }
-
-      // button clicked, toggle dark mode
-      button.addEventListener("click", () => setTheme(!this.isDark()));
-
-      // Initalise button state
-      setTheme(this.isDark());
-    }
-
-    // returns if the root element contains the dark class
-    isDark() {
-      return document.documentElement.classList.contains("dark");
-    }
-  }
-
-  customElements.define("theme-toggle", ThemeToggle);
-</script> -->
-<script>
-	class ThemeToggle extends HTMLElement {
-		constructor() {
-			super();
-			const button = this.querySelector("button") as HTMLButtonElement;
-
-			// Function to retrieve user's theme preference from localStorage
-			const getUserThemePreference = () => {
-				return localStorage.getItem("theme") === "dark";
-			};
-
-			// Function to set theme
-			const setTheme = (dark: boolean) => {
-				// Toggle the "dark" class on the root element
-				document.documentElement.classList.toggle("dark", dark);
-				// Update aria-pressed attribute
-				button.setAttribute("aria-pressed", String(dark));
-				// Save the user's theme preference in localStorage
-				localStorage.setItem("theme", dark ? "dark" : "light");
-			};
-
-			// Event listener for button click to toggle theme
-			button.addEventListener("click", () => setTheme(!this.isDark()));
-
-			// Initialize button state based on user preference or default state
-			setTheme(getUserThemePreference() || this.isDark());
-		}
-
-		// Function to check if the current theme is dark
-		isDark() {
-			return document.documentElement.classList.contains("dark");
-		}
-	}
-
-	customElements.define("theme-toggle", ThemeToggle);
-</script>
 
 <theme-toggle class:list={["ml-auto", `order-${order}`, "sm:order-3"]}>
 	<button
 		type="button"
-		id="toggle-theme"
+		id="themeToggle"
 		class="group relative h-10 w-10 rounded-md bg-zinc-200 p-2 ring-zinc-400 transition-all hover:ring-2 dark:bg-zinc-700"
 		aria-label="Toggle Dark Mode"
 	>
 		<svg
 			id="sun-svg"
-			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all group-aria-pressed:scale-100 group-aria-pressed:opacity-100"
+			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all dark:scale-100 dark:opacity-100"
 			aria-hidden="true"
 			focusable="false"
 			stroke-width="1.5"
@@ -107,7 +43,7 @@ const { order = 0 } = Astro.props;
 		</svg>
 		<svg
 			id="moon-svg"
-			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all group-aria-[pressed=false]:scale-100 group-aria-[pressed=false]:opacity-100"
+			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all dark:scale-0 dark:opacity-0"
 			aria-hidden="true"
 			focusable="false"
 			stroke-width="1.5"
@@ -137,3 +73,33 @@ const { order = 0 } = Astro.props;
 		</svg>
 	</button>
 </theme-toggle>
+
+<script is:inline>
+	const theme = (() => {
+		if (typeof localStorage !== "undefined" && localStorage.getItem("theme")) {
+			return localStorage.getItem("theme");
+		}
+		if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+			return "dark";
+		}
+		return "light";
+	})();
+
+	if (theme === "light") {
+		document.documentElement.classList.remove("dark");
+	} else {
+		document.documentElement.classList.add("dark");
+	}
+
+	window.localStorage.setItem("theme", theme);
+
+	const handleToggleClick = () => {
+		const element = document.documentElement;
+		element.classList.toggle("dark");
+
+		const isDark = element.classList.contains("dark");
+		localStorage.setItem("theme", isDark ? "dark" : "light");
+	};
+
+	document.getElementById("themeToggle").addEventListener("click", handleToggleClick);
+</script>

@@ -1,11 +1,11 @@
 ---
-import ThemeToggle from "../ThemeToggle.astro";
 import Search from "../Search.astro";
 import { getMenu } from "@/utils";
 import { siteInfo } from "@/site.config";
 import { filePath, getNavLink } from "@/lib/blog-helpers";
 import Icon from "astro-icon";
 import { textToAstroIcon } from "@/lib/style-helpers";
+import ThemeIcon from "../ThemeIcon.astro";
 
 const menuLinks = await getMenu();
 
@@ -140,7 +140,7 @@ const rss_path = getNavLink("/rss.xml");
 			>
 		</div>
 		<Search />
-		<ThemeToggle />
+		<ThemeIcon />
 		<mobile-button>
 			<button
 				id="toggle-navigation-menu"
