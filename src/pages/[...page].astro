@@ -37,37 +37,44 @@ interface Props {
 const { page: slug } = Astro.params;
 const { page } = Astro.props;
 
+let pageFound = true;
+let blocks = null;
+
 if (!page) {
-	throw new Error("Page not found");
+	console.log("Page not found");
+	pageFound = false;
 }
 //NOTE: later if i want posts on my home page which i very well might!
 // const [blocks, rankedPosts] = await Promise.all([
 // 	getAllBlocksByBlockId(page.PageId),
 // 	getRankedPosts(),
 // ]);
+if (pageFound) {
+	blocks = await getPostContentByPostId(page);
 
-const blocks = await getPostContentByPostId(page);
+	const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
+		.concat(extractTargetBlocks("video", blocks))
+		.concat(extractTargetBlocks("file", blocks))
+		.concat(extractTargetBlocks("audio", blocks))
+		.filter((block) => {
+			if (!block) {
+				return false;
+			}
+			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+			return (
+				imageOrVideoOrAudioOrFile &&
+				imageOrVideoOrAudioOrFile.File &&
+				imageOrVideoOrAudioOrFile.File.Url
+			);
+		});
 
-const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
-	.concat(extractTargetBlocks("video", blocks))
-	.concat(extractTargetBlocks("file", blocks))
-	.concat(extractTargetBlocks("audio", blocks))
-	.filter((block) => {
-		if (!block) {
-			return false;
-		}
-		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-		return (
-			imageOrVideoOrAudioOrFile &&
-			imageOrVideoOrAudioOrFile.File &&
-			imageOrVideoOrAudioOrFile.File.Url
-		);
-	});
-
-const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	const processedFile = await processFileBlocks(fileAtacchedBlocks);
+}
 ---
 
-<script>
+{pageFound &&
+
+(<script>
 	const scrollBtn = document.getElementById("to-top-btn") as HTMLButtonElement;
 	const targetHeader = document.getElementById("blog-hero") as HTMLDivElement;
 
@@ -144,4 +151,4 @@ const processedFile = await processFileBlocks(fileAtacchedBlocks);
 	>
 		<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 	</svg>
-</button>
+</button>)}

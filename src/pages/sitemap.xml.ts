@@ -43,6 +43,10 @@ export const GET = async () => {
   ${combinedEntries}
 </urlset>`;
 
-  return { body: sitemap };;
+  // return { body: sitemap };
+  return new Response(
+    JSON.stringify({ body: sitemap })
+  );
 };
+
 

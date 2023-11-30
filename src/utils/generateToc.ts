@@ -20,31 +20,30 @@ function diveChildren(item: TocItem, depth: number): Array<TocItem> {
 }
 
 export function generateToc(headings: ReadonlyArray<MarkdownHeading>) {
-  // this ignores/filters out h1 element(s)
   //NOTE: commented this because it was skipping h2s in our setup
-  // const bodyHeadings = [...headings.filter(({ depth }) => depth > 1)];
   const toc: Array<TocItem> = [];
 
   headings.forEach((h) => {
     const heading: TocItem = { ...h, subheadings: [] };
+    let ignore = false;
 
-    // add h2 elements into the top level
     //NOTE: changed it to 1 for top level
     if (heading.depth === 1) {
       toc.push(heading);
     } else {
-      const lastItemInToc = toc[toc.length - 1]!;
-      if (heading.depth < lastItemInToc.depth) {
-        throw new Error(`Orphan heading found: ${heading.text}.`);
+      const lastItemInToc = toc ? toc[toc.length - 1]! : null;
+      if (!lastItemInToc || heading.depth < lastItemInToc.depth) {
+        console.log(`Orphan heading found: ${heading.text}.`);
+        ignore = true;
       }
-
-      // higher depth
-      // push into children, or children's children
-      const gap = heading.depth - lastItemInToc.depth;
-      const target = diveChildren(lastItemInToc, gap);
-      target.push(heading);
+      if (!ignore) {
+        const gap = heading.depth - lastItemInToc.depth;
+        const target = diveChildren(lastItemInToc, gap);
+        target.push(heading);
+      }
     }
   });
+  // console.log(toc);
   return toc;
 }
 

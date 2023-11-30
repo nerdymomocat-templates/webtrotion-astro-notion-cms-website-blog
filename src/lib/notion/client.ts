@@ -358,42 +358,13 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
   return allBlocks;
 }
 
-export async function getBlock(blockId: string): Promise<Block> {
+export async function getBlock(blockId: string): Promise<Block | null> {
   const params: requestParams.RetrieveBlock = {
     block_id: blockId,
   };
 
-  const res = await retry(
-    async (bail) => {
-      try {
-        return (await client.blocks.retrieve(
-          params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-        )) as responses.RetrieveBlockResponse;
-      } catch (error: unknown) {
-        if (error instanceof APIResponseError) {
-          if (error.status && error.status >= 400 && error.status < 500) {
-            bail(error);
-          }
-        }
-        throw error;
-      }
-    },
-    {
-      retries: numberOfRetry,
-    },
-  );
-
-  return _buildBlock(res);
-}
-
-export async function getBlockParentPageId(blockId: string): Promise<string | null> {
-  let parent_page_id = null;
-
-  while (true) {
-    let params: requestParams.RetrieveBlock = {
-      block_id: blockId,
-    };
-    let res = await retry(
+  try {
+    const res = await retry(
       async (bail) => {
         try {
           return (await client.blocks.retrieve(
@@ -412,18 +383,62 @@ export async function getBlockParentPageId(blockId: string): Promise<string | nu
         retries: numberOfRetry,
       },
     );
-    if (res.parent.type == "block_id") {
-      blockId = res.parent.block_id;
+
+    return _buildBlock(res);
+  } catch (error) {
+    // Log the error if necessary
+    console.error('Error retrieving block:' + blockId, error);
+    return null; // Return null if an error occurs
+  }
+}
+
+export async function getBlockParentPageId(blockId: string): Promise<string | null> {
+  let parent_page_id: string | null = null;
+
+  while (true) {
+    let params: requestParams.RetrieveBlock = {
+      block_id: blockId,
+    };
+
+    try {
+      let res = await retry(
+        async (bail) => {
+          try {
+            return (await client.blocks.retrieve(
+              params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+            )) as responses.RetrieveBlockResponse;
+          } catch (error: unknown) {
+            if (error instanceof APIResponseError) {
+              if (error.status && error.status >= 400 && error.status < 500) {
+                bail(error);
+              }
+            }
+            throw error;
+          }
+        },
+        {
+          retries: numberOfRetry,
+        },
+      );
+
+      if (res.parent.type === "block_id") {
+        blockId = res.parent.block_id;
+      } else if (res.parent.type === "page_id") {
+        parent_page_id = res.parent.page_id;
+        break;
+      } else {
+        break;
+      }
+    } catch (error) {
+      // Log the error if necessary
+      console.error('Error retrieving block parent:', error);
+      return null; // Return null if an error occurs
     }
-    else if (res.parent.type == "page_id") {
-      parent_page_id = res.parent.page_id;
-      break;
-    }
-    else { break; }
   }
 
   return parent_page_id;
 }
+
 
 export function getUniqueTags(posts: Post[]) {
   const tagNames: string[] = [];
@@ -610,6 +625,7 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
         if (Date.parse(expiryTime) < Date.now()) {
           // If the file is expired, get the block again and extract the new URL
           const updatedBlock = await getBlock(block.Id);
+          if (!updatedBlock) { return null; }
           url = new URL((updatedBlock.NImage || updatedBlock.File || updatedBlock.Video || updatedBlock.NAudio).File.Url);
         }
 
@@ -994,43 +1010,40 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
 async function _getTableRows(blockId: string): Promise<TableRow[]> {
   let results: responses.BlockObject[] = [];
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, "utf-8"));
-  } else {
-    const params: requestParams.RetrieveBlockChildren = {
-      block_id: blockId,
-    };
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const res = await retry(
-        async (bail) => {
-          try {
-            return (await client.blocks.children.list(
-              params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-            )) as responses.RetrieveBlockChildrenResponse;
-          } catch (error: unknown) {
-            if (error instanceof APIResponseError) {
-              if (error.status && error.status >= 400 && error.status < 500) {
-                bail(error);
-              }
+  const params: requestParams.RetrieveBlockChildren = {
+    block_id: blockId,
+  };
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const res = await retry(
+      async (bail) => {
+        try {
+          return (await client.blocks.children.list(
+            params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          )) as responses.RetrieveBlockChildrenResponse;
+        } catch (error: unknown) {
+          if (error instanceof APIResponseError) {
+            if (error.status && error.status >= 400 && error.status < 500) {
+              bail(error);
             }
-            throw error;
           }
-        },
-        {
-          retries: numberOfRetry,
-        },
-      );
+          throw error;
+        }
+      },
+      {
+        retries: numberOfRetry,
+      },
+    );
 
-      results = results.concat(res.results);
+    results = results.concat(res.results);
 
-      if (!res.has_more) {
-        break;
-      }
-
-      params["start_cursor"] = res.next_cursor as string;
+    if (!res.has_more) {
+      break;
     }
+
+    params["start_cursor"] = res.next_cursor as string;
   }
 
   return results.map((blockObject) => {
@@ -1060,43 +1073,39 @@ async function _getTableRows(blockId: string): Promise<TableRow[]> {
 async function _getColumns(blockId: string): Promise<Column[]> {
   let results: responses.BlockObject[] = [];
 
-  if (fs.existsSync(`tmp/${blockId}.json`)) {
-    results = JSON.parse(fs.readFileSync(`tmp/${blockId}.json`, "utf-8"));
-  } else {
-    const params: requestParams.RetrieveBlockChildren = {
-      block_id: blockId,
-    };
+  const params: requestParams.RetrieveBlockChildren = {
+    block_id: blockId,
+  };
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const res = await retry(
-        async (bail) => {
-          try {
-            return (await client.blocks.children.list(
-              params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-            )) as responses.RetrieveBlockChildrenResponse;
-          } catch (error: unknown) {
-            if (error instanceof APIResponseError) {
-              if (error.status && error.status >= 400 && error.status < 500) {
-                bail(error);
-              }
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const res = await retry(
+      async (bail) => {
+        try {
+          return (await client.blocks.children.list(
+            params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+          )) as responses.RetrieveBlockChildrenResponse;
+        } catch (error: unknown) {
+          if (error instanceof APIResponseError) {
+            if (error.status && error.status >= 400 && error.status < 500) {
+              bail(error);
             }
-            throw error;
           }
-        },
-        {
-          retries: numberOfRetry,
-        },
-      );
+          throw error;
+        }
+      },
+      {
+        retries: numberOfRetry,
+      },
+    );
 
-      results = results.concat(res.results);
+    results = results.concat(res.results);
 
-      if (!res.has_more) {
-        break;
-      }
-
-      params["start_cursor"] = res.next_cursor as string;
+    if (!res.has_more) {
+      break;
     }
+
+    params["start_cursor"] = res.next_cursor as string;
   }
 
   return await Promise.all(
@@ -1116,12 +1125,11 @@ async function _getColumns(blockId: string): Promise<Column[]> {
 }
 
 async function _getSyncedBlockChildren(block: Block): Promise<Block[]> {
-  let originalBlock: Block = block;
+  let originalBlock: Block | null = block;
   if (block.SyncedBlock && block.SyncedBlock.SyncedFrom && block.SyncedBlock.SyncedFrom.BlockId) {
-    try {
-      originalBlock = await getBlock(block.SyncedBlock.SyncedFrom.BlockId);
-    } catch (err) {
-      console.log(`Could not retrieve the original synced_block. error: ${err}`);
+    originalBlock = await getBlock(block.SyncedBlock.SyncedFrom.BlockId);
+    if (!originalBlock) {
+      console.log("Could not retrieve the original synced_block");
       return [];
     }
   }
