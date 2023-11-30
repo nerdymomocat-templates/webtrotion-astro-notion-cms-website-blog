@@ -12,7 +12,7 @@ export interface Props {
 const { block, headings } = Astro.props;
 ---
 
-<ul class="list-inside list-disc space-y-1 pl-2">
+<ul class="list-outside list-disc space-y-1 pl-6">
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "bulleted_list_item").map(
 			(b: interfaces.Block) => (
