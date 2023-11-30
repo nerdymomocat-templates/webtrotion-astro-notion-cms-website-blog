@@ -1,5 +1,7 @@
-⚠️ Ideally you might want to read this page on the [rendered website here](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/introducing-webtrotion/) to get a feel of how it looks like.
+> [!NOTE]
+> Ideally you might want to read this page on the [rendered website here](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/introducing-webtrotion/) to get a feel of how it looks like.
 
+---
 
 **Table of Contents**
 1. [Acknowledgements](#acknowledgements)
@@ -162,7 +164,7 @@ npm run dev
 
 | Key | Value |
 | --- | --- |
-| PUBLIC_GA_TRACKING_ID | Your google tracking property id. Steps https://support.google.com/analytics/answer/9304153?hl=en&ref_topic=14088998&sjid=1644955229874584087-NC. |
+| PUBLIC_GA_TRACKING_ID | Your google tracking property id. Steps [here](https://support.google.com/analytics/answer/9304153?hl=en&ref_topic=14088998&sjid=1644955229874584087-NC). |
 | WEBMENTION_API_KEY | Key obtained from https://webmention.io/ |
 | WEBMENTION_LINK | Link obtained from https://webmention.io/ |
 | CUSTOM_DOMAIN | If you want to host the site somewhere else |
