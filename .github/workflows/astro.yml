@@ -45,7 +45,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci —ignore-scripts
+        run: npm ci --ignore-scripts
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Setup Pages
