@@ -25,16 +25,16 @@ const {
 <html lang={siteInfo.lang}>
 	<head>
 		<BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
-		{
+		<!-- {
 			/*
 			Fallback set to none in non-supporting browsers -> https://docs.astro.build/en/guides/view-transitions/#fallback-control
 			This is set to false by default in src/utils/siteConfig.ts
 			*/
-		}
-		{siteInfo.includeViewTransitions && <ViewTransitions fallback="none" />}
+		} -->
+		<!-- {siteInfo.includeViewTransitions && <ViewTransitions fallback="none" />} -->
 	</head>
 	<body>
-		<!-- <ThemeProvider /> -->
+		<ThemeProvider />
 		<SkipLink />
 		<Header />
 		<main id="main" class="lg:w-[125%]">
