@@ -1,7 +1,12 @@
+<div align="center">
+  <img alt="Webtrotion Cat" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/250af1ba-5bbf-4ce5-b8d4-bdec168ffe1e" width="70" />
+</div>
+<h1 align="center">
+  Webtrotion
+</h1>
+
 > [!NOTE]
 > Ideally you might want to read this page on the [rendered website here](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/introducing-webtrotion/) to get a feel of how it looks like.
-
----
 
 **Table of Contents**
 1. [Acknowledgements](#acknowledgements)
@@ -24,8 +29,6 @@
 Webtrotion is a simple to install, configurable to $n^{th}$ limit starter built with the [Astro framework](https://astro.build/) in conjunction with [Notion](notion://www.notion.so/). Use it to create an easy-to-use blog **or website.**
 
 [(Skip to features and setup)](#key-features)
-
-![Webtrotion Cat](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/250af1ba-5bbf-4ce5-b8d4-bdec168ffe1e)
 
 ---
 
