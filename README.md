@@ -1,3 +1,6 @@
+⚠️ Ideally you might want to read this page on the [rendered website here](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/introducing-webtrotion/) to get a feel of how it looks like.
+
+
 **Table of Contents**
 1. [Acknowledgements](#acknowledgements)
 2. [Why Webtrotion](#why-webtrotion)
@@ -91,6 +94,7 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
 1. Create a new repo from [this template](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/generate) if you want to have a one and done standalone repository. If you want to be able to access and sync changes made in the template to your repository, choose to [fork it instead](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/generate).
 
 📝 If you ***do not choose to add a custom domain***, the name of your repository matters. If the name of the repository you create is **<username>.github.io**; your website will be accessible at <username>.github.io if you use github actions. If you use any other name, the website will instead be hosted at <username>.github.io/<reponame>.
+
 ⚠️ When you first fork the repository, you will see that the github action output fails. This is because we haven’t added or changed notion integration information. Don’t worry, once you add those, it will run successfully.
 
 2. In your repository settings:
@@ -109,7 +113,9 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
 6. Save the file and commit+merge to the main repo.
 7. The github action by default runs every 8 hours or on commits to the repo. This can be modified in `.github/astro.yml` file. You can choose any cron duration.
 
-🥳 And we are done! You can access your website on **<username>.github.io** or <username>.github.io/<reponame> depending on what you chose. Checkout all [Supported blocks](https://www.notion.so/Supported-blocks-ac44e9c00f744bc0b52c5653ebdbbd8f?pvs=21) but tl;dr all blocks are supported except child databases and child pages.
+
+🥳 And we are done! You can access your website on **<username>.github.io** or <username>.github.io/<reponame> depending on what you chose. Checkout all [Supported blocks](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/supported-blocks/) but tl;dr all blocks are supported except child databases and child pages. This specific page will show up as insecure because it has a direct HTML injection.
+
 📝 Remember, the cron schedule is by default set to every 8 hours. You can change it to run every 2 hours or if you want to push out a change immediately, you can also [manually run the github action](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) if you are deploying on github. The workflow name is “Deploy Github Pages”.
 
 # Preview
@@ -182,7 +188,8 @@ npm run dev
 MIT
 
 # Notes
-
-ℹ️ **Aggressive Caching**
-
+- 📝 If you ***do not choose to add a custom domain***, the name of your repository matters. If the name of the repository you create is **<username>.github.io**; your website will be accessible at <username>.github.io if you use github actions. If you use any other name, the website will instead be hosted at <username>.github.io/<reponame>.
+- ⚠️ **Don’t rename the columns of DB.** They are used in the astro code. You can reorder the columns or add any other columns you want.
+- 📝 Remember, the cron schedule is by default set to every 8 hours. You can change it to run every 2 hours or if you want to push out a change immediately, you can also [manually run the github action](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) if you are deploying on github. The workflow name is “Deploy Github Pages”.
+- ℹ️ **Aggressive Caching**
 Remember that the setup uses aggressive caching for github actions. These caches are public. If you want to remove caches, you can go to [github action workflow](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) and manually delete the caches
