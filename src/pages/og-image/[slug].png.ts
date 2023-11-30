@@ -953,7 +953,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getAllEntries();
 
   const postsMap = posts.map(({ Slug }) => ({ params: { slug: Slug } }));
-  // const postsMap = filteredPosts.map(({ Slug }) => ({ params: { slug: Slug } }));
 
   const collections = await getCollections();
   const collectionMap = collections.map((collection) => ({
@@ -969,7 +968,5 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const postsindex = { params: { slug: "postsindex---index" } };
   const collectionsindex = { params: { slug: "collectionsindex---index" } };
 
-  //Note: using featured image to generate og!
-  // return posts.map(({ Slug }) => ({ params: { slug: Slug } }));
   return [...postsMap, ...collectionMap, ...tagMap, tagsindex, postsindex, collectionsindex];
 };

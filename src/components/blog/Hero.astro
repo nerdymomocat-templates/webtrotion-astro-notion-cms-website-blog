@@ -18,30 +18,10 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 };
 ---
 
-{
-	//NOTE: Removed featued image from the top of page
-	// post.FeaturedImage && (
-	// 	<div class="aspect-h-9 aspect-w-16 mb-6">
-	// 		<Image
-	// 			src={post.FeaturedImage.Url}
-	// 			width={200}
-	// 			height={300}
-	// 			alt={post.Title}
-	// 			class="object-cover"
-	// 			loading="eager"
-	// 			fetchpriority="high"
-	// 		/>
-	// 	</div>
-	// )
-}
 <h1 class="title mb-3 sm:mb-1">{post.Title}</h1>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
-		{
-			//FIXME: fix this remark plugin thing
-			//{remarkPluginFrontmatter.minutesRead}
-		}
 	</p>
 	{
 		post.Date && post.LastUpdatedDate && areDifferentDates(post.Date, post.LastUpdatedDate) && (
