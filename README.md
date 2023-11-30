@@ -1,5 +1,5 @@
 <div align="center">
-  <img alt="Webtrotion Cat" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/250af1ba-5bbf-4ce5-b8d4-bdec168ffe1e" width="70" />
+  <img alt="Webtrotion Cat" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/b8206c1e-7c27-46d5-b192-850699117c8b" width="70" />
 </div>
 <h1 align="center">
   Webtrotion
@@ -124,9 +124,12 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
 📝 Remember, the cron schedule is by default set to every 8 hours. You can change it to run every 2 hours or if you want to push out a change immediately, you can also [manually run the github action](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) if you are deploying on github. The workflow name is “Deploy Github Pages”.
 
 # Preview
-<img width="990" alt="Light Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/1746ba04-5dc8-4c30-bf43-78903fec3684">
+
+<img width="990" alt="Light Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/0bc56b36-88a1-4875-9266-e186becb380d">
+
 Light mode preview
-<img width="971" alt="Dark Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/ac25c6e1-6020-42cc-a562-65be122de7f2">
+<img width="971" alt="Dark Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/52edd08a-1459-4aa5-ac22-77b8b6dea161">
+
 Dark mode preview
 
 # Notion Properties
