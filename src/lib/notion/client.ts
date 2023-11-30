@@ -532,8 +532,6 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
 
 
   const filepath = generateFilePath(url);
-  // console.log('filePath in download', filepath);
-  // const faviconPath = BASE_DIR + "/favicon.ico";
 
   let stream = res.data;
   if (res.headers["content-type"] === "image/jpeg") {
@@ -574,8 +572,6 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
 
   if (isImage && optimize_img && !filepath.includes(".gif")) {
     // Process and write only the optimized WebP image
-    // const webpPath = `${dir}/${filename.split('.')[0]}.webp`;
-    // const webpPath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
     const webpPath = generateFilePath(url, true);
     // console.log('Writing to', webpPath);
     stream.pipe(sharp()
@@ -613,14 +609,11 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
       let url = new URL(fileDetails.Url);
 
       const cacheFilePath = generateFilePath(url, true);
-      // console.log('checking for cache of block id: ', block.Id, cacheFilePath, block.LastUpdatedTimeStamp, LAST_BUILD_TIME);
 
       const shouldDownload = LAST_BUILD_TIME ? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(cacheFilePath)) : true;
 
-      // const shouldDownload = LAST_BUILD_TIME ? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(`./public/notion/${fileDetails.Url.split('/').pop()}`)) : true;
 
       if (shouldDownload) {
-        // console.log("Downloading for ", block.Id);
 
         if (Date.parse(expiryTime) < Date.now()) {
           // If the file is expired, get the block again and extract the new URL
@@ -631,7 +624,6 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
 
         return downloadFile(url); // Download the file
       }
-      // console.log("Hit cache for download of ", block.Id);
 
       return null;
     })
@@ -1143,10 +1135,6 @@ function _validPageObject(pageObject: responses.PageObject): boolean {
   return (
     !!prop.Page.title &&
     prop.Page.title.length > 0
-    // &&
-    // !!prop.Slug.rich_text &&
-    // prop.Slug.rich_text.length > 0 &&
-    // !!prop.Date.date
   );
 }
 
@@ -1198,11 +1186,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     LastUpdatedTimeStamp: pageObject.last_edited_time ? new Date(pageObject.last_edited_time) : null,
     Icon: icon,
     Cover: cover,
-    // Collection: prop.Collection?.select!.name,
     Collection: prop.Collection?.select ? prop.Collection.select.name : "",
-    // Slug: prop.Slug?.rich_text && prop.Slug.rich_text.map((richText) => richText.plain_text).join("") != ""
-    //   ? prop.Slug.rich_text.map((richText) => richText.plain_text).join("")
-    //   : prop.Page?.title ? slugify(prop.Page.title.map((richText) => richText.plain_text).join(""), { preserveLeadingUnderscore: true }) : null,
     Slug: prop.Slug?.formula?.string ? prop.Slug.formula.string : "",
     Date: prop['Publish Date']?.formula?.date ? prop['Publish Date']?.formula?.date.start : "",
     Tags: prop.Tags?.multi_select ? prop.Tags.multi_select : [],

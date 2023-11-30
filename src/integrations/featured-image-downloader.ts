@@ -11,7 +11,7 @@ export default (): AstroIntegration => ({
 
       await Promise.all(
         posts.map((post) => {
-          if (!post.FeaturedImage || !post.FeaturedImage.Url || (post.LastUpdatedTimeStamp < LAST_BUILD_TIME && !fs.existsSync(generateFilePath(new URL(post.FeaturedImage.Url))))) {
+          if (!post.FeaturedImage || !post.FeaturedImage.Url || (LAST_BUILD_TIME && post.LastUpdatedTimeStamp < LAST_BUILD_TIME && !fs.existsSync(generateFilePath(new URL(post.FeaturedImage.Url))))) {
             return Promise.resolve()
           }
 

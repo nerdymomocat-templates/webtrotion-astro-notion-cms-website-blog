@@ -51,8 +51,6 @@ export function generateToc(headings: ReadonlyArray<MarkdownHeading>) {
 
 function cleanHeading(heading: Block): Heading {
   let text = "";
-  //NOTE: removed subheadings because we do not care about it
-  // let subheadings: Heading[] = [];
   let depth = 0;
   if (heading.Type === "heading_1" && heading.Heading1) {
     text = heading.Heading1?.RichTexts[0]?.PlainText;

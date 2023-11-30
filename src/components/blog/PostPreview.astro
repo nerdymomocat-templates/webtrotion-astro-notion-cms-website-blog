@@ -4,7 +4,6 @@
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
 import type { Post } from "src/lib/interfaces";
-import { getPostBySlug } from "@/lib/notion/client";
 import { convertToTailwindColor, convertToTailwindColorForBorder } from "@/lib/style-helpers";
 import { getNavLink, getPostLink } from "@/lib/blog-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";

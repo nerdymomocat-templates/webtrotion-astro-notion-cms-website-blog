@@ -1,7 +1,4 @@
 ---
-//TODO: figure out why site config was being used
-// import { siteConfig } from "@/site-config";
-// import { menuLinks, siteConfig } from "@/site-config";
 import { getMenu } from "@/utils";
 import SocialList from "@/components/SocialList";
 
@@ -11,10 +8,6 @@ const menuLinks = await getMenu();
 <footer
 	class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 pb-4 pt-20 text-center align-top text-xs text-accent-2 sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%]"
 >
-	<!-- <div class="me-0 sm:me-4">
-		Copyright &copy; {year}{" "}
-		{siteConfig.author}
-	</div> -->
 	<nav
 		aria-label="More on this site"
 		class="sm: flex flex-wrap gap-x-2 rounded border-b-2 border-t-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500 sm:border-none"

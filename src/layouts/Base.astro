@@ -1,13 +1,9 @@
 ---
-import { ViewTransitions } from "astro:transitions";
-
 import type { SiteMeta } from "@/types";
 import BaseHead from "@/components/BaseHead";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
-// import { siteConfig } from "@/site-config";
-// import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
 
 interface Props {
@@ -24,13 +20,6 @@ const {
 <html lang={siteInfo.lang}>
 	<head>
 		<BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
-		<!-- {
-			/*
-			Fallback set to none in non-supporting browsers -> https://docs.astro.build/en/guides/view-transitions/#fallback-control
-			This is set to false by default in src/utils/siteConfig.ts
-			*/
-		} -->
-		<!-- {siteInfo.includeViewTransitions && <ViewTransitions fallback="none" />} -->
 	</head>
 	<body>
 		<SkipLink />

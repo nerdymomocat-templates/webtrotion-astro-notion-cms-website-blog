@@ -14,7 +14,6 @@ let image = "";
 if (block.NImage?.External) {
 	image = block.NImage.External.Url;
 } else if (block.NImage?.File) {
-	// image = filePath(new URL(block.NImage.File.Url));
 	image = filePath(new URL(block.NImage.File.OptimizedUrl));
 }
 ---

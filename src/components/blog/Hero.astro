@@ -1,21 +1,13 @@
 ---
-import { Image } from "astro:assets";
-// import type { CollectionEntry } from "astro:content";
 import FormattedDate from "../FormattedDate.astro";
-//ADDED
 import type { Post } from "src/lib/interfaces";
 import { convertToTailwindColor, convertToTailwindColorForBorder } from "@/lib/style-helpers";
 import { areDifferentDates } from "@/utils/date";
 import { getNavLink } from "@/lib/blog-helpers";
 
 interface Props {
-	// content: CollectionEntry<"post">;
 	post: Post;
 }
-
-// const {
-// 	content: { data, render },
-// } = Astro.props;
 
 const { post } = Astro.props;
 //FIXME: figure out what this remarkPluginFrontmatter is
@@ -26,37 +18,31 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 };
 ---
 
-<!-- //NOTE: Removed featued image from the top of page --><!-- {
-	post.FeaturedImage && (
-		<div class="aspect-h-9 aspect-w-16 mb-6">
-			<Image
-				src={post.FeaturedImage.Url}
-				width={200}
-				height={300}
-				alt={post.Title}
-				class="object-cover"
-				loading="eager"
-				fetchpriority="high"
-			/>
-		</div>
-	)
-} -->
+{
+	//NOTE: Removed featued image from the top of page
+	// post.FeaturedImage && (
+	// 	<div class="aspect-h-9 aspect-w-16 mb-6">
+	// 		<Image
+	// 			src={post.FeaturedImage.Url}
+	// 			width={200}
+	// 			height={300}
+	// 			alt={post.Title}
+	// 			class="object-cover"
+	// 			loading="eager"
+	// 			fetchpriority="high"
+	// 		/>
+	// 	</div>
+	// )
+}
 <h1 class="title mb-3 sm:mb-1">{post.Title}</h1>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
-		<!-- //FIXME: fix this remark plugin thing -->
-		<!-- {remarkPluginFrontmatter.minutesRead} -->
+		{
+			//FIXME: fix this remark plugin thing
+			//{remarkPluginFrontmatter.minutesRead}
+		}
 	</p>
-	<!-- {
-		data.updatedDate && (
-			<span class="rounded-lg bg-quote/10 p-1 text-quote">
-				Last Updated:
-				<FormattedDate class="ms-1" date={data.updatedDate} dateTimeOptions={dateTimeOptions} />
-			</span>
-		)
-	} -->
-
 	{
 		post.Date && post.LastUpdatedDate && areDifferentDates(post.Date, post.LastUpdatedDate) && (
 			<span class="rounded-lg bg-quote/10 p-1 text-quote">

@@ -1,12 +1,9 @@
 ---
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import PostLayout from "@/layouts/BlogPost.astro";
-import { extractTargetBlocks, filePath } from "@/lib/blog-helpers";
+import { extractTargetBlocks } from "@/lib/blog-helpers";
 import {
-	downloadFile,
-	getAllBlocksByBlockId,
 	getAllPosts,
-	getBlock,
 	getPostContentByPostId,
 	processFileBlocks,
 } from "@/lib/notion/client";
@@ -57,42 +54,7 @@ if (postFound) {
 
 	const processedFile = await processFileBlocks(fileAtacchedBlocks);
 }
-
-// // Download files
-// await Promise.all(
-// 	fileAtacchedBlocks
-// 		.map(async (block) => {
-// 			const expiryTime = (block.NImage || block.File || block.Video || block.NAudio).File
-// 				.ExpiryTime;
-// 			if (Date.parse(expiryTime) > Date.now()) {
-// 				return Promise.resolve(block);
-// 			}
-// 			return getBlock(block.Id);
-// 		})
-// 		.map((promise) =>
-// 			promise.then((block) => {
-// 				let url!: URL;
-// 				try {
-// 					url = new URL((block.NImage || block.File || block.Video || block.NAudio).File.Url);
-// 				} catch (err) {
-// 					console.log("Invalid file URL");
-// 					return Promise.reject();
-// 				}
-// 				return Promise.resolve(url);
-// 			}),
-// 		)
-// 		.map((promise) => promise.then(downloadFile)),
-// );
-
-// let ogImage;
-// if (post.FeaturedImage) {
-// 	ogImage = new URL(filePath(new URL(post.FeaturedImage.Url)), Astro.site).toString();
-// }
 ---
-
-<!-- FIXME: use this maybe later for correct collect based stuff--><!-- <PostLayout post={entry}>
-	<Content />
-</PostLayout> --><!-- <PostLayout post={post} ogImage={ogImage} headings={headings}> -->
   {postFound &&
   (<PostLayout post={post} headings={headings}>
 	<div class="post-body max-w-prose">

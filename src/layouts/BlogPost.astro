@@ -1,35 +1,20 @@
 ---
-// import type { CollectionEntry } from "astro:content";
-
 import BaseLayout from "./Base.astro";
 import BlogHero from "@/components/blog/Hero";
 import TOC from "@/components/blog/TOC";
 import WebMentions from "@/components/blog/webmentions/index";
 
-//ADDED
 import type { Post } from "src/lib/interfaces";
 import type { Heading } from "@/types";
 import PostComments from "@/components/blog/PostComments";
 
 import { HOME_PAGE_SLUG, OG_SETUP, FULL_PREVIEW_COLLECTIONS } from "@/constants";
 
-//FIXME: so why is this this way?
-
-// interface Props {
-// 	post: CollectionEntry<"post">;
-// }
-
 interface Props {
 	post: Post;
 	ogImage?: string;
 	headings: Heading[];
 }
-
-// const { post } = Astro.props;
-// const {
-// 	data: { title, description, ogImage, publishDate, updatedDate },
-// 	slug,
-// } = post;
 
 const { post, ogImage, headings } = Astro.props;
 const differenceInTime = new Date().getTime() - new Date(post.LastUpdatedDate).getTime();

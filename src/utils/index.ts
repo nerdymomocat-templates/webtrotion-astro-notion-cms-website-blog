@@ -52,9 +52,6 @@ export async function getMenu(): Promise<
       path: getNavLink(page.Slug === HOME_PAGE_SLUG ? "/" : "/" + page.Slug),
     }));
 
-  //console.log(pageLinks);
-
-
   return [...pageLinks, ...collectionLinks];
 }
 

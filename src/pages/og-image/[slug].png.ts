@@ -6,11 +6,9 @@ import { Resvg } from "@resvg/resvg-js";
 // import { siteConfig } from "@/site-config";
 import { getFormattedDate } from "@/utils";
 
-import RobotoMono from "@/assets/roboto-mono-regular.ttf";
-import RobotoMonoBold from "@/assets/roboto-mono-700.ttf";
 import JetBrainsMonoBold from "@/assets/JetBrainsMono-Bold.ttf";
 //ADDITION
-import { getAllPosts, getPostBySlug, getAllEntries } from "@/lib/notion/client";
+import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
 import { getCollections } from "@/utils";
 
 // import { siteInfo } from "@/utils";
@@ -868,9 +866,7 @@ export async function GET({ params: { slug } }: APIContext) {
 
   if (type == "postpage") {
     post = await getPostBySlug(keyStr!);
-    // Assuming post.LastUpdatedTimestamp is in a format that can be directly converted to a Date object
     postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME ? (post?.LastUpdatedTimeStamp ? (post?.LastUpdatedTimeStamp < LAST_BUILD_TIME) : false) : false;
-    // console.log("logging for og slug is", slug, "last updated time stamp is", post?.LastUpdatedTimeStamp, "last build time is", LAST_BUILD_TIME);
   }
 
   if (!fs.existsSync(BASE_DIR)) {
@@ -890,7 +886,6 @@ export async function GET({ params: { slug } }: APIContext) {
       },
     });
   }
-  // console.log("generating og image for slug", slug);
 
   let chosen_markup;
   let fallback_markup;
@@ -934,7 +929,6 @@ export async function GET({ params: { slug } }: APIContext) {
     // Fallback to a basic markup if satori fails
     svg = await satori(fallback_markup, ogOptions);
   }
-  // const png = new Resvg(svg).render().asPng();
   const pngBuffer = new Resvg(svg).render().asPng();
   // Check if the buffer size is greater than 100 KB (102400 bytes)
   if (pngBuffer.length > 102400) {
@@ -957,23 +951,6 @@ export async function GET({ params: { slug } }: APIContext) {
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const posts = await getAllEntries();
-
-  // // Assuming postsArray is an array of posts
-  // const filteredPosts = posts.filter(post => {
-  //   const differenceInTime = new Date().getTime() - new Date(post.LastUpdatedDate).getTime();
-  //   const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
-
-  //   const ogbeforecutoff =
-  //     OG_SETUP &&
-  //     OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"] &&
-  //     FULL_PREVIEW_COLLECTIONS &&
-  //     FULL_PREVIEW_COLLECTIONS.includes(post.Collection) &&
-  //     differenceInDays > OG_SETUP["FULL_PREVIEW_COLLECTIONS_LAST_UPDATED_CUTOFF"];
-
-  //   // Return true if the post should be kept, false if it should be removed
-  //   return !ogbeforecutoff;
-  // });
-
 
   const postsMap = posts.map(({ Slug }) => ({ params: { slug: Slug } }));
   // const postsMap = filteredPosts.map(({ Slug }) => ({ params: { slug: Slug } }));

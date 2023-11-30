@@ -4,8 +4,7 @@
 import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
 import type { Post } from "src/lib/interfaces";
-import { getPostBySlug, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { downloadFile, getAllBlocksByBlockId, getBlock } from "@/lib/notion/client";
+import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
 import { convertToTailwindColor, convertToTailwindColorForBorder } from "@/lib/style-helpers";

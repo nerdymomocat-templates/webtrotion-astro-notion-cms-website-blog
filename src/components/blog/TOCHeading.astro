@@ -11,22 +11,26 @@ const {
 // depth <= 1 ? "mt-3" : "mt-2 text-[0.6875rem]"
 ---
 
-<!-- //NOTE: change this to depth 1 everywhere because that is how it works with notion at the moment -->
-<li class={`${depth > 1 ? "ms-2" : ""}`}>
-	<a
-		class={`block line-clamp-2 hover:text-accent no-underline hover:underline hover:underline-offset-4 ${
-			depth <= 1 ? "mt-3" : "mt-2"
-		}`}
-		href={`#${slug}`}
-		aria-label={`Scroll to section: ${text}`}>{text}</a
-	>
-	{
-		!!subheadings.length && (
-			<ul>
-				{subheadings.map((subheading) => (
-					<Astro.self heading={subheading} />
-				))}
-			</ul>
-		)
-	}
-</li>
+{
+	(
+		//NOTE: change this to depth 1 everywhere because that is how it works with notion at the moment}
+		<li class={`${depth > 1 ? "ms-2" : ""}`}>
+			<a
+				class={`line-clamp-2 block no-underline hover:text-accent hover:underline hover:underline-offset-4 ${
+					depth <= 1 ? "mt-3" : "mt-2"
+				}`}
+				href={`#${slug}`}
+				aria-label={`Scroll to section: ${text}`}
+			>
+				{text}
+			</a>
+			{!!subheadings.length && (
+				<ul>
+					{subheadings.map((subheading) => (
+						<Astro.self heading={subheading} />
+					))}
+				</ul>
+			)}
+		</li>
+	)
+}

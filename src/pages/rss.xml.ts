@@ -20,7 +20,6 @@ export const GET = async () => {
       title: post.Title,
       description: post.Excerpt,
       pubDate: new Date(post.LastUpdatedDate),
-      //link: `posts/${post.Slug}`,
       link: new URL(getPostLink(post.Slug), import.meta.env.SITE).toString(),
     })),
   });

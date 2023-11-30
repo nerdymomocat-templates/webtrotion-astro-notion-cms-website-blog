@@ -22,15 +22,10 @@ let current_page_id = null;
 
 pageId = richText.InternalHref?.PageId;
 if (pageId) {
-	// console.log("I AM IN ANCHOR COMPONENT AND INTERNAL REF IS TRUE, THE PAGE ID IS:", pageId);
 	post = await getPostByPageId(pageId);
 }
 
 if (post && richText.InternalHref?.BlockId) {
-	// console.log(
-	// 	"I AM IN ANCHOR COMPONENT and INTERNAL REF BLOCK ID IS TRUE. IT IS ",
-	// 	richText.InternalHref?.BlockId,
-	// );
 	block_linked = await getBlock(richText.InternalHref?.BlockId);
 	if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
 		block_linked_id = buildHeadingId(
@@ -38,9 +33,7 @@ if (post && richText.InternalHref?.BlockId) {
 		);
 		current_page_id = blockID ? await getBlockParentPageId(blockID) : null;
 	}
-	//console.log(block_linked, block_linked_id);
 }
-// console.log(blockID, ":::", current_page_id, pageId, post?.Slug);
 ---
 
 {

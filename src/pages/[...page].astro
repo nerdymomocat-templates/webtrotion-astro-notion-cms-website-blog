@@ -1,14 +1,10 @@
 ---
 import PageLayout from "../layouts/Base.astro";
-import PostPreview from "../components/blog/PostPreview.astro";
+// import PostPreview from "../components/blog/PostPreview.astro";
 import WebMentions from "@/components/blog/webmentions/index";
 import {
-	downloadFile,
-	getAllBlocksByBlockId,
 	getAllPages,
-	getBlock,
 	getPostContentByPostId,
-	getRankedPosts,
 	processFileBlocks,
 } from "@/lib/notion/client";
 import { extractTargetBlocks } from "../lib/blog-helpers";
@@ -115,24 +111,24 @@ if (pageFound) {
 				}
 			</div>
 		</article>
-		<!-- {!!headings.length && <TOC headings={headings} />} -->
+		{//!!headings.length && <TOC headings={headings} />}
 	</div>
 
-	<!-- {
+{
     //NOTE: This added a recent posts thing to my page. I can add it back later if needed
-		!slug && (
-			<section aria-label="Blog post list" class="mt-16">
-				<h2 class="title mb-4 text-xl">Posts</h2>
-				<ul class="space-y-4 sm:space-y-2">
-					{rankedPosts.map((p) => (
-						<li class="flex flex-col gap-x-2 sm:flex-row">
-							<PostPreview post={p} />
-						</li>
-					))}
-				</ul>
-			</section>
-		)
-	} -->
+		// !slug && (
+		// 	<section aria-label="Blog post list" class="mt-16">
+		// 		<h2 class="title mb-4 text-xl">Posts</h2>
+		// 		<ul class="space-y-4 sm:space-y-2">
+		// 			{rankedPosts.map((p) => (
+		// 				<li class="flex flex-col gap-x-2 sm:flex-row">
+		// 					<PostPreview post={p} />
+		// 				</li>
+		// 			))}
+		// 		</ul>
+		// 	</section>
+		// )
+	}
 </PageLayout>
 <button
 	id="to-top-btn"

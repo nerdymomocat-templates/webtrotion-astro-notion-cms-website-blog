@@ -33,10 +33,6 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 	});
 };
 
-//FIXME: use collections later
-// interface Props {
-// 	page: Page<CollectionEntry<"post">>;
-// }
 interface Props {
 	page: Page<Post>;
 }

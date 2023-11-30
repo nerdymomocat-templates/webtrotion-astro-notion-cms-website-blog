@@ -27,12 +27,6 @@ export interface Post {
   LastUpdatedTimeStamp: Date;
 }
 
-// export interface DateProp {
-//   start: string;
-//   end?: null | string;
-//   timezone?: null | string;
-// }
-
 export interface Block {
   Id: string;
   Type: BlockTypes;
