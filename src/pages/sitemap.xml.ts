@@ -44,9 +44,11 @@ export const GET = async () => {
 </urlset>`;
 
   // return { body: sitemap };
-  return new Response(
-    JSON.stringify({ body: sitemap })
-  );
+  return new Response(sitemap, {
+    headers: {
+      'Content-Type': 'text/xml',
+    },
+  });
 };
 
 
