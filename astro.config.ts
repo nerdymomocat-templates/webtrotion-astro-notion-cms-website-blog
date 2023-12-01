@@ -8,9 +8,6 @@ import tailwind from "@astrojs/tailwind";
 import prefetch from "@astrojs/prefetch";
 // import { astroImageTools } from "astro-imagetools";
 import path from 'path';
-
-
-
 import { CUSTOM_DOMAIN, BASE_PATH, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "./src/constants";
 const getSite = function () {
   if (CUSTOM_DOMAIN) {
@@ -34,19 +31,15 @@ import CustomIconDownloader from './src/integrations/custom-icon-downloader';
 import FeaturedImageDownloader from './src/integrations/featured-image-downloader';
 import PublicNotionCopier from './src/integrations/public-notion-copier';
 import buildTimestampRecorder from './src/integrations/build-timestamp-recorder.ts';
-
 import CSSWriter from './src/integrations/theme-constants-to-css';
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
+import preload from "astro-preload";
 const key_value_from_json = {
   ...config
 };
-
-function modifyRedirectPaths(
-  redirects: Record<string, string>,
-  basePath: string
-): Record<string, string> {
+function modifyRedirectPaths(redirects: Record<string, string>, basePath: string): Record<string, string> {
   const modifiedRedirects: Record<string, string> = {};
   for (const [key, value] of Object.entries(redirects)) {
     if (basePath && !value.startsWith(basePath) && !value.startsWith('/' + basePath)) {
@@ -58,23 +51,24 @@ function modifyRedirectPaths(
   return modifiedRedirects;
 }
 
+
 // https://astro.build/config
 export default defineConfig({
   site: getSite(),
   base: process.env.BASE || BASE_PATH,
   redirects: key_value_from_json["REDIRECTS"] ? modifyRedirectPaths(key_value_from_json["REDIRECTS"], process.env.BASE || BASE_PATH) : {},
   integrations: [
-    // mdx({}),
-    tailwind({
-      applyBaseStyles: false
-    }), prefetch(),
-    // astroImageTools,
-    buildTimestampRecorder(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
-      // Adds dataLayer.push as a forwarding-event.
-      config: {
-        forward: ["dataLayer.push"],
-      },
-    }),],
+  // mdx({}),
+  tailwind({
+    applyBaseStyles: false
+  }), prefetch(),
+  // astroImageTools,
+  buildTimestampRecorder(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
+    // Adds dataLayer.push as a forwarding-event.
+    config: {
+      forward: ["dataLayer.push"]
+    }
+  }), preload()],
   image: {
     domains: ["webmention.io"]
   },

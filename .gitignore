@@ -27,5 +27,6 @@ pnpm-debug.log*
 .astro
 .vscode/
 public/notion/**/*
+public/assets/preloaded/*
 tmp/*
 !tmp/.gitkeep

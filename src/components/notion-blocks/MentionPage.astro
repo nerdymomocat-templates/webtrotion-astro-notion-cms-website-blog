@@ -4,7 +4,7 @@ import { getPostByPageId } from "../../lib/notion/client";
 import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION } from "@/constants";
 import { textToAstroIcon } from "@/lib/style-helpers";
-import { Icon } from "astro-icon";
+import { Icon } from "astro-preload/components";
 
 export interface Props {
 	pageId: string;
