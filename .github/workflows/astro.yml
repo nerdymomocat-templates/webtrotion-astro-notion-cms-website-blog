@@ -41,7 +41,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ./node_modules
-          key: modules-${{ hashFiles(format('{0}/package_lock.json', env.BUILD_PATH)) }}
+          key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
 
       - name: Install dependencies
         if: steps.npm-cache.outputs.cache-hit != 'true'
