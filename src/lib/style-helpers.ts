@@ -67,7 +67,7 @@ export const textToAstroIcon = (text: string) => {
     "dblp": "simple-icons:dblp",
     "email": "mdi:email",
     "github": "mdi:github",
-    "googlescholar": "simple-icons:google-scholar",
+    "googlescholar": "simple-icons:googlescholar",
     "linkedin": "mdi:linkedin",
     "facebook": "mdi:facebook",
     "twitter": "mdi:twitter",
