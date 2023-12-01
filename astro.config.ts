@@ -1,14 +1,10 @@
 import { defineConfig } from "astro/config";
 import fs from "fs";
-//NOT USING MDX
-// import mdx from "@astrojs/mdx";
-// import remarkUnwrapImages from "remark-unwrap-images";
 // import { remarkReadingTime } from "./src/utils/remark-reading-time";
 import tailwind from "@astrojs/tailwind";
 import prefetch from "@astrojs/prefetch";
-// import { astroImageTools } from "astro-imagetools";
 import path from 'path';
-import { CUSTOM_DOMAIN, BASE_PATH, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "./src/constants";
+import { CUSTOM_DOMAIN, BASE_PATH } from "./src/constants";
 const getSite = function () {
   if (CUSTOM_DOMAIN) {
     return new URL(BASE_PATH, `https://${CUSTOM_DOMAIN}`).toString();
@@ -35,7 +31,7 @@ import CSSWriter from './src/integrations/theme-constants-to-css';
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
-import preload from "astro-preload";
+
 const key_value_from_json = {
   ...config
 };
@@ -68,7 +64,7 @@ export default defineConfig({
     config: {
       forward: ["dataLayer.push"]
     }
-  }), preload()],
+  })],
   image: {
     domains: ["webmention.io"]
   },
