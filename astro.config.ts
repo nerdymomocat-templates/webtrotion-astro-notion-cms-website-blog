@@ -7,6 +7,8 @@ import fs from "fs";
 import tailwind from "@astrojs/tailwind";
 import prefetch from "@astrojs/prefetch";
 // import { astroImageTools } from "astro-imagetools";
+import path from 'path';
+
 
 
 import { CUSTOM_DOMAIN, BASE_PATH, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "./src/constants";
@@ -41,11 +43,26 @@ const key_value_from_json = {
   ...config
 };
 
+function modifyRedirectPaths(
+  redirects: Record<string, string>,
+  basePath: string
+): Record<string, string> {
+  const modifiedRedirects: Record<string, string> = {};
+  for (const [key, value] of Object.entries(redirects)) {
+    if (basePath && !value.startsWith(basePath) && !value.startsWith('/' + basePath)) {
+      modifiedRedirects[key] = path.join(basePath, value);
+    } else {
+      modifiedRedirects[key] = value;
+    }
+  }
+  return modifiedRedirects;
+}
+
 // https://astro.build/config
 export default defineConfig({
   site: getSite(),
   base: process.env.BASE || BASE_PATH,
-  redirects: key_value_from_json["REDIRECTS"] ? key_value_from_json["REDIRECTS"] : {},
+  redirects: key_value_from_json["REDIRECTS"] ? modifyRedirectPaths(key_value_from_json["REDIRECTS"], process.env.BASE || BASE_PATH) : {},
   integrations: [
     // mdx({}),
     tailwind({

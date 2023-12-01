@@ -25,10 +25,10 @@ if (block.NImage?.External) {
 				<div>
 					{ENABLE_LIGHTBOX ? (
 						<a data-fslightbox href={image} data-type="image">
-							<img src={image} alt="image block" />
+							<img src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
 						</a>
 					) : (
-						<img src={image} alt="image block" />
+						<img src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
 					)}
 				</div>
 				<Caption richTexts={block.NImage.Caption} block={block} />
