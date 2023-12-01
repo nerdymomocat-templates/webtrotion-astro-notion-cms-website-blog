@@ -71,7 +71,7 @@ export const textToAstroIcon = (text: string) => {
     "linkedin": "mdi:linkedin",
     "facebook": "mdi:facebook",
     "twitter": "mdi:twitter",
-    // "threads": "simple-icons:threads",
+    "threads": "simple-icons:threads",
     "instagram": "mdi:instagram",
     "mastodon": "mdi:mastodon",
     "semanticscholar": "simple-icons:semanticscholar",

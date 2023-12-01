@@ -588,20 +588,30 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
   } else {
     // Original behavior for non-image files or when not optimizing
     const writeStream = fs.createWriteStream(filepath);
-    stream.on('error', function (err) {
-      console.error('Error reading stream:', err);
-    });
-    writeStream.on('error', function (err) {
-      console.error('Error writing file:', err);
-    });
     stream.pipe(new ExifTransformer()).pipe(writeStream);
 
+    const writeStreamPromise = new Promise<void>((resolve) => {
     // After the file is written, check if favicon processing is needed
-    writeStream.on('finish', async () => {
-      if (isFavicon) {
-        const fav = await processFavicon(filepath);
-      }
+    writeStream.on("finish", async () => {
+    if (isFavicon) {
+    const fav = await processFavicon(filepath);
+    }
+
+    resolve();
     });
+
+    stream.on("error", function (err) {
+    console.error("Error reading stream:", err);
+    resolve();
+    });
+
+    writeStream.on("error", function (err) {
+    console.error("Error writing file:", err);
+    resolve();
+    });
+    });
+
+    await writeStreamPromise;
   }
 }
 
@@ -612,7 +622,7 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
       const expiryTime = fileDetails.ExpiryTime;
       let url = new URL(fileDetails.Url);
 
-      const cacheFilePath = generateFilePath(url, isConvImageType(url.pathname));
+      const cacheFilePath = generateFilePath(url, isConvImageType(url.pathname) && OPTIMIZE_IMAGES);
 
       const shouldDownload = LAST_BUILD_TIME ? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(cacheFilePath)) : true;
 
