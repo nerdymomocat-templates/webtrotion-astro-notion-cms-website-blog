@@ -108,15 +108,16 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
     3. Go to **Actions → General** and set it to *Allow All*
     4. Go to **Pages** and set **Source** as **Github Actions**
     5. Go to **Environments** → **github-pages**; Scroll down to **Environment Secrets**, click Add New Secret. Set name as **NOTION_API_SECRET** and the value to the API secret you obtained in [Notion Setup](#notion-setup).
-3. Set up giscus as mentioned on the website [giscus.app](http://giscus.app). Keep the script it produces open as we will use it in the next step.
-4. Go back to your cloned (forked or created through a template) repository.
-5. Open file **`constants-config.json`** in the web UI. This file is the complete setup file for your website. For now, we will make four major modifications:
+3. Go to the actions tab, and choose ***I understand and want to run actions***. On the left sidebar click the action “Deploy Github pages”. It will show a warning saying the scheduled action is disabled in forks. Click ***Enable workflow***.
+4. Set up giscus as mentioned on the website [giscus.app](http://giscus.app). Keep the script it produces open as we will use it in the next step.
+5. Go back to your cloned (forked or created through a template) repository.
+6. Open file **`constants-config.json`** in the web UI. This file is the complete setup file for your website. For now, we will make four major modifications:
     1. Change `DATABASE_ID` to your database id that you obtained from Notion.
     2. Add your name to `AUTHOR` (this is used for HTML semantics and OG image generation)
     3. Add your socials (you can also remove the value for `this-github-repo`)
     4. Add your giscus information to the `GISCUS` key. If you do not want you use Giscus, remove value for `data-repo` in `GISCUS` and that will disable the feature.
-6. Save the file and commit+merge to the main repo.
-7. The github action by default runs every 8 hours or on commits to the repo. This can be modified in `.github/astro.yml` file. You can choose any cron duration.
+7. Save the file and commit+merge to the main repo.
+8. The github action by default runs every 8 hours or on commits to the repo. This can be modified in `.github/astro.yml` file. You can choose any cron duration.
 
 
 🥳 And we are done! You can access your website on **<username>.github.io** or <username>.github.io/<reponame> depending on what you chose. Checkout all [Supported blocks](https://nerdymomocat-templates.github.io/webtrotion-astro-notion-cms-website-blog/posts/supported-blocks/) but tl;dr all blocks are supported except child databases and child pages. This specific page will show up as insecure because it has a direct HTML injection.
