@@ -151,7 +151,6 @@ Dark mode preview
 | Explicit Publish Date | By default, the formula considers the date notion page was last edited to be last edited date. You can override it by setting a date for this property. |
 | Rank | Want to order single pages (Updates before Papers?) Set rank in ascending order |
 | Related Pages | Set up related pages. This property does not anything at the moment. But I plan to use it to show “Similar pages” footnote later. |
-| Publish On | Filter for whether you want this page to be published on a particular website or deployment. You most likely won’t need it, but it is useful in conjunction with PUBLISH_ON_FILTER to have two websites from the same database. |
 
 ⚠️ **Don’t rename the columns of DB.** They are used in the astro code. You can reorder the columns or add any other columns you want.
 
@@ -184,7 +183,6 @@ npm run dev
 | REQUEST_TIMEOUT_MS | Timeout for API requests |
 | MENU_PAGES_COLLECTION | Collection select value in Notion database that decides if these are pages or blogposts. Set this to value you use for pages. |
 | HEADING_BLOCKS | Which top-level blocks blocks should form the table of contents on right |
-| PUBLISH_ON_FILTER | Publish on filter select value in Notion database to only publish pages that have that select value or are empty. Can be useful if you want to create two websites from the same database (lab website + personal website). |
 | FULL_PREVIEW_COLLECTIONS | Stream like view, where each post is a mini-blog in the same page as a scrollable page instead of being links to individual pages. Any Collection name added to this list will be rendered as stream view. |
 | HIDE_UNDERSCORE_SLUGS_IN_LISTS | If the slug starts with _, hide those in post lists, rss and sitemap, but still render them, so that you can share them |
 | HOME_PAGE_SLUG | By default is set to “home” but can be anything that you want for the renderer to recognize which is your home page from the database |

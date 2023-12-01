@@ -27,8 +27,6 @@ export const MENU_PAGES_COLLECTION = key_value_from_json["MENU_PAGES_COLLECTION"
 
 export const HEADING_BLOCKS = key_value_from_json["HEADING_BLOCKS"] || ["heading_1", "heading_2", "heading_3"];
 
-export const PUBLISH_ON_FILTER = key_value_from_json["PUBLISH_ON_FILTER"] || "";
-
 export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["FULL_PREVIEW_COLLECTIONS"] || [];
 
 export const HIDE_UNDERSCORE_SLUGS_IN_LISTS = key_value_from_json["HIDE_UNDERSCORE_SLUGS_IN_LISTS"] || false;

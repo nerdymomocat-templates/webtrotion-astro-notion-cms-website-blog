@@ -60,7 +60,6 @@ import type {
 } from "../interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
-import { FOR_THIS_SITE } from "../filters";
 import { getFormattedDateWithTime } from "../../utils/date";
 
 
@@ -82,7 +81,7 @@ export async function getAllEntries(): Promise<Post[]> {
   }
   // console.log("Did not find cache for getAllEntries");
 
-  const queryFilters: QueryFilters = { and: [FOR_THIS_SITE] };
+  const queryFilters: QueryFilters = {};
 
   const params: requestParams.QueryDatabase = {
     database_id: DATABASE_ID,
