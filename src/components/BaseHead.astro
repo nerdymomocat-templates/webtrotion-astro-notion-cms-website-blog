@@ -22,6 +22,7 @@ const titleSeparator = "•";
 const siteTitle = `${title} ${titleSeparator} ${siteInfo.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_PAGE_SLUG}.png`), Astro.url).href;
+const faviconLink = getNavLink("/favicon.ico")
 
 ---
 
@@ -45,14 +46,14 @@ const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_
     </GoogleFontsOptimizer>)
 }
 {
-  ENABLE_LIGHTBOX && (<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+  ENABLE_LIGHTBOX && (<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" media="print" onload="this.media='all'" />
 )
 }
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <title>{siteTitle}</title>
 
 {/* Icons / Favicon */}
-<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href={faviconLink} sizes="any" />
 <!-- <link rel="icon" href="/icon.svg" type="image/svg+xml" /> -->
 <!-- <link rel="apple-touch-icon" href="/apple-touch-icon.png" /> -->
 <link rel="canonical" href={canonicalURL} />
@@ -101,6 +102,7 @@ const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_
 	href="https://cdn.jsdelivr.net/npm/katex@0.16.4/dist/katex.min.css"
 	integrity="sha384-vKruj+a13U8yHIkAyGgK1J3ArTLzrFGBbBc0tDp4ad/EyewESeXE/Iv67Aj8gKZ0"
 	crossorigin="anonymous"
+  media="print" onload="this.media='all'"
 />
 
 {/* RSS auto-discovery */}
