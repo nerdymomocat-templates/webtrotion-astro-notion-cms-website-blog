@@ -92,7 +92,7 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
 3. [Get your API secret](https://developers.notion.com/docs/create-a-notion-integration#get-your-api-secret)
 4. Give your [integration permission to the complete database](https://developers.notion.com/docs/create-a-notion-integration#give-your-integration-page-permissions) you just duplicated
 5. Get your database id of the database you duplicated. Database id is the 32 character alphanumeric string right after your workspace in the URL. It is the easiest to get this ID on a web browser rather than the Notion app.
-![Getting database id from Notion](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/c05f4dfe-1665-4d71-b257-590330ce7817)
+![Getting database id from Notion](https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/b904b2cf-eb9b-4c04-b836-82a604ea8d47)
 
 ## Github Setup
 
