@@ -23,10 +23,7 @@ interface Props {
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
 const blocks = await getPostContentByPostId(post_full_preview);
-const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
-	.concat(extractTargetBlocks("video", blocks))
-	.concat(extractTargetBlocks("file", blocks))
-	.concat(extractTargetBlocks("audio", blocks))
+const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 	.filter((block) => {
 		if (!block) {
 			return false;

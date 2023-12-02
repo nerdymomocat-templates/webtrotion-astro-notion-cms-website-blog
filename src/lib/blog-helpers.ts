@@ -13,10 +13,10 @@ export const filePath = (url: URL): string => {
   // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
 };
 
-export const extractTargetBlocks = (blockType: string, blocks: Block[]): Block[] => {
+export const extractTargetBlocks = (blockType: string[], blocks: Block[]): Block[] => {
   return blocks
     .reduce((acc: Block[], block) => {
-      if (block.Type === blockType) {
+      if (blockType.includes(block.Type)) {
         acc.push(block);
       }
 

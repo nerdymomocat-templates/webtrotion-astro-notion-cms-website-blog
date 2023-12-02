@@ -44,10 +44,7 @@ if (!page) {
 if (pageFound) {
 	blocks = await getPostContentByPostId(page);
 
-	const fileAtacchedBlocks = extractTargetBlocks("image", blocks)
-		.concat(extractTargetBlocks("video", blocks))
-		.concat(extractTargetBlocks("file", blocks))
-		.concat(extractTargetBlocks("audio", blocks))
+	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 		.filter((block) => {
 			if (!block) {
 				return false;

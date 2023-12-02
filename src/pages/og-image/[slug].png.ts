@@ -13,7 +13,7 @@ import { getCollections } from "@/utils";
 
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { OG_SETUP, LAST_BUILD_TIME } from "@/constants";
+import { OG_SETUP, LAST_BUILD_TIME, HOME_PAGE_SLUG } from "@/constants";
 
 import fs from 'fs';
 import sharp from 'sharp';
@@ -896,7 +896,7 @@ export async function GET({ params: { slug } }: APIContext) {
   let fallback_markup;
 
   if (type == "postpage") {
-    const title = post?.Title ?? siteInfo.title;
+    const title = post?.Title ? (post.Slug == HOME_PAGE_SLUG? siteInfo.title: post.Title):siteInfo.title;
     const postDate = getFormattedDate(
       post?.Date ?? post?.Date ?? Date.now()
     );
