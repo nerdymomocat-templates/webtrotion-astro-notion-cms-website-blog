@@ -39,7 +39,8 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
 {
   code_inject ?
   (
-    <div class="injected-html-code" set:html={code.replace("<!DOCTYPE html>","")}/>
+    <Fragment set:html={code.replace(HTML_DIRECTIVE,"")}/>
+
   )
   :
   (

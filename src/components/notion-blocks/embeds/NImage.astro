@@ -18,37 +18,21 @@ if (block.NImage?.External) {
 }
 ---
 
-<figure class="image">
-	{
-		image && (
-			<div>
-				<div>
-					{ENABLE_LIGHTBOX ? (
-						<a data-fslightbox href={image} data-type="image">
-							<img src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
-						</a>
-					) : (
-						<img src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
-					)}
-				</div>
-				<Caption richTexts={block.NImage.Caption} block={block} />
-			</div>
-		)
-	}
+<figure class="flex mx-auto mt-1">
+  {
+      image && (
+          <div class="mx-auto">
+              <div>
+                  {ENABLE_LIGHTBOX ? (
+                      <a data-fslightbox href={image} data-type="image">
+                          <img class="block max-w-full" src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
+                      </a>
+                  ) : (
+                      <img class="block max-w-full" src={image} alt={block.NImage?.Caption.map((richText) => richText.PlainText).join(' ')} />
+                  )}
+              </div>
+              <Caption richTexts={block.NImage.Caption} block={block} />
+          </div>
+      )
+  }
 </figure>
-
-<style>
-	.image {
-		display: flex;
-		margin: 0.2rem auto 0;
-	}
-	.image > div {
-		margin: 0 auto;
-	}
-	.image > div > div {
-	}
-	.image > div > div img {
-		display: block;
-		max-width: 100%;
-	}
-</style>
