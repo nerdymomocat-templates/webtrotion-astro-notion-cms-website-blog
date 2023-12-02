@@ -1,12 +1,23 @@
 ---
+import { ENABLE_LIGHTBOX } from '@/constants';
+import { textToAstroIcon } from '@/lib/style-helpers';
+import Icon from 'astro-iconify';
 export interface Props {
 	url: URL;
+  caption: string | undefined;
 }
-const { url } = Astro.props;
+
+const { url, caption } = Astro.props;
 ---
 
-<iframe
+  <div class="relative">
+    <!-- Icon for triggering lightbox, positioned at the bottom right corner -->
+    {ENABLE_LIGHTBOX && (<a href={url.toString()} data-description={caption} class="glightbox absolute bottom-4 right-4 m-2 cursor-pointer z-10">
+      <Icon name={textToAstroIcon("expand")} class="inline h-6 w-6" />
+    </a>)}
+    <iframe
 	allowtransparency="true"
-	class="max-w-sm:h-[220px] h-[340px] w-full border-none"
+	class="max-w-sm:h-[220px] h-[340px] w-full border-none rounded-lg"
 	src={url.toString()}
 	loading="lazy"></iframe>
+  </div>

@@ -1,0 +1,26 @@
+---
+import {Icon} from "astro-iconify";
+import { textToAstroIcon } from "@/lib/style-helpers";
+import { ENABLE_LIGHTBOX } from "@/constants";
+export interface Props {
+	url: URL;
+  caption: string | undefined;
+}
+
+const { url, caption } = Astro.props;
+---
+
+<div class="relative w-full aspect-ratio-4-3">
+  <!-- Icon for triggering lightbox, positioned at the bottom right corner -->
+  {ENABLE_LIGHTBOX && (<a href={url.toString()} class="glightbox absolute bottom-4 right-4 m-2 cursor-pointer z-10" >
+    <Icon name={textToAstroIcon("expand")} class="inline h-6 w-6" />
+  </a>)}
+
+  <iframe src={url.toString()} allowfullscreen="" loading="lazy" class="w-full h-full absolute top-0 left-0 border-none rounded-lg" referrerpolicy="no-referrer-when-downgrade"></iframe>
+</div>
+
+<style>
+  .aspect-ratio-4-3 {
+    padding-top: 75%; /* 3/4 = 75% for 4:3 Aspect Ratio */
+}
+</style>

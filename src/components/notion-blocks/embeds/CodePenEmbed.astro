@@ -1,8 +1,10 @@
 ---
 export interface Props {
 	url: URL;
+  caption: string | undefined;
 }
-const { url } = Astro.props;
+
+const { url, caption } = Astro.props;
 const user = url.pathname.split("/")[1];
 const id = url.pathname.split("/")[3];
 ---

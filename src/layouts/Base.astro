@@ -5,6 +5,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
 import { siteInfo } from "@/siteInfo";
+import { ENABLE_LIGHTBOX } from "@/constants";
 
 interface Props {
 	meta: SiteMeta;
@@ -14,7 +15,6 @@ const {
 	meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
 } = Astro.props;
 
-// console.log(siteInfo);
 ---
 
 <html lang={siteInfo.lang}>
@@ -28,5 +28,22 @@ const {
 			<slot />
 		</main>
 		<Footer />
+    {/*Lightbox */}
+{
+  ENABLE_LIGHTBOX && (
+  <script type="module">
+  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+
+  window.addEventListener('load', () => {
+    const lightbox = GLightbox({
+      selector: '.glightbox'
+    });
+  });
+</script>
+)
+
+
+}
+
 	</body>
 </html>

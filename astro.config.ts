@@ -46,8 +46,6 @@ function modifyRedirectPaths(redirects: Record<string, string>, basePath: string
   }
   return modifiedRedirects;
 }
-
-
 // https://astro.build/config
 export default defineConfig({
   site: getSite(),

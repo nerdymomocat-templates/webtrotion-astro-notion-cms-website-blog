@@ -7,6 +7,7 @@ import {
   isPinterestURL,
   isCodePenURL,
   isSpotifyURL,
+  isGoogleMapsURL,
   isEmbeddableURL
 } from '../../../lib/blog-helpers.ts'
 import Caption from "../Caption.astro";
@@ -19,6 +20,7 @@ import PinterestEmbed from './PinterestEmbed.astro'
 import CodePenEmbed from './CodePenEmbed.astro'
 import EmbedGeneric from './EmbedGeneric.astro'
 import SpotifyEmbed from './SpotifyEmbed.astro'
+import GoogleMapsEmbed from './GoogleMapsEmbed.astro';
 
 export interface Props {
   block: interfaces.Block
@@ -31,6 +33,8 @@ try {
 } catch (err) {
   console.log(err)
 }
+const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(' ');
+
 ---
 <div class="embedded-info pb-2">
 {
@@ -38,17 +42,20 @@ try {
     isTweetURL(url) ? (
       <TweetEmbed url={url} />
     ) : isTikTokURL(url) ? (
-      <TikTokEmbed url={url} />
+      <TikTokEmbed url={url} caption={plainTextCaption} />
     ) : isInstagramURL(url) ? (
-      <InstagramEmbed url={url} />
+      <InstagramEmbed url={url} caption={plainTextCaption} />
     ) : isPinterestURL(url) ? (
-      <PinterestEmbed url={url} />
+      <PinterestEmbed url={url} caption={plainTextCaption}/>
     ) : isCodePenURL(url) ? (
-      <CodePenEmbed url={url} />
+      <CodePenEmbed url={url} caption={plainTextCaption}/>
     ) : isSpotifyURL(url)? (
-    <SpotifyEmbed url={url} />
+    <SpotifyEmbed url={url} caption={plainTextCaption}/>
+      ):
+      isGoogleMapsURL(url)? (
+    <GoogleMapsEmbed url={url} caption={plainTextCaption}/>
       ): await isEmbeddableURL(url) ? (
-      <EmbedGeneric url={url} />
+      <EmbedGeneric url={url} caption={plainTextCaption}/>
     ): (
       <Bookmark block={block} urlMap={urlMap} />
     )

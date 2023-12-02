@@ -201,6 +201,16 @@ export const isSpotifyURL = (url: URL): boolean => {
   return /\/embed\//.test(url.pathname)
 }
 
+export const isGoogleMapsURL = (url:URL): boolean => {
+  if (
+    url.toString().startsWith("https://www.google.com/maps/embed")
+  )
+  {
+    return true;
+  }
+  return false;
+}
+
 export const isCodePenURL = (url: URL): boolean => {
   if (url.hostname !== 'codepen.io' && url.hostname !== 'www.codepen.io') {
     return false

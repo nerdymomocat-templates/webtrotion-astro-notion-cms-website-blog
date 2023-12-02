@@ -49,7 +49,7 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
           <div class="flex">
             <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0" data-code={"```"+language+"\n"+code+"```"} >
               <svg class="inline h-5 w-5 transition-colors duration-300 svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path fill="white" d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1Z"/>
+                  <path fill="#888888" d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1Z"/>
               </svg>
             </button>
           </div>
@@ -58,7 +58,7 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
 			language === 'mermaid' ? (
          <pre class="rounded mermaid p-4">{code}</pre>
       ) : (
-          <pre class={`rounded whitespace-pre-wrap p-4 overflow-auto break-normal leading-6 tabular-nums text-left no-hyphens bg-slate-900 text-sky-600 ${"language-"+language}`}><code set:html={Prism.highlight(code, grammar, language)} /></pre>
+          <pre class={`rounded whitespace-pre-wrap p-4 overflow-auto break-word leading-6 tabular-nums text-left no-hyphens bg-slate-900 text-sky-600 ${"language-"+language}`}><code set:html={Prism.highlight(code, grammar, language)} /></pre>
       )
 		}
 	</div>
@@ -74,7 +74,7 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
     if (svg) {
       svg.setAttribute("fill", "limegreen");
       setTimeout(() => {
-        svg.setAttribute("fill", "white");
+        svg.setAttribute("fill", "#888888");
       }, 1000);
     }
   });

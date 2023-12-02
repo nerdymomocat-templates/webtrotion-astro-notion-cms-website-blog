@@ -6,7 +6,7 @@ import "../styles/syntax-coloring.css";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
 // import { GoogleAnalytics } from "astro-google-analytics";
-import { PUBLIC_GA_TRACKING_ID } from "@/constants";
+import {ENABLE_LIGHTBOX, PUBLIC_GA_TRACKING_ID } from "@/constants";
 import { GoogleFontsOptimizer } from "astro-google-fonts-optimizer";
 import config from '../../constants-config.json';
 import { HOME_PAGE_SLUG } from "@/constants";
@@ -43,6 +43,10 @@ const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_
 {
   theme_config_font_url && (<GoogleFontsOptimizer url={theme_config_font_url}>
     </GoogleFontsOptimizer>)
+}
+{
+  ENABLE_LIGHTBOX && (<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+)
 }
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <title>{siteTitle}</title>

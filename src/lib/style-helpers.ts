@@ -61,7 +61,7 @@ export const textToAstroIcon = (text: string) => {
   const textIconMap = {
     "🗓️": "mdi:calendar-blank",
     "download": "mdi:download-circle",
-    "copy-code": "mdi:content-copy",
+    "copy-code": "ic:twotone-content-copy",
     "copied-to-clipboard": "mdi:clipboard-check",
     "rss": "mdi:rss",
     "dblp": "simple-icons:dblp",
@@ -78,7 +78,7 @@ export const textToAstroIcon = (text: string) => {
     "this-github-repo": "mdi:github-face",
     "page-mention-ne-arrow": "mdi:arrow-top-right-thin-circle-outline",
     "document": "mdi:file-document",
-
+    "expand": "pepicons-print:expand-circle-filled"
   }
   if (text in textIconMap) {
     return textIconMap[text];

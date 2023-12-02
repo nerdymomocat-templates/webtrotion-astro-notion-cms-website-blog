@@ -1,8 +1,10 @@
 ---
 export interface Props {
-  url: URL
+	url: URL;
+  caption: string | undefined;
 }
-const { url } = Astro.props
+
+const { url, caption } = Astro.props;
 ---
 
 <a href={url.toString()} data-pin-do="embedPin"></a>

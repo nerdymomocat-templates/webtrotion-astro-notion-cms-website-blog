@@ -1,8 +1,10 @@
 ---
 export interface Props {
 	url: URL;
+  caption: string | undefined;
 }
-const { url } = Astro.props;
+
+const { url, caption } = Astro.props;
 const id = url.pathname.split("/")[2];
 
 //NOTE: I could not fix this, the min width kept changing to 326px no matter what I did.

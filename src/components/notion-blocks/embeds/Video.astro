@@ -4,6 +4,9 @@ import { isYouTubeURL, parseYouTubeVideoId } from "../../../lib/blog-helpers.ts"
 import Caption from "../Caption.astro";
 import { filePath } from "../../../lib/blog-helpers";
 import EmbedGeneric from "./EmbedGeneric.astro";
+import { textToAstroIcon } from "@/lib/style-helpers";
+import Icon from "astro-iconify";
+import { ENABLE_LIGHTBOX } from "@/constants";
 
 export interface Props {
 	block: interfaces.Block;
@@ -19,9 +22,10 @@ if (block.Video.External) {
 } else if (block.Video.File) {
 	videoUrl = filePath(new URL(block.Video.File.Url));
 }
+const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainText).join(' ');
 ---
 
-<div class="video">
+<div class="video relative">
 	{
 		videoUrl &&
 			(url ? (
@@ -34,13 +38,23 @@ if (block.Video.External) {
 						allowfullscreen
 					/>
 				) : (
-					<EmbedGeneric url={url} />
+					<EmbedGeneric url={url} caption={plainTextCaption} />
 				)
 			) : (
-				<video class="max-w-sm:h-[220px] h-[340px] w-full" controls>
-					<source src={videoUrl} type="video/mp4" />
-					Your browser does not support the video tag.
-				</video>
+      <>
+      {
+						ENABLE_LIGHTBOX && (
+							<a href={videoUrl} class="glightbox absolute top-4 right-4 m-2 cursor-pointer z-10" data-description={plainTextCaption}>
+								<Icon name={textToAstroIcon("expand")} class="inline h-6 w-6" />
+							</a>
+						)
+					}
+					<video class="max-w-sm:h-[220px] h-[340px] w-full border-none rounded-lg" controls>
+						<source src={videoUrl} type="video/mp4" />
+						Your browser does not support the video tag.
+					</video>
+
+				</>
 			))
 	}
 	<Caption richTexts={block.Video.Caption} block={block} />
