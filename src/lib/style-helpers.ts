@@ -78,7 +78,8 @@ export const textToAstroIcon = (text: string) => {
     "this-github-repo": "mdi:github-face",
     "page-mention-ne-arrow": "mdi:arrow-top-right-thin-circle-outline",
     "document": "mdi:file-document",
-    "expand": "pepicons-print:expand-circle-filled"
+    "expand": "pepicons-print:expand-circle-filled",
+    "preview-pdf": "material-symbols:preview"
   }
   if (text in textIconMap) {
     return textIconMap[text];

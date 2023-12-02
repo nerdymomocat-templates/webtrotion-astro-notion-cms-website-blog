@@ -29,7 +29,7 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
           <div class="mx-auto">
               <div>
                   {ENABLE_LIGHTBOX ? (
-                      <a data-type="image" href={image} class="glightbox" data-description={plainTextCaption}>
+                      <a data-type="image" href={image} class="mediaglightbox" data-description={plainTextCaption}>
                           <img class="block max-w-full" src={image} alt={plainTextCaption} loading="lazy"/>
                       </a>
                   ) : (
