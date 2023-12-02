@@ -28,7 +28,7 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 					? block.File.Caption[0].Text.Content
 					: filename}
 				{"  "}
-        <span class="border rounded-lg inline-flex">
+        <span class="border rounded-lg inline-flex border-accent-2/20 hover:border-accent/40">
 				<a
 					href={block.File.External ? url.String() : filePath(url)}
 					target="_blank"
