@@ -28,6 +28,12 @@
     "data-input-position": "top",
     "data-reactions-enabled": true
   },
+  "REFERENCES":{
+    "SITE_LINKS_IN_PAGE": true,
+    "EXTERNAL_LINKS_IN_PAGE": true,
+    "MEDIA_AND_FILE_LINKS_IN_THIS_PAGE": true,
+    "LINKS_TO_THIS_PAGE": true
+  },
   "HTML_DIRECTIVE": "<!DOCTYPE html>",
   "THEME": {
     "colors": {

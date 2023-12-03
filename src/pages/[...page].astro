@@ -95,15 +95,6 @@ if (pageFound) {
 		<article class="col-span-3 break-words" data-pagefind-body>
 			<div class="">
 				<NotionBlocks blocks={blocks} isRoot={true} />
-				{
-					page.Slug !== HOME_PAGE_SLUG && (
-						<>
-							<hr class="divider w-70 mx-auto my-4 h-1 rounded border-0 bg-accent/30" />
-							<WebMentions />
-							<PostComments />
-						</>
-					)
-				}
 			</div>
 		</article>
 	</div>
