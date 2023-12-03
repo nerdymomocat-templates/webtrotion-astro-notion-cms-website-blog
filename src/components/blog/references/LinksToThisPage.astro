@@ -1,0 +1,43 @@
+---
+import type { Block, Post } from '@/lib/interfaces';
+import NBlocksPopover from './NBlocksPopover.astro';
+import { getReferenceLink } from '@/lib/blog-helpers';
+import NPagePopover from './NPagePopover.astro';
+interface Props {
+	post: Post;
+  allReferencesToPage: { entryId: string, block: Block }[]
+}
+const { post, allReferencesToPage } = Astro.props;
+const groupedReferences = allReferencesToPage? allReferencesToPage.reduce((acc, { entryId, block }) => {
+  acc[entryId] = acc[entryId] || [];
+  acc[entryId].push(block);
+  return acc;
+}, {}): null;
+
+const entryIdLinksEntry = {};
+const blockIdLinks = {};
+
+if (groupedReferences) {
+  for (const entryId of Object.keys(groupedReferences)) {
+    entryIdLinksEntry[entryId] = await getReferenceLink(post.PageId, entryId);
+    for (const block of groupedReferences[entryId]) {
+      const result = await getReferenceLink(post.PageId, entryId, block);
+      blockIdLinks[block.Id] = result[0];
+    }
+  }
+}
+
+---
+{groupedReferences && (<div>
+  Related Pages
+  {Object.entries(groupedReferences).map(([entryId, blocks]) => (
+    <div>
+    <div key={entryId} class="inline-block">
+      Mentioned in {' '}<NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
+
+       {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`} popoverTitle={entryIdLinksEntry[entryId][1].Title}/>{' '}</>))}
+    </div>
+  </div>
+  ))}
+</div>)}
+

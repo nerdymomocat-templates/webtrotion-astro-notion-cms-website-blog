@@ -1,5 +1,7 @@
 ---
 import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
+import NBlocksPopover from './NBlocksPopover.astro';
+import { getReferenceLink } from '@/lib/blog-helpers';
 interface Props {
 	post: Post;
   filteredReferencesInPage: ReferencesInPage[];
@@ -26,14 +28,28 @@ filteredReferencesInPage.reduce((acc, ref) => {
     return acc;
   }, {});
 
+  const blockIdLinks = {};
+  if (groupedReferences) {
+  for (const hrefLink of Object.keys(groupedReferences)) {
+    for (const block of groupedReferences[hrefLink]) {
+      const result = await getReferenceLink(post.PageId, undefined, block, true);
+      blockIdLinks[block.Id] = result[0];
+    }
+  }
+}
+
+
 
 ---
 
 {groupedReferences && (<div>
-Media Links In This Page
-  {Object.entries(groupedReferences).map(([entryId, blocks]) => (
-    <p key={entryId}>
-      Mentions {entryId} at {blocks.map((block, index) => `${index + 1}:${block.Id}`).join(' ')}
-    </p>
+  External Links In This Page
+  {Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
+    <div>
+    <div key={hrefLink} class="inline-block">
+      Mentions {' '}{hrefLink} at {' '}
+       {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`}/>{' '}</>))}
+    </div>
+  </div>
   ))}
 </div>)}

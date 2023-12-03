@@ -1,9 +1,10 @@
 import fetch from "node-fetch";
-import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG } from "../constants";
-import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesInPage } from "./interfaces";
+import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
+import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesInPage, Post } from "./interfaces";
 import slugify from '@sindresorhus/slugify';
 import path from 'path';
 import fs from "node:fs";
+import { getBlock, getBlockParentPageId, getPostByPageId } from "./notion/client";
 
 
 const BASE_PATH = import.meta.env.BASE_URL;
@@ -17,7 +18,7 @@ export const filePath = (url: URL): string => {
   // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
 };
 
-export function getReferencesInPage(entryId: string){
+export function getReferencesInPage(entryId: string) {
   // Load and aggregate data if referencesInPageCache is null
   if (referencesInPageCache === null) {
     referencesInPageCache = {};
@@ -37,7 +38,7 @@ export function getReferencesInPage(entryId: string){
   return referencesInPageCache[entryId] || null;
 }
 
-export function getReferencesToPage(entryId: string){
+export function getReferencesToPage(entryId: string) {
   // Load and aggregate data if referencesInPageCache is null
   if (referencesToPageCache === null) {
     referencesToPageCache = {};
@@ -107,93 +108,93 @@ const _extractTargetBlockFromColumns = (blockTypes: string[], columns: Column[])
     .flat();
 };
 
-const _filterRichTexts = (postId:string, block: Block, rich_texts:RichText[]): ReferencesInPage => ({
+const _filterRichTexts = (postId: string, block: Block, rich_texts: RichText[]): ReferencesInPage => ({
   block,
   other_pages: rich_texts.reduce((acc, richText) => {
-      if (richText.InternalHref && richText.InternalHref?.PageId!== postId) {
-          acc.push(richText);
-      }
-      if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId!==postId) {
-          acc.push(richText);
-      }
-      return acc;
-  }, [] as RichText[]) || [],
-  external_hrefs: rich_texts.reduce((acc, richText) => {
-      if (!richText.InternalHref && richText.Href) {
-          acc.push(richText);
-      }
-      return acc;
-  }, [] as RichText[]) || [],
-  same_page: rich_texts.reduce((acc, richText) => {
-    if (richText.InternalHref?.PageId=== postId) {
-        acc.push(richText);
+    if (richText.InternalHref && richText.InternalHref?.PageId !== postId) {
+      acc.push(richText);
     }
-    if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId===postId) {
-        acc.push(richText);
+    if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId !== postId) {
+      acc.push(richText);
     }
     return acc;
-}, [] as RichText[]) || [],
-direct_media_link: null,
-link_to_pageid: null,
-direct_nonmedia_link: null
+  }, [] as RichText[]) || [],
+  external_hrefs: rich_texts.reduce((acc, richText) => {
+    if (!richText.InternalHref && richText.Href) {
+      acc.push(richText);
+    }
+    return acc;
+  }, [] as RichText[]) || [],
+  same_page: rich_texts.reduce((acc, richText) => {
+    if (richText.InternalHref?.PageId === postId) {
+      acc.push(richText);
+    }
+    if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId === postId) {
+      acc.push(richText);
+    }
+    return acc;
+  }, [] as RichText[]) || [],
+  direct_media_link: null,
+  link_to_pageid: null,
+  direct_nonmedia_link: null
 });
 
-const _extractReferencesInBlock = (postId:string, block: Block): ReferencesInPage => {
+const _extractReferencesInBlock = (postId: string, block: Block): ReferencesInPage => {
   //MISSING TABLE ROWS
   // console.debug("here in _extractReferencesInBlock");
   const rich_texts = block.Bookmark?.Caption || block.BulletedListItem?.RichTexts || block.Callout?.RichTexts || block.Code?.RichTexts || block.Embed?.Caption || block.File?.Caption || block.Heading1?.RichTexts || block.Heading2?.RichTexts || block.Heading3?.RichTexts || block.LinkPreview?.Caption || block.NAudio?.Caption || block.NImage?.Caption || block.NumberedListItem?.RichTexts || block.Paragraph?.RichTexts || block.Quote?.RichTexts || block.ToDo?.RichTexts || block.Toggle?.RichTexts || block.Video?.Caption || [];
   let filteredRichText = _filterRichTexts(postId, block, rich_texts);
   let direct_media_link = block.NAudio?.External?.Url || block.File?.External?.Url || block.NImage?.External?.Url || block.Video?.External?.Url;
   let direct_nonmedia_link = block.Embed?.Url || block.LinkPreview?.Url || block.Bookmark?.Url;
-  let link_to_pageid = block.LinkToPage?.PageId && block.LinkToPage?.PageId!==postId? block.LinkToPage?.PageId:null;
-  filteredRichText.direct_media_link = direct_media_link??null;
-  filteredRichText.direct_nonmedia_link = direct_nonmedia_link??null;
-  filteredRichText.link_to_pageid = link_to_pageid??null;
+  let link_to_pageid = block.LinkToPage?.PageId && block.LinkToPage?.PageId !== postId ? block.LinkToPage?.PageId : null;
+  filteredRichText.direct_media_link = direct_media_link ?? null;
+  filteredRichText.direct_nonmedia_link = direct_nonmedia_link ?? null;
+  filteredRichText.link_to_pageid = link_to_pageid ?? null;
   return filteredRichText;
 };
 
 
 
-export const extractReferencesInPage =(postId:string, blocks:Block[]):ReferencesInPage[]=>{
+export const extractReferencesInPage = (postId: string, blocks: Block[]): ReferencesInPage[] => {
   // console.debug("here in extractReferencesInPage");
   return blocks
-  .reduce((acc: ReferencesInPage[], block) => {
+    .reduce((acc: ReferencesInPage[], block) => {
 
-    acc.push(_extractReferencesInBlock(postId, block));
+      acc.push(_extractReferencesInBlock(postId, block));
 
-    if (block.ColumnList && block.ColumnList.Columns) {
-      acc = acc.concat(_extractReferencesFromColumns(postId, block.ColumnList.Columns));
-    } else if (block.BulletedListItem && block.BulletedListItem.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.BulletedListItem.Children));
-    } else if (block.NumberedListItem && block.NumberedListItem.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.NumberedListItem.Children));
-    } else if (block.ToDo && block.ToDo.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.ToDo.Children));
-    } else if (block.SyncedBlock && block.SyncedBlock.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.SyncedBlock.Children));
-    } else if (block.Toggle && block.Toggle.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Toggle.Children));
-    } else if (block.Paragraph && block.Paragraph.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Paragraph.Children));
-    } else if (block.Heading1 && block.Heading1.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Heading1.Children));
-    } else if (block.Heading2 && block.Heading2.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Heading2.Children));
-    } else if (block.Heading3 && block.Heading3.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Heading3.Children));
-    } else if (block.Quote && block.Quote.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Quote.Children));
-    } else if (block.Callout && block.Callout.Children) {
-      acc = acc.concat(extractReferencesInPage(postId, block.Callout.Children));
-    }
+      if (block.ColumnList && block.ColumnList.Columns) {
+        acc = acc.concat(_extractReferencesFromColumns(postId, block.ColumnList.Columns));
+      } else if (block.BulletedListItem && block.BulletedListItem.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.BulletedListItem.Children));
+      } else if (block.NumberedListItem && block.NumberedListItem.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.NumberedListItem.Children));
+      } else if (block.ToDo && block.ToDo.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.ToDo.Children));
+      } else if (block.SyncedBlock && block.SyncedBlock.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.SyncedBlock.Children));
+      } else if (block.Toggle && block.Toggle.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Toggle.Children));
+      } else if (block.Paragraph && block.Paragraph.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Paragraph.Children));
+      } else if (block.Heading1 && block.Heading1.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Heading1.Children));
+      } else if (block.Heading2 && block.Heading2.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Heading2.Children));
+      } else if (block.Heading3 && block.Heading3.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Heading3.Children));
+      } else if (block.Quote && block.Quote.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Quote.Children));
+      } else if (block.Callout && block.Callout.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, block.Callout.Children));
+      }
 
-    return acc;
-  }, [])
-  .flat();
+      return acc;
+    }, [])
+    .flat();
 }
 
 
-const _extractReferencesFromColumns = (postId:string, columns: Column[]): ReferencesInPage[] => {
+const _extractReferencesFromColumns = (postId: string, columns: Column[]): ReferencesInPage[] => {
   return columns
     .reduce((acc: ReferencesInPage[], column) => {
       if (column.Children) {
@@ -244,6 +245,56 @@ export const getNavLink = (nav: string) => {
   }
   return path.join(BASE_PATH, nav);
 };
+
+export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string): Promise<{hreflink:string | null, blocklinked:any | null, conditionmatch:string | null, post:Post|null}> => {
+
+  let block_linked = null;
+  let block_linked_id = null;
+  let post: Post | null = null;
+  let pageId = null;
+  let current_page_id = null;
+
+  pageId = richText.InternalHref?.PageId;
+  if (pageId) {
+    post = await getPostByPageId(pageId);
+  }
+
+  if (post && richText.InternalHref?.BlockId) {
+    block_linked = await getBlock(richText.InternalHref?.BlockId);
+    block_linked_id = block_linked ? block_linked.Id : null;
+    if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
+      block_linked_id = buildHeadingId(
+        block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,
+      );
+      current_page_id = blockID ? getBlockParentPageId(blockID) : null;
+    }
+  }
+
+  if (richText.Href && !richText.Mention && !richText.InternalHref) { return {hreflink:richText.Href, blocklinked:block_linked, conditionmatch:"external", post:post}; }
+  else if (block_linked_id && post && current_page_id && pageId == current_page_id) { return {hreflink:`#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_current_page", post:post};}
+  else if (block_linked_id && post) { return  {hreflink:`${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_other_page", post:post};}
+  else if (post) { return {hreflink:getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION), blocklinked:block_linked, conditionmatch:"other_page", post:post};}
+  return {hreflink:null, blocklinked:null, conditionmatch:"no_match", post:null};;
+
+}
+
+export const getReferenceLink = async (current_page_id: string, linkedPageId?: string, block_linked?: Block, currentOverride:boolean = false): Promise<[string | null, Post | null]> => {
+  const linkedpost = currentOverride? null: linkedPageId?await getPostByPageId(linkedPageId):null;
+  let block_linked_id = block_linked? block_linked.Id: null;
+  if (linkedpost || currentOverride) {
+    if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
+      block_linked_id = buildHeadingId(
+        block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,
+      );
+    }
+  }
+
+  if (block_linked_id && ((linkedpost && current_page_id && linkedPageId == current_page_id)||currentOverride)) { return [`#${block_linked_id}`,linkedpost]; }
+  else if (block_linked_id && linkedpost) { return [`${getPostLink(linkedpost.Slug, linkedpost.Collection === MENU_PAGES_COLLECTION)}#${block_linked_id}`,linkedpost]; }
+  else if (linkedpost) { return [getPostLink(linkedpost.Slug, linkedpost.Collection === MENU_PAGES_COLLECTION),linkedpost] }
+  return [null,null];
+}
+
 
 export const getPostLink = (slug: string, isRoot: boolean = false) => {
   const linkedPath = isRoot ? (slug === HOME_PAGE_SLUG ? path.join(BASE_PATH, `/`) : path.join(BASE_PATH, `/${slug}`)) : path.join(BASE_PATH, `/posts/${slug}`);
@@ -343,11 +394,10 @@ export const isSpotifyURL = (url: URL): boolean => {
   return /\/embed\//.test(url.pathname)
 }
 
-export const isGoogleMapsURL = (url:URL): boolean => {
+export const isGoogleMapsURL = (url: URL): boolean => {
   if (
     url.toString().startsWith("https://www.google.com/maps/embed")
-  )
-  {
+  ) {
     return true;
   }
   return false;

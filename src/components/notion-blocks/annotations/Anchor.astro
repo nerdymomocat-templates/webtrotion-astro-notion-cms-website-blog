@@ -1,11 +1,9 @@
 ---
-import { buildHeadingId } from "../../../lib/blog-helpers.ts";
+import { REFERENCES } from "@/constants";
+import { getAnchorLinkAndBlock } from "../../../lib/blog-helpers.ts";
 import { RichText } from "../../../lib/interfaces.ts";
-import { getBlock } from "../../../lib/notion/client.ts";
-import { Post } from "../../../lib/interfaces.ts";
-import { getPostByPageId, getBlockParentPageId } from "../../../lib/notion/client";
-import { getPostLink } from "../../../lib/blog-helpers.ts";
-import { MENU_PAGES_COLLECTION } from "@/constants";
+import NPagePopover from "@/components/blog/references/NPagePopover.astro";
+import NBlocksPopover from "@/components/blog/references/NBlocksPopover.astro";
 
 export interface Props {
 	richText: RichText;
@@ -13,40 +11,21 @@ export interface Props {
 }
 
 const { richText, blockID } = Astro.props;
-
-let block_linked = null;
-let block_linked_id = null;
-let post: Post = null;
-let pageId = null;
-let current_page_id = null;
-
-pageId = richText.InternalHref?.PageId;
-if (pageId) {
-	post = await getPostByPageId(pageId);
-}
-
-if (post && richText.InternalHref?.BlockId) {
-	block_linked = await getBlock(richText.InternalHref?.BlockId);
-  block_linked_id = block_linked? block_linked.Id : null;
-	if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
-		block_linked_id = buildHeadingId(
-			block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,
-		);
-		current_page_id = blockID ? await getBlockParentPageId(blockID) : null;
-	}
-}
+const {hreflink, blocklinked, conditionmatch, post} = await getAnchorLinkAndBlock(richText,blockID);
 ---
 
 {
-	/* prettier-ignore */
-	richText.Href && !richText.Mention && !richText.InternalHref? (
-    <a href={richText.Href} class="text-link underline decoration-accent-2 hover:decoration-accent underline-offset-4"><slot /></a>
-  ) : block_linked_id && post && current_page_id && pageId==current_page_id?(<a href={`#${block_linked_id}`} class="underline-offset-4 text-link underline decoration-accent-2 hover:decoration-accent "><slot /></a>):
-  block_linked_id && post?(
-    <a href={`${getPostLink(post.Slug, post.Collection===MENU_PAGES_COLLECTION)}#${block_linked_id}`} class="underline-offset-4 text-link underline underline decoration-accent-2 hover:decoration-accent  "><slot /></a>
-  ): post?( <a href={getPostLink(post.Slug, post.Collection===MENU_PAGES_COLLECTION)} class="underline-offset-4 text-link underline underline decoration-accent-2 hover:decoration-accent"><slot /></a>
-  ):
-  (
+  hreflink && REFERENCES && REFERENCES["BODY_LINK_POPUPS"] && conditionmatch && ["block_current_page", "block_other_page", "other_page"].includes(conditionmatch) && post && post.Title ? (
+    conditionmatch === "block_current_page" || conditionmatch === "block_other_page" ? (
+      <NBlocksPopover block={blocklinked} linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title}><slot /></NBlocksPopover>
+    ) : (
+      <NPagePopover linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title} postId={post.PageId} excerpt={post.Excerpt}><slot /></NPagePopover>
+    )
+  ) : hreflink ? (
+    <a href={hreflink} class="text-link underline decoration-accent-2 hover:decoration-accent underline-offset-4">
+      <slot />
+    </a>
+  ) : (
     <slot />
   )
 }
