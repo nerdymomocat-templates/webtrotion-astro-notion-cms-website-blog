@@ -1,17 +1,14 @@
 ---
 import PageLayout from "../layouts/Base.astro";
 // import PostPreview from "../components/blog/PostPreview.astro";
-import WebMentions from "@/components/blog/webmentions/index";
 import { getAllPages, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
-import { HOME_PAGE_SLUG } from "@/constants";
 
 // import { siteConfig } from "@/site-config";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import PostComments from "@/components/blog/PostComments.astro";
 
 export async function getStaticPaths() {
 	const pages = await getAllPages();
