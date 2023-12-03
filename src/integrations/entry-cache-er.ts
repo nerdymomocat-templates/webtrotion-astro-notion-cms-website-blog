@@ -57,7 +57,7 @@ function createBlockIdPostIdMap(referencesInEntries) {
     return acc;
   }, {});
 
-  const blockToPostIdPath = path.join('./tmp', "block_to_postid_path.json");
+  const blockToPostIdPath = path.join('./tmp', "blockid_to_postid_map.json");
   fs.writeFileSync(blockToPostIdPath, JSON.stringify(blockIdToPostIdMap, null, 2), 'utf-8');
 
   return true;

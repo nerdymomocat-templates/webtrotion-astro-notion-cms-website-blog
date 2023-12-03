@@ -71,6 +71,7 @@ const client = new Client({
 
 let allEntriesCache: Post[] | null = null;
 let dbCache: Database | null = null;
+let blockIdPostIdMap: { [blockId: string]: string } | null = null;
 
 const numberOfRetry = 2;
 
@@ -406,51 +407,23 @@ export async function getBlock(blockId: string): Promise<Block | null> {
   }
 }
 
-export async function getBlockParentPageId(blockId: string): Promise<string | null> {
-  let parent_page_id: string | null = null;
+export function getBlockParentPageId(blockId: string): string | null {
+  // Load and parse the JSON only if blockIdPostIdMap is null
+  if (blockIdPostIdMap === null) {
+    const blockToPostIdPath = path.join('./tmp', "blockid_to_postid_map.json");
 
-  while (true) {
-    let params: requestParams.RetrieveBlock = {
-      block_id: blockId,
-    };
-
-    try {
-      let res = await retry(
-        async (bail) => {
-          try {
-            return (await client.blocks.retrieve(
-              params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
-            )) as responses.RetrieveBlockResponse;
-          } catch (error: unknown) {
-            if (error instanceof APIResponseError) {
-              if (error.status && error.status >= 400 && error.status < 500) {
-                bail(error);
-              }
-            }
-            throw error;
-          }
-        },
-        {
-          retries: numberOfRetry,
-        },
-      );
-
-      if (res.parent.type === "block_id") {
-        blockId = res.parent.block_id;
-      } else if (res.parent.type === "page_id") {
-        parent_page_id = res.parent.page_id;
-        break;
-      } else {
-        break;
-      }
-    } catch (error) {
-      // Log the error if necessary
-      console.error('Error retrieving block parent:', error);
-      return null; // Return null if an error occurs
+    // Check if the file exists
+    if (fs.existsSync(blockToPostIdPath)) {
+      const fileContent = fs.readFileSync(blockToPostIdPath, 'utf-8');
+      blockIdPostIdMap = JSON.parse(fileContent);
+    } else {
+      // If the file does not exist, return null
+      return null;
     }
   }
 
-  return parent_page_id;
+  // Return the parent page ID for the given block ID, or null if not found
+  return blockIdPostIdMap[blockId] || null;
 }
 
 
