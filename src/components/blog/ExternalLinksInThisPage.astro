@@ -1,0 +1,13 @@
+---
+import { getReferencesInPage } from '@/lib/blog-helpers';
+import type { Post } from '@/lib/interfaces';
+interface Props {
+	post: Post;
+}
+const { post } = Astro.props;
+
+const allReferencesInPage = getReferencesInPage(post.PageId);
+const filteredReferences = allReferencesInPage.filter(ref => ref.external_hrefs.length > 0 || ref.direct_nonmedia_link);
+
+---
+

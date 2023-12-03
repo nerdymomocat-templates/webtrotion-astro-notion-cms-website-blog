@@ -3,15 +3,60 @@ import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG } from "../constants";
 import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesInPage } from "./interfaces";
 import slugify from '@sindresorhus/slugify';
 import path from 'path';
+import fs from "node:fs";
+
 
 
 const BASE_PATH = import.meta.env.BASE_URL;
+let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
+let referencesToPageCache: { [entryId: string]: { entryId: string, block: Block }[] } | null = null;
+
 
 export const filePath = (url: URL): string => {
   const [dir, filename] = url.pathname.split("/").slice(-2);
   return path.join(BASE_PATH, `/notion/${dir}/${filename}`);
   // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
 };
+
+export function getReferencesInPage(entryId: string){
+  // Load and aggregate data if referencesInPageCache is null
+  if (referencesInPageCache === null) {
+    referencesInPageCache = {};
+
+    // Assuming you have a way to list all relevant JSON files in ./tmp/
+    const files = fs.readdirSync('./tmp').filter(file => file.endsWith('_ReferencesInPage.json'));
+
+    for (const file of files) {
+      const filePath = path.join('./tmp', file);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const pageId = file.replace('_ReferencesInPage.json', '');
+      referencesInPageCache[pageId] = JSON.parse(fileContent);
+    }
+  }
+
+  // Return the references for the given entryId, or null if not found
+  return referencesInPageCache[entryId] || null;
+}
+
+export function getReferencesToPage(entryId: string){
+  // Load and aggregate data if referencesInPageCache is null
+  if (referencesToPageCache === null) {
+    referencesToPageCache = {};
+
+    // Assuming you have a way to list all relevant JSON files in ./tmp/
+    const files = fs.readdirSync('./tmp').filter(file => file.endsWith('_ReferencesInPage.json'));
+
+    for (const file of files) {
+      const filePath = path.join('./tmp', file);
+      const fileContent = fs.readFileSync(filePath, 'utf-8');
+      const pageId = file.replace('_ReferencesToPage.json', '');
+      referencesToPageCache[pageId] = JSON.parse(fileContent);
+    }
+  }
+
+  // Return the references for the given entryId, or null if not found
+  return referencesToPageCache[entryId] || null;
+}
 
 export const extractTargetBlocks = (blockTypes: string[], blocks: Block[]): Block[] => {
   return blocks
@@ -89,8 +134,9 @@ const _filterRichTexts = (postId:string, block: Block, rich_texts:RichText[]): R
     }
     return acc;
 }, [] as RichText[]) || [],
-direct_link: null,
-link_to_pageid: null
+direct_media_link: null,
+link_to_pageid: null,
+direct_nonmedia_link: null
 });
 
 const _extractReferencesInBlock = (postId:string, block: Block): ReferencesInPage => {
@@ -98,9 +144,11 @@ const _extractReferencesInBlock = (postId:string, block: Block): ReferencesInPag
   // console.debug("here in _extractReferencesInBlock");
   const rich_texts = block.Bookmark?.Caption || block.BulletedListItem?.RichTexts || block.Callout?.RichTexts || block.Code?.RichTexts || block.Embed?.Caption || block.File?.Caption || block.Heading1?.RichTexts || block.Heading2?.RichTexts || block.Heading3?.RichTexts || block.LinkPreview?.Caption || block.NAudio?.Caption || block.NImage?.Caption || block.NumberedListItem?.RichTexts || block.Paragraph?.RichTexts || block.Quote?.RichTexts || block.ToDo?.RichTexts || block.Toggle?.RichTexts || block.Video?.Caption || [];
   let filteredRichText = _filterRichTexts(postId, block, rich_texts);
-  let direct_link = block.Embed?.Url || block.LinkPreview?.Url || block.NAudio?.External?.Url || block.File?.External?.Url || block.NImage?.External?.Url || block.Video?.External?.Url;
-  let link_to_pageid = block.LinkToPage?.PageId;
-  filteredRichText.direct_link = direct_link??null;
+  let direct_media_link = block.NAudio?.External?.Url || block.File?.External?.Url || block.NImage?.External?.Url || block.Video?.External?.Url;
+  let direct_nonmedia_link = block.Embed?.Url || block.LinkPreview?.Url || block.Bookmark?.Url;
+  let link_to_pageid = block.LinkToPage?.PageId && block.LinkToPage?.PageId!==postId? block.LinkToPage?.PageId:null;
+  filteredRichText.direct_media_link = direct_media_link??null;
+  filteredRichText.direct_nonmedia_link = direct_nonmedia_link??null;
   filteredRichText.link_to_pageid = link_to_pageid??null;
   return filteredRichText;
 };

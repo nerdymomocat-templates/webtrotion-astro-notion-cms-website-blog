@@ -12,7 +12,7 @@ const fontFamilyMono = theme_config_font_fonts && theme_config_font_fonts['mono_
 
 
 export default {
-  content: ["./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}"],
+  content: ["./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}","./node_modules/flowbite/**/*.js"],
   darkMode: "class",
   corePlugins: {
     // disable aspect ratio as per docs -> @tailwindcss/aspect-ratio
@@ -114,6 +114,7 @@ export default {
   plugins: [
     // require("@tailwindcss/typography"),
     require("@tailwindcss/aspect-ratio"),
+    require('flowbite/plugin'),
     plugin(function ({ addComponents }) {
       addComponents({
         ".cactus-link": {

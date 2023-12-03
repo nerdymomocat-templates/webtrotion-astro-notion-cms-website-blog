@@ -64,8 +64,9 @@ export interface ReferencesInPage {
   other_pages: RichText[];
   external_hrefs: RichText[];
   same_page: RichText[];
-  direct_link: string | null;
+  direct_media_link: string | null;
   link_to_pageid: string | null;
+  direct_nonmedia_link: string | null;
 }
 
 

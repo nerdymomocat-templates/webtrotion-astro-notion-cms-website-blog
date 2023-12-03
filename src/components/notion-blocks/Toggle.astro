@@ -5,14 +5,15 @@ import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-	block: interfaces.Block;
-	headings: interfaces.Block[];
+  block: interfaces.Block;
+  headings: interfaces.Block[];
+  renderChildren?: boolean; // Make this optional
 }
 
-const { block, headings } = Astro.props;
+const { block, headings, renderChildren = true } = Astro.props;
 ---
 
-<details class={`toggle ${convertToTailwindColor(block.Toggle.Color)}`}>
+<details class={`toggle ${convertToTailwindColor(block.Toggle.Color)}`} id={block.Id}>
 	<summary class="flex cursor-pointer list-none gap-2">
     <div>
     <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="none" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
@@ -30,7 +31,7 @@ const { block, headings } = Astro.props;
     </div>
 	</summary>
 	<div class="pl-10">
-		<NotionBlocks blocks={block.Toggle.Children} headings={headings} />
+		<NotionBlocks blocks={block.Toggle.Children} headings={headings} renderChildren={renderChildren}/>
 	</div>
 </details>
 

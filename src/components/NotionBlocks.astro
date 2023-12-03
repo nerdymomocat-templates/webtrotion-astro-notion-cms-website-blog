@@ -31,9 +31,10 @@ export interface Props {
 	isRoot?: boolean;
 	level?: number;
 	headings?: interfaces.Block[];
+  renderChildren?: boolean
 }
 
-const { blocks: rawBlocks, isRoot = false, level = 1, headings: rawHeadings = [] } = Astro.props;
+const { blocks: rawBlocks, isRoot = false, level = 1, headings: rawHeadings = [], renderChildren=true } = Astro.props;
 
 const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 	const isBulletedListItem = block.Type === "bulleted_list_item";
@@ -109,15 +110,15 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 	blocks.map((block: interfaces.Block) => {
 		switch (block.Type) {
 			case "paragraph":
-				return <Paragraph block={block} headings={headings} />;
+				return <Paragraph block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "heading_1":
-				return <Heading1 block={block} headings={headings} />;
+				return <Heading1 block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "heading_2":
-				return <Heading2 block={block} headings={headings} />;
+				return <Heading2 block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "heading_3":
-				return <Heading3 block={block} headings={headings} />;
+				return <Heading3 block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "table_of_contents":
-				return <TableOfContents block={block} headings={headings} />;
+				return <TableOfContents block={block} headings={headings}/>;
 			case "image":
 				return <NImage block={block}/>;
 			case "video":
@@ -127,13 +128,13 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 			case "code":
 				return <NCode block={block} />;
 			case "quote":
-				return <Quote block={block} headings={headings} />;
+				return <Quote block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "equation":
 				return <Equation block={block} />;
 			case "callout":
-				return <Callout block={block} headings={headings} />;
+				return <Callout block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "embed":
-				return <Embed block={block} urlMap={bookmarkURLMap} />;
+				return <Embed block={block} urlMap={bookmarkURLMap}  />;
 			case "bookmark":
 			case "link_preview":
 				return <Bookmark block={block} urlMap={bookmarkURLMap} />;
@@ -142,17 +143,17 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 			case "table":
 				return <Table block={block} />;
 			case "column_list":
-				return <ColumnList block={block} headings={headings} />;
+				return <ColumnList block={block} headings={headings}renderChildren={renderChildren} />;
 			case "bulleted_list":
-				return <BulletedListItems block={block} headings={headings} />;
+				return <BulletedListItems block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "numbered_list":
-				return <NumberedListItems block={block} level={level} headings={headings} />;
+				return <NumberedListItems block={block} level={level} headings={headings} renderChildren={renderChildren}/>;
 			case "to_do_list":
-				return <ToDo block={block} headings={headings} />;
+				return <ToDo block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "synced_block":
-				return <SyncedBlock block={block} headings={headings} />;
+				return <SyncedBlock block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "toggle":
-				return <Toggle block={block} headings={headings} />;
+				return <Toggle block={block} headings={headings} renderChildren={renderChildren}/>;
 			case "file":
 				return <File block={block} />;
 			case "link_to_page":

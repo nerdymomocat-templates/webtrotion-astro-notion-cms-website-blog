@@ -20,7 +20,7 @@ try {
 const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 ---
 
-<div class="file">
+<div class="file" id={block.Id}>
 	{
 		url && (
 			<div>

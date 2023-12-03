@@ -11,7 +11,7 @@ export interface Props {
 const { block, headings } = Astro.props;
 ---
 
-<div class="table-of-contents">
+<div class="table-of-contents" id={block.Id}>
 	{
 		headings.map((headingBlock: interfaces.Block) => {
 			const heading = headingBlock.Heading1 || headingBlock.Heading2 || headingBlock.Heading3;

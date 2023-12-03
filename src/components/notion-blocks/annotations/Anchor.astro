@@ -27,6 +27,7 @@ if (pageId) {
 
 if (post && richText.InternalHref?.BlockId) {
 	block_linked = await getBlock(richText.InternalHref?.BlockId);
+  block_linked_id = block_linked? block_linked.Id : null;
 	if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
 		block_linked_id = buildHeadingId(
 			block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,

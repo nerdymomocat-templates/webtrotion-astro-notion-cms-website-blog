@@ -1,0 +1,17 @@
+---
+import { REFERENCES } from "@/constants";
+import InternalLinksInThisPage from "./SiteLinksInThisPage.astro";
+import LinksToThisPage from "./LinksToThisPage.astro";
+import ExternalLinksInThisPage from "./ExternalLinksInThisPage.astro";
+import MediaLinksInThisPage from "./MediaLinksInThisPage.astro";
+import type { Post } from "@/lib/interfaces";
+
+interface Props {
+	post: Post;
+}
+const { post } = Astro.props;
+---
+{REFERENCES && REFERENCES["LINKS_TO_THIS_PAGE"] && <LinksToThisPage post={post}/>}
+{REFERENCES && REFERENCES["SITE_LINKS_IN_PAGE"] && <InternalLinksInThisPage post={post}/>}
+{REFERENCES && REFERENCES["EXTERNAL_LINKS_IN_PAGE"] && <ExternalLinksInThisPage post={post}/>}
+{REFERENCES && REFERENCES["MEDIA_AND_FILE_LINKS_IN_THIS_PAGE"] && <MediaLinksInThisPage post={post}/>}

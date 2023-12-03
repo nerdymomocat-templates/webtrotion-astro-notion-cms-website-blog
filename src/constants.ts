@@ -56,3 +56,5 @@ const readBuildStartTime = () => {
 
 export const LAST_BUILD_TIME = readBuildStartTime();
 console.log('Last Build Start Time:', LAST_BUILD_TIME);
+
+export const REFERENCES = key_value_from_json["REFERENCES"] || null;

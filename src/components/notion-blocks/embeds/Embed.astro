@@ -36,7 +36,7 @@ try {
 const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(' ');
 
 ---
-<div class="embedded-info pb-2">
+<div class="embedded-info pb-2" id={block.Id}>
 {
   url ? (
     isTweetURL(url) ? (

@@ -5,18 +5,19 @@ import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-	block: interfaces.Block;
-	headings: interfaces.Block[];
+  block: interfaces.Block;
+  headings: interfaces.Block[];
+  renderChildren?: boolean; // Make this optional
 }
 
-const { block, headings } = Astro.props;
+const { block, headings, renderChildren = true } = Astro.props;
 ---
 
-<div class="to-do pl-2 leading-7">
+<div class="to-do pl-2 leading-7" id={block.Id}>
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
-				<div key={index} class="mb-2">
+				<div key={index} class="mb-2" id={b.Id}>
 					<div class={`flex items-start ${convertToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
 						<div class="pr-2 pt-1">
@@ -35,15 +36,15 @@ const { block, headings } = Astro.props;
 									return (
 										<span class="block line-through decoration-slate-500/50">
 											{/* Block element for the text */}
-											<RichText richText={richText} blockID={block.Id} />
+											<RichText richText={richText} blockID={b.Id} />
 										</span>
 									);
 								}
-								return <RichText richText={richText} blockID={block.Id} class="block" />;
+								return <RichText richText={richText} blockID={b.Id} class="block" />;
 							})}
 						</div>
 					</div>
-					{b.HasChildren && (
+					{b.HasChildren && renderChildren && (
 						<div class="mt-1">
 							{/* Margin for spacing between the to-do and its children */}
 							<NotionBlocks blocks={b.ToDo.Children} headings={headings} />

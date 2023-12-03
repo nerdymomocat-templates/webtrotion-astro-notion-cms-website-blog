@@ -5,11 +5,12 @@ import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-	block: interfaces.Block;
-	headings: interfaces.Block[];
+  block: interfaces.Block;
+  headings: interfaces.Block[];
+  renderChildren?: boolean; // Make this optional
 }
 
-const { block, headings } = Astro.props;
+const { block, headings, renderChildren = true } = Astro.props;
 
 const id = buildHeadingId(block.Heading3);
 ---
@@ -47,7 +48,7 @@ const id = buildHeadingId(block.Heading3);
 				</a>
 			</summary>
 			<div class="pl-10">
-				{block.Heading3.Children && (
+				{block.Heading3.Children && renderChildren && (
 					<NotionBlocks blocks={block.Heading3.Children} headings={headings} />
 				)}
 			</div>

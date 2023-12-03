@@ -10,7 +10,7 @@ const { block } = Astro.props;
 ---
 
 <div
-	class="equation text-center"
+	class="equation text-center" id={block.Id}
 	set:html={katex.renderToString(block.Equation.Expression, {
 		throwOnError: false,
 	})}
