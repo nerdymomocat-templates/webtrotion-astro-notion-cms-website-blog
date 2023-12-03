@@ -23,7 +23,6 @@ export interface Post {
   FeaturedImage: FileObject | null;
   Rank: number;
   LastUpdatedDate: string;
-  RelatedPages: Reference[] | null;
   LastUpdatedTimeStamp: Date;
 }
 

@@ -1249,9 +1249,6 @@ function _buildPost(pageObject: responses.PageObject): Post {
     FeaturedImage: featuredImage,
     Rank: prop.Rank.number ? prop.Rank.number : 0,
     LastUpdatedDate: prop['Last Updated Date']?.formula?.date ? prop['Last Updated Date']?.formula.date.start : "",
-    RelatedPages: prop["Related Pages"]?.relation && prop["Related Pages"].relation.length > 0
-      ? prop["Related Pages"].relation.map(item => ({ PageId: item.id, Type: "page" }))
-      : null,
   };
   return post;
 }

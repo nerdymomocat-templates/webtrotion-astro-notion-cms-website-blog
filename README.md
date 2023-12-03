@@ -150,7 +150,6 @@ Dark mode preview
 | Explicit Publish Date | By default, the formula considers the date notion page was created to be publish date. You can override it by setting a date for this property. |
 | Explicit Publish Date | By default, the formula considers the date notion page was last edited to be last edited date. You can override it by setting a date for this property. |
 | Rank | Want to order single pages (Updates before Papers?) Set rank in ascending order |
-| Related Pages | Set up related pages. This property does not anything at the moment. But I plan to use it to show “Similar pages” footnote later. |
 
 ⚠️ **Don’t rename the columns of DB.** They are used in the astro code. You can reorder the columns or add any other columns you want.
 
