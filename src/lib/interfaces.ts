@@ -59,6 +59,16 @@ export interface Block {
   LinkToPage?: LinkToPage;
 }
 
+export interface ReferencesInPage {
+  block: Block;
+  other_pages: RichText[];
+  external_hrefs: RichText[];
+  same_page: RichText[];
+  direct_link: string | null;
+  link_to_pageid: string | null;
+}
+
+
 export interface Paragraph {
   RichTexts: RichText[];
   Color: string;

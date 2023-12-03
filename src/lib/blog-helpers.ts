@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
-import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG } from "@/constants";
-import type { Block, Heading1, Heading2, Heading3, RichText, Column } from "./interfaces";
+import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG } from "../constants";
+import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesInPage } from "./interfaces";
 import slugify from '@sindresorhus/slugify';
 import path from 'path';
 
@@ -13,37 +13,37 @@ export const filePath = (url: URL): string => {
   // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
 };
 
-export const extractTargetBlocks = (blockType: string[], blocks: Block[]): Block[] => {
+export const extractTargetBlocks = (blockTypes: string[], blocks: Block[]): Block[] => {
   return blocks
     .reduce((acc: Block[], block) => {
-      if (blockType.includes(block.Type)) {
+      if (blockTypes.includes(block.Type)) {
         acc.push(block);
       }
 
       if (block.ColumnList && block.ColumnList.Columns) {
-        acc = acc.concat(_extractTargetBlockFromColums(blockType, block.ColumnList.Columns));
+        acc = acc.concat(_extractTargetBlockFromColumns(blockTypes, block.ColumnList.Columns));
       } else if (block.BulletedListItem && block.BulletedListItem.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.BulletedListItem.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.BulletedListItem.Children));
       } else if (block.NumberedListItem && block.NumberedListItem.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.NumberedListItem.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.NumberedListItem.Children));
       } else if (block.ToDo && block.ToDo.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.ToDo.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.ToDo.Children));
       } else if (block.SyncedBlock && block.SyncedBlock.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.SyncedBlock.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.SyncedBlock.Children));
       } else if (block.Toggle && block.Toggle.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Toggle.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Toggle.Children));
       } else if (block.Paragraph && block.Paragraph.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Paragraph.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Paragraph.Children));
       } else if (block.Heading1 && block.Heading1.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Heading1.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Heading1.Children));
       } else if (block.Heading2 && block.Heading2.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Heading2.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Heading2.Children));
       } else if (block.Heading3 && block.Heading3.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Heading3.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Heading3.Children));
       } else if (block.Quote && block.Quote.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Quote.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Quote.Children));
       } else if (block.Callout && block.Callout.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, block.Callout.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, block.Callout.Children));
       }
 
       return acc;
@@ -51,11 +51,106 @@ export const extractTargetBlocks = (blockType: string[], blocks: Block[]): Block
     .flat();
 };
 
-const _extractTargetBlockFromColums = (blockType: string, columns: Column[]): Block[] => {
+
+const _extractTargetBlockFromColumns = (blockTypes: string[], columns: Column[]): Block[] => {
   return columns
     .reduce((acc: Block[], column) => {
       if (column.Children) {
-        acc = acc.concat(extractTargetBlocks(blockType, column.Children));
+        acc = acc.concat(extractTargetBlocks(blockTypes, column.Children));
+      }
+      return acc;
+    }, [])
+    .flat();
+};
+
+const _filterRichTexts = (postId:string, block: Block, rich_texts:RichText[]): ReferencesInPage => ({
+  block,
+  other_pages: rich_texts.reduce((acc, richText) => {
+      if (richText.InternalHref && richText.InternalHref?.PageId!== postId) {
+          acc.push(richText);
+      }
+      if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId!==postId) {
+          acc.push(richText);
+      }
+      return acc;
+  }, [] as RichText[]) || [],
+  external_hrefs: rich_texts.reduce((acc, richText) => {
+      if (!richText.InternalHref && richText.Href) {
+          acc.push(richText);
+      }
+      return acc;
+  }, [] as RichText[]) || [],
+  same_page: rich_texts.reduce((acc, richText) => {
+    if (richText.InternalHref?.PageId=== postId) {
+        acc.push(richText);
+    }
+    if (richText.Mention?.Page?.PageId && richText.Mention.Page.PageId===postId) {
+        acc.push(richText);
+    }
+    return acc;
+}, [] as RichText[]) || [],
+direct_link: null,
+link_to_pageid: null
+});
+
+const _extractReferencesInBlock = (postId:string, block: Block): ReferencesInPage => {
+  //MISSING TABLE ROWS
+  // console.debug("here in _extractReferencesInBlock");
+  const rich_texts = block.Bookmark?.Caption || block.BulletedListItem?.RichTexts || block.Callout?.RichTexts || block.Code?.RichTexts || block.Embed?.Caption || block.File?.Caption || block.Heading1?.RichTexts || block.Heading2?.RichTexts || block.Heading3?.RichTexts || block.LinkPreview?.Caption || block.NAudio?.Caption || block.NImage?.Caption || block.NumberedListItem?.RichTexts || block.Paragraph?.RichTexts || block.Quote?.RichTexts || block.ToDo?.RichTexts || block.Toggle?.RichTexts || block.Video?.Caption || [];
+  let filteredRichText = _filterRichTexts(postId, block, rich_texts);
+  let direct_link = block.Embed?.Url || block.LinkPreview?.Url || block.NAudio?.External?.Url || block.File?.External?.Url || block.NImage?.External?.Url || block.Video?.External?.Url;
+  let link_to_pageid = block.LinkToPage?.PageId;
+  filteredRichText.direct_link = direct_link??null;
+  filteredRichText.link_to_pageid = link_to_pageid??null;
+  return filteredRichText;
+};
+
+
+
+export const extractReferencesInPage =(postId:string, blocks:Block[]):ReferencesInPage[]=>{
+  // console.debug("here in extractReferencesInPage");
+  return blocks
+  .reduce((acc: ReferencesInPage[], block) => {
+
+    acc.push(_extractReferencesInBlock(postId, block));
+
+    if (block.ColumnList && block.ColumnList.Columns) {
+      acc = acc.concat(_extractReferencesFromColumns(postId, block.ColumnList.Columns));
+    } else if (block.BulletedListItem && block.BulletedListItem.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.BulletedListItem.Children));
+    } else if (block.NumberedListItem && block.NumberedListItem.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.NumberedListItem.Children));
+    } else if (block.ToDo && block.ToDo.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.ToDo.Children));
+    } else if (block.SyncedBlock && block.SyncedBlock.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.SyncedBlock.Children));
+    } else if (block.Toggle && block.Toggle.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Toggle.Children));
+    } else if (block.Paragraph && block.Paragraph.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Paragraph.Children));
+    } else if (block.Heading1 && block.Heading1.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Heading1.Children));
+    } else if (block.Heading2 && block.Heading2.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Heading2.Children));
+    } else if (block.Heading3 && block.Heading3.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Heading3.Children));
+    } else if (block.Quote && block.Quote.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Quote.Children));
+    } else if (block.Callout && block.Callout.Children) {
+      acc = acc.concat(extractReferencesInPage(postId, block.Callout.Children));
+    }
+
+    return acc;
+  }, [])
+  .flat();
+}
+
+
+const _extractReferencesFromColumns = (postId:string, columns: Column[]): ReferencesInPage[] => {
+  return columns
+    .reduce((acc: ReferencesInPage[], column) => {
+      if (column.Children) {
+        acc = acc.concat(extractReferencesInPage(postId, column.Children));
       }
       return acc;
     }, [])

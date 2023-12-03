@@ -25,6 +25,7 @@ const { post } = Astro.props;
 let postFound = true;
 let headings = null;
 let blocks = null;
+let referencesInPage = null;
 
 if (!post) {
 	console.log("Post not found. slug: ${slug}");
@@ -32,7 +33,9 @@ if (!post) {
 }
 
 if (postFound) {
-	blocks = await getPostContentByPostId(post);
+  const result = await getPostContentByPostId(post);
+  blocks = result.blocks;
+  referencesInPage = result.referencesInPage;
 
 	headings = buildHeadings(blocks);
 

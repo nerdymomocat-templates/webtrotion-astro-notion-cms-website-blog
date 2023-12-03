@@ -56,11 +56,13 @@ import type {
   LinkToPage,
   Mention,
   Reference,
-  NAudio
+  NAudio,
+  ReferencesInPage
 } from "../interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
+import { extractReferencesInPage } from "../blog-helpers";
 
 
 const client = new Client({
@@ -256,9 +258,10 @@ export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
   );
 }
 
-export async function getPostContentByPostId(post: Post): Promise<Block[]> {
+export async function getPostContentByPostId(post: Post): Promise<{ blocks: Block[], referencesInPage: ReferencesInPage[] |null }> {
   const tmpDir = './tmp';
   const cacheFilePath = path.join(tmpDir, `${post.PageId}.json`);
+  const cacheReferencesInPageFilePath = path.join(tmpDir, `${post.PageId}_ReferencesInPage.json`);
   const isPostUpdatedAfterLastBuild = LAST_BUILD_TIME ? post.LastUpdatedTimeStamp > LAST_BUILD_TIME : true;
 
   // Ensure the tmp directory exists
@@ -270,14 +273,23 @@ export async function getPostContentByPostId(post: Post): Promise<Block[]> {
     // If the post was not updated after the last build and cache file exists, return the cached data
     console.log("Hit cache for", post.Slug);
     const cachedData = JSON.parse(fs.readFileSync(cacheFilePath, 'utf-8'));
-    return cachedData;
+    let referencesInPage = null;
+    if (!fs.existsSync(cacheReferencesInPageFilePath))
+    {
+      referencesInPage = extractReferencesInPage(post.PageId, cachedData);
+      fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage), 'utf-8');
+    }
+    return { blocks: cachedData, referencesInPage: referencesInPage };
   } else {
     // If the post was updated after the last build or cache does not exist, fetch new data
     const allBlocks = await getAllBlocksByBlockId(post.PageId);
 
+
     // Write the new data to the cache file
     fs.writeFileSync(cacheFilePath, JSON.stringify(allBlocks), 'utf-8');
-    return allBlocks;
+    const referencesInPage = extractReferencesInPage(post.PageId, allBlocks);
+    fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage), 'utf-8');
+    return { blocks: allBlocks, referencesInPage: referencesInPage };
   }
 }
 

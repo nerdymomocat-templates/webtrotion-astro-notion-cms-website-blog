@@ -31,6 +31,7 @@ const { page } = Astro.props;
 
 let pageFound = true;
 let blocks = null;
+let referencesInPage = null;
 
 if (!page) {
 	console.log("Page not found");
@@ -42,7 +43,10 @@ if (!page) {
 // 	getRankedPosts(),
 // ]);
 if (pageFound) {
-	blocks = await getPostContentByPostId(page);
+	const result = await getPostContentByPostId(page);
+  blocks = result.blocks;
+  referencesInPage = result.referencesInPage;
+
 
 	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 		.filter((block) => {

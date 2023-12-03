@@ -22,7 +22,7 @@ interface Props {
 }
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
-const blocks = await getPostContentByPostId(post_full_preview);
+const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
 const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 	.filter((block) => {
 		if (!block) {
