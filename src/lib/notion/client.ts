@@ -277,7 +277,10 @@ export async function getPostContentByPostId(post: Post): Promise<{ blocks: Bloc
     if (!fs.existsSync(cacheReferencesInPageFilePath))
     {
       referencesInPage = extractReferencesInPage(post.PageId, cachedData);
-      fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage), 'utf-8');
+      fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage, null, 2), 'utf-8');
+    }
+    else{
+      referencesInPage = JSON.parse(fs.readFileSync(cacheReferencesInPageFilePath, 'utf-8'));
     }
     return { blocks: cachedData, referencesInPage: referencesInPage };
   } else {
@@ -286,9 +289,9 @@ export async function getPostContentByPostId(post: Post): Promise<{ blocks: Bloc
 
 
     // Write the new data to the cache file
-    fs.writeFileSync(cacheFilePath, JSON.stringify(allBlocks), 'utf-8');
+    fs.writeFileSync(cacheFilePath, JSON.stringify(allBlocks, null, 2), 'utf-8');
     const referencesInPage = extractReferencesInPage(post.PageId, allBlocks);
-    fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage), 'utf-8');
+    fs.writeFileSync(cacheReferencesInPageFilePath, JSON.stringify(referencesInPage, null, 2), 'utf-8');
     return { blocks: allBlocks, referencesInPage: referencesInPage };
   }
 }
