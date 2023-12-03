@@ -314,6 +314,9 @@ export function createReferencesToThisEntry(referencesInEntries: { referencesInP
           if (richText.InternalHref?.PageId && entryReferencesMap[richText.InternalHref.PageId]) {
             entryReferencesMap[richText.InternalHref.PageId].push({ entryId: entryId, block: reference.block });
           }
+          else if (richText.Mention?.Page?.PageId && entryReferencesMap[richText.Mention?.Page?.PageId]) {
+            entryReferencesMap[richText.Mention.Page.PageId].push({ entryId: entryId, block: reference.block });
+          }
         });
 
         // Check and collect blocks where link_to_pageid matches an entryId in the map

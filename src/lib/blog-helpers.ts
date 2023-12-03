@@ -6,7 +6,6 @@ import path from 'path';
 import fs from "node:fs";
 
 
-
 const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
 let referencesToPageCache: { [entryId: string]: { entryId: string, block: Block }[] } | null = null;
@@ -44,7 +43,7 @@ export function getReferencesToPage(entryId: string){
     referencesToPageCache = {};
 
     // Assuming you have a way to list all relevant JSON files in ./tmp/
-    const files = fs.readdirSync('./tmp').filter(file => file.endsWith('_ReferencesInPage.json'));
+    const files = fs.readdirSync('./tmp').filter(file => file.endsWith('_ReferencesToPage.json'));
 
     for (const file of files) {
       const filePath = path.join('./tmp', file);

@@ -1,13 +1,39 @@
 ---
-import { getReferencesInPage } from '@/lib/blog-helpers';
-import type { Post } from '@/lib/interfaces';
+import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
 interface Props {
 	post: Post;
+  filteredReferencesInPage: ReferencesInPage[];
 }
-const { post } = Astro.props;
+const { post, filteredReferencesInPage } = Astro.props;
+const groupedReferences: { [key: string]: Block[] } =
+filteredReferencesInPage.reduce((acc, ref) => {
+    // Group by direct_nonmedia_link and collect Block objects
+    if (ref.direct_nonmedia_link) {
+      const key = ref.direct_nonmedia_link;
+      acc[key] = acc[key] || [];
+      acc[key].push(ref.block);
+    }
 
-const allReferencesInPage = getReferencesInPage(post.PageId);
-const filteredReferences = allReferencesInPage.filter(ref => ref.external_hrefs.length > 0 || ref.direct_nonmedia_link);
+    // Group by each Href in external_hrefs and collect Block objects
+    ref.external_hrefs.forEach(richText => {
+      if (richText.Href) {
+        const key = richText.Href;
+        acc[key] = acc[key] || [];
+        acc[key].push(ref.block);
+      }
+    });
+
+    return acc;
+  }, {});
+
 
 ---
 
+{groupedReferences && (<div>
+Media Links In This Page
+  {Object.entries(groupedReferences).map(([entryId, blocks]) => (
+    <p key={entryId}>
+      Mentions {entryId} at {blocks.map((block, index) => `${index + 1}:${block.Id}`).join(' ')}
+    </p>
+  ))}
+</div>)}

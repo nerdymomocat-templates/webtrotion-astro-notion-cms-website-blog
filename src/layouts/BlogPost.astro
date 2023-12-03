@@ -53,9 +53,9 @@ const articleDate = new Date(post.Date).toISOString();
 			<!-- <div id="blog-hero"><BlogHero content={post} /></div> -->
 			<div class="mt-12">
 				<slot />
-				<hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />
-        {REFERENCES && <ReferencesSection post={post}/>}
         <hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />
+
+        {REFERENCES && <ReferencesSection post={post}/>}
 
 				<WebMentions />
 
