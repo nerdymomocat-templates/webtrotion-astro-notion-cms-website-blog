@@ -24,7 +24,7 @@ const getSite = function () {
   return new URL(BASE_PATH, 'http://localhost:4321').toString();
 };
 import CustomIconDownloader from './src/integrations/custom-icon-downloader';
-import FeaturedImageDownloader from './src/integrations/featured-image-downloader';
+import EntryCacheEr from './src/integrations/entry-cache-er';
 import PublicNotionCopier from './src/integrations/public-notion-copier';
 import buildTimestampRecorder from './src/integrations/build-timestamp-recorder.ts';
 import CSSWriter from './src/integrations/theme-constants-to-css';
@@ -57,7 +57,7 @@ export default defineConfig({
     applyBaseStyles: false
   }), prefetch(),
   // astroImageTools,
-  buildTimestampRecorder(), CustomIconDownloader(), FeaturedImageDownloader(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
+  buildTimestampRecorder(), CustomIconDownloader(), EntryCacheEr(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
     // Adds dataLayer.push as a forwarding-event.
     config: {
       forward: ["dataLayer.push"]
