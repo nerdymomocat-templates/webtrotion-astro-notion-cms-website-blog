@@ -175,7 +175,7 @@ npm run dev
 | CUSTOM_DOMAIN | If you want to host the site somewhere else |
 | BASE_PATH | Or subdomain inside the custom domain |
 | HTML_DIRECTIVE | Embed html code blocks that start with this line directly into the page |
-|REFERENCES| To show related pages, external links, and mentioned media at the end of the post. POPOVERS - not yet implemented to display a snippet when hovering over a post link in the body.|
+|REFERENCES| To show related pages, external links, and mentioned media at the end of the post. Set POPOVERS to true to display a snippet when hovering over a post link in the body.|
 | THEME | Colors for light mode and dark mode |
 | fontFamily-Google Fonts | Combined URL link for all fonts you want to use from google fonts. Remember to escape spaces in font names if needed |
 | NUMBER_OF_POSTS_PER_PAGE | Number of posts in a page for pagination purposes |
