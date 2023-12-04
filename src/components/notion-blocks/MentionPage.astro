@@ -5,7 +5,6 @@ import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION, REFERENCES } from "@/constants";
 import { textToAstroIcon } from "@/lib/style-helpers";
 import { Icon } from "astro-iconify";
-import NPagePopover from "../blog/references/NPagePopover.astro";
 
 export interface Props {
 	pageId: string;
@@ -21,49 +20,8 @@ if (pageId) {
 const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION):null;
 ---
 
-{    post && REFERENCES && REFERENCES["POPOVERS"] ? (
-        <span class="inline-flex items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
-            <NPagePopover linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title} postId={post.PageId} excerpt={post.Excerpt} spanTextTheming={""}>
-                {/* Shared content */}
-                <>
-				<span class="mx-1">
-					{post.Icon && post.Icon.Type === "emoji" ? (
-						post.Icon.Emoji
-					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class="inline h-4 w-4 flex-shrink-0 align-sub" />
-					) : textToAstroIcon("document") ? (
-						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
-					) : (
-						"📄"
-					)}
-				</span>
-				<span class="w-full">{post.Title}</span>
-
-				{textToAstroIcon("page-mention-ne-arrow") ? (
-					<Icon name={textToAstroIcon("page-mention-ne-arrow")} class="inline h-4 w-4" />
-				) : (
-					<svg
-						class="h-4 w-4"
-						aria-hidden="true"
-						xmlns="http://www.w3.org/2000/svg"
-						fill="none"
-						viewBox="0 0 14 10"
-					>
-						<path
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M1 5h12m0 0L9 1m4 4L9 9"
-						/>
-					</svg>
-				)}
-			</>
-
-            </NPagePopover>
-        </span>
-    ) : post ? (
-        <a href={getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)} class="inline-flex items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
+{    post && (
+        <a href={hreflink} class="inline-flex items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
             {/* Shared content */}
             <>
 				<span class="mx-1">
@@ -101,6 +59,6 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 			</>
 
         </a>
-    ) : null
+    )
 }
 

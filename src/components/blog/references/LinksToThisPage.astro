@@ -2,7 +2,6 @@
 import type { Block, Post } from '@/lib/interfaces';
 import NBlocksPopover from './NBlocksPopover.astro';
 import { getReferenceLink } from '@/lib/blog-helpers';
-import NPagePopover from './NPagePopover.astro';
 import { REFERENCES } from '@/constants';
 interface Props {
 	post: Post;
@@ -41,13 +40,9 @@ if (groupedReferences) {
           <div class="inline-block">
             {REFERENCES && REFERENCES["POPOVERS"] ? (
               <>
-                <NPagePopover
-                  linkedTo={entryIdLinksEntry[entryId][0]}
-                  popoverSpanText={entryIdLinksEntry[entryId][1].Title}
-                  popoverTitle={entryIdLinksEntry[entryId][1].Title}
-                  postId={entryId}
-                  excerpt={entryIdLinksEntry[entryId][1].Excerpt}
-                />
+              <a href={entryIdLinksEntry[entryId][0]} class="text-link underline decoration-wavy decoration-accent-2/20">
+                  {entryIdLinksEntry[entryId][1].Title}
+                </a>
                 {" at "}
                 {blocks.map((block, index) => (
                   <NBlocksPopover
