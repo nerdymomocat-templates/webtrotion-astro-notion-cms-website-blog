@@ -38,12 +38,13 @@ if (groupedReferences) {
       {Object.entries(groupedReferences).map(([entryId, blocks]) => (
         <div class="ml-2" key={entryId}>
           <div class="inline-block">
-            {REFERENCES && REFERENCES["POPOVERS"] ? (
-              <>
-              <a href={entryIdLinksEntry[entryId][0]} class="text-link underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
+            <a href={entryIdLinksEntry[entryId][0]} class="text-link underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
                   {entryIdLinksEntry[entryId][1].Title}
                 </a>
                 {" at "}
+            {REFERENCES && REFERENCES["POPOVERS"] ? (
+              <>
+
                 {blocks.map((block, index) => (
                   <NBlocksPopover
                     block={block}
@@ -56,12 +57,9 @@ if (groupedReferences) {
               </>
             ) : (
               <>
-                <a href={entryIdLinksEntry[entryId][0]} class="text-link">
-                  {entryIdLinksEntry[entryId][1].Title}
-                </a>
-                {" at "}
+
                 {blocks.map((block, index) => (
-                  <a key={block.Id} href={blockIdLinks[block.Id]} class="text-link font-mono">
+                  <a href={blockIdLinks[block.Id]} class="text-link font-mono">
                     {`[${index + 1}]`}
                   </a>
                 ))}

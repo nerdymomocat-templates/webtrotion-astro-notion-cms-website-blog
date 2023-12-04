@@ -121,14 +121,15 @@ if (groupedReferences && urlMap) {
         {Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
           <div key={hrefLink}>
             <div class="inline-block">
-              {REFERENCES && REFERENCES["POPOVERS"] ? (
-                <>
-                  <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
+              <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
                     {hrefMetaData[hrefLink].title.length > 35
                       ? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
                       : hrefMetaData[hrefLink].title}
                   </a>
                   {" at "}
+              {REFERENCES && REFERENCES["POPOVERS"] ? (
+                <>
+
                   {blocks.map((block, index) => (
                     <NBlocksPopover
                       block={block}
@@ -140,12 +141,6 @@ if (groupedReferences && urlMap) {
                 </>
               ) : (
                 <>
-                  <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
-                    {hrefMetaData[hrefLink].title.length > 35
-                      ? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
-                      : hrefMetaData[hrefLink].title}
-                  </a>
-                  {" at "}
                   {blocks.map((block, index) => (
                     <a href={blockIdLinks[block.Id]} class="text-link font-mono">
                       {`[${index + 1}]`}
