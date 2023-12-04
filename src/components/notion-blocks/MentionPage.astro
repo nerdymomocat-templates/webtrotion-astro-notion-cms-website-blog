@@ -30,7 +30,7 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class="inline relative h-4 w-4 flex-shrink-0 align-sub" />
+						<img src={post.Icon.Url} class="inline h-4 w-4 flex-shrink-0 align-sub" />
 					) : textToAstroIcon("document") ? (
 						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
 					) : (
