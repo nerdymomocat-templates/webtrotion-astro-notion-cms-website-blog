@@ -3,6 +3,7 @@ import type { Block, Post } from '@/lib/interfaces';
 import NBlocksPopover from './NBlocksPopover.astro';
 import { getReferenceLink } from '@/lib/blog-helpers';
 import NPagePopover from './NPagePopover.astro';
+import { REFERENCES } from '@/constants';
 interface Props {
 	post: Post;
   allReferencesToPage: { entryId: string, block: Block }[]
@@ -28,16 +29,53 @@ if (groupedReferences) {
 }
 
 ---
-{groupedReferences && Object.keys(groupedReferences).length>0 && (<div>
-  <span class="font-semibold underline decoration-wavy decoration-accent">Pages That Mention This Page</span>
-  {Object.entries(groupedReferences).map(([entryId, blocks]) => (
-    <div class="ml-2">
-    <div key={entryId} class="inline-block">
-      <NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
 
-       {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`} popoverTitle={entryIdLinksEntry[entryId][1].Title}/>{' '}</>))}
+{
+  groupedReferences && Object.keys(groupedReferences).length > 0 && (
+    <div>
+      <span class="font-semibold underline decoration-wavy decoration-accent">
+        Pages That Mention This Page
+      </span>
+      {Object.entries(groupedReferences).map(([entryId, blocks]) => (
+        <div class="ml-2" key={entryId}>
+          <div class="inline-block">
+            {REFERENCES && REFERENCES["POPOVERS"] ? (
+              <>
+                <NPagePopover
+                  linkedTo={entryIdLinksEntry[entryId][0]}
+                  popoverSpanText={entryIdLinksEntry[entryId][1].Title}
+                  popoverTitle={entryIdLinksEntry[entryId][1].Title}
+                  postId={entryId}
+                  excerpt={entryIdLinksEntry[entryId][1].Excerpt}
+                />
+                {" at "}
+                {blocks.map((block, index) => (
+                  <NBlocksPopover
+                    block={block}
+                    linkedTo={blockIdLinks[block.Id]}
+                    popoverSpanText={`[${index + 1}]`}
+                    popoverTitle={entryIdLinksEntry[entryId][1].Title}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                <a href={entryIdLinksEntry[entryId][0]} class="text-link">
+                  {entryIdLinksEntry[entryId][1].Title}
+                </a>
+                {" at "}
+                {blocks.map((block, index) => (
+                  <a key={block.Id} href={blockIdLinks[block.Id]} class="text-link">
+                    {`[${index + 1}]`}
+                  </a>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
-  </div>
-  ))}
-</div><br>)}
+    <br>
+  )
+}
 

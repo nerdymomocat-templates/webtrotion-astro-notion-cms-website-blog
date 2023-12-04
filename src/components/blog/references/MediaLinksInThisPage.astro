@@ -2,6 +2,7 @@
 import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
 import NBlocksPopover from './NBlocksPopover.astro';
 import { getReferenceLink } from '@/lib/blog-helpers';
+import { REFERENCES } from '@/constants';
 interface Props {
 	post: Post;
   filteredReferencesInPage: ReferencesInPage[];
@@ -35,14 +36,44 @@ filteredReferencesInPage.reduce((acc, ref) => {
 
 ---
 
-{groupedReferences && Object.keys(groupedReferences).length>0 && (<div>
-  <span class="font-semibold underline decoration-wavy decoration-accent">Media & Files On This Page</span>
-  {Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
-    <div class="ml-2">
-    <div key={dmltype} class="inline-block">
-      {dmltype} at {' '}
-       {blockdmls.map((blockdml, index) => (<><NBlocksPopover block={blockdml.block} linkedTo={blockIdLinks[blockdml.block.Id]} popoverSpanText={`[${index + 1}]`}/>{' '}</>))}
+{
+  groupedReferences && Object.keys(groupedReferences).length > 0 && (
+    <div>
+      <span class="font-semibold underline decoration-wavy decoration-accent">
+        Media & Files On This Page
+      </span>
+      {Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
+        <div class="ml-2" key={dmltype}>
+          <div class="inline-block">
+            {REFERENCES && REFERENCES["POPOVERS"] ? (
+              <>
+                {dmltype} at {' '}
+                {blockdmls.map((blockdml, index) => (
+                  <>
+                    <NBlocksPopover
+                      block={blockdml.block}
+                      linkedTo={blockIdLinks[blockdml.block.Id]}
+                      popoverSpanText={`[${index + 1}]`}
+                    />
+                    {' '}
+                  </>
+                ))}
+              </>
+            ) : (
+              <>
+                {dmltype} at {' '}
+                {blockdmls.map((blockdml, index) => (
+                  <a href={blockIdLinks[blockdml.block.Id]} class="text-link">
+                    {`[${index + 1}]`}
+                  </a>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      ))}
     </div>
-  </div>
-  ))}
-</div><br>)}
+    <br>
+  )
+}
+

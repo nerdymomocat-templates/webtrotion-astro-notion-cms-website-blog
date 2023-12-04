@@ -6,6 +6,7 @@ import metascraperImage from "metascraper-image";
 import metascraperTitle from "metascraper-title";
 import NBlocksPopover from "./NBlocksPopover.astro";
 import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
+import { REFERENCES } from "@/constants";
 interface Props {
 	post: Post;
 	filteredReferencesInPage: ReferencesInPage[];
@@ -36,7 +37,6 @@ const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.r
 
 const blockIdLinks = {};
 const urlList: URL[] = [];
-let hrefLinksToDel = [];
 const hrefMetaData = {};
 
 if (groupedReferences) {
@@ -45,23 +45,18 @@ if (groupedReferences) {
 		try {
 			url = new URL(hrefLink);
 			urlList.push(url);
-		} catch (err) {
-			console.log(err);
-			hrefLinksToDel.push(hrefLink);
-			continue;
-		}
-		for (const block of groupedReferences[hrefLink]) {
+      for (const block of groupedReferences[hrefLink]) {
 			const result = await getReferenceLink(post.PageId, undefined, block, true);
 			blockIdLinks[block.Id] = result[0];
 		}
+		} catch (err) {
+			console.log(err);
+			delete groupedReferences[hrefLink];
+			continue;
+		}
+
 	}
 }
-
-hrefLinksToDel.forEach((hrefLink) => {
-	delete groupedReferences[hrefLink];
-});
-
-hrefLinksToDel = [];
 
 const urlMap = await buildURLToHTMLMap(urlList);
 
@@ -81,24 +76,22 @@ if (groupedReferences && urlMap) {
 			if (html) {
 				metadata = await metascraper({ html, url });
 				if (!metadata || (metadata && !metadata.title)) {
-					hrefLinksToDel.push(hrefLink);
+					delete groupedReferences[hrefLink];
 					continue;
 				}
-				hrefMetaData[hrefLink] = metadata;
+				else {hrefMetaData[hrefLink] = metadata;}
 			}
+      else{
+        delete groupedReferences[hrefLink];
+      }
 		} catch (err) {
 			console.log(err);
-			hrefLinksToDel.push(hrefLink);
+			delete groupedReferences[hrefLink];
 			continue;
 		}
 	}
 }
-
-hrefLinksToDel.forEach((hrefLink) => {
-	delete groupedReferences[hrefLink];
-});
 ---
-
 {
 	groupedReferences && Object.keys(groupedReferences).length>0 && urlMap && (
 		<details class="toggle" id="external-links">
@@ -125,32 +118,49 @@ hrefLinksToDel.forEach((hrefLink) => {
 				</div>
 			</summary>
 			<div class="pl-2">
-				{Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
-					<div>
-						<div key={hrefLink} class="inline-block">
-							<a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
-								{hrefMetaData[hrefLink].title.length > 35
-									? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
-									: hrefMetaData[hrefLink].title}
-							</a>{" "}
-							at{" "}
-							{blocks.map((block, index) => (
-								<>
-									<NBlocksPopover
-										block={block}
-										linkedTo={blockIdLinks[block.Id]}
-										popoverSpanText={`[${index + 1}]`}
-									/>{" "}
-								</>
-							))}
-						</div>
-					</div>
-				))}
-			</div>
-		</details>
+        {Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
+          <div key={hrefLink}>
+            <div class="inline-block">
+              {REFERENCES && REFERENCES["POPOVERS"] ? (
+                <>
+                  <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
+                    {hrefMetaData[hrefLink].title.length > 35
+                      ? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
+                      : hrefMetaData[hrefLink].title}
+                  </a>
+                  {" at "}
+                  {blocks.map((block, index) => (
+                    <NBlocksPopover
+                      block={block}
+                      linkedTo={blockIdLinks[block.Id]}
+                      popoverSpanText={`[${index + 1}]`}
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
+                    {hrefMetaData[hrefLink].title.length > 35
+                      ? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
+                      : hrefMetaData[hrefLink].title}
+                  </a>
+                  {" at "}
+                  {blocks.map((block, index) => (
+                    <a href={blockIdLinks[block.Id]} class="text-link">
+                      {`[${index + 1}]`}
+                    </a>
+                  ))}
+                </>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </details>
     <br>
-	)
+  )
 }
+
 
 <style>
 	.toggle > summary > a {

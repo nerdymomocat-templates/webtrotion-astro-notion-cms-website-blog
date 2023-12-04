@@ -21,7 +21,7 @@ if (pageId) {
 const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION):null;
 ---
 
-{    post && REFERENCES && REFERENCES["BODY_LINK_POPUPS"] ? (
+{    post && REFERENCES && REFERENCES["POPOVERS"] ? (
         <span class="inline-flex items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
             <NPagePopover linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title} postId={post.PageId} excerpt={post.Excerpt}>
                 {/* Shared content */}
