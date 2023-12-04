@@ -36,6 +36,7 @@ const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainTe
 						title="YouTube video player"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
 						allowfullscreen
+            loading="lazy"
 					/>
 				) : (
 					<EmbedGeneric url={url} caption={plainTextCaption} />
