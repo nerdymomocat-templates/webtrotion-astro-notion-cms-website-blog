@@ -60,7 +60,7 @@ entryIdsToDel.forEach(entryId => {
 {
   groupedReferences && Object.keys(groupedReferences).length > 0 && (
     <div>
-      <span class="font-semibold underline decoration-wavy decoration-accent">
+      <span class="font-semibold">
         Other Pages Mentioned On This Page
       </span>
       {Object.entries(groupedReferences).map(([entryId, blocks]) => (
@@ -82,6 +82,7 @@ entryIdsToDel.forEach(entryId => {
                     block={block}
                     linkedTo={blockIdLinks[block.Id]}
                     popoverSpanText={`[${index + 1}]`}
+                    font = {"font-mono"}
                   />
                 ))}
               </>
@@ -90,7 +91,7 @@ entryIdsToDel.forEach(entryId => {
                 <a href={entryIdLinksEntry[entryId][0]} class="text-link">{entryIdLinksEntry[entryId][1].Title} </a>
                 {" at "}
                 {blocks.map((block, index) => (
-                  <a href={blockIdLinks[block.Id]} class="text-link">{`[${index + 1}]`} </a>
+                  <a href={blockIdLinks[block.Id]} class="text-link font-mono">{`[${index + 1}]`} </a>
                 ))}
               </>
             )}

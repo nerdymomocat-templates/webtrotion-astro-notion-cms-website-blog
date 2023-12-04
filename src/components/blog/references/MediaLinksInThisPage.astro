@@ -39,7 +39,7 @@ filteredReferencesInPage.reduce((acc, ref) => {
 {
   groupedReferences && Object.keys(groupedReferences).length > 0 && (
     <div>
-      <span class="font-semibold underline decoration-wavy decoration-accent">
+      <span class="font-semibold">
         Media & Files On This Page
       </span>
       {Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
@@ -47,13 +47,14 @@ filteredReferencesInPage.reduce((acc, ref) => {
           <div class="inline-block">
             {REFERENCES && REFERENCES["POPOVERS"] ? (
               <>
-                {dmltype} at {' '}
+                <span class="italic">{dmltype}</span> {' at '}
                 {blockdmls.map((blockdml, index) => (
                   <>
                     <NBlocksPopover
                       block={blockdml.block}
                       linkedTo={blockIdLinks[blockdml.block.Id]}
                       popoverSpanText={`[${index + 1}]`}
+                      font = {"font-mono"}
                     />
                     {' '}
                   </>
@@ -61,9 +62,9 @@ filteredReferencesInPage.reduce((acc, ref) => {
               </>
             ) : (
               <>
-                {dmltype} at {' '}
+              <span class="italic">{dmltype}</span> {' at '}
                 {blockdmls.map((blockdml, index) => (
-                  <a href={blockIdLinks[blockdml.block.Id]} class="text-link">
+                  <a href={blockIdLinks[blockdml.block.Id]} class="text-link font-mono">
                     {`[${index + 1}]`}
                   </a>
                 ))}

@@ -112,7 +112,7 @@ if (groupedReferences && urlMap) {
 					</svg>
 				</div>
 				<div>
-					<span class="font-semibold underline decoration-accent decoration-wavy">
+					<span class="font-semibold">
 						External Links On This Page
 					</span>
 				</div>
@@ -134,6 +134,7 @@ if (groupedReferences && urlMap) {
                       block={block}
                       linkedTo={blockIdLinks[block.Id]}
                       popoverSpanText={`[${index + 1}]`}
+                      font = {"font-mono"}
                     />
                   ))}
                 </>
@@ -146,7 +147,7 @@ if (groupedReferences && urlMap) {
                   </a>
                   {" at "}
                   {blocks.map((block, index) => (
-                    <a href={blockIdLinks[block.Id]} class="text-link">
+                    <a href={blockIdLinks[block.Id]} class="text-link font-mono">
                       {`[${index + 1}]`}
                     </a>
                   ))}

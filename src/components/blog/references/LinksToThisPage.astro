@@ -33,7 +33,7 @@ if (groupedReferences) {
 {
   groupedReferences && Object.keys(groupedReferences).length > 0 && (
     <div>
-      <span class="font-semibold underline decoration-wavy decoration-accent">
+      <span class="font-semibold">
         Pages That Mention This Page
       </span>
       {Object.entries(groupedReferences).map(([entryId, blocks]) => (
@@ -55,6 +55,7 @@ if (groupedReferences) {
                     linkedTo={blockIdLinks[block.Id]}
                     popoverSpanText={`[${index + 1}]`}
                     popoverTitle={entryIdLinksEntry[entryId][1].Title}
+                    font = {"font-mono"}
                   />
                 ))}
               </>
@@ -65,7 +66,7 @@ if (groupedReferences) {
                 </a>
                 {" at "}
                 {blocks.map((block, index) => (
-                  <a key={block.Id} href={blockIdLinks[block.Id]} class="text-link">
+                  <a key={block.Id} href={blockIdLinks[block.Id]} class="text-link font-mono">
                     {`[${index + 1}]`}
                   </a>
                 ))}
