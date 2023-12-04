@@ -14,7 +14,7 @@ const { block, headings, renderChildren = true } = Astro.props;
 ---
 
 <details class={`toggle ${convertToTailwindColor(block.Toggle.Color)}`} id={block.Id}>
-	<summary class="flex cursor-pointer list-none gap-2">
+	<summary class="flex cursor-pointer list-none list-image-none gap-2">
     <div>
     <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="none" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
       <polyline points="12 8 18 14 12 20"></polyline>
@@ -43,4 +43,7 @@ const { block, headings, renderChildren = true } = Astro.props;
 details[open] > summary > div >.flex-shrink-0.rotate-svg {
   transform: rotate(90deg);
 }
+summary::-webkit-details-marker {
+      display:none;
+   }
 </style>
