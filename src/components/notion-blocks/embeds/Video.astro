@@ -10,9 +10,10 @@ import { ENABLE_LIGHTBOX } from "@/constants";
 
 export interface Props {
 	block: interfaces.Block;
+  setId?:boolean;
 }
 
-const { block } = Astro.props;
+const { block, setId=true } = Astro.props;
 
 let url: URL | null = null;
 let videoUrl = "";
@@ -25,7 +26,7 @@ if (block.Video.External) {
 const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainText).join(' ');
 ---
 
-<div class="video relative">
+<div class="video relative" id={setId?block.Id:undefined}>
 	{
 		videoUrl &&
 			(url ? (

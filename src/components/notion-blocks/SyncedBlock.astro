@@ -6,9 +6,10 @@ export interface Props {
   block: interfaces.Block;
   headings: interfaces.Block[];
   renderChildren?: boolean; // Make this optional
+  setId?:boolean;
 }
 
-const { block, headings, renderChildren = true } = Astro.props;
+const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<NotionBlocks blocks={block.SyncedBlock.Children} headings={headings} renderChildren={renderChildren} />
+<NotionBlocks blocks={block.SyncedBlock.Children} headings={headings} renderChildren={renderChildren} setId={setId} />

@@ -9,9 +9,10 @@ import Caption from "../Caption.astro";
 export interface Props {
 	block: interfaces.Block;
 	urlMap: { [key: string]: string };
+  setId?:boolean;
 }
 
-const { block, urlMap } = Astro.props;
+const { block, urlMap, setId=true } = Astro.props;
 
 const urlString = (block.Bookmark || block.LinkPreview || block.Embed).Url;
 const metascraper = createMetascraper([
@@ -33,7 +34,7 @@ try {
 }
 ---
 
-<div class="bookmark pb-2">
+<div class="bookmark pb-2" id={setId?block.Id:undefined}>
 	{
 		url && (
 			<div class="flex w-full max-w-full overflow-hidden text-sm">

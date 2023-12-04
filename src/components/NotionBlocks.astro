@@ -31,10 +31,11 @@ export interface Props {
 	isRoot?: boolean;
 	level?: number;
 	headings?: interfaces.Block[];
-  renderChildren?: boolean
+  renderChildren?: boolean;
+  setId?:boolean;
 }
 
-const { blocks: rawBlocks, isRoot = false, level = 1, headings: rawHeadings = [], renderChildren=true } = Astro.props;
+const { blocks: rawBlocks, isRoot = false, level = 1, headings: rawHeadings = [], renderChildren=true, setId=true } = Astro.props;
 
 const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 	const isBulletedListItem = block.Type === "bulleted_list_item";
@@ -110,54 +111,54 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 	blocks.map((block: interfaces.Block) => {
 		switch (block.Type) {
 			case "paragraph":
-				return <Paragraph block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Paragraph block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "heading_1":
-				return <Heading1 block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Heading1 block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "heading_2":
-				return <Heading2 block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Heading2 block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "heading_3":
-				return <Heading3 block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Heading3 block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "table_of_contents":
-				return <TableOfContents block={block} headings={headings}/>;
+				return <TableOfContents block={block} headings={headings} setId={setId}/>;
 			case "image":
-				return <NImage block={block}/>;
+				return <NImage block={block} setId={setId}/>;
 			case "video":
-				return <Video block={block} />;
+				return <Video block={block} setId={setId}/>;
 			case "audio":
-				return <NAudio block={block} />;
+				return <NAudio block={block} setId={setId}/>;
 			case "code":
-				return <NCode block={block} />;
+				return <NCode block={block} setId={setId}/>;
 			case "quote":
-				return <Quote block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Quote block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "equation":
-				return <Equation block={block} />;
+				return <Equation block={block} setId={setId}/>;
 			case "callout":
-				return <Callout block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Callout block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "embed":
-				return <Embed block={block} urlMap={bookmarkURLMap}  />;
+				return <Embed block={block} urlMap={bookmarkURLMap}  setId={setId}/>;
 			case "bookmark":
 			case "link_preview":
-				return <Bookmark block={block} urlMap={bookmarkURLMap} />;
+				return <Bookmark block={block} urlMap={bookmarkURLMap} setId={setId}/>;
 			case "divider":
 				return <Divider />;
 			case "table":
-				return <Table block={block} />;
+				return <Table block={block} setId={setId}/>;
 			case "column_list":
-				return <ColumnList block={block} headings={headings}renderChildren={renderChildren} />;
+				return <ColumnList block={block} headings={headings}renderChildren={renderChildren} setId={setId}/>;
 			case "bulleted_list":
-				return <BulletedListItems block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <BulletedListItems block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "numbered_list":
-				return <NumberedListItems block={block} level={level} headings={headings} renderChildren={renderChildren}/>;
+				return <NumberedListItems block={block} level={level} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "to_do_list":
-				return <ToDo block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <ToDo block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "synced_block":
-				return <SyncedBlock block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <SyncedBlock block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "toggle":
-				return <Toggle block={block} headings={headings} renderChildren={renderChildren}/>;
+				return <Toggle block={block} headings={headings} renderChildren={renderChildren} setId={setId}/>;
 			case "file":
-				return <File block={block} />;
+				return <File block={block} setId={setId} />;
 			case "link_to_page":
-				return <LinkToPage block={block} />;
+				return <LinkToPage block={block} setId={setId}/>;
 		}
 		return null;
 	})

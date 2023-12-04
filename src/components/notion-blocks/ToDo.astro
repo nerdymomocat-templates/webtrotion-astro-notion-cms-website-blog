@@ -8,12 +8,13 @@ export interface Props {
   block: interfaces.Block;
   headings: interfaces.Block[];
   renderChildren?: boolean; // Make this optional
+  setId?:boolean;
 }
 
-const { block, headings, renderChildren = true } = Astro.props;
+const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<div class="to-do pl-2 leading-7" id={block.Id}>
+<div class="to-do pl-2 leading-7" id={setId?block.Id:undefined}>
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
@@ -47,7 +48,7 @@ const { block, headings, renderChildren = true } = Astro.props;
 					{b.HasChildren && renderChildren && (
 						<div class="mt-1">
 							{/* Margin for spacing between the to-do and its children */}
-							<NotionBlocks blocks={b.ToDo.Children} headings={headings} />
+							<NotionBlocks blocks={b.ToDo.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>
 						</div>
 					)}
 				</div>

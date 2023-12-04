@@ -8,11 +8,12 @@ export interface Props {
   block: interfaces.Block;
   headings: interfaces.Block[];
   renderChildren?: boolean; // Make this optional
+  setId?:boolean;
 }
 
-const { block, headings, renderChildren = true } = Astro.props;
+const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
-<div class={`callout flex my-2 mx-auto py-4 px-3 w-full leading-6 rounded border ${convertToTailwindColor(block.Callout.Color)} ${convertToTailwindColorForBorder(block.Callout.Color)}`} id={block.Id}>
+<div class={`callout flex my-2 mx-auto py-4 px-3 w-full leading-6 rounded border ${convertToTailwindColor(block.Callout.Color)} ${convertToTailwindColorForBorder(block.Callout.Color)}`} id={setId?block.Id:undefined}>
     <div class="m-0 leading-6 mr-2">
         {
             block.Callout.Icon.Type === "emoji" ? (
@@ -28,6 +29,6 @@ const { block, headings, renderChildren = true } = Astro.props;
                 <RichText richText={richText}  blockID={block.Id} />
             ))
         }
-        {block.Callout.Children && renderChildren && <NotionBlocks blocks={block.Callout.Children} headings={headings} />}
+        {block.Callout.Children && renderChildren && <NotionBlocks blocks={block.Callout.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>}
     </div>
 </div>

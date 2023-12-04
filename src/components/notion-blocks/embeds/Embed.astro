@@ -25,8 +25,9 @@ import GoogleMapsEmbed from './GoogleMapsEmbed.astro';
 export interface Props {
   block: interfaces.Block
   urlMap: { [key: string]: string }
+  setId?:boolean;
 }
-const { block, urlMap } = Astro.props
+const { block, urlMap, setId=true } = Astro.props
 let url: URL
 try {
   url = new URL(block.Embed.Url)
@@ -36,7 +37,7 @@ try {
 const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(' ');
 
 ---
-<div class="embedded-info pb-2" id={block.Id}>
+<div class="embedded-info pb-2" id={setId?block.Id:undefined}>
 {
   url ? (
     isTweetURL(url) ? (

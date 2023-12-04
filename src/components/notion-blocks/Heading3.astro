@@ -5,12 +5,13 @@ import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 
 const id = buildHeadingId(block.Heading3);
 ---
@@ -36,11 +37,11 @@ const id = buildHeadingId(block.Heading3);
 				</div>
 				<a
 					class="inline"
-					href={`#${id}`}
-					id={id}
+					href={setId ? `#${id}` : undefined}
+					id={setId ? id : undefined}
 					onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${this.id}`; navigator.clipboard.writeText(fullUrl); this.closest('details').open = !this.closest('details').open;"
 				>
-					<h4 class="toggle-h4 mb-4 mt-8 inline text-lg">
+					<h4 class={`toggle-h4 mb-4 mt-8 inline text-lg ${setId ? "hasId" : "noId"}`}>
 						{block.Heading3.RichTexts.map((richText: interfaces.RichText) => (
 							<RichText richText={richText} blockID={block.Id} />
 						))}
@@ -49,18 +50,23 @@ const id = buildHeadingId(block.Heading3);
 			</summary>
 			<div class="pl-10">
 				{block.Heading3.Children && renderChildren && (
-					<NotionBlocks blocks={block.Heading3.Children} headings={headings} />
+					<NotionBlocks
+						blocks={block.Heading3.Children}
+						headings={headings}
+						renderChildren={renderChildren}
+						setId={setId}
+					/>
 				)}
 			</div>
 		</details>
 	) : (
 		<a
-			href={`#${id}`}
-			id={id}
+			href={setId ? `#${id}` : undefined}
+			id={setId ? id : undefined}
 			class="inline"
 			onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);"
 		>
-			<h4 class="mb-4 mt-8 text-lg font-normal">
+			<h4 class={`mb-4 mt-8 text-lg font-normal ${setId ? "hasId" : "noId"}`}>
 				{block.Heading3.RichTexts.map((richText: interfaces.RichText) => (
 					<RichText richText={richText} blockID={block.Id} />
 				))}
@@ -70,7 +76,7 @@ const id = buildHeadingId(block.Heading3);
 }
 
 <style>
-	h4::before {
+	h4.hasId::before {
 		content: "#";
 		position: absolute;
 		color: rgb(var(--theme-accent));
@@ -79,17 +85,20 @@ const id = buildHeadingId(block.Heading3);
 		opacity: 0; /* Start with invisible content */
 		transition: opacity 0.3s ease; /* Transition the opacity */
 	}
+	h4.noId::before {
+		display: none;
+	}
 
-	h4:hover::before {
+	h4.hasId:hover::before {
 		opacity: 1; /* Make the content visible on hover */
 	}
-	h4.toggle-h4::before {
+	h4.hasId.toggle-h4::before {
 		margin-left: -2.5rem;
 	}
 	details[open] > summary > div > .flex-shrink-0.rotate-svg {
 		transform: rotate(90deg);
 	}
-  summary::-webkit-details-marker {
-      display:none;
-   }
+	summary::-webkit-details-marker {
+		display: none;
+	}
 </style>

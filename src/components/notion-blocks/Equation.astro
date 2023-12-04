@@ -4,13 +4,14 @@ import * as interfaces from "../../lib/interfaces.ts";
 
 export interface Props {
 	block: interfaces.Block;
+  setId?:boolean;
 }
 
-const { block } = Astro.props;
+const { block, setId=true  } = Astro.props;
 ---
 
 <div
-	class="equation text-center" id={block.Id}
+	class="equation text-center" id={setId?block.Id:undefined}
 	set:html={katex.renderToString(block.Equation.Expression, {
 		throwOnError: false,
 	})}

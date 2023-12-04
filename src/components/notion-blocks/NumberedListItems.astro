@@ -9,14 +9,15 @@ export interface Props {
 	level: number;
 	headings: interfaces.Block[];
   renderChildren?: boolean; // Make this optional
+  setId?:boolean;
 }
 
-const { block, level, headings, renderChildren = true  } = Astro.props;
+const { block, level, headings, renderChildren = true, setId=true   } = Astro.props;
 
 const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 ---
 
-<div class="numbered-list" id={block.Id}>
+<div class="numbered-list" id={setId?block.Id:undefined}>
 	<ol
 		class="list-outside space-y-1 pl-6"
 		style={`list-style-type: ${listTypes[level % 3]} !important;`}
@@ -33,6 +34,7 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 								blocks={b.NumberedListItem.Children}
 								level={level + 1}
 								headings={headings}
+                renderChildren={renderChildren} setId={setId}
 							/>
 						)}
 					</li>

@@ -6,16 +6,17 @@ export interface Props {
   block: interfaces.Block;
   headings: interfaces.Block[];
   renderChildren?: boolean; // Make this optional
+  setId?:boolean;
 }
 
-const { block, headings, renderChildren = true } = Astro.props;
+const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
 <div class="flex flex-wrap w-full mx-auto my-4 gap-x-4 md:flex-nowrap">
   {
     block.ColumnList.Columns.map((column: interfaces.Column) => (
       <div  class="ncolumns flex-1 min-w-[180px] w-[180px] md:w-auto">
-        <NotionBlocks blocks={column.Children} headings={headings} renderChildren={renderChildren}/>
+        <NotionBlocks blocks={column.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>
       </div>
     ))
   }

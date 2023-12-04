@@ -8,9 +8,10 @@ import Caption from "../Caption.astro";
 
 export interface Props {
 	block: interfaces.Block;
+  setId?:boolean;
 }
 
-const { block } = Astro.props;
+const { block, setId=true } = Astro.props;
 
 let image = "";
 if (block.NImage?.External) {
@@ -23,7 +24,7 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
 
 ---
 
-<figure class="flex mx-auto mt-1">
+<figure class="flex mx-auto mt-1" id={setId?block.Id:undefined}>
   {
       image && (
           <div class="mx-auto">
