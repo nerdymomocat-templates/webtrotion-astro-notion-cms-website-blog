@@ -1,55 +1,162 @@
 ---
-import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
-import NBlocksPopover from './NBlocksPopover.astro';
-import { getReferenceLink } from '@/lib/blog-helpers';
+import type { Block, Post, ReferencesInPage } from "@/lib/interfaces";
+import createMetascraper from "metascraper";
+import metascraperDescription from "metascraper-description";
+import metascraperImage from "metascraper-image";
+import metascraperTitle from "metascraper-title";
+import NBlocksPopover from "./NBlocksPopover.astro";
+import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
 interface Props {
 	post: Post;
-  filteredReferencesInPage: ReferencesInPage[];
+	filteredReferencesInPage: ReferencesInPage[];
 }
 const { post, filteredReferencesInPage } = Astro.props;
-const groupedReferences: { [key: string]: Block[] } =
-filteredReferencesInPage.reduce((acc, ref) => {
-    // Group by direct_nonmedia_link and collect Block objects
-    if (ref.direct_nonmedia_link) {
-      const key = ref.direct_nonmedia_link;
-      acc[key] = acc[key] || [];
-      acc[key].push(ref.block);
-    }
+const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.reduce(
+	(acc, ref) => {
+		// Group by direct_nonmedia_link and collect Block objects
+		if (ref.direct_nonmedia_link && !ref.direct_nonmedia_link.includes("tiktok.com")) {
+			const key = ref.direct_nonmedia_link;
+			acc[key] = acc[key] || [];
+			acc[key].push(ref.block);
+		}
 
-    // Group by each Href in external_hrefs and collect Block objects
-    ref.external_hrefs.forEach(richText => {
-      if (richText.Href) {
-        const key = richText.Href;
-        acc[key] = acc[key] || [];
-        acc[key].push(ref.block);
-      }
-    });
+		// Group by each Href in external_hrefs and collect Block objects
+		ref.external_hrefs.forEach((richText) => {
+			if (richText.Href && !richText.Href.includes("tiktok.com")) {
+				const key = richText.Href;
+				acc[key] = acc[key] || [];
+				acc[key].push(ref.block);
+			}
+		});
 
-    return acc;
-  }, {});
+		return acc;
+	},
+	{},
+);
 
-  const blockIdLinks = {};
-  if (groupedReferences) {
-  for (const hrefLink of Object.keys(groupedReferences)) {
-    for (const block of groupedReferences[hrefLink]) {
-      const result = await getReferenceLink(post.PageId, undefined, block, true);
-      blockIdLinks[block.Id] = result[0];
-    }
-  }
+const blockIdLinks = {};
+const urlList: URL[] = [];
+let hrefLinksToDel = [];
+const hrefMetaData = {};
+
+if (groupedReferences) {
+	for (const hrefLink of Object.keys(groupedReferences)) {
+		let url: URL;
+		try {
+			url = new URL(hrefLink);
+			urlList.push(url);
+		} catch (err) {
+			console.log(err);
+			hrefLinksToDel.push(hrefLink);
+			continue;
+		}
+		for (const block of groupedReferences[hrefLink]) {
+			const result = await getReferenceLink(post.PageId, undefined, block, true);
+			blockIdLinks[block.Id] = result[0];
+		}
+	}
 }
 
+hrefLinksToDel.forEach((hrefLink) => {
+	delete groupedReferences[hrefLink];
+});
 
+hrefLinksToDel = [];
 
+const urlMap = await buildURLToHTMLMap(urlList);
+
+const metascraper = createMetascraper([
+	metascraperTitle(),
+	metascraperImage(),
+	metascraperDescription(),
+]);
+
+if (groupedReferences && urlMap) {
+	for (const hrefLink of Object.keys(groupedReferences)) {
+		let url: URL;
+		let metadata: Record<string, string>;
+		try {
+			url = new URL(hrefLink);
+			const html = urlMap[hrefLink];
+			if (html) {
+				metadata = await metascraper({ html, url });
+				if (!metadata || (metadata && !metadata.title)) {
+					hrefLinksToDel.push(hrefLink);
+					continue;
+				}
+				hrefMetaData[hrefLink] = metadata;
+			}
+		} catch (err) {
+			console.log(err);
+			hrefLinksToDel.push(hrefLink);
+			continue;
+		}
+	}
+}
+
+hrefLinksToDel.forEach((hrefLink) => {
+	delete groupedReferences[hrefLink];
+});
 ---
 
-{groupedReferences && (<div>
-  External Links In This Page
-  {Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
-    <div>
-    <div key={hrefLink} class="inline-block">
-      Mentions {' '}{hrefLink} at {' '}
-       {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`}/>{' '}</>))}
-    </div>
-  </div>
-  ))}
-</div>)}
+{
+	groupedReferences && Object.keys(groupedReferences).length>0 && urlMap && (
+		<details class="toggle" id="external-links">
+			<summary class="flex cursor-pointer list-none list-outside gap-2">
+				<div class="-ml-7">
+					<svg
+						class="rotate-svg flex-shrink-0 transition-all duration-300"
+						fill="none"
+						height="20"
+						width="20"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						viewBox="0 0 24 24"
+					>
+						<polyline points="12 8 18 14 12 20" />
+					</svg>
+				</div>
+				<div>
+					<span class="font-semibold underline decoration-accent decoration-wavy">
+						External Links On This Page
+					</span>
+				</div>
+			</summary>
+			<div class="pl-2">
+				{Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
+					<div>
+						<div key={hrefLink} class="inline-block">
+							<a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
+								{hrefMetaData[hrefLink].title.length > 35
+									? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
+									: hrefMetaData[hrefLink].title}
+							</a>{" "}
+							at{" "}
+							{blocks.map((block, index) => (
+								<>
+									<NBlocksPopover
+										block={block}
+										linkedTo={blockIdLinks[block.Id]}
+										popoverSpanText={`[${index + 1}]`}
+									/>{" "}
+								</>
+							))}
+						</div>
+					</div>
+				))}
+			</div>
+		</details>
+    <br>
+	)
+}
+
+<style>
+	.toggle > summary > a {
+		display: inline;
+	}
+	details[open] > summary > div > .flex-shrink-0.rotate-svg {
+		transform: rotate(90deg);
+	}
+</style>

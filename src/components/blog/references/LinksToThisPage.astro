@@ -28,16 +28,16 @@ if (groupedReferences) {
 }
 
 ---
-{groupedReferences && (<div>
-  Related Pages
+{groupedReferences && Object.keys(groupedReferences).length>0 && (<div>
+  <span class="font-semibold underline decoration-wavy decoration-accent">Pages That Mention This Page</span>
   {Object.entries(groupedReferences).map(([entryId, blocks]) => (
-    <div>
+    <div class="ml-2">
     <div key={entryId} class="inline-block">
-      Mentioned in {' '}<NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
+      <NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
 
        {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`} popoverTitle={entryIdLinksEntry[entryId][1].Title}/>{' '}</>))}
     </div>
   </div>
   ))}
-</div>)}
+</div><br>)}
 

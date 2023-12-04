@@ -18,7 +18,7 @@ const toc = generateToc(headings);
 		!!toc.length && (
 			<>
 				<h2 class="font-semibold text-accent">Table of Contents</h2>
-				<ul class="mt-4 text-xs">
+				<ul class="mt-4 text-sm">
 					{toc.map((heading) => (
 						<TOCHeading heading={heading} />
 					))}

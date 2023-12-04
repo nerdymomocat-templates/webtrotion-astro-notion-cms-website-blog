@@ -1,5 +1,5 @@
 ---
-import type { Post, ReferencesInPage } from '@/lib/interfaces';
+import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
 import NBlocksPopover from './NBlocksPopover.astro';
 import { getReferenceLink } from '@/lib/blog-helpers';
 interface Props {
@@ -8,39 +8,41 @@ interface Props {
 }
 const { post, filteredReferencesInPage } = Astro.props;
 
-const groupedReferences: { [key: string]: Block[] } =
+const groupedReferences: { [key: string]: {block:Block, dml:string}[] } =
 filteredReferencesInPage.reduce((acc, ref) => {
     // Group by direct_nonmedia_link and collect Block objects
     if (ref.direct_media_link) {
-      const key = ref.direct_media_link;
+      // const key = ref.direct_media_link;
+      let key= null;
+      key = ref.block.Video? "Videos":(ref.block.NImage?"Images":(ref.block.NAudio?"Audio":"Files"))
       acc[key] = acc[key] || [];
-      acc[key].push(ref.block);
+      acc[key].push({block:ref.block, dml:ref.direct_media_link});
     }
     return acc;
   }, {});
 
   const blockIdLinks = {};
   if (groupedReferences) {
-  for (const dml of Object.keys(groupedReferences)) {
-    for (const block of groupedReferences[dml]) {
-      const result = await getReferenceLink(post.PageId, undefined, block, true);
-      blockIdLinks[block.Id] = result[0];
+  for (const dmltype of Object.keys(groupedReferences)) {
+    for (const blockdml of groupedReferences[dmltype]) {
+      const result = await getReferenceLink(post.PageId, undefined, blockdml.block, true);
+      blockIdLinks[blockdml.block.Id] = result[0];
     }
   }
 }
 
-
+// console.log(groupedReferences);
 
 ---
 
-{groupedReferences && (<div>
-  Media Links In This Page
-  {Object.entries(groupedReferences).map(([dml, blocks]) => (
-    <div>
-    <div key={dml} class="inline-block">
-      Mentions {' '}{dml} at {' '}
-       {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`}/>{' '}</>))}
+{groupedReferences && Object.keys(groupedReferences).length>0 && (<div>
+  <span class="font-semibold underline decoration-wavy decoration-accent">Media & Files On This Page</span>
+  {Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
+    <div class="ml-2">
+    <div key={dmltype} class="inline-block">
+      {dmltype} at {' '}
+       {blockdmls.map((blockdml, index) => (<><NBlocksPopover block={blockdml.block} linkedTo={blockIdLinks[blockdml.block.Id]} popoverSpanText={`[${index + 1}]`}/>{' '}</>))}
     </div>
   </div>
   ))}
-</div>)}
+</div><br>)}

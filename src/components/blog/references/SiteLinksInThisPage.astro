@@ -58,17 +58,17 @@ entryIdsToDel.forEach(entryId => {
 ---
 
 
-{groupedReferences && (<div>
-  Posts Mentioned In This Page
+{groupedReferences && Object.keys(groupedReferences).length>0 && (<div>
+  <span class="font-semibold underline decoration-wavy decoration-accent">Other Pages Mentioned On This Page</span>
   {Object.entries(groupedReferences).map(([entryId, blocks]) => (
-    <div>
+    <div class="ml-2">
     <div key={entryId} class="inline-block">
-      Mentions {' '}<NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
+      <NPagePopover linkedTo={entryIdLinksEntry[entryId][0]} popoverSpanText={entryIdLinksEntry[entryId][1].Title} popoverTitle={entryIdLinksEntry[entryId][1].Title} postId={entryId} excerpt={entryIdLinksEntry[entryId][1].Excerpt}/> at {' '}
 
        {blocks.map((block, index) => (<><NBlocksPopover block={block} linkedTo={blockIdLinks[block.Id]} popoverSpanText={`[${index + 1}]`} />{' '}</>))}
     </div>
   </div>
   ))}
-</div>)}
+</div><br>)}
 
 
