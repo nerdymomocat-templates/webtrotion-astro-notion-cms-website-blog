@@ -20,7 +20,7 @@ const { block, headings, renderChildren = true } = Astro.props;
 				<div key={index} class="mb-2" id={b.Id}>
 					<div class={`flex items-start ${convertToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
-						<div class="pr-2 pt-1">
+						<div class="pr-2">
 							{/* Padding for the checkbox */}
 							<input
 								type="checkbox"
