@@ -1,14 +1,16 @@
 ---
 import PageLayout from "../layouts/Base.astro";
 // import PostPreview from "../components/blog/PostPreview.astro";
-import { getAllPages, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks } from "../lib/blog-helpers";
+import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
+import { extractTargetBlocks, getNavLink } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
 
 // import { siteConfig } from "@/site-config";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE } from "@/constants";
+import PostPreview from "@/components/blog/PostPreview.astro";
 
 export async function getStaticPaths() {
 	const pages = await getAllPages();
@@ -60,9 +62,22 @@ if (pageFound) {
 
 	const processedFile = await processFileBlocks(fileAtacchedBlocks);
 }
+
+let recent_posts = null;
+if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
+{
+  recent_posts = await getAllPosts();
+  recent_posts = recent_posts.filter((post) => !FULL_PREVIEW_COLLECTIONS.includes(post.Collection));
+  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+    recent_posts = recent_posts.filter((post) => !post.Slug.startsWith("_"));
+		}
+    recent_posts = recent_posts.slice(0, 5); // Slice to get only the first five posts
+}
 ---
 
-{pageFound &&(<script>
+{pageFound &&(
+  <>
+  <script>
 	const scrollBtn = document.getElementById("to-top-btn") as HTMLButtonElement;
 	const targetHeader = document.getElementById("blog-hero") as HTMLDivElement;
 
@@ -95,7 +110,38 @@ if (pageFound) {
 			</div>
 		</article>
 	</div>
-</PageLayout>
+{RECENT_POSTS_ON_HOME_PAGE && recent_posts && (
+  <div>
+    <a href="#auto-recent-posts" id="auto-recent-posts" class="inline" onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);">
+            <h2 class="mb-4 mt-8 text-2xl font-normal hasId"><strong class="font-semibold">Recent Posts</strong></h2></a>
+
+		<section aria-label="Recent posts list">
+
+			<ul class="space-y-8 text-start">
+				{
+					recent_posts.map((post) =>
+							<li class="flex flex-col flex-wrap gap-2 [&_q]:basis-full">
+								<PostPreview post={post} as="h3" withDesc />
+							</li>
+						,
+					)
+				}
+			</ul>
+      <span class="mt-4 block sm:text-end">
+						<a
+							class="sm:hover:text-accent"
+							href={getNavLink("/posts/")}
+							aria-label="View all posts"
+						>
+							View all →
+						</a>
+					</span>
+		</section>
+  </div>
+
+        )}
+      </PageLayout>
+
 <button
 	id="to-top-btn"
 	class="z-90 fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
@@ -113,4 +159,6 @@ if (pageFound) {
 	>
 		<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 	</svg>
-</button>)}
+</button>
+</>
+)}

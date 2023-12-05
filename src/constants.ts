@@ -58,3 +58,5 @@ export const LAST_BUILD_TIME = readBuildStartTime();
 console.log('Last Build Start Time:', LAST_BUILD_TIME);
 
 export const REFERENCES = key_value_from_json["REFERENCES"] || null;
+
+export const RECENT_POSTS_ON_HOME_PAGE = key_value_from_json["RECENT_POSTS_ON_HOME_PAGE"] || false;
