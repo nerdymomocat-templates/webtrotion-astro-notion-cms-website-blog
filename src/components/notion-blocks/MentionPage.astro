@@ -21,21 +21,20 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 ---
 
 {    post && (
-        <a href={hreflink} class="inline-flex items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
-            {/* Shared content */}
+        <a href={hreflink} class="inline items-center justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
             <>
-				<span class="mx-1">
+				<span class="mx-1 inline">
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class="relative h-4 w-4 flex-shrink-0 align-sub" />
+						<img src={post.Icon.Url} class="relative h-4 w-4 flex-shrink-0 align-sub inline" />
 					) : textToAstroIcon("document") ? (
 						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
 					) : (
 						"📄"
 					)}
 				</span>
-				<span class="w-full">{post.Title}</span>
+				<span class="w-full inline">{post.Title}</span>
 
 				{textToAstroIcon("page-mention-ne-arrow") ? (
 					<Icon name={textToAstroIcon("page-mention-ne-arrow")} class="inline h-4 w-4" />

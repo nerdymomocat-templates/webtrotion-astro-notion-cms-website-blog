@@ -120,7 +120,7 @@ const _filterRichTexts = (postId: string, block: Block, rich_texts: RichText[]):
     return acc;
   }, [] as RichText[]) || [],
   external_hrefs: rich_texts.reduce((acc, richText) => {
-    if (!richText.InternalHref && richText.Href) {
+    if (!richText.InternalHref && !richText.Mention && richText.Href) {
       acc.push(richText);
     }
     return acc;
