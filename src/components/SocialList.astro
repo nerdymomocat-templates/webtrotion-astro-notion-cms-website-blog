@@ -27,7 +27,7 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 				link: value,
 			};
 		})
-		.filter((link) => link.link); // Filter out empty links
+		.filter((link) => link.link && link.link!=="mailto:"); // Filter out empty links
 };
 
 const socialLinks = mapSocialLinks(socials_links);
