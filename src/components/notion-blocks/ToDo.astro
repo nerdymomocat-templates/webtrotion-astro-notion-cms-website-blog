@@ -35,13 +35,13 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 							{b.ToDo.RichTexts.map((richText: interfaces.RichText) => {
 								if (b.ToDo.Checked) {
 									return (
-										<span class="block line-through decoration-slate-500/50">
+										<span class="line-through decoration-slate-500/50">
 											{/* Block element for the text */}
 											<RichText richText={richText} blockID={b.Id} />
 										</span>
 									);
 								}
-								return <RichText richText={richText} blockID={b.Id} class="block" />;
+								return <RichText richText={richText} blockID={b.Id}/>;
 							})}
 						</div>
 					</div>
