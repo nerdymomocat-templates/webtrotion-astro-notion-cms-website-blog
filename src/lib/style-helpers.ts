@@ -50,12 +50,50 @@ export const convertToTailwindColorForBorder = (s: string) => {
     'purple-background': 'border-purple-200 dark:border-purple-800',
     'pink-background': 'border-pink-200 dark:border-pink-800',
     'red-background': 'border-red-200 dark:border-red-800',
-    'default-background': 'border-gray-200 dark:border-gray-800',
+    'default-background': 'border-gray-200 dark:border-gray-700',
+    'default': 'border-gray-200 dark:border-gray-700'
   };
 
   // Return the Tailwind color classes, defaulting to the input if no mapping is found
   return colorMap[kebabCase];
 };
+
+export const iconCssFilter = (iconUrl: string): string | null | undefined => {
+  // Regular expression to match the pattern:
+  // (1) Any characters after the last underscore
+  // (2) Ending with ".svg"
+  const regex = /_([^.]+)\.svg$/;
+  const match = iconUrl.match(regex);
+
+  // If a match is found, return the captured group, which is the color part.
+  // Otherwise, return null if no match is found.
+  return match ? match[1] : null;
+}
+
+export const generateIconTailwindFilterStyle = (url: string): string => {
+  // if (!url.startsWith('https://www.notion.so/icons/')) {
+  //       return '';
+  //   }
+
+  const ncolors = ["gray", "lightgray", "brown", "yellow", "orange", "green", "blue", "purple", "pink","red"]
+
+  // Extract the color name from the URL using regex
+  const regex = /_([^.]+)\.svg$/;
+  const match = url.match(regex);
+  const colorName = match ? match[1] : null;
+
+  if (colorName && ncolors.includes(colorName)) {
+      // return `dark:hue-rotate-${colorName} dark:saturate-${colorName} dark:brightness-${colorName}`;
+      let hueT = 'dark:hue-rotate-0';
+      let saturateT = 'dark:saturate-100';
+      let brightnessT = 'dark:brightness-100';
+      if (colorName=="lightgray") {hueT='dark:-hue-rotate-30'; saturateT='dark:saturate-0';}
+      if (colorName=="gray") {hueT='dark:-hue-rotate-60'; saturateT='dark:saturate-0'; brightnessT = 'dark:brightness-150'}
+      return hueT+" "+saturateT+" "+brightnessT;
+    }
+  return "";
+}
+
 
 export const textToAstroIcon = (text: string) => {
   const textIconMap = {

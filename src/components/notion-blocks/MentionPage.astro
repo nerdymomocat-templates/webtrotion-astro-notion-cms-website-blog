@@ -3,7 +3,7 @@ import { Post } from "../../lib/interfaces.ts";
 import { getPostByPageId } from "../../lib/notion/client";
 import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION, REFERENCES } from "@/constants";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { textToAstroIcon, generateIconTailwindFilterStyle } from "@/lib/style-helpers";
 import { Icon } from "astro-iconify";
 
 export interface Props {
@@ -27,7 +27,7 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class="relative h-4 w-4 flex-shrink-0 align-sub inline dark:saturate-[1.5]	dark:brightness-[1.2]" />
+						<img src={post.Icon.Url} class={`relative h-4 w-4 flex-shrink-0 align-sub inline ${generateIconTailwindFilterStyle(post.Icon.Url)}`} />
 					) : textToAstroIcon("document") ? (
 						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
 					) : (
