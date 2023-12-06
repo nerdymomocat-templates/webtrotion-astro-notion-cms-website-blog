@@ -75,9 +75,11 @@ And I did not want that. We want something that converts well into a static site
 - **Giscus comments**
 - Auto-generated sitemap
 - [Pagefind](https://pagefind.app/) static search library integration
-- [Astro Icon](https://github.com/natemoo-re/astro-icon) svg icon component
+- [Astro Iconify](https://github.com/manuelmeister/astro-iconify) svg icon component
 - **API request output caching on Github Actions for fast build times**
 - **Mini blog streams (idea copied from [Linus’s stream](https://stream.thesephist.com/))**
+- **Auto-generated related content and pages that link to this page**
+- **Pretty looking wikipedia like popups on hover that works with links to any block on any page.**
 
 ## Demo
 
