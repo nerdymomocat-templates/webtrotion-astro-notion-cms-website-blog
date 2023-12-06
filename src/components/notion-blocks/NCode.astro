@@ -35,13 +35,13 @@ const code = block.Code.RichTexts.map(
 const language = block.Code.Language.toLowerCase();
 const grammar = Prism.languages[language.toLowerCase()] || Prism.languages.javascript;
 const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
-
+// <Fragment set:html={code.replace(HTML_DIRECTIVE,"")}/>
 ---
 {
   code_inject ?
   (
     <div class="injectedcode w-full mb-1" id={setId?block.Id:undefined}>
-    <Fragment set:html={code.replace(HTML_DIRECTIVE,"")}/>
+    <iframe srcdoc={code.replace(HTML_DIRECTIVE,"") } class="max-w-sm:h-[220px] h-[340px] w-full border-none rounded-lg" loading="lazy"></iframe>
   </div>
 
   )
