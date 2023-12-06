@@ -144,7 +144,7 @@ const _extractReferencesInBlock = (postId: string, block: Block): ReferencesInPa
   // console.debug("here in _extractReferencesInBlock");
   const rich_texts = block.Bookmark?.Caption || block.BulletedListItem?.RichTexts || block.Callout?.RichTexts || block.Code?.RichTexts || block.Embed?.Caption || block.File?.Caption || block.Heading1?.RichTexts || block.Heading2?.RichTexts || block.Heading3?.RichTexts || block.LinkPreview?.Caption || block.NAudio?.Caption || block.NImage?.Caption || block.NumberedListItem?.RichTexts || block.Paragraph?.RichTexts || block.Quote?.RichTexts || block.ToDo?.RichTexts || block.Toggle?.RichTexts || block.Video?.Caption || [];
   let filteredRichText = _filterRichTexts(postId, block, rich_texts);
-  let direct_media_link = block.NAudio?.External?.Url || block.NAudio?.File?.OptimizedUrl || block.File?.External?.Url|| block.File?.File?.OptimizedUrl || block.NImage?.External?.Url || block.NImage?.File?.OptimizedUrl || block.Video?.External?.Url || block.Video?.File?.OptimizedUrl;
+  let direct_media_link = block.NAudio?.External?.Url || block.NAudio?.File?.OptimizedUrl || block.NAudio?.File?.Url || block.File?.External?.Url|| block.File?.File?.OptimizedUrl || block.File?.File?.Url || block.NImage?.External?.Url || block.NImage?.File?.OptimizedUrl || block.NImage?.File?.Url || block.Video?.External?.Url || block.Video?.File?.OptimizedUrl || block.Video?.File?.Url;
   let direct_nonmedia_link = block.Embed?.Url || block.LinkPreview?.Url || block.Bookmark?.Url;
   let link_to_pageid = block.LinkToPage?.PageId && block.LinkToPage?.PageId !== postId ? block.LinkToPage?.PageId : null;
   filteredRichText.direct_media_link = direct_media_link ?? null;
