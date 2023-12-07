@@ -161,12 +161,12 @@ export async function getAllEntries(): Promise<Post[]> {
 
 export async function getAllPosts(): Promise<Post[]> {
   const allEntries = await getAllEntries();
-  return allEntries.filter(post => !MENU_PAGES_COLLECTION.includes(post.Collection));
+  return allEntries.filter(post => !(MENU_PAGES_COLLECTION === post.Collection));
 }
 
 export async function getAllPages(): Promise<Post[]> {
   const allEntries = await getAllEntries();
-  return allEntries.filter(post => MENU_PAGES_COLLECTION.includes(post.Collection));
+  return allEntries.filter(post => MENU_PAGES_COLLECTION===post.Collection);
 }
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
