@@ -37,7 +37,7 @@ try {
 const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(' ');
 
 ---
-<div class="embedded-info pb-2" id={setId?block.Id:undefined}>
+<div class="embedded-info pb-2 max-w-full" id={setId?block.Id:undefined}>
 {
   url ? (
     isTweetURL(url) ? (

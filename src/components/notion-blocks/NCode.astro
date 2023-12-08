@@ -40,14 +40,14 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
 {
   code_inject ?
   (
-    <div class="injectedcode w-full mb-1" id={setId?block.Id:undefined}>
-    <iframe srcdoc={code.replace(HTML_DIRECTIVE,"") } class="max-w-sm:h-[220px] h-[340px] w-full border-none rounded-lg" loading="lazy"></iframe>
+    <div class="injectedcode w-full mb-1 max-w-full" id={setId?block.Id:undefined}>
+    <iframe srcdoc={code.replace(HTML_DIRECTIVE,"") } class="max-w-full sm:h-[220px] h-[340px] w-full border-none rounded-lg" loading="lazy"></iframe>
   </div>
 
   )
   :
   (
-  <div class="code w-full mb-1 font-mono relative" id={setId?block.Id:undefined}>
+  <div class="code w-full mb-1 font-mono relative max-w-full" id={setId?block.Id:undefined}>
 	<div>
           <div class="flex">
             <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0" data-code={code} >
@@ -59,7 +59,7 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
 		{
 
 			language === 'mermaid' ? (
-         <pre class="rounded mermaid p-4">{code}</pre>
+         <pre class="rounded mermaid p-4 max-w-full">{code}</pre>
       ) : (
           <pre class={`rounded whitespace-pre-wrap p-4 overflow-auto break-word leading-6 tabular-nums text-left no-hyphens bg-slate-900 text-sky-600 ${"language-"+language}`}><code set:html={Prism.highlight(code, grammar, language)} /></pre>
       )

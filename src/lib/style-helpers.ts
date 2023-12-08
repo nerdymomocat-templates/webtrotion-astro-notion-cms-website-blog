@@ -84,14 +84,19 @@ export const generateIconTailwindFilterStyle = (url: string): string => {
 
   if (colorName && ncolors.includes(colorName)) {
       // return `dark:hue-rotate-${colorName} dark:saturate-${colorName} dark:brightness-${colorName}`;
-      let hueT = 'dark:hue-rotate-0';
-      let saturateT = 'dark:saturate-100';
-      let brightnessT = 'dark:brightness-100';
+      let hueT = '';
+      let saturateT = '';
+      let brightnessT = '';
       if (colorName=="lightgray") {hueT='dark:-hue-rotate-30'; saturateT='dark:saturate-0';}
       if (colorName=="gray") {hueT='dark:-hue-rotate-60'; saturateT='dark:saturate-0'; brightnessT = 'dark:brightness-150'}
       return hueT+" "+saturateT+" "+brightnessT;
+      //VERY TEMP FIX -- only light gray and gray icons will cause z index issue now because i was returning defaults of saturate-100, hue rotate 0 and brightness-100 before anyway.
     }
   return "";
+}
+
+export const isNotionIconURL = (url:string): boolean => {
+  return !url.startsWith('https://www.notion.so/icons/');
 }
 
 

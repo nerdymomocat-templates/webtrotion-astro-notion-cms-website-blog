@@ -37,6 +37,7 @@
   },
   "HTML_DIRECTIVE": "<!DOCTYPE html>",
   "RECENT_POSTS_ON_HOME_PAGE": false,
+  "BOTTOM_TOC": true,
   "THEME": {
     "colors": {
       "bg": {

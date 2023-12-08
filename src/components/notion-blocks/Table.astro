@@ -11,7 +11,7 @@ const { block, setId=true } = Astro.props;
 //NOTE: table colors are not visible on the API as of 22 Nov
 ---
 
-<div class="ntable relative overflow-x-auto pb-2 table-auto" id={setId?block.Id:undefined}>
+<div class="ntable relative overflow-x-auto pb-2 table-auto max-w-full" id={setId?block.Id:undefined}>
 	<table class="w-full text-left text-sm text-textColor/50">
 		<tbody>
 			{

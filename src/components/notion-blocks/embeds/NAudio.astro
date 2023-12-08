@@ -23,7 +23,7 @@ if (block.NAudio.External) {
 <div class="audio-elem p-2" id={setId?block.Id:undefined}>
 	{
 		audioUrl && (
-			<audio controls src={audioUrl}>
+			<audio class="max-w-full"controls src={audioUrl}>
 				Your browser does not support the audio element.
 			</audio>
 		)
