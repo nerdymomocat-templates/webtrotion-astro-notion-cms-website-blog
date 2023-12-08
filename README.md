@@ -190,6 +190,7 @@ npm run dev
 | og-setup                  | Refers to open graph setup or those images you see when you share links. By default, it includes excerpts, and creates two columns if featured image is available |
 | optimize-images           | Converts images to next-gen formats like webp for more responsive sites |
 | redirects                 | Intentional redirects, especially if you are moving systems that astro should redirect to |
+| bottom-toc                | Has a ToC navigation bar at bottom on smaller screens |
 
 # License
 

@@ -57,28 +57,45 @@ const articleDate = new Date(post.Date).toISOString();
       isButtonScroll = true; // Set flag when button is clicked
     });
 
-    window.addEventListener(
-      "scroll",
-      function () {
-        if (!isButtonScroll) { // Only show/hide if not a button scroll
-          bottomTocNav.classList.remove("vopacity-0");
-          bottomTocNav.classList.add("vopacity-100");
+    function attachScrollListener() {
+      window.addEventListener(
+        "scroll",
+        function () {
+          if (!isButtonScroll) { // Only show/hide if not a button scroll
+            bottomTocNav.classList.remove("vopacity-0");
+            bottomTocNav.classList.add("vopacity-100");
 
-          window.clearTimeout(isScrolling);
+            window.clearTimeout(isScrolling);
 
-          isScrolling = setTimeout(function () {
-            bottomTocNav.classList.remove("vopacity-100");
-            bottomTocNav.classList.add("vopacity-0");
-          }, 1600);
-        } else {
-          // Clear the flag after the scroll
-          setTimeout(() => {
-            isButtonScroll = false;
-          }, 1600); // Adjust the time to match scroll timeout if needed
-        }
-      },
-      false,
-    );
+            isScrolling = setTimeout(function () {
+              bottomTocNav.classList.remove("vopacity-100");
+              bottomTocNav.classList.add("vopacity-0");
+            }, 1600);
+          } else {
+            // Clear the flag after the scroll
+            setTimeout(() => {
+              bottomTocNav.classList.remove("vopacity-100");
+              bottomTocNav.classList.add("vopacity-0");
+              isButtonScroll = false;
+            }, 1600); // Adjust the time to match scroll timeout if needed
+          }
+        },
+        false,
+      );
+    }
+
+    function checkScreenSize() {
+      if (window.matchMedia("(max-width: 640px)").matches && bottomTocNav) {
+        attachScrollListener();
+      } else {
+        // Optionally, remove the listener if the screen size is larger than 400px
+        window.removeEventListener("scroll", attachScrollListener);
+      }
+    }
+
+    checkScreenSize(); // Check screen size on initial load
+
+    window.addEventListener("resize", checkScreenSize); // Check screen size on resize
 
     const observer = new IntersectionObserver(callback);
     observer.observe(targetHeader);
