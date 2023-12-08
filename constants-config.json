@@ -1,10 +1,8 @@
 {
-  "DATABASE_ID": "169b6e632b7448529120599281265ac5",
-  "AUTHOR": "",
-  "PUBLIC_GA_TRACKING_ID": "",
-  "WEBMENTION_API_KEY": "",
-  "WEBMENTION_LINK": "",
-  "SOCIALS": {
+  "database-id": "169b6e632b7448529120599281265ac5",
+  "author": "",
+  "public-ga-tracking-id": "",
+  "socials": {
     "email": "",
     "github": "",
     "googlescholar": "",
@@ -17,9 +15,9 @@
     "mastodon": "",
     "this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog"
   },
-  "CUSTOM_DOMAIN": "",
-  "BASE_PATH": "",
-  "GISCUS": {
+  "custom-domain": "",
+  "base-path": "",
+  "giscus": {
     "data-repo": "nerdymomocat-templates/blogtrotion-astro-notion-cms",
     "data-repo-id": "R_kgDOK0FuUA",
     "data-category": "Announcements",
@@ -28,17 +26,17 @@
     "data-input-position": "top",
     "data-reactions-enabled": true
   },
-  "REFERENCES":{
-    "SITE_LINKS_IN_PAGE": true,
-    "EXTERNAL_LINKS_IN_PAGE": true,
-    "MEDIA_AND_FILE_LINKS_IN_THIS_PAGE": true,
-    "LINKS_TO_THIS_PAGE": true,
-    "POPOVERS":true
+  "references": {
+    "site-links-in-page": true,
+    "external-links-in-page": true,
+    "media-and-file-links-in-this-page": true,
+    "links-to-this-page": true,
+    "popovers": true
   },
-  "HTML_DIRECTIVE": "<!DOCTYPE html>",
-  "RECENT_POSTS_ON_HOME_PAGE": false,
-  "BOTTOM_TOC": true,
-  "THEME": {
+  "html-directive": "<!DOCTYPE html>",
+  "recent-posts-on-home-page": false,
+  "bottom-toc": true,
+  "theme": {
     "colors": {
       "bg": {
         "light": "249 249 249",
@@ -65,31 +63,35 @@
         "dark": "205 254 183"
       }
     },
-    "fontFamily-Google Fonts": {
-      "combined_url": "https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
-      "sans_font_name": "Roboto",
-      "serif_font_name": "",
-      "mono_font_name": "Roboto\\ Mono"
+    "fontfamily-google-fonts": {
+      "combined-url": "https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+      "sans-font-name": "Roboto",
+      "serif-font-name": "",
+      "mono-font-name": "Roboto\\ Mono"
     }
   },
-  "NUMBER_OF_POSTS_PER_PAGE": 10,
-  "ENABLE_LIGHTBOX": true,
-  "REQUEST_TIMEOUT_MS": "10000",
-  "MENU_PAGES_COLLECTION": "main",
-  "HEADING_BLOCKS": [
-    "heading_1",
-    "heading_2",
-    "heading_3"
+  "webmention": {
+    "webmention-api-key": "",
+    "webmention-link": ""
+  },
+  "number-of-posts-per-page": 10,
+  "enable-lightbox": true,
+  "request-timeout-ms": "10000",
+  "menu-pages-collection": "main",
+  "heading-blocks": [
+    "heading-1",
+    "heading-2",
+    "heading-3"
   ],
-  "FULL_PREVIEW_COLLECTIONS": [
+  "full-preview-collections": [
     "Stream"
   ],
-  "HIDE_UNDERSCORE_SLUGS_IN_LISTS": true,
-  "HOME_PAGE_SLUG": "",
-  "OG_SETUP": {
-    "COLUMNS": 2,
-    "EXCERPT": true
+  "hide-underscore-slugs-in-lists": true,
+  "home-page-slug": "",
+  "og-setup": {
+    "columns": 1,
+    "excerpt": false
   },
-  "OPTIMIZE_IMAGES": true,
-  "REDIRECTS": {}
+  "optimize-images": true,
+  "redirects": {}
 }

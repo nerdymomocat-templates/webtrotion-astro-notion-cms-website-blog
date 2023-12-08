@@ -18,7 +18,7 @@ const allReferencesInPage = getReferencesInPage(post.PageId);
 const filteredExternalNonMediaReferences = allReferencesInPage? allReferencesInPage.filter(ref => ref.external_hrefs.length > 0 || ref.direct_nonmedia_link):null;
 const filteredSitePages = allReferencesInPage? allReferencesInPage.filter(ref => ref.other_pages.length>0 || ref.link_to_pageid):null;
 const filteredMediaReferences = allReferencesInPage? allReferencesInPage.filter(ref => ref.direct_media_link):null;
-const rendering = REFERENCES && ((REFERENCES["LINKS_TO_THIS_PAGE"] && allReferencesToPage && Object.keys(allReferencesToPage).length>0) || (REFERENCES["SITE_LINKS_IN_PAGE"] && filteredSitePages && Object.keys(filteredSitePages).length>0) || (REFERENCES["EXTERNAL_LINKS_IN_PAGE"] && filteredExternalNonMediaReferences && Object.keys(filteredExternalNonMediaReferences).length>0) || (REFERENCES["MEDIA_AND_FILE_LINKS_IN_THIS_PAGE"] && filteredMediaReferences && Object.keys(filteredMediaReferences).length>0))
+const rendering = REFERENCES && ((REFERENCES["links-to-this-page"] && allReferencesToPage && Object.keys(allReferencesToPage).length>0) || (REFERENCES["site-links-in-page"] && filteredSitePages && Object.keys(filteredSitePages).length>0) || (REFERENCES["external-links-in-page"] && filteredExternalNonMediaReferences && Object.keys(filteredExternalNonMediaReferences).length>0) || (REFERENCES["media-and-file-links-in-this-page"] && filteredMediaReferences && Object.keys(filteredMediaReferences).length>0))
 
 
 ---
@@ -58,10 +58,10 @@ const rendering = REFERENCES && ((REFERENCES["LINKS_TO_THIS_PAGE"] && allReferen
   }
 </style>)
   }
-{REFERENCES && REFERENCES["LINKS_TO_THIS_PAGE"] && allReferencesToPage && <LinksToThisPage post={post} allReferencesToPage={allReferencesToPage}/>}
-{REFERENCES && REFERENCES["SITE_LINKS_IN_PAGE"] && filteredSitePages && <InternalLinksInThisPage post={post} filteredReferencesInPage={filteredSitePages}/>}
-{REFERENCES && REFERENCES["MEDIA_AND_FILE_LINKS_IN_THIS_PAGE"] && filteredMediaReferences && <MediaLinksInThisPage post={post} filteredReferencesInPage={filteredMediaReferences}/>}
-{REFERENCES && REFERENCES["EXTERNAL_LINKS_IN_PAGE"] && filteredExternalNonMediaReferences && <ExternalLinksInThisPage post={post} filteredReferencesInPage={filteredExternalNonMediaReferences}/>}
+{REFERENCES && REFERENCES["links-to-this-page"] && allReferencesToPage && <LinksToThisPage post={post} allReferencesToPage={allReferencesToPage}/>}
+{REFERENCES && REFERENCES["site-links-in-page"] && filteredSitePages && <InternalLinksInThisPage post={post} filteredReferencesInPage={filteredSitePages}/>}
+{REFERENCES && REFERENCES["media-and-file-links-in-this-page"] && filteredMediaReferences && <MediaLinksInThisPage post={post} filteredReferencesInPage={filteredMediaReferences}/>}
+{REFERENCES && REFERENCES["external-links-in-page"] && filteredExternalNonMediaReferences && <ExternalLinksInThisPage post={post} filteredReferencesInPage={filteredExternalNonMediaReferences}/>}
 {
   rendering && <hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />
 }

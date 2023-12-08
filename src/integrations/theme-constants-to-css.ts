@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import type { AstroIntegration } from 'astro';
 import config from '../../constants-config.json';
 const key_value_from_json = { ...config };
-const theme_config = key_value_from_json["THEME"];
+const theme_config = key_value_from_json["theme"];
 
 export default (): AstroIntegration => ({
   name: 'theme-constants-to-css',
@@ -13,7 +13,7 @@ export default (): AstroIntegration => ({
       // Function to create CSS variables from the config
       const createCssVariables = (theme) => {
         let cssContent = '';
-        for (const key in config.THEME.colors) {
+        for (const key in theme_config.colors) {
           let color = theme_config.colors[key][theme];
           if (!color) {
             if (key.includes('bg')) {

@@ -1,8 +1,6 @@
 ---
 import { Icon } from "astro-iconify";
-import config from "constants-config.json";
-const key_value_from_json = { ...config };
-const socials_links = key_value_from_json["SOCIALS"];
+import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
 import { textToAstroIcon } from "@/lib/style-helpers";
 
@@ -30,9 +28,9 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 		.filter((link) => link.link && link.link!=="mailto:"); // Filter out empty links
 };
 
-const socialLinks = mapSocialLinks(socials_links);
+const socialLinks = mapSocialLinks(SOCIALS);
 ---
-
+{socialLinks && (
 <div class="flex flex-wrap items-center gap-x-4">
 	<p>Find me on</p>
 	<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
@@ -52,4 +50,4 @@ const socialLinks = mapSocialLinks(socials_links);
 			))
 		}
 	</ul>
-</div>
+</div>)}

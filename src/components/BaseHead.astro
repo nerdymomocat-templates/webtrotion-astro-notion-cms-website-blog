@@ -6,13 +6,11 @@ import "../styles/syntax-coloring.css";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
 // import { GoogleAnalytics } from "astro-google-analytics";
-import {ENABLE_LIGHTBOX, PUBLIC_GA_TRACKING_ID } from "@/constants";
+import {ENABLE_LIGHTBOX, PUBLIC_GA_TRACKING_ID, THEME } from "@/constants";
 import { GoogleFontsOptimizer } from "astro-google-fonts-optimizer";
-import config from '../../constants-config.json';
 import { HOME_PAGE_SLUG } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
-const key_value_from_json = { ...config };
-const theme_config_font_url = key_value_from_json["THEME"]['fontFamily-Google Fonts']['combined_url'];
+const theme_config_font_url = THEME['fontfamily-google-fonts']['combined-url'];
 
 type Props = SiteMeta;
 

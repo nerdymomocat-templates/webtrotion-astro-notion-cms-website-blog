@@ -45,7 +45,7 @@ filteredReferencesInPage.reduce((acc, ref) => {
       {Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
         <div class="ml-2" key={dmltype}>
           <div class="inline-block">
-            {REFERENCES && REFERENCES["POPOVERS"] ? (
+            {REFERENCES && REFERENCES["popovers"] ? (
               <>
                 <span class="italic">{dmltype}</span> {' at '}
                 {blockdmls.map((blockdml, index) => (

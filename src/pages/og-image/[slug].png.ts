@@ -900,12 +900,12 @@ export async function GET({ params: { slug } }: APIContext) {
     const postDate = getFormattedDate(
       post?.Date ?? post?.Date ?? Date.now()
     );
-    if (OG_SETUP['COLUMNS'] == 1 && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
+    if (OG_SETUP['columns'] == 1 && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
       chosen_markup = obj_img_bg(title, postDate, post.FeaturedImage.Url);
-    } else if (OG_SETUP['COLUMNS'] && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
-      chosen_markup = post?.Excerpt && OG_SETUP['EXCERPT'] ? obj_img_sq_with_desc(title, postDate, post?.Excerpt, post.FeaturedImage.Url) : obj_img_sq_without_desc(title, postDate, post.FeaturedImage.Url);
+    } else if (OG_SETUP['columns'] && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
+      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_sq_with_desc(title, postDate, post?.Excerpt, post.FeaturedImage.Url) : obj_img_sq_without_desc(title, postDate, post.FeaturedImage.Url);
     } else {
-      chosen_markup = post?.Excerpt && OG_SETUP['EXCERPT'] ? obj_img_none_with_desc(title, postDate, post?.Excerpt) : obj_img_none_without_desc(title, postDate);
+      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_none_with_desc(title, postDate, post?.Excerpt) : obj_img_none_without_desc(title, postDate);
     }
     fallback_markup = post?.Excerpt ? obj_img_none_with_desc(title, postDate, post?.Excerpt) : obj_img_none_without_desc(title, postDate);
   }

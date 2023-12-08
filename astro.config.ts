@@ -50,7 +50,7 @@ function modifyRedirectPaths(redirects: Record<string, string>, basePath: string
 export default defineConfig({
   site: getSite(),
   base: process.env.BASE || BASE_PATH,
-  redirects: key_value_from_json["REDIRECTS"] ? modifyRedirectPaths(key_value_from_json["REDIRECTS"], process.env.BASE || BASE_PATH) : {},
+  redirects: key_value_from_json["redirects"] ? modifyRedirectPaths(key_value_from_json["redirects"], process.env.BASE || BASE_PATH) : {},
   integrations: [
   // mdx({}),
   tailwind({

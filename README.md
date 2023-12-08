@@ -114,10 +114,10 @@ Check out the [Demo](https://nerdymomocat-templates.github.io/webtrotion-astro-n
 4. Set up giscus as mentioned on the website [giscus.app](http://giscus.app). Keep the script it produces open as we will use it in the next step.
 5. Go back to your cloned (forked or created through a template) repository.
 6. Open file **`constants-config.json`** in the web UI. This file is the complete setup file for your website. For now, we will make four major modifications:
-    1. Change `DATABASE_ID` to your database id that you obtained from Notion.
-    2. Add your name to `AUTHOR` (this is used for HTML semantics and OG image generation)
+    1. Change `database-id` to your database id that you obtained from Notion.
+    2. Add your name to `author` (this is used for HTML semantics and OG image generation)
     3. Add your socials (you can also remove the value for `this-github-repo`)
-    4. Add your giscus information to the `GISCUS` key. If you do not want you use Giscus, remove value for `data-repo` in `GISCUS` and that will disable the feature.
+    4. Add your giscus information to the `giscus` key. If you do not want you use Giscus, remove value for `data-repo` in `giscus` and that will disable the feature.
 7. Save the file and commit+merge to the main repo.
 8. The github action by default runs every 8 hours or on commits to the repo. This can be modified in `.github/astro.yml` file. You can choose any cron duration.
 
@@ -169,28 +169,27 @@ npm run dev
 
 # Extra configuration options
 
-| Key | Value |
-| --- | --- |
-| PUBLIC_GA_TRACKING_ID | Your google tracking property id. Steps [here](https://support.google.com/analytics/answer/9304153?hl=en&ref_topic=14088998&sjid=1644955229874584087-NC). |
-| WEBMENTION_API_KEY | Key obtained from https://webmention.io/ |
-| WEBMENTION_LINK | Link obtained from https://webmention.io/ |
-| CUSTOM_DOMAIN | If you want to host the site somewhere else |
-| BASE_PATH | Or subdomain inside the custom domain |
-| HTML_DIRECTIVE | Embed html code blocks that start with this line directly into the page |
-|REFERENCES| To show related pages, external links, and mentioned media at the end of the post. Set POPOVERS to true to display a snippet when hovering over a post link in the body.|
-| THEME | Colors for light mode and dark mode |
-| fontFamily-Google Fonts | Combined URL link for all fonts you want to use from google fonts. Remember to escape spaces in font names if needed |
-| NUMBER_OF_POSTS_PER_PAGE | Number of posts in a page for pagination purposes |
-| ENABLE_LIGHTBOX | Set to true if you want people to be able to click on your image to open in a new tab |
-| REQUEST_TIMEOUT_MS | Timeout for API requests |
-| MENU_PAGES_COLLECTION | Collection select value in Notion database that decides if these are pages or blogposts. Set this to value you use for pages. |
-| HEADING_BLOCKS | Which top-level blocks blocks should form the table of contents on right |
-| FULL_PREVIEW_COLLECTIONS | Stream like view, where each post is a mini-blog in the same page as a scrollable page instead of being links to individual pages. Any Collection name added to this list will be rendered as stream view. |
-| HIDE_UNDERSCORE_SLUGS_IN_LISTS | If the slug starts with _, hide those in post lists, rss and sitemap, but still render them, so that you can share them |
-| HOME_PAGE_SLUG | By default is set to “home” but can be anything that you want for the renderer to recognize which is your home page from the database |
-| OG_SETUP | Refers to open graph setup or those images you see when you share links. By default, it includes excerpts, and creates two columns if featured image is available |
-| OPTIMIZE_IMAGES | Converts images to next-gen formats like webp for more responsive sites |
-| REDIRECTS | Intentional redirects, especially if you are moving systems that astro should redirect to |
+| Key                       | Value |
+|---------------------------|-------|
+| public-ga-tracking-id     | Your google tracking property id. Steps [here](https://support.google.com/analytics/answer/9304153?hl=en&ref_topic=14088998&sjid=1644955229874584087-NC). |
+| webmention                | Webmention API Key and link obtained from https://webmention.io/ |
+| custom-domain             | If you want to host the site somewhere else |
+| base-path                 | Or subdomain inside the custom domain |
+| html-directive            | Embed html code blocks that start with this line directly into the page |
+| references                | To show related pages, external links, and mentioned media at the end of the post. Set POPOVERS to true to display a snippet when hovering over a post link in the body. |
+| theme                     | Colors for light mode and dark mode |
+| fontfamily-google-fonts   | Combined URL link for all fonts you want to use from google fonts. Remember to escape spaces in font names if needed |
+| number-of-posts-per-page  | Number of posts in a page for pagination purposes |
+| enable-lightbox           | Set to true if you want people to be able to click on your image to open in a new tab |
+| request-timeout-ms        | Timeout for API requests |
+| menu-pages-collection     | Collection select value in Notion database that decides if these are pages or blogposts. Set this to value you use for pages. |
+| heading-blocks            | Which top-level blocks blocks should form the table of contents on right |
+| full-preview-collections  | Stream like view, where each post is a mini-blog in the same page as a scrollable page instead of being links to individual pages. Any Collection name added to this list will be rendered as stream view. |
+| hide-underscore-slugs-in-lists | If the slug starts with _, hide those in post lists, rss and sitemap, but still render them, so that you can share them |
+| home-page-slug            | By default is set to “home” but can be anything that you want for the renderer to recognize which is your home page from the database |
+| og-setup                  | Refers to open graph setup or those images you see when you share links. By default, it includes excerpts, and creates two columns if featured image is available |
+| optimize-images           | Converts images to next-gen formats like webp for more responsive sites |
+| redirects                 | Intentional redirects, especially if you are moving systems that astro should redirect to |
 
 # License
 

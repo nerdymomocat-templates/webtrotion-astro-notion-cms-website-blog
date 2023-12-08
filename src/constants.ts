@@ -6,42 +6,41 @@ import path from 'path';
 
 export const NOTION_API_SECRET =
   import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
-export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["DATABASE_ID"] || "";
-export const AUTHOR = key_value_from_json["AUTHOR"] || "";
-export const PUBLIC_GA_TRACKING_ID = key_value_from_json["PUBLIC_GA_TRACKING_ID"] || "";
-export const WEBMENTION_API_KEY = import.meta.env.WEBMENTION_API_KEY || process.env.WEBMENTION_API_KEY || key_value_from_json["WEBMENTION_API_KEY"] || "";
-export const WEBMENTION_LINK = key_value_from_json["WEBMENTION_LINK"] || "";
+export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["database-id"] || "";
+export const AUTHOR = key_value_from_json["author"] || "";
+export const PUBLIC_GA_TRACKING_ID = key_value_from_json["public-ga-tracking-id"] || "";
+export const WEBMENTION_API_KEY = import.meta.env.WEBMENTION_API_KEY || process.env.WEBMENTION_API_KEY || key_value_from_json["webmention"]["webmention-api-key"] || "";
+export const WEBMENTION_LINK = key_value_from_json["webmention"]["webmention-link"] || "";
 
+export const CUSTOM_DOMAIN = process.env.CUSTOM_DOMAIN || key_value_from_json["custom-domain"] || ""; // <- Set your custom domain if you have. e.g. alpacat.com
+export const BASE_PATH = process.env.BASE_PATH || key_value_from_json["base-path"] || ""; // <- Set sub directory path if you want. e.g. /docs/
 
+export const NUMBER_OF_POSTS_PER_PAGE = key_value_from_json["number-of-posts-per-page"] || 10;
+export const REQUEST_TIMEOUT_MS = parseInt(key_value_from_json["request-timeout-ms"] || "10000", 10);
+export const ENABLE_LIGHTBOX = key_value_from_json["enable-lightbox"] || false;
 
-export const CUSTOM_DOMAIN = process.env.CUSTOM_DOMAIN || key_value_from_json["CUSTOM_DOMAIN"] || ""; // <- Set your costom domain if you have. e.g. alpacat.com
-export const BASE_PATH = process.env.BASE_PATH || key_value_from_json["BASE_PATH"] || ""; // <- Set sub directory path if you want. e.g. /docs/
-
-export const NUMBER_OF_POSTS_PER_PAGE = key_value_from_json["NUMBER_OF_POSTS_PER_PAGE"] || 10;
-export const REQUEST_TIMEOUT_MS = parseInt(key_value_from_json["REQUEST_TIMEOUT_MS"] || "10000", 10);
-export const ENABLE_LIGHTBOX = key_value_from_json["ENABLE_LIGHTBOX"] || false;
 /**
- *  a collection which represent a page
+ *  a collection which represents a page
  */
-export const MENU_PAGES_COLLECTION = key_value_from_json["MENU_PAGES_COLLECTION"] || "main";
+export const MENU_PAGES_COLLECTION = key_value_from_json["menu-pages-collection"] || "main";
 
-export const HEADING_BLOCKS = key_value_from_json["HEADING_BLOCKS"] || ["heading_1", "heading_2", "heading_3"];
+export const HEADING_BLOCKS = key_value_from_json["heading-blocks"] || ["heading-1", "heading-2", "heading-3"];
 
-export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["FULL_PREVIEW_COLLECTIONS"] || [];
+export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["full-preview-collections"] || [];
 
-export const HIDE_UNDERSCORE_SLUGS_IN_LISTS = key_value_from_json["HIDE_UNDERSCORE_SLUGS_IN_LISTS"] || false;
+export const HIDE_UNDERSCORE_SLUGS_IN_LISTS = key_value_from_json["hide-underscore-slugs-in-lists"] || false;
 
-export const HOME_PAGE_SLUG = key_value_from_json["HOME_PAGE_SLUG"] || "home";
+export const HOME_PAGE_SLUG = key_value_from_json["home-page-slug"] || "home";
 
-export const OG_SETUP = key_value_from_json["OG_SETUP"] || {
-  "COLUMNS": 2,
-  "EXCERPT": true
+export const OG_SETUP = key_value_from_json["og-setup"] || {
+  "columns": 1,
+  "excerpt": false
 };
 
-// export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] == null ? true : key_value_from_json["OPTIMIZE_IMAGES"];
-export const OPTIMIZE_IMAGES = key_value_from_json["OPTIMIZE_IMAGES"] || false;
+// export const OPTIMIZE_IMAGES = key_value_from_json["optimize-images"] == null ? true : key_value_from_json["optimize-images"];
+export const OPTIMIZE_IMAGES = key_value_from_json["optimize-images"] || false;
 
-export const HTML_DIRECTIVE = key_value_from_json["HTML_DIRECTIVE"] || "";
+export const HTML_DIRECTIVE = key_value_from_json["html-directive"] || "";
 
 // Function to read the build start time from the file
 const readBuildStartTime = () => {
@@ -57,8 +56,14 @@ const readBuildStartTime = () => {
 export const LAST_BUILD_TIME = readBuildStartTime();
 console.log('Last Build Start Time:', LAST_BUILD_TIME);
 
-export const REFERENCES = key_value_from_json["REFERENCES"] || null;
+export const REFERENCES = key_value_from_json["references"] || null;
 
-export const RECENT_POSTS_ON_HOME_PAGE = key_value_from_json["RECENT_POSTS_ON_HOME_PAGE"] || false;
+export const RECENT_POSTS_ON_HOME_PAGE = key_value_from_json["recent-posts-on-home-page"] || false;
 
-export const BOTTOM_TOC = key_value_from_json["BOTTOM_TOC"] || false;
+export const BOTTOM_TOC = key_value_from_json["bottom-toc"] || false;
+
+export const SOCIALS = key_value_from_json["socials"] || {};
+
+export const GISCUS = key_value_from_json["giscus"] || null;
+
+export const THEME = key_value_from_json["theme"] || {};

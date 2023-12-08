@@ -15,7 +15,7 @@ const {hreflink, blocklinked, conditionmatch, post} = await getAnchorLinkAndBloc
 ---
 
 {
-  hreflink && REFERENCES && REFERENCES["POPOVERS"] && conditionmatch && ["block_current_page", "block_other_page", "other_page"].includes(conditionmatch) && post && post.Title ? (
+  hreflink && REFERENCES && REFERENCES["popovers"] && conditionmatch && ["block_current_page", "block_other_page", "other_page"].includes(conditionmatch) && post && post.Title ? (
     conditionmatch === "block_current_page" || conditionmatch === "block_other_page" ? (
       <NBlocksPopover block={blocklinked} linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title}><slot /></NBlocksPopover>
     ) : (

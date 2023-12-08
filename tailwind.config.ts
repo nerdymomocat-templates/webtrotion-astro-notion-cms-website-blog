@@ -4,12 +4,11 @@ import plugin from "tailwindcss/plugin";
 
 import config from './constants-config.json';
 const key_value_from_json = { ...config };
-const theme_config_font_fonts = key_value_from_json["THEME"]['fontFamily-Google Fonts'];
+const theme_config_font_fonts = key_value_from_json["theme"]['fontfamily-google-fonts'];
 
-const fontFamilySans = theme_config_font_fonts && theme_config_font_fonts['sans_font_name'] ? [theme_config_font_fonts['sans_font_name'], ...fontFamily.sans] : [...fontFamily.sans];
-const fontFamilySerif = theme_config_font_fonts && theme_config_font_fonts['serif_font_name'] ? [theme_config_font_fonts['serif_font_name'], ...fontFamily.serif] : [...fontFamily.serif];
-const fontFamilyMono = theme_config_font_fonts && theme_config_font_fonts['mono_font_name'] ? [theme_config_font_fonts['mono_font_name'], ...fontFamily.mono] : [...fontFamily.mono];
-
+const fontFamilySans = theme_config_font_fonts && theme_config_font_fonts['sans-font-name'] ? [theme_config_font_fonts['sans-font-name'], ...fontFamily.sans] : [...fontFamily.sans];
+const fontFamilySerif = theme_config_font_fonts && theme_config_font_fonts['serif-font-name'] ? [theme_config_font_fonts['serif-font-name'], ...fontFamily.serif] : [...fontFamily.serif];
+const fontFamilyMono = theme_config_font_fonts && theme_config_font_fonts['mono-font-name'] ? [theme_config_font_fonts['mono-font-name'], ...fontFamily.mono] : [...fontFamily.mono];
 
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,svelte,ts,tsx,vue}", "./node_modules/flowbite/**/*.js"],

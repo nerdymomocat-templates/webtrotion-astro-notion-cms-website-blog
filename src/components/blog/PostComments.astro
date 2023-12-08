@@ -1,31 +1,29 @@
 ---
-import config from "../../../constants-config.json";
-const key_value_from_json = { ...config };
-const giscus_config = key_value_from_json["GISCUS"];
+import { GISCUS } from "@/constants";
 const filled_in_giscus =
-	giscus_config &&
-	giscus_config["data-repo"] &&
-	giscus_config["data-repo-id"] &&
-	giscus_config["data-category"] &&
-	giscus_config["data-category-id"];
+	GISCUS &&
+	GISCUS["data-repo"] &&
+	GISCUS["data-repo-id"] &&
+	GISCUS["data-category"] &&
+	GISCUS["data-category-id"];
 ---
 
 {
 	filled_in_giscus && (
 		<>
-			<section class="giscus mx-auto mt-10 w-full" id="--layout-div-giscus-post-comments"/>
+			<section class="giscus mx-auto mt-10 w-full" id="--layout-div-giscus-post-comments" />
 			<script
 				src="https://giscus.app/client.js"
-				data-repo={giscus_config["data-repo"]}
-				data-repo-id={giscus_config["data-repo-id"]}
-				data-category={giscus_config["data-category"]}
-				data-category-id={giscus_config["data-category-id"]}
-				data-mapping={giscus_config["data-mapping"] ? giscus_config["data-mapping"] : "url"}
+				data-repo={GISCUS["data-repo"]}
+				data-repo-id={GISCUS["data-repo-id"]}
+				data-category={GISCUS["data-category"]}
+				data-category-id={GISCUS["data-category-id"]}
+				data-mapping={GISCUS["data-mapping"] ? GISCUS["data-mapping"] : "url"}
 				data-strict="0"
-				data-reactions-enabled={giscus_config["data-reactions-enabled"] ? "1" : "0"}
+				data-reactions-enabled={GISCUS["data-reactions-enabled"] ? "1" : "0"}
 				data-emit-metadata="0"
 				data-input-position={
-					giscus_config["data-input-position"] ? giscus_config["data-input-position"] : "bottom"
+					GISCUS["data-input-position"] ? GISCUS["data-input-position"] : "bottom"
 				}
 				data-theme="preferred_color_scheme"
 				data-lang="en"
