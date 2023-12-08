@@ -145,7 +145,7 @@ Dark mode preview
 | Page | Title of the page or post being rendered |
 | Tags | Tags displayed for the post |
 | Excerpt | Description used in OG images and RSS feeds |
-| Collection | Collection in which the post/page goes. Anything tagged with main or your MENU_PAGES_COLLECTION is rendered as a page. |
+| Collection | Collection in which the post/page goes. Anything tagged with main or your `menu-pages-collection` is rendered as a page. |
 | Published | Your post or page is only published when you tick publish |
 | FeaturedImage | Image used to generate your page’s or post’s open graph image |
 | Specific Slug | The template generates a slug using formula, but if you want a specific slug, you can specify it here |
