@@ -52,7 +52,7 @@ const processedFile = await processFileBlocks(fileAtacchedBlocks);
 	id={post_full_preview.Slug}
 	onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);"
 	class="inline"
-	rel="prefetch"
+	data-astro-prefetch
 >
 	<Tag class="font-bold">
 		{post_full_preview.Title}

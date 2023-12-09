@@ -16,7 +16,7 @@ const { prevUrl, nextUrl } = Astro.props;
 				<a
 					class="me-auto py-2 text-link no-underline hover:underline-offset-4 hover:underline"
 					href={prevUrl.url}
-					rel="prefetch"
+					data-astro-prefetch
 				>
 					{prevUrl.srLabel && <span class="sr-only">{prevUrl.srLabel}</span>}
 					{prevUrl.text ? prevUrl.text : "Previous"}
@@ -26,7 +26,7 @@ const { prevUrl, nextUrl } = Astro.props;
 				<a
 					class="ms-auto py-2 text-link no-underline hover:underline-offset-4 hover:underline"
 					href={nextUrl.url}
-					rel="prefetch"
+					data-astro-prefetch
 				>
 					{nextUrl.srLabel && <span class="sr-only">{nextUrl.srLabel}</span>}
 					{nextUrl.text ? nextUrl.text : "Next"}

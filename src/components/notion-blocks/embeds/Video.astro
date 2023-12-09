@@ -32,7 +32,7 @@ const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainTe
 			(url ? (
 				isYouTubeURL(url) ? (
 					<iframe
-						class="max-w-full sm:h-[220px] h-[340px] w-full lazyload"
+						class="max-w-full h-[340px] w-full lazyload"
 						data-src={`https://www.youtube.com/embed/${parseYouTubeVideoId(url)}`}
 						title="YouTube video player"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -51,7 +51,7 @@ const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainTe
 							</a>
 						)
 					}
-					<video class="max-w-full sm:h-[220px] h-[340px] w-full border-none rounded-lg" controls>
+					<video class="max-w-full h-[340px] w-full border-none rounded-lg" controls>
 						<source src={videoUrl} type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>

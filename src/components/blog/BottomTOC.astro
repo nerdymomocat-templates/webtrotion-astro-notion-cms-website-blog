@@ -12,7 +12,7 @@ const { headings } = Astro.props;
 const toc = generateToc(headings);
 ---
 
-<aside class="fixed bottom-0 left-0 z-30 w-full max-w-full whitespace-normal overflow-hidden sm:hidden bg-bgColor border-y-2 border-accent-2/70 p-2 vopacity-0 rounded shadow-inner visible-transition" id="bottom-toc-nav">
+<aside class="fixed bottom-0 left-0 mx-2 my-0.5 z-30 w-[96%] max-w-[96%] whitespace-normal overflow-hidden sm:hidden bg-bgColor border border-accent-2/40 p-2 vopacity-0 rounded-lg visible-transition shadow-lg shadow-accent-2/40" id="bottom-toc-nav">
   {
       !!toc.length && (
           <>
