@@ -31,7 +31,7 @@
     "external-links-in-page": true,
     "media-and-file-links-in-this-page": true,
     "links-to-this-page": true,
-    "popovers": false
+    "popovers": true
   },
   "html-directive": "<!DOCTYPE html>",
   "recent-posts-on-home-page": false,

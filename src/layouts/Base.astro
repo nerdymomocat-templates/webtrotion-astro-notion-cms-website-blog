@@ -7,82 +7,156 @@ import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
 import { siteInfo } from "@/siteInfo";
 import { ENABLE_LIGHTBOX, REFERENCES } from "@/constants";
-
 interface Props {
-	meta: SiteMeta;
+meta: SiteMeta;
 }
-
 const {
-	meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
+meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
 } = Astro.props;
-
 ---
-
 <html lang={siteInfo.lang}>
-	<head>
-		<BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
-    <!-- <ViewTransitions /> -->
-	</head>
-	<body>
-		<SkipLink />
-		<Header />
-		<main id="main" class="lg:w-[125%]">
-			<slot />
-		</main>
-		<Footer />
-    {/*Lightbox */}
-{
-  ENABLE_LIGHTBOX && (
-  <script type="module">
-  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+   <head>
+      <BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
+      <!-- <ViewTransitions /> -->
+   </head>
+   <body>
+      <SkipLink />
+      <Header />
+      <main id="main" class="lg:w-[125%]">
+         <slot />
+      </main>
+      <Footer />
+      {/*Lightbox */}
+      {
+      ENABLE_LIGHTBOX && (
+      <script type="module">
+         import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
 
-  window.addEventListener('load', () => {
-    const lightbox = GLightbox({
-      selector: '.mediaglightbox, .fileglightbox, .embedglightbox'
+         window.addEventListener('load', () => {
+           const lightbox = GLightbox({
+             selector: '.mediaglightbox, .fileglightbox, .embedglightbox'
+           });
+         });
+      </script>
+      )
+      }
+      {
+      REFERENCES && REFERENCES["popovers"] && (
+      <script type="module">
+  import { computePosition, offset, shift, autoUpdate, limitShift, autoPlacement } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const popoverTriggers = document.querySelectorAll('[data-popover-target]');
+    let activePopover = null;
+    let activeNestedPopover = null;
+    let cleanupAutoUpdate = new Map();
+    let hoverTimeout;
+
+    const hidePopover = (popoverEl) => {
+      if (popoverEl) {
+        popoverEl.style.visibility = 'hidden';
+        popoverEl.style.opacity = '0';
+        const cleanup = cleanupAutoUpdate.get(popoverEl);
+        if (cleanup) {
+          cleanup();
+          cleanupAutoUpdate.delete(popoverEl);
+        }
+        // Check if the popover being hidden is the main one or a nested one
+        if (popoverEl === activeNestedPopover) {
+          activeNestedPopover = null;
+        } else {
+          activePopover = null;
+          activeNestedPopover = null; // Also hide any nested popover
+        }
+      }
+    };
+
+    const hideAllPopovers = () => {
+      hidePopover(activeNestedPopover);
+      hidePopover(activePopover);
+    };
+
+    const showPopover = (triggerEl, popoverEl, isNested = false) => {
+      // If it's a main popover trigger, hide all popovers
+      if (!isNested) {
+        hideAllPopovers();
+        activePopover = popoverEl;
+      } else {
+        // If it's a nested popover trigger, only hide the nested popover
+        hidePopover(activeNestedPopover);
+        activeNestedPopover = popoverEl;
+      }
+
+      popoverEl.style.visibility = 'visible';
+      popoverEl.style.opacity = '1';
+
+      const update = () => {
+        computePosition(triggerEl, popoverEl, {
+          middleware: [autoPlacement(), shift({ limiter: limitShift({ offset: 10 }) }), offset(12)]
+        }).then(({ x, y }) => {
+          Object.assign(popoverEl.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+            position: 'absolute'
+          });
+        });
+      };
+
+      update(); // Initial position update
+      cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
+    };
+
+    popoverTriggers.forEach(triggerEl => {
+      const popoverID = triggerEl.dataset.popoverTarget;
+      const popoverEl = document.getElementById(popoverID);
+      const isNested = triggerEl.closest('[data-popover]'); // Check if it's a nested trigger
+
+      triggerEl.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+        showPopover(triggerEl, popoverEl, isNested);
+      });
+
+      triggerEl.addEventListener('mouseleave', () => {
+        // Start a timeout to hide the popover, which can be cleared if re-entered
+        hoverTimeout = setTimeout(() => {
+          if (isNested) {
+            hidePopover(activeNestedPopover);
+          } else {
+            hideAllPopovers();
+          }
+        }, 100); // Short delay before hiding the popover
+      });
+
+      popoverEl.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+      });
+
+      popoverEl.addEventListener('mouseleave', () => {
+        hoverTimeout = setTimeout(() => {
+          hidePopover(isNested ? activeNestedPopover : activePopover);
+        }, 100);
+      });
+    });
+
+    // Close all popovers when clicking elsewhere on the page
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-popover-target]')) {
+        hideAllPopovers();
+      }
+    });
+
+    // Close all popovers when the Escape key is pressed
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        hideAllPopovers();
+      }
     });
   });
 </script>
-)
 
 
-}
-{
-REFERENCES && REFERENCES["popovers"] && (
-<script type="module">
-  import {computePosition, flip, inline, shift} from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
-  document.addEventListener("DOMContentLoaded", function () {
-    console.log("Gi");
-    document.querySelectorAll('[data-popover-target]').forEach(($triggerEl) => {
-        const popoverID = $triggerEl.getAttribute('data-popover-target');
-        const $popoverEl = document.getElementById(popoverID);
 
-        if ($popoverEl) {
-            const triggerType = "hover";
-            const placement = "auto";
-            const offset = $triggerEl.getAttribute('data-popover-offset');
-
-            new Popover(
-                $popoverEl as HTMLElement,
-                $triggerEl as HTMLElement,
-                {
-                    placement: placement ? placement : Default.placement,
-                    offset: offset ? parseInt(offset) : Default.offset,
-                    triggerType: triggerType
-                        ? triggerType
-                        : Default.triggerType,
-                } as PopoverOptions
-            );
-        } else {
-            console.error(
-                `The popover element with id "${popoverID}" does not exist. Please check the data-popover-target attribute.`
-            );
-        }
-    });
-  })
-
-</script>
-  )
-}
-
-	</body>
+      )
+      }
+   </body>
 </html>
