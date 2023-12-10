@@ -43,11 +43,11 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       {
       REFERENCES && REFERENCES["popovers"] && (
       <script type="module">
-  import { computePosition, offset, shift, autoUpdate, limitShift, autoPlacement } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
+  import { computePosition, offset, shift, flip, autoUpdate } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
 
   document.addEventListener('DOMContentLoaded', () => {
     const popoverTriggers = document.querySelectorAll('[data-popover-target]');
-    let activePopovers = [];
+    let activePopover = null;
     let cleanupAutoUpdate = new Map();
     let hoverTimeout;
 
@@ -55,31 +55,39 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       if (popoverEl) {
         popoverEl.style.visibility = 'hidden';
         popoverEl.style.opacity = '0';
-        popoverEl.style.top = '0px';  // Reset position
-        popoverEl.style.left = '0px';  // Reset position
+        popoverEl.style.top = '0px';
+        popoverEl.style.left = '0px';
+
         const cleanup = cleanupAutoUpdate.get(popoverEl);
         if (cleanup) {
           cleanup();
           cleanupAutoUpdate.delete(popoverEl);
         }
-        activePopovers = activePopovers.filter(el => el !== popoverEl);
+
+        if (activePopover === popoverEl) {
+          activePopover = null;
+        }
       }
     };
 
     const hideAllPopovers = () => {
-      activePopovers.forEach(popoverEl => hidePopover(popoverEl));
+      if (activePopover) {
+        hidePopover(activePopover);
+      }
     };
 
     const showPopover = (triggerEl, popoverEl) => {
-      hideAllPopovers();
-      activePopovers.push(popoverEl);
+      if (activePopover !== popoverEl) {
+        hideAllPopovers();
+        activePopover = popoverEl;
+      }
 
       popoverEl.style.visibility = 'visible';
       popoverEl.style.opacity = '1';
 
       const update = () => {
         computePosition(triggerEl, popoverEl, {
-          middleware: [autoPlacement(), shift({ limiter: limitShift({ padding: 5 }) }), offset(12)]
+          middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
         }).then(({ x, y }) => {
           Object.assign(popoverEl.style, {
             left: `${x}px`,
@@ -97,36 +105,43 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       const popoverID = triggerEl.dataset.popoverTarget;
       const popoverEl = document.getElementById(popoverID);
 
-      // Mouse event listeners
       triggerEl.addEventListener('mouseenter', () => {
         clearTimeout(hoverTimeout);
         showPopover(triggerEl, popoverEl);
       });
+
       triggerEl.addEventListener('mouseleave', () => {
-        hoverTimeout = setTimeout(() => hidePopover(popoverEl), 100);
+        hoverTimeout = setTimeout(() => {
+          // Check if the mouse moved to a child popover or left all popovers
+          if (!popoverEl.contains(document.activeElement)) {
+            hidePopover(popoverEl);
+          }
+        }, 100);
       });
 
-      // Focus and blur event listeners for accessibility
       triggerEl.addEventListener('focus', () => {
         showPopover(triggerEl, popoverEl);
       });
+
       triggerEl.addEventListener('blur', () => {
         hidePopover(popoverEl);
       });
 
-      // Popover event listeners
-      popoverEl.addEventListener('mouseenter', () => clearTimeout(hoverTimeout));
-      popoverEl.addEventListener('mouseleave', () => hidePopover(popoverEl));
+      popoverEl.addEventListener('mouseenter', () => {
+        clearTimeout(hoverTimeout);
+      });
+
+      popoverEl.addEventListener('mouseleave', () => {
+        hidePopover(popoverEl);
+      });
     });
 
-    // Close all popovers when clicking outside
     document.addEventListener('click', (event) => {
       if (!event.target.closest('[data-popover-target]')) {
         hideAllPopovers();
       }
     });
 
-    // Close all popovers when the Escape key is pressed
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         hideAllPopovers();
@@ -134,9 +149,6 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
     });
   });
 </script>
-
-
-
 
       )
       }
