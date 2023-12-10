@@ -262,16 +262,18 @@ export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string
   if (post && richText.InternalHref?.BlockId) {
     block_linked = await getBlock(richText.InternalHref?.BlockId);
     block_linked_id = block_linked ? block_linked.Id : null;
+    console.log(blockID);
+    current_page_id = blockID ? getBlockParentPageId(blockID) : null;
+
     if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
       block_linked_id = buildHeadingId(
         block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,
       );
-      current_page_id = blockID ? getBlockParentPageId(blockID) : null;
     }
   }
 
   if (richText.Href && !richText.Mention && !richText.InternalHref) { return {hreflink:richText.Href, blocklinked:block_linked, conditionmatch:"external", post:post}; }
-  else if (block_linked_id && post && current_page_id && pageId == current_page_id) { return {hreflink:`#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_current_page", post:post};}
+  else if (block_linked_id && post && current_page_id && (pageId === current_page_id)) { return {hreflink:`#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_current_page", post:post};}
   else if (block_linked_id && post) { return  {hreflink:`${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_other_page", post:post};}
   else if (post) { return {hreflink:getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION), blocklinked:block_linked, conditionmatch:"other_page", post:post};}
   return {hreflink:null, blocklinked:null, conditionmatch:"no_match", post:null};;
