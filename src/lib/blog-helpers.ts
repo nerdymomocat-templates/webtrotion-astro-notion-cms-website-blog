@@ -262,7 +262,6 @@ export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string
   if (post && richText.InternalHref?.BlockId) {
     block_linked = await getBlock(richText.InternalHref?.BlockId);
     block_linked_id = block_linked ? block_linked.Id : null;
-    console.log(blockID);
     current_page_id = blockID ? getBlockParentPageId(blockID) : null;
 
     if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
