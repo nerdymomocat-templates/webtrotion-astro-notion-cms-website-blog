@@ -18,7 +18,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
-				<div key={index} class="mb-2" id={b.Id}>
+				<div key={index} class="mb-2" id={setId?b.Id:undefined}>
 					<div class={`flex items-start ${convertToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
 						<div class="pr-2">

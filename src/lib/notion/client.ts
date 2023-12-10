@@ -334,23 +334,6 @@ export function createReferencesToThisEntry(referencesInEntries: { referencesInP
   });
 }
 
-export function createBlockIdPostIdMap(referencesInEntries) {
-  const blockIdToPostIdMap = referencesInEntries.reduce((acc, { referencesInPage, entryId }) => {
-    if (referencesInPage) {
-      for (const reference of referencesInPage) {
-        const blockId = reference.block.Id; // Assuming each block has a unique 'id' property
-        acc[blockId] = entryId;
-      }
-    }
-    return acc;
-  }, {});
-
-  const blockToPostIdPath = path.join('./tmp', "blockid_to_postid_map.json");
-  fs.writeFileSync(blockToPostIdPath, JSON.stringify(blockIdToPostIdMap, null, 2), 'utf-8');
-
-  return true;
-}
-
 export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
   let results: responses.BlockObject[] = [];
 
@@ -459,25 +442,6 @@ export async function getBlock(blockId: string): Promise<Block | null> {
     console.error('Error retrieving block:' + blockId, error);
     return null; // Return null if an error occurs
   }
-}
-
-export function getBlockParentPageId(blockId: string): string | null {
-  // Load and parse the JSON only if blockIdPostIdMap is null
-  if (blockIdPostIdMap === null) {
-    const blockToPostIdPath = path.join('./tmp', "blockid_to_postid_map.json");
-
-    // Check if the file exists
-    if (fs.existsSync(blockToPostIdPath)) {
-      const fileContent = fs.readFileSync(blockToPostIdPath, 'utf-8');
-      blockIdPostIdMap = JSON.parse(fileContent);
-    } else {
-      // If the file does not exist, return null
-      return null;
-    }
-  }
-
-  // Return the parent page ID for the given block ID, or null if not found
-  return blockIdPostIdMap[blockId] || null;
 }
 
 

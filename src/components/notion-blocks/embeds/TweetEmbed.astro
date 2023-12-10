@@ -1,5 +1,5 @@
 ---
-import { Tweet } from '@astro-community/astro-embed-twitter';
+import Tweet from 'astro-tweet';
 export interface Props {
   url: URL
 }
@@ -10,8 +10,8 @@ const postURL =
   url.hostname === 'x.com' || url.hostname === 'www.x.com'
     ? new URL(url.pathname, 'https://twitter.com')
     : url
-// const tweetID = postURL.pathname.split("/")[3];
-const tweetID = postURL.toString();
+const tweetID = postURL.pathname.split("/")[3];
+// const tweetID = postURL.toString();
 ---
 {tweetID && (<div class="w-full max-w-[640px] mx-auto">
   <Tweet id={tweetID} />

@@ -10,13 +10,13 @@ export interface Props {
 	blockID?: string;
 }
 
-const { richText, blockID } = Astro.props;
-const {hreflink, blocklinked, conditionmatch, post} = await getAnchorLinkAndBlock(richText,blockID);
+const { richText } = Astro.props;
+const {hreflink, blocklinked, conditionmatch, post} = await getAnchorLinkAndBlock(richText);
 ---
 
 {
-  hreflink && REFERENCES && REFERENCES["popovers"] && conditionmatch && ["block_current_page", "block_other_page", "other_page"].includes(conditionmatch) && post && post.Title ? (
-    conditionmatch === "block_current_page" || conditionmatch === "block_other_page" ? (
+  hreflink && REFERENCES && REFERENCES["popovers"] && conditionmatch && ["block_current_or_other_page", "other_page"].includes(conditionmatch) && post && post.Title ? (
+    conditionmatch === "block_current_or_other_page" ? (
       <NBlocksPopover block={blocklinked} linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title}><slot /></NBlocksPopover>
     ) : (
       <NPagePopover linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title} postId={post.PageId} excerpt={post.Excerpt}><slot /></NPagePopover>

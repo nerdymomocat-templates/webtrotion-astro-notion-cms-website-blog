@@ -4,7 +4,7 @@ import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesI
 import slugify from '@sindresorhus/slugify';
 import path from 'path';
 import fs from "node:fs";
-import { getBlock, getBlockParentPageId, getPostByPageId } from "./notion/client";
+import { getBlock, getPostByPageId } from "./notion/client";
 
 
 const BASE_PATH = import.meta.env.BASE_URL;
@@ -246,13 +246,12 @@ export const getNavLink = (nav: string) => {
   return path.join(BASE_PATH, nav);
 };
 
-export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string): Promise<{hreflink:string | null, blocklinked:any | null, conditionmatch:string | null, post:Post|null}> => {
+export const getAnchorLinkAndBlock = async (richText: RichText): Promise<{hreflink:string | null, blocklinked:any | null, conditionmatch:string | null, post:Post|null}> => {
 
   let block_linked = null;
   let block_linked_id = null;
   let post: Post | null = null;
   let pageId = null;
-  let current_page_id = null;
 
   pageId = richText.InternalHref?.PageId;
   if (pageId) {
@@ -262,8 +261,6 @@ export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string
   if (post && richText.InternalHref?.BlockId) {
     block_linked = await getBlock(richText.InternalHref?.BlockId);
     block_linked_id = block_linked ? block_linked.Id : null;
-    current_page_id = blockID ? getBlockParentPageId(blockID) : null;
-
     if (block_linked && (block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3)) {
       block_linked_id = buildHeadingId(
         block_linked.Heading1 || block_linked.Heading2 || block_linked.Heading3,
@@ -272,8 +269,7 @@ export const getAnchorLinkAndBlock = async (richText: RichText, blockID?: string
   }
 
   if (richText.Href && !richText.Mention && !richText.InternalHref) { return {hreflink:richText.Href, blocklinked:block_linked, conditionmatch:"external", post:post}; }
-  else if (block_linked_id && post && current_page_id && (pageId === current_page_id)) { return {hreflink:`#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_current_page", post:post};}
-  else if (block_linked_id && post) { return  {hreflink:`${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_other_page", post:post};}
+  else if (block_linked_id && post) { return  {hreflink:`${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}/#${block_linked_id}`, blocklinked:block_linked, conditionmatch:"block_current_or_other_page", post:post};}
   else if (post) { return {hreflink:getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION), blocklinked:block_linked, conditionmatch:"other_page", post:post};}
   return {hreflink:null, blocklinked:null, conditionmatch:"no_match", post:null};;
 

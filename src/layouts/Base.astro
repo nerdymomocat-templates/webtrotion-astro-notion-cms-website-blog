@@ -49,7 +49,37 @@ const {
 {
 REFERENCES && REFERENCES["popovers"] && (
 <script type="module">
-  import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js';
+  import {computePosition, flip, inline, shift} from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("Gi");
+    document.querySelectorAll('[data-popover-target]').forEach(($triggerEl) => {
+        const popoverID = $triggerEl.getAttribute('data-popover-target');
+        const $popoverEl = document.getElementById(popoverID);
+
+        if ($popoverEl) {
+            const triggerType = "hover";
+            const placement = "auto";
+            const offset = $triggerEl.getAttribute('data-popover-offset');
+
+            new Popover(
+                $popoverEl as HTMLElement,
+                $triggerEl as HTMLElement,
+                {
+                    placement: placement ? placement : Default.placement,
+                    offset: offset ? parseInt(offset) : Default.offset,
+                    triggerType: triggerType
+                        ? triggerType
+                        : Default.triggerType,
+                } as PopoverOptions
+            );
+        } else {
+            console.error(
+                `The popover element with id "${popoverID}" does not exist. Please check the data-popover-target attribute.`
+            );
+        }
+    });
+  })
+
 </script>
   )
 }
