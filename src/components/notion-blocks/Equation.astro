@@ -11,7 +11,7 @@ const { block, setId=true  } = Astro.props;
 ---
 
 <div
-	class="equation text-center" id={setId?block.Id:undefined}
+	class="equation text-center overflow-x-auto max-w-full overscroll-none" id={setId?block.Id:undefined}
 	set:html={katex.renderToString(block.Equation.Expression, {
 		throwOnError: false,
 	})}

@@ -46,108 +46,101 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
   import { computePosition, offset, shift, flip, autoUpdate } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
 
   document.addEventListener('DOMContentLoaded', () => {
-    const popoverTriggers = document.querySelectorAll('[data-popover-target]');
-    let activePopover = null;
-    let cleanupAutoUpdate = new Map();
-    let hoverTimeout;
+  const popoverTriggers = document.querySelectorAll('[data-popover-target]');
+  let openPopovers = [];
+  let cleanupAutoUpdate = new Map();
+  let hoverTimeout;
 
-    const hidePopover = (popoverEl) => {
-      if (popoverEl) {
-        popoverEl.style.visibility = 'hidden';
-        popoverEl.style.opacity = '0';
-        popoverEl.style.top = '0px';
-        popoverEl.style.left = '0px';
-
-        const cleanup = cleanupAutoUpdate.get(popoverEl);
-        if (cleanup) {
-          cleanup();
-          cleanupAutoUpdate.delete(popoverEl);
-        }
-
-        if (activePopover === popoverEl) {
-          activePopover = null;
-        }
-      }
+  const hideAllPopovers = () => {
+    openPopovers.forEach(popoverEl => hidePopover(popoverEl));
     };
 
-    const hideAllPopovers = () => {
-      if (activePopover) {
-        hidePopover(activePopover);
+  const hidePopover = (popoverEl) => {
+    if (popoverEl) {
+      popoverEl.style.visibility = 'hidden';
+      popoverEl.style.opacity = '0';
+      popoverEl.style.top = '0px';
+      popoverEl.style.left = '0px';
+
+      const cleanup = cleanupAutoUpdate.get(popoverEl);
+      if (cleanup) {
+        cleanup();
+        cleanupAutoUpdate.delete(popoverEl);
       }
-    };
-
-    const showPopover = (triggerEl, popoverEl) => {
-      if (activePopover !== popoverEl) {
-        hideAllPopovers();
-        activePopover = popoverEl;
+      const openPopoverIndex = openPopovers.indexOf(popoverEl);
+      if (openPopoverIndex !== -1) {
+        openPopovers.splice(openPopoverIndex, 1);
       }
+    }
+  };
 
-      popoverEl.style.visibility = 'visible';
-      popoverEl.style.opacity = '1';
 
-      const update = () => {
-        computePosition(triggerEl, popoverEl, {
-          middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
-        }).then(({ x, y }) => {
-          Object.assign(popoverEl.style, {
-            left: `${x}px`,
-            top: `${y}px`,
-            position: 'absolute'
-          });
+  const showPopover = (triggerEl, popoverEl) => {
+
+    const update = () => {
+      computePosition(triggerEl, popoverEl, {
+        middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
+      }).then(({ x, y }) => {
+        Object.assign(popoverEl.style, {
+          left: `${x}px`,
+          top: `${y}px`,
+          position: 'absolute'
         });
-      };
-
-      update();
-      cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
+      });
     };
 
-    popoverTriggers.forEach(triggerEl => {
-      const popoverID = triggerEl.dataset.popoverTarget;
-      const popoverEl = document.getElementById(popoverID);
+    update();
+    popoverEl.style.visibility = 'visible';
+    popoverEl.style.opacity = '1';
+    openPopovers.push(popoverEl);
+    cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
+  };
 
-      triggerEl.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
-        showPopover(triggerEl, popoverEl);
-      });
+  popoverTriggers.forEach(triggerEl => {
+    const popoverID = triggerEl.dataset.popoverTarget;
+    const popoverEl = document.getElementById(popoverID);
 
-      triggerEl.addEventListener('mouseleave', () => {
-        hoverTimeout = setTimeout(() => {
-          // Check if the mouse moved to a child popover or left all popovers
-          if (!popoverEl.contains(document.activeElement)) {
-            hidePopover(popoverEl);
-          }
-        }, 100);
-      });
-
-      triggerEl.addEventListener('focus', () => {
-        showPopover(triggerEl, popoverEl);
-      });
-
-      triggerEl.addEventListener('blur', () => {
-        hidePopover(popoverEl);
-      });
-
-      popoverEl.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
-      });
-
-      popoverEl.addEventListener('mouseleave', () => {
-        hidePopover(popoverEl);
-      });
+    triggerEl.addEventListener('mouseenter', () => {
+      clearTimeout(hoverTimeout);
+      showPopover(triggerEl, popoverEl);
     });
 
-    document.addEventListener('click', (event) => {
-      if (!event.target.closest('[data-popover-target]')) {
-        hideAllPopovers();
-      }
+    triggerEl.addEventListener('mouseleave', () => {
+      hoverTimeout = setTimeout(() => {
+          hidePopover(popoverEl);
+      }, 100);
     });
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        hideAllPopovers();
-      }
+    triggerEl.addEventListener('focus', () => {
+      showPopover(triggerEl, popoverEl);
+    });
+
+    triggerEl.addEventListener('blur', () => {
+      hidePopover(popoverEl);
+    });
+
+    popoverEl.addEventListener('mouseenter', () => {
+      clearTimeout(hoverTimeout);
+    });
+
+    popoverEl.addEventListener('mouseleave', () => {
+      hidePopover(popoverEl);
     });
   });
+
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('[data-popover-target]')) {
+      hideAllPopovers();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      hideAllPopovers();
+    }
+  });
+});
+
 </script>
 
       )
