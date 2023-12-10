@@ -93,7 +93,7 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
 
       const update = () => {
         computePosition(triggerEl, popoverEl, {
-          middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
+          middleware: [offset(10),shift({ padding: 5 }), flip({ padding: 5 })]
         }).then(({ x, y }) => {
           Object.assign(popoverEl.style, {
             left: `${x}px`,
