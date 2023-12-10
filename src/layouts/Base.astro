@@ -47,8 +47,7 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
 
   document.addEventListener('DOMContentLoaded', () => {
     const popoverTriggers = document.querySelectorAll('[data-popover-target]');
-    let activePopover = null;
-    let activeNestedPopover = null;
+    let activePopovers = [];
     let cleanupAutoUpdate = new Map();
     let hoverTimeout;
 
@@ -56,43 +55,31 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       if (popoverEl) {
         popoverEl.style.visibility = 'hidden';
         popoverEl.style.opacity = '0';
+        popoverEl.style.top = '0px';  // Reset position
+        popoverEl.style.left = '0px';  // Reset position
         const cleanup = cleanupAutoUpdate.get(popoverEl);
         if (cleanup) {
           cleanup();
           cleanupAutoUpdate.delete(popoverEl);
         }
-        // Check if the popover being hidden is the main one or a nested one
-        if (popoverEl === activeNestedPopover) {
-          activeNestedPopover = null;
-        } else {
-          activePopover = null;
-          activeNestedPopover = null; // Also hide any nested popover
-        }
+        activePopovers = activePopovers.filter(el => el !== popoverEl);
       }
     };
 
     const hideAllPopovers = () => {
-      hidePopover(activeNestedPopover);
-      hidePopover(activePopover);
+      activePopovers.forEach(popoverEl => hidePopover(popoverEl));
     };
 
-    const showPopover = (triggerEl, popoverEl, isNested = false) => {
-      // If it's a main popover trigger, hide all popovers
-      if (!isNested) {
-        hideAllPopovers();
-        activePopover = popoverEl;
-      } else {
-        // If it's a nested popover trigger, only hide the nested popover
-        hidePopover(activeNestedPopover);
-        activeNestedPopover = popoverEl;
-      }
+    const showPopover = (triggerEl, popoverEl) => {
+      hideAllPopovers();
+      activePopovers.push(popoverEl);
 
       popoverEl.style.visibility = 'visible';
       popoverEl.style.opacity = '1';
 
       const update = () => {
         computePosition(triggerEl, popoverEl, {
-          middleware: [autoPlacement(), shift({ limiter: limitShift({ offset: 10 }) }), offset(12)]
+          middleware: [autoPlacement(), shift({ limiter: limitShift({ padding: 5 }) }), offset(12)]
         }).then(({ x, y }) => {
           Object.assign(popoverEl.style, {
             left: `${x}px`,
@@ -102,43 +89,37 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
         });
       };
 
-      update(); // Initial position update
+      update();
       cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
     };
 
     popoverTriggers.forEach(triggerEl => {
       const popoverID = triggerEl.dataset.popoverTarget;
       const popoverEl = document.getElementById(popoverID);
-      const isNested = triggerEl.closest('[data-popover]'); // Check if it's a nested trigger
 
+      // Mouse event listeners
       triggerEl.addEventListener('mouseenter', () => {
         clearTimeout(hoverTimeout);
-        showPopover(triggerEl, popoverEl, isNested);
+        showPopover(triggerEl, popoverEl);
       });
-
       triggerEl.addEventListener('mouseleave', () => {
-        // Start a timeout to hide the popover, which can be cleared if re-entered
-        hoverTimeout = setTimeout(() => {
-          if (isNested) {
-            hidePopover(activeNestedPopover);
-          } else {
-            hideAllPopovers();
-          }
-        }, 100); // Short delay before hiding the popover
+        hoverTimeout = setTimeout(() => hidePopover(popoverEl), 100);
       });
 
-      popoverEl.addEventListener('mouseenter', () => {
-        clearTimeout(hoverTimeout);
+      // Focus and blur event listeners for accessibility
+      triggerEl.addEventListener('focus', () => {
+        showPopover(triggerEl, popoverEl);
+      });
+      triggerEl.addEventListener('blur', () => {
+        hidePopover(popoverEl);
       });
 
-      popoverEl.addEventListener('mouseleave', () => {
-        hoverTimeout = setTimeout(() => {
-          hidePopover(isNested ? activeNestedPopover : activePopover);
-        }, 100);
-      });
+      // Popover event listeners
+      popoverEl.addEventListener('mouseenter', () => clearTimeout(hoverTimeout));
+      popoverEl.addEventListener('mouseleave', () => hidePopover(popoverEl));
     });
 
-    // Close all popovers when clicking elsewhere on the page
+    // Close all popovers when clicking outside
     document.addEventListener('click', (event) => {
       if (!event.target.closest('[data-popover-target]')) {
         hideAllPopovers();
@@ -153,6 +134,7 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
     });
   });
 </script>
+
 
 
 
