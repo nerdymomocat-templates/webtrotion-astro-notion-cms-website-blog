@@ -46,102 +46,125 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
   import { computePosition, offset, shift, flip, autoUpdate } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
 
   document.addEventListener('DOMContentLoaded', () => {
-  const popoverTriggers = document.querySelectorAll('[data-popover-target]');
-  let openPopovers = [];
-  let cleanupAutoUpdate = new Map();
-  let hoverTimeout;
+    const popoverTriggers = document.querySelectorAll('[data-popover-target]');
+    let openPopovers = [];
+    let cleanupAutoUpdate = new Map();
+    let hoverTimeouts = new Map();
 
-  const hideAllPopovers = () => {
-    openPopovers.forEach(popoverEl => hidePopover(popoverEl));
+    const getPopoverLevel = (el) => {
+      let level = 0;
+      while (el && el.closest('[data-popover-target]')) {
+        level++;
+        el = el.parentElement;
+      }
+      return level - 1;
     };
 
-  const hidePopover = (popoverEl) => {
-    if (popoverEl) {
-      popoverEl.style.visibility = 'hidden';
-      popoverEl.style.opacity = '0';
-      popoverEl.style.top = '0px';
-      popoverEl.style.left = '0px';
-
-      const cleanup = cleanupAutoUpdate.get(popoverEl);
-      if (cleanup) {
-        cleanup();
-        cleanupAutoUpdate.delete(popoverEl);
-      }
-      const openPopoverIndex = openPopovers.indexOf(popoverEl);
-      if (openPopoverIndex !== -1) {
-        openPopovers.splice(openPopoverIndex, 1);
-      }
-    }
-  };
-
-
-  const showPopover = (triggerEl, popoverEl) => {
-
-    const update = () => {
-      computePosition(triggerEl, popoverEl, {
-        middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
-      }).then(({ x, y }) => {
-        Object.assign(popoverEl.style, {
-          left: `${x}px`,
-          top: `${y}px`,
-          position: 'absolute'
-        });
+    const hideAllPopovers = (level = 0) => {
+      openPopovers.forEach(popoverEl => {
+        if (getPopoverLevel(popoverEl) >= level) {
+          hidePopover(popoverEl);
+        }
       });
     };
 
-    update();
-    popoverEl.style.visibility = 'visible';
-    popoverEl.style.opacity = '1';
-    openPopovers.push(popoverEl);
-    cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
-  };
+    const hidePopover = (popoverEl) => {
+      if (popoverEl) {
+        popoverEl.style.visibility = 'hidden';
+        popoverEl.style.opacity = '0';
+        popoverEl.style.top = '0px';
+        popoverEl.style.left = '0px';
 
-  popoverTriggers.forEach(triggerEl => {
-    const popoverID = triggerEl.dataset.popoverTarget;
-    const popoverEl = document.getElementById(popoverID);
+        const cleanup = cleanupAutoUpdate.get(popoverEl);
+        if (cleanup) {
+          cleanup();
+          cleanupAutoUpdate.delete(popoverEl);
+        }
+        const openPopoverIndex = openPopovers.indexOf(popoverEl);
+        if (openPopoverIndex !== -1) {
+          openPopovers.splice(openPopoverIndex, 1);
+        }
+      }
+    };
 
-    triggerEl.addEventListener('mouseenter', () => {
-      clearTimeout(hoverTimeout);
-      showPopover(triggerEl, popoverEl);
-    });
+    const showPopover = (triggerEl, popoverEl) => {
+      const level = getPopoverLevel(triggerEl);
+      hideAllPopovers(level);
 
-    triggerEl.addEventListener('mouseleave', () => {
-      hoverTimeout = setTimeout(() => {
+      const update = () => {
+        computePosition(triggerEl, popoverEl, {
+          middleware: [shift({ padding: 5 }), flip({ padding: 5 }), offset(10)]
+        }).then(({ x, y }) => {
+          Object.assign(popoverEl.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+            position: 'absolute'
+          });
+        });
+      };
+
+      update();
+      popoverEl.style.visibility = 'visible';
+      popoverEl.style.opacity = '1';
+      openPopovers.push(popoverEl);
+      cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
+    };
+
+    popoverTriggers.forEach(triggerEl => {
+      const popoverID = triggerEl.dataset.popoverTarget;
+      const popoverEl = document.getElementById(popoverID);
+
+      triggerEl.addEventListener('mouseenter', () => {
+        const timeoutId = hoverTimeouts.get(popoverEl);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          hoverTimeouts.delete(popoverEl);
+        }
+        showPopover(triggerEl, popoverEl);
+      });
+
+      triggerEl.addEventListener('mouseleave', () => {
+        const timeoutId = setTimeout(() => {
           hidePopover(popoverEl);
-      }, 100);
+        }, 100);
+        hoverTimeouts.set(popoverEl, timeoutId);
+      });
+
+      triggerEl.addEventListener('focus', () => {
+        showPopover(triggerEl, popoverEl);
+      });
+
+      triggerEl.addEventListener('blur', () => {
+        hidePopover(popoverEl);
+      });
+
+      popoverEl.addEventListener('mouseenter', () => {
+        const timeoutId = hoverTimeouts.get(popoverEl);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      });
+
+      popoverEl.addEventListener('mouseleave', () => {
+        hidePopover(popoverEl);
+      });
     });
 
-    triggerEl.addEventListener('focus', () => {
-      showPopover(triggerEl, popoverEl);
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-popover-target]')) {
+        hideAllPopovers();
+      }
     });
 
-    triggerEl.addEventListener('blur', () => {
-      hidePopover(popoverEl);
-    });
-
-    popoverEl.addEventListener('mouseenter', () => {
-      clearTimeout(hoverTimeout);
-    });
-
-    popoverEl.addEventListener('mouseleave', () => {
-      hidePopover(popoverEl);
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        hideAllPopovers();
+      }
     });
   });
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.closest('[data-popover-target]')) {
-      hideAllPopovers();
-    }
-  });
-
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-      hideAllPopovers();
-    }
-  });
-});
 
 </script>
+
 
       )
       }
