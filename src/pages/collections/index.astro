@@ -23,7 +23,7 @@ const collections = await getCollections();
 						class="cactus-link inline-block"
 						href={getNavLink("/collections/" + slugify(collection) + "/")}
 						title={`View posts with in collection: ${collection}`}
-						rel="prefetch"
+						data-astro-prefetch
 					>
 						{collection}
 					</a>

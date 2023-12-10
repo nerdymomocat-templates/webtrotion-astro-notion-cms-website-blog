@@ -1,5 +1,5 @@
 import type { AstroIntegration } from 'astro'
-import { downloadFile, getAllEntries, generateFilePath, getPostContentByPostId, createReferencesToThisEntry, createBlockIdPostIdMap } from '../lib/notion/client'
+import { downloadFile, getAllEntries, generateFilePath, getPostContentByPostId, createReferencesToThisEntry } from '../lib/notion/client'
 import { LAST_BUILD_TIME } from '../constants'
 import fs from "node:fs";
 
@@ -37,7 +37,6 @@ export default (): AstroIntegration => ({
       );
 
       // Once all entries are processed, call createBlockIdPostIdMap with the referencesInPages
-      createBlockIdPostIdMap(referencesInEntries);
       createReferencesToThisEntry(referencesInEntries);
     },
   },

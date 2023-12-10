@@ -10,6 +10,8 @@ import PostComments from "@/components/blog/PostComments";
 import { BOTTOM_TOC, REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import BottomTOC from "@/components/blog/BottomTOC.astro";
+import { Icon } from "astro-iconify";
+import { textToAstroIcon } from "@/lib/style-helpers";
 
 interface Props {
 	post: Post;
@@ -29,82 +31,6 @@ REFERENCES
 const socialImage = ogImage ? ogImage : `/og-image/${post.Slug}.png`;
 const articleDate = new Date(post.Date).toISOString();
 ---
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const scrollBtn = document.getElementById("to-top-btn") as HTMLButtonElement;
-    const targetHeader = document.getElementById("blog-hero") as HTMLDivElement;
-    const targetFooter = document.getElementById("main-footer") as HTMLDivElement;
-    const bottomTocNav = document.getElementById("bottom-toc-nav") as HTMLDivElement;
-    const targetGiscusPosts = document.getElementById("--layout-div-giscus-post-comments") as HTMLDivElement;
-
-    let isScrolling;
-    let isButtonScroll = false; // Flag to indicate scroll triggered by button
-
-    function callback(entries: IntersectionObserverEntry[]) {
-      entries.forEach((entry) => {
-        if (entry.target === targetHeader) {
-          scrollBtn.dataset.show = (!entry.isIntersecting).toString();
-        }
-
-        const isHeaderFooterVisible = entries.some((entry) => entry.isIntersecting);
-        bottomTocNav.classList.toggle("hidden", isHeaderFooterVisible);
-      });
-    }
-
-    scrollBtn.addEventListener("click", () => {
-      document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
-      isButtonScroll = true; // Set flag when button is clicked
-    });
-
-    function attachScrollListener() {
-      window.addEventListener(
-        "scroll",
-        function () {
-          if (!isButtonScroll) { // Only show/hide if not a button scroll
-            bottomTocNav.classList.remove("vopacity-0");
-            bottomTocNav.classList.add("vopacity-100");
-
-            window.clearTimeout(isScrolling);
-
-            isScrolling = setTimeout(function () {
-              bottomTocNav.classList.remove("vopacity-100");
-              bottomTocNav.classList.add("vopacity-0");
-            }, 1600);
-          } else {
-            // Clear the flag after the scroll
-            setTimeout(() => {
-              bottomTocNav.classList.remove("vopacity-100");
-              bottomTocNav.classList.add("vopacity-0");
-              isButtonScroll = false;
-            }, 1600); // Adjust the time to match scroll timeout if needed
-          }
-        },
-        false,
-      );
-    }
-
-    function checkScreenSize() {
-      if (window.matchMedia("(max-width: 640px)").matches && bottomTocNav) {
-        attachScrollListener();
-      } else {
-        // Optionally, remove the listener if the screen size is larger than 400px
-        window.removeEventListener("scroll", attachScrollListener);
-      }
-    }
-
-    checkScreenSize(); // Check screen size on initial load
-
-    window.addEventListener("resize", checkScreenSize); // Check screen size on resize
-
-    const observer = new IntersectionObserver(callback);
-    observer.observe(targetHeader);
-    observer.observe(targetFooter);
-    observer.observe(targetGiscusPosts);
-  });
-</script>
-
-
 
 <!-- <BaseLayout meta={{ title, description, articleDate, ogImage: socialImage }}> -->
 <BaseLayout
@@ -130,7 +56,7 @@ const articleDate = new Date(post.Date).toISOString();
 	</div>
 	<button
 		id="to-top-btn"
-		class={`z-90 fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12`}
+		class={`z-50 fixed ${BOTTOM_TOC?"bottom-20":"bottom-8"} sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12`}
 		aria-label="Back to Top"
 		data-show="false"
 		><svg
@@ -146,4 +72,76 @@ const articleDate = new Date(post.Date).toISOString();
 			<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 		</svg>
 	</button>
+  {BOTTOM_TOC && (<button
+  id="show-bottom-toc"
+  class={`z-50 fixed bottom-8 end-4 flex h-10 w-10 sm:hidden items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700`}
+  aria-label="Show table of contents"><Icon class="h-6 w-6" name={textToAstroIcon("table-of-contents")} aria-hidden="true"/>
+</button>)}
 </BaseLayout>
+
+<script>
+
+	document.addEventListener("DOMContentLoaded", function () {
+		const scrollBtn = document.getElementById("to-top-btn");
+		const targetHeader = document.getElementById("blog-hero");
+    const bottomTocNav = document.getElementById("bottom-toc-nav");
+    const showBottomToc = document.getElementById("show-bottom-toc");
+
+		function callback(entries: IntersectionObserverEntry[]) {
+			entries.forEach((entry) => {
+				if (entry.target === targetHeader) {
+					scrollBtn.dataset.show = (!entry.isIntersecting).toString();
+				}
+			});
+		}
+
+		scrollBtn.addEventListener("click", () => {
+			document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+		});
+		const observer = new IntersectionObserver(callback);
+		observer.observe(targetHeader);
+
+    if(bottomTocNav && showBottomToc) {showBottomToc.addEventListener("click", function() {
+    const showBottomTocBtn = this;
+
+    // Check if bottom-toc-nav is currently visible
+    const isVisible = bottomTocNav.classList.contains("vopacity-100");
+
+    // Toggle visibility
+    if (isVisible) {
+        // Hide bottom-toc-nav
+        bottomTocNav.classList.remove("vopacity-100");
+        bottomTocNav.classList.add("vopacity-0");
+
+        // Reset positions of buttons
+        scrollBtn.classList.remove("bottom-56");
+        scrollBtn.classList.add("bottom-20");
+        showBottomTocBtn.classList.remove("bottom-44");
+        showBottomTocBtn.classList.add("bottom-8");
+    } else {
+        // Show bottom-toc-nav
+        bottomTocNav.classList.remove("vopacity-0");
+        bottomTocNav.classList.add("vopacity-100");
+
+        // Shift positions of buttons
+        scrollBtn.classList.remove("bottom-20");
+        scrollBtn.classList.add("bottom-56");
+        showBottomTocBtn.classList.remove("bottom-8");
+        showBottomTocBtn.classList.add("bottom-44");
+
+        // Set a timer to hide bottom-toc-nav after 3 seconds
+        setTimeout(function() {
+            bottomTocNav.classList.remove("vopacity-100");
+            bottomTocNav.classList.add("vopacity-0");
+
+            // Reset positions of buttons
+            scrollBtn.classList.remove("bottom-56");
+            scrollBtn.classList.add("bottom-20");
+            showBottomTocBtn.classList.remove("bottom-44");
+            showBottomTocBtn.classList.add("bottom-8");
+        }, 3000);
+    }
+});}
+
+	});
+</script>

@@ -1,56 +1,172 @@
 ---
 import type { SiteMeta } from "@/types";
+// import { ViewTransitions } from "astro:transitions";
 import BaseHead from "@/components/BaseHead";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
 import { siteInfo } from "@/siteInfo";
 import { ENABLE_LIGHTBOX, REFERENCES } from "@/constants";
-
 interface Props {
-	meta: SiteMeta;
+meta: SiteMeta;
 }
-
 const {
-	meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
+meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
 } = Astro.props;
-
 ---
-
 <html lang={siteInfo.lang}>
-	<head>
-		<BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
-	</head>
-	<body>
-		<SkipLink />
-		<Header />
-		<main id="main" class="lg:w-[125%]">
-			<slot />
-		</main>
-		<Footer />
-    {/*Lightbox */}
-{
-  ENABLE_LIGHTBOX && (
-  <script type="module">
-  import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
+   <head>
+      <BaseHead title={title} description={description} ogImage={ogImage} articleDate={articleDate} />
+      <!-- <ViewTransitions /> -->
+   </head>
+   <body>
+      <SkipLink />
+      <Header />
+      <main id="main" class="lg:w-[125%]">
+         <slot />
+      </main>
+      <Footer />
+      {/*Lightbox */}
+      {
+      ENABLE_LIGHTBOX && (
+      <script type="module">
+         import 'https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js';
 
-  window.addEventListener('load', () => {
-    const lightbox = GLightbox({
-      selector: '.mediaglightbox, .fileglightbox, .embedglightbox'
+         window.addEventListener('load', () => {
+           const lightbox = GLightbox({
+             selector: '.mediaglightbox, .fileglightbox, .embedglightbox'
+           });
+         });
+      </script>
+      )
+      }
+      {
+      REFERENCES && REFERENCES["popovers"] && (
+      <script type="module">
+  import { computePosition, offset, shift, flip, autoUpdate } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const popoverTriggers = document.querySelectorAll('[data-popover-target]');
+    let openPopovers = [];
+    let cleanupAutoUpdate = new Map();
+    let hoverTimeouts = new Map();
+
+    const getPopoverLevel = (el) => {
+      let level = 0;
+      while (el && el.closest('[data-popover-target]')) {
+        level++;
+        el = el.parentElement;
+      }
+      return level - 1;
+    };
+
+    const hideAllPopovers = (level = 0) => {
+      openPopovers.forEach(popoverEl => {
+        if (getPopoverLevel(popoverEl) >= level) {
+          hidePopover(popoverEl);
+        }
+      });
+    };
+
+    const hidePopover = (popoverEl) => {
+      if (popoverEl) {
+        popoverEl.style.visibility = 'hidden';
+        popoverEl.style.opacity = '0';
+        popoverEl.style.top = '0px';
+        popoverEl.style.left = '0px';
+
+        const cleanup = cleanupAutoUpdate.get(popoverEl);
+        if (cleanup) {
+          cleanup();
+          cleanupAutoUpdate.delete(popoverEl);
+        }
+        const openPopoverIndex = openPopovers.indexOf(popoverEl);
+        if (openPopoverIndex !== -1) {
+          openPopovers.splice(openPopoverIndex, 1);
+        }
+      }
+    };
+
+    const showPopover = (triggerEl, popoverEl) => {
+      const level = getPopoverLevel(triggerEl);
+      hideAllPopovers(level);
+
+      const update = () => {
+        computePosition(triggerEl, popoverEl, {
+          middleware: [offset(10),shift({ padding: 5 }), flip({ padding: 5 })]
+        }).then(({ x, y }) => {
+          Object.assign(popoverEl.style, {
+            left: `${x}px`,
+            top: `${y}px`,
+            position: 'absolute'
+          });
+        });
+      };
+
+      update();
+      popoverEl.style.visibility = 'visible';
+      popoverEl.style.opacity = '1';
+      openPopovers.push(popoverEl);
+      cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
+    };
+
+    popoverTriggers.forEach(triggerEl => {
+      const popoverID = triggerEl.dataset.popoverTarget;
+      const popoverEl = document.getElementById(popoverID);
+
+      triggerEl.addEventListener('mouseenter', () => {
+        const timeoutId = hoverTimeouts.get(popoverEl);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          hoverTimeouts.delete(popoverEl);
+        }
+        showPopover(triggerEl, popoverEl);
+      });
+
+      triggerEl.addEventListener('mouseleave', () => {
+        const timeoutId = setTimeout(() => {
+          hidePopover(popoverEl);
+        }, 100);
+        hoverTimeouts.set(popoverEl, timeoutId);
+      });
+
+      triggerEl.addEventListener('focus', () => {
+        showPopover(triggerEl, popoverEl);
+      });
+
+      triggerEl.addEventListener('blur', () => {
+        hidePopover(popoverEl);
+      });
+
+      popoverEl.addEventListener('mouseenter', () => {
+        const timeoutId = hoverTimeouts.get(popoverEl);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+      });
+
+      popoverEl.addEventListener('mouseleave', () => {
+        hidePopover(popoverEl);
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('[data-popover-target]')) {
+        hideAllPopovers();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        hideAllPopovers();
+      }
     });
   });
+
 </script>
-)
 
 
-}
-{
-REFERENCES && REFERENCES["popovers"] && (
-<script type="module">
-  import 'https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.0/flowbite.min.js';
-</script>
-  )
-}
-
-	</body>
+      )
+      }
+   </body>
 </html>

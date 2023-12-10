@@ -22,7 +22,7 @@ const meta = {
 						class="cactus-link inline-block"
 						href={getNavLink("/tags/" + tag.name + "/")}
 						title={`View posts with the tag: ${tag.name}`}
-						rel="prefetch"
+						data-astro-prefetch
 					>
 						&#35;{tag.name}
 					</a>

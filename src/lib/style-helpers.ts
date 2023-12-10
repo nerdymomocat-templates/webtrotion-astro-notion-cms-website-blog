@@ -122,7 +122,8 @@ export const textToAstroIcon = (text: string) => {
     "page-mention-ne-arrow": "mdi:arrow-top-right-thin-circle-outline",
     "document": "mdi:file-document",
     "expand": "pepicons-print:expand-circle-filled",
-    "preview-pdf": "material-symbols:preview"
+    "preview-pdf": "material-symbols:preview",
+    "table-of-contents":"mdi:table-of-contents"
   }
   if (text in textIconMap) {
     return textIconMap[text];

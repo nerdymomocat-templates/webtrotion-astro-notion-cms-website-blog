@@ -61,7 +61,7 @@ And I did not want that. We want something that converts well into a static site
 
 # Key Features
 
-- Astro v3.0
+- Astro v4.0
 - **Integrates with Notion to create a website and not just a blog**
 - **Single file configuration**
 - TailwindCSS Utility classes **with Notion Color Matching for everything.**

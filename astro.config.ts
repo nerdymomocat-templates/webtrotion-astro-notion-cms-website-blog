@@ -1,8 +1,7 @@
 import { defineConfig } from "astro/config";
-import fs from "fs";
+import * as fs from "node:fs";
 // import { remarkReadingTime } from "./src/utils/remark-reading-time";
 import tailwind from "@astrojs/tailwind";
-import prefetch from "@astrojs/prefetch";
 import path from 'path';
 import { CUSTOM_DOMAIN, BASE_PATH } from "./src/constants";
 const getSite = function () {
@@ -55,7 +54,7 @@ export default defineConfig({
   // mdx({}),
   tailwind({
     applyBaseStyles: false
-  }), prefetch(),
+  }),
   // astroImageTools,
   buildTimestampRecorder(), CustomIconDownloader(), EntryCacheEr(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
     // Adds dataLayer.push as a forwarding-event.
@@ -66,6 +65,7 @@ export default defineConfig({
   image: {
     domains: ["webmention.io"]
   },
+  prefetch: true,
   vite: {
     plugins: [rawFonts([".ttf"])],
     optimizeDeps: {

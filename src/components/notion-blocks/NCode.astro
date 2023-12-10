@@ -41,7 +41,7 @@ const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
   code_inject ?
   (
     <div class="injectedcode w-full mb-1 max-w-full" id={setId?block.Id:undefined}>
-    <iframe srcdoc={code.replace(HTML_DIRECTIVE,"") } class="max-w-full sm:h-[220px] h-[340px] w-full border-none rounded-lg" loading="lazy"></iframe>
+    <iframe srcdoc={code.replace(HTML_DIRECTIVE,"") } class="max-w-full h-[340px] w-full border-none rounded-lg" loading="lazy"></iframe>
   </div>
 
   )
