@@ -1,21 +1,23 @@
 ---
+import type { HTMLTag } from "astro/types";
 import * as interfaces from "../../lib/interfaces.ts";
 import RichTextB from "./RichText.astro";
 
 export interface Props {
 	richTexts: interfaces.RichText[];
 	block?: interfaces.Block;
+  as?: HTMLTag;
 }
 
-const { richTexts, block } = Astro.props;
+const { richTexts, block, as: Tag = "div" } = Astro.props;
 ---
 
 {
 	(
-		<div class="caption pt-1 text-sm text-accent-2/50">
+		<Tag class="caption pt-1 text-sm text-accent-2/50">
 			{richTexts.map((richText: interfaces.RichText) => (
 				<RichTextB richText={richText} blockID={block.Id} />
 			))}
-		</div>
+		</Tag>
 	)
 }

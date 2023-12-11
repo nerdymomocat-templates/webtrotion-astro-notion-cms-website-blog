@@ -37,7 +37,7 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
                       <img class="block max-w-full rounded-md" src={image} alt={plainTextCaption} loading="lazy"/>
                   )}
               </div>
-              <Caption richTexts={block.NImage.Caption} block={block} />
+              <Caption richTexts={block.NImage.Caption} block={block} as="figcaption" />
           </div>
       )
   }
