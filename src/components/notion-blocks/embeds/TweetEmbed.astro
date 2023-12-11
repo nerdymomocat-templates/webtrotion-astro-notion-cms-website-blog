@@ -13,7 +13,7 @@ const postURL =
 const tweetID = postURL.pathname.split("/")[3];
 // const tweetID = postURL.toString();
 ---
-{tweetID && (<div class="w-full max-w-[640px] mx-auto">
+{tweetID && (<div class="w-full max-w-full mx-auto">
   <Tweet id={tweetID} />
 </div>
 <script>
