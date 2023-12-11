@@ -11,7 +11,7 @@ import { BOTTOM_TOC, REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import BottomTOC from "@/components/blog/BottomTOC.astro";
 import { Icon } from "astro-iconify";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 interface Props {
 	post: Post;
@@ -75,7 +75,7 @@ const articleDate = new Date(post.Date).toISOString();
   {BOTTOM_TOC && (<button
   id="show-bottom-toc"
   class={`z-30 fixed bottom-8 end-4 flex h-10 w-10 sm:hidden items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700`}
-  aria-label="Show table of contents"><Icon class="h-6 w-6" name={textToAstroIcon("table-of-contents")} aria-hidden="true"/>
+  aria-label="Show table of contents"><Icon class="h-6 w-6" name={getTextToAstroIcon("table-of-contents")} aria-hidden="true"/>
 </button>)}
 </BaseLayout>
 

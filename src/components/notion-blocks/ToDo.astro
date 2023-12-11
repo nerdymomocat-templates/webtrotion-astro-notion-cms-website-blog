@@ -1,6 +1,6 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { convertToTailwindColor } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
@@ -19,7 +19,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
 				<div key={index} class="mb-2" id={setId?b.Id:undefined}>
-					<div class={`flex items-start ${convertToTailwindColor(b.ToDo.Color)}`}>
+					<div class={`flex items-start ${getNotionColorToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
 						<div class="pr-2">
 							{/* Padding for the checkbox */}

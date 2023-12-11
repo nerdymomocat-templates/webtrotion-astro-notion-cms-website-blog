@@ -2,13 +2,13 @@
 import { Icon } from "astro-iconify";
 import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)
 		.map(([key, value]): SocialLink => {
 			// Handling special case for email
-			let iconname = textToAstroIcon(key);
+			let iconname = getTextToAstroIcon(key);
 			iconname = iconname ? iconname : "mdi:web";
 			if (key === "email") {
 				return {

@@ -1,6 +1,6 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { convertToTailwindColor } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
@@ -14,7 +14,7 @@ export interface Props {
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<div class={`${convertToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`} id={setId?block.Id:undefined}>
+<div class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`} id={setId?block.Id:undefined}>
 	{
 		block.Paragraph.RichTexts.map((richText) => (
 			<RichText richText={richText} blockID={block.Id} />

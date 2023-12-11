@@ -1,7 +1,7 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
 import { buildHeadingId } from "../../lib/blog-helpers.ts";
-import { convertToTailwindColor } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 
 export interface Props {
 	block: interfaces.Block;
@@ -27,7 +27,7 @@ const { block, headings, setId=true } = Astro.props;
 			return (
 				<a
 					href={`#${buildHeadingId(heading)}`}
-					class={`block leading-7 table-of-contents hover:font-bold ${convertToTailwindColor(
+					class={`block leading-7 table-of-contents hover:font-bold ${getNotionColorToTailwindColor(
 						block.TableOfContents.Color,
 					)} ${indentClass}`}
 				>

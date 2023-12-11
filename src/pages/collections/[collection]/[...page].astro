@@ -9,7 +9,7 @@ import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "@/lib/interfaces";
 import { getCollections } from "@/utils";
 import slugify from "@sindresorhus/slugify";
-import { convertToTailwindColor, convertToTailwindColorForBorder } from "@/lib/style-helpers";
+import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 
@@ -117,9 +117,9 @@ const paginationProps = {
 						{uniqueTags.map((tag) => (
 							<li>
 								<a
-									class={`flex items-center justify-center rounded-lg border p-1 ${convertToTailwindColor(
+									class={`flex items-center justify-center rounded-lg border p-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
-									)} ${convertToTailwindColorForBorder(tag.color + "-background")}`}
+									)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
 									href={getNavLink("/tags/" + tag.name + "/")}
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>

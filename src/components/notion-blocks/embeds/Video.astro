@@ -4,7 +4,7 @@ import { isYouTubeURL, parseYouTubeVideoId } from "../../../lib/blog-helpers.ts"
 import Caption from "../Caption.astro";
 import { filePath } from "../../../lib/blog-helpers";
 import EmbedGeneric from "./EmbedGeneric.astro";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 import Icon from "astro-iconify";
 import { ENABLE_LIGHTBOX } from "@/constants";
 
@@ -47,7 +47,7 @@ const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainTe
       {
 						ENABLE_LIGHTBOX && (
 							<a href={videoUrl} class="mediaglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent" data-description={plainTextCaption}>
-								<Icon name={textToAstroIcon("expand")} class="inline h-6 w-6" />
+								<Icon name={getTextToAstroIcon("expand")} class="inline h-6 w-6" />
 							</a>
 						)
 					}

@@ -1,6 +1,6 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { convertToTailwindColor, convertToTailwindColorForBorder, generateIconTailwindFilterStyle } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder, getIconTailwindFilterStyle } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
@@ -13,13 +13,13 @@ export interface Props {
 
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
-<div class={`callout flex my-2 mx-auto py-4 px-3 w-full leading-6 rounded border ${convertToTailwindColor(block.Callout.Color)} ${convertToTailwindColorForBorder(block.Callout.Color)}`} id={setId?block.Id:undefined}>
+<div class={`callout flex my-2 mx-auto py-4 px-3 w-full leading-6 rounded border ${getNotionColorToTailwindColor(block.Callout.Color)} ${getNotionColorToTailwindColorForBorder(block.Callout.Color)}`} id={setId?block.Id:undefined}>
     <div class="m-0 leading-6 mr-2">
         {
             block.Callout.Icon.Type === "emoji" ? (
                 block.Callout.Icon.Emoji
             ) : block.Callout.Icon.Type === "external" ? (
-                <img src={block.Callout.Icon.Url} class={`w-5 h-5 max-w-none ${generateIconTailwindFilterStyle(block.Callout.Icon.Url)}`} />
+                <img src={block.Callout.Icon.Url} class={`w-5 h-5 max-w-none ${getIconTailwindFilterStyle(block.Callout.Icon.Url)}`} />
             ) : null
         }
     </div>

@@ -3,7 +3,7 @@ import { Post } from "../../lib/interfaces.ts";
 import { getPostByPageId } from "../../lib/notion/client";
 import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION, REFERENCES } from "@/constants";
-import { textToAstroIcon, generateIconTailwindFilterStyle, isNotionIconURL } from "@/lib/style-helpers";
+import { getTextToAstroIcon, getIconTailwindFilterStyle, isNotionIconURL } from "@/lib/style-helpers";
 import { Icon } from "astro-iconify";
 // import { rootHasDarkClass } from "@/utils";
 
@@ -31,17 +31,17 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class={`h-4 w-4 flex-shrink-0 align-sub inline ${generateIconTailwindFilterStyle(post.Icon.Url)}`} />
-					) : textToAstroIcon("document") ? (
-						<Icon name={textToAstroIcon("document")} class="inline h-4 w-4" />
+						<img src={post.Icon.Url} class={`h-4 w-4 flex-shrink-0 align-sub inline ${getIconTailwindFilterStyle(post.Icon.Url)}`} />
+					) : getTextToAstroIcon("document") ? (
+						<Icon name={getTextToAstroIcon("document")} class="inline h-4 w-4" />
 					) : (
 						"📄"
 					)}
 				</span>
 				<span class="w-full inline">{post.Title}</span>
 
-				{textToAstroIcon("page-mention-ne-arrow") ? (
-					<Icon name={textToAstroIcon("page-mention-ne-arrow")} class="inline h-4 w-4" />
+				{getTextToAstroIcon("page-mention-ne-arrow") ? (
+					<Icon name={getTextToAstroIcon("page-mention-ne-arrow")} class="inline h-4 w-4" />
 				) : (
 					<svg
 						class="h-4 w-4"

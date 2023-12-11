@@ -1,5 +1,5 @@
 // eslint-disable-next-line prettier/prettier
-export const convertToTailwindColor = (s: string) => {
+export const getNotionColorToTailwindColor = (s: string) => {
   // Convert snake_case to kebab-case
   const kebabCase = s.replaceAll("_", "-");
 
@@ -34,7 +34,7 @@ export const convertToTailwindColor = (s: string) => {
   return colorMap[kebabCase];
 };
 
-export const convertToTailwindColorForBorder = (s: string) => {
+export const getNotionColorToTailwindColorForBorder = (s: string) => {
   // Convert snake_case to kebab-case
   const kebabCase = s.replaceAll("_", "-");
 
@@ -58,7 +58,7 @@ export const convertToTailwindColorForBorder = (s: string) => {
   return colorMap[kebabCase];
 };
 
-export const iconCssFilter = (iconUrl: string): string | null | undefined => {
+export const getIconCssFilter = (iconUrl: string): string | null | undefined => {
   // Regular expression to match the pattern:
   // (1) Any characters after the last underscore
   // (2) Ending with ".svg"
@@ -70,7 +70,7 @@ export const iconCssFilter = (iconUrl: string): string | null | undefined => {
   return match ? match[1] : null;
 }
 
-export const generateIconTailwindFilterStyle = (url: string): string => {
+export const getIconTailwindFilterStyle = (url: string): string => {
   // if (!url.startsWith('https://www.notion.so/icons/')) {
   //       return '';
   //   }
@@ -100,7 +100,7 @@ export const isNotionIconURL = (url:string): boolean => {
 }
 
 
-export const textToAstroIcon = (text: string) => {
+export const getTextToAstroIcon = (text: string) => {
   const textIconMap = {
     "🗓️": "mdi:calendar-blank",
     "download": "mdi:download-circle",
@@ -123,7 +123,9 @@ export const textToAstroIcon = (text: string) => {
     "document": "mdi:file-document",
     "expand": "pepicons-print:expand-circle-filled",
     "preview-pdf": "material-symbols:preview",
-    "table-of-contents":"mdi:table-of-contents"
+    "table-of-contents":"mdi:table-of-contents",
+    "clear-search":"mdi:format-clear",
+    "close-search":"mdi:close-thick"
   }
   if (text in textIconMap) {
     return textIconMap[text];

@@ -4,7 +4,7 @@ import { getMenu } from "@/utils";
 import { siteInfo } from "@/site.config";
 import { filePath, getNavLink } from "@/lib/blog-helpers";
 import {Icon} from "astro-iconify";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 import ThemeIcon from "../ThemeIcon.astro";
 
 const menuLinks = await getMenu();
@@ -86,7 +86,7 @@ const rss_path = getNavLink("/rss.xml");
 		<div class="h-10 w-10 items-center justify-center rounded-md p-1.5 hover:text-accent">
 			<a href={rss_path}
 				><Icon
-					name={textToAstroIcon("rss")}
+					name={getTextToAstroIcon("rss")}
 					class="h-7 w-7 hover:text-accent"
 					aria-label="Open RSS Link"
 				/></a

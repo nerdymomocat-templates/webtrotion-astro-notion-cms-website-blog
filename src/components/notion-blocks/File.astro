@@ -1,7 +1,7 @@
 ---
 import * as interfaces from "../../lib/interfaces";
 import { filePath } from "../../lib/blog-helpers";
-import { textToAstroIcon } from "@/lib/style-helpers";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 import { Icon } from "astro-iconify";
 import { ENABLE_LIGHTBOX } from "@/constants";
 
@@ -36,7 +36,7 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 					rel="noopener noreferrer"
 				>
 					<span class="text-sm inline-flex items-center justify-center rounded-lg p-0.5 font-medium webtrotion-page-link">
-						Download <Icon name={textToAstroIcon("download")} class="inline h-4 w-4" />
+						Download <Icon name={getTextToAstroIcon("download")} class="inline h-4 w-4" />
 
 					</span>
 				</a>
@@ -44,7 +44,7 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 				{filename.endsWith(".pdf") && ENABLE_LIGHTBOX && (
           <a href={block.File.External ? url.String() : filePath(url)} class="hidden fileglightbox sm:inline" type="application/pdf">
 					<span class="text-sm inline-flex items-center ml-2 justify-center underline decoration-wavy decoration-accent-2/20 p-0.5 font-medium hover:decoration-accent/40">
-						Preview <Icon name={textToAstroIcon("preview-pdf")} class="inline h-4 w-4" />
+						Preview <Icon name={getTextToAstroIcon("preview-pdf")} class="inline h-4 w-4" />
 					</span>
         </a>
 				)}

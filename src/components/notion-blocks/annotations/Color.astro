@@ -1,6 +1,6 @@
 ---
 import { RichText } from "../../../lib/interfaces.ts";
-import { convertToTailwindColor } from "../../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../../lib/style-helpers.ts";
 
 export interface Props {
 	richText: RichText;
@@ -12,7 +12,7 @@ const { richText } = Astro.props;
 {
 	/* prettier-ignore */
 	richText.Annotation.Color && richText.Annotation.Color !== 'default' ? (
-    <span class={convertToTailwindColor(richText.Annotation.Color)}><slot /></span>
+    <span class={getNotionColorToTailwindColor(richText.Annotation.Color)}><slot /></span>
   ) : (
     <slot />
   )

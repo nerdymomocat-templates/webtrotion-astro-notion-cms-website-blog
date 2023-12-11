@@ -1,6 +1,6 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { convertToTailwindColor } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
@@ -15,7 +15,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
 <blockquote
-	class={`nquote !p-4 my-4 border-s-4 border-gray-300 dark:border-gray-500 ${convertToTailwindColor(
+	class={`nquote !p-4 my-4 border-s-4 border-gray-300 dark:border-gray-500 ${getNotionColorToTailwindColor(
 		block.Quote.Color,
 	)}`} id={setId?block.Id:undefined}
 >

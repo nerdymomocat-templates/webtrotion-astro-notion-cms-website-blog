@@ -2,6 +2,8 @@
 // Heavy inspiration taken from Astro Starlight -> https://github.com/withastro/starlight/blob/main/packages/starlight/components/Search.astro
 
 import "@pagefind/default-ui/css/ui.css";
+import { Icon } from "astro-iconify";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 ---
 
 <site-search id="search" class="ms-auto">
@@ -29,13 +31,13 @@ import "@pagefind/default-ui/css/ui.css";
 	</button>
 	<dialog
 		aria-label="search"
-		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-bgColor shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-md"
+		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-bgColor shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-lg"
 	>
-		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6">
+		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6 bg-opacity-80">
 			<button
 				data-close-modal
-				class="ms-auto cursor-pointer rounded-md bg-zinc-200 p-2 font-semibold dark:bg-zinc-700"
-				>Close</button
+				class="ms-auto cursor-pointer rounded-md bg-zinc-200 p-2 font-semibold dark:bg-zinc-700" aria-label="Close Search"
+				><Icon class="h-6 w-6 inline" name={getTextToAstroIcon("close-search")} aria-hidden="true"/></button
 			>
 			{
 				import.meta.env.DEV ? (
@@ -151,9 +153,9 @@ import "@pagefind/default-ui/css/ui.css";
 	}
 	#cactus__search .pagefind-ui__search-clear::before {
 		content: "";
-		-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12'%3E%3C/path%3E%3C/svg%3E")
+		-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'  %3E%3Cpath d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E")
 			center / 60% no-repeat;
-		mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 18L18 6M6 6l12 12'%3E%3C/path%3E%3C/svg%3E")
+		mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E")
 			center / 60% no-repeat;
 		background-color: theme("colors.accent");
 		display: block;
@@ -162,8 +164,15 @@ import "@pagefind/default-ui/css/ui.css";
 	}
 
 	#cactus__search .pagefind-ui__result {
+    padding: 12px;
 		border: 0;
 	}
+  @media (max-width: 640px){
+    #cactus__search .pagefind-ui__drawer {
+        gap: 12px !important;
+    }
+  }
+
 
 	#cactus__search .pagefind-ui__result-link {
 		background-size: 100% 6px;

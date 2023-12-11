@@ -1,6 +1,6 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { convertToTailwindColor } from "../../lib/style-helpers.ts";
+import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
@@ -14,7 +14,7 @@ export interface Props {
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<details class={`toggle ${convertToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
+<details class={`toggle ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
 	<summary class="flex cursor-pointer list-none list-image-none gap-2">
     <div>
     <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="none" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
