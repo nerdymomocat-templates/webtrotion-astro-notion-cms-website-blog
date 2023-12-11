@@ -63,7 +63,7 @@ const paginationProps = {
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6 flex items-center">
+	<h1 class="title mb-6 flex max-w-full items-center">
 		<a
 			href={getNavLink("/tags/")}
 			class="hove text-accent underline-offset-4 underline-offset-4 sm:hover:underline" aria-label="View all tags">Tags</a
@@ -75,7 +75,7 @@ const paginationProps = {
 		<ul class="space-y-8">
 			{
 				page.data.map((p) => (
-					<li class="flex flex-col flex-wrap gap-2 [&_q]:basis-full">
+					<li class="flex max-w-full flex-col flex-wrap gap-2 [&_q]:basis-full">
 						<PostPreview post={p} as="h2" withDesc />
 					</li>
 				))

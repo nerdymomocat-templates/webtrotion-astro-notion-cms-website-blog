@@ -13,17 +13,8 @@ const postURL =
 const tweetID = postURL.pathname.split("/")[3];
 // const tweetID = postURL.toString();
 ---
-{tweetID && (<div class="w-full max-w-full mx-auto">
+{tweetID && (<div class="w-full max-w-full mx-auto overflow-scroll">
   <Tweet id={tweetID} />
 </div>
-<script>
-const twitterElements = document.querySelectorAll('.astro-tweet-theme');
-twitterElements.forEach((element) => {
-    const htmlElement = element;
-    htmlElement.style.setProperty('--tweet-container-margin','0')
-    htmlElement.style.setProperty('--tweet-body-font-size','1rem')
-    // Remove other properties as needed
-});
-
-</script>)
+)
 }

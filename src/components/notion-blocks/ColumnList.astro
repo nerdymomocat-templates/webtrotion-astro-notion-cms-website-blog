@@ -12,10 +12,10 @@ export interface Props {
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<div class="flex flex-wrap w-full mx-auto my-4 gap-x-4 md:flex-nowrap">
+<div class="flex flex-wrap w-full mx-auto my-4 gap-x-4 md:flex-nowrap max-w-full">
   {
     block.ColumnList.Columns.map((column: interfaces.Column) => (
-      <div  class="ncolumns flex-1 min-w-[180px] w-[180px] md:w-auto">
+      <div  class="ncolumns flex-1 min-w-[180px] w-[180px] md:w-auto max-w-full">
         <NotionBlocks blocks={column.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>
       </div>
     ))

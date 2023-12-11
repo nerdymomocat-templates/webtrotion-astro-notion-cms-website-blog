@@ -17,7 +17,7 @@ const meta = {
 	<ul class="space-y-4">
 		{
 			allTags.map((tag) => (
-				<li class="flex items-center gap-x-2">
+				<li class="flex max-w-full items-center gap-x-2">
 					<a
 						class="webtrotion-page-link inline-block"
 						href={getNavLink("/tags/" + tag.name + "/")}

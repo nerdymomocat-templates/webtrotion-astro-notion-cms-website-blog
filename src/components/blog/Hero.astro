@@ -19,7 +19,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 ---
 
 <h1 class="title mb-3 sm:mb-1">{post.Title}</h1>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+<div class="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
 	</p>
