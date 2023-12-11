@@ -3,6 +3,8 @@ import { getAllPosts, getAllPages } from "@/lib/notion/client";
 import { getPostLink } from '../lib/blog-helpers'
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getCollections } from "@/utils";
+import slugify from '@sindresorhus/slugify';
+
 
 export const GET = async () => {
   const [posts, pages] = await Promise.all([getAllPosts(), getAllPages()]);
@@ -22,7 +24,7 @@ export const GET = async () => {
   ).join('');
 
   const generateCollectionEntries = (collectionNames) => collectionNames.map(collectionName =>
-    `<url><loc>${new URL(getPostLink('collections/' + collectionName, true), import.meta.env.SITE).toString()}</loc></url>`
+    `<url><loc>${new URL(getPostLink('collections/' + slugify(collectionName), true), import.meta.env.SITE).toString()}</loc></url>`
   ).join('');
 
   const postEntries = generateEntries(filteredPosts, false);
