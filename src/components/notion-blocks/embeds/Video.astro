@@ -46,8 +46,8 @@ const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainTe
       <>
       {
 						ENABLE_LIGHTBOX && (
-							<a href={videoUrl} class="mediaglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent" data-description={plainTextCaption}>
-								<Icon name={getTextToAstroIcon("expand")} class="inline h-6 w-6" />
+							<a href={videoUrl} class="mediaglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent" data-description={plainTextCaption} aria-label="Expand to view in lightbox">
+								<Icon name={getTextToAstroIcon("expand")} class="inline h-6 w-6" aria-hidden="true"/>
 							</a>
 						)
 					}

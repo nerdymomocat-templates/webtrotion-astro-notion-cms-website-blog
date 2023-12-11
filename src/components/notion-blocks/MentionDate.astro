@@ -12,6 +12,6 @@ const icon_name = getTextToAstroIcon(text);
 ---
 {
   icon_name
-    ? <Icon name={icon_name} class="inline h-5 w-5" />
+    ? <Icon name={icon_name} class="inline h-5 w-5" aria-hidden="true"/>
     : text
 } {' '+mention_date}

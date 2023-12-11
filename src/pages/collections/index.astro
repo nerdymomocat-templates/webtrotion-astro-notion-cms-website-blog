@@ -24,6 +24,7 @@ const collections = await getCollections();
 						href={getNavLink("/collections/" + slugify(collection) + "/")}
 						title={`View posts with in collection: ${collection}`}
 						data-astro-prefetch
+            aria-label={`View posts with in collection: ${collection}`}
 					>
 						{collection}
 					</a>

@@ -43,7 +43,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 						target="_blank"
 						rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
 					>
-						<Icon class="h-6 w-6" name={name} aria-hidden="true" focusable="false" />
+						<Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
 						<span class="sr-only">{friendlyName}</span>
 					</a>
 				</li>

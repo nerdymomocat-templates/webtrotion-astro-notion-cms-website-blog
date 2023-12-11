@@ -22,6 +22,7 @@ const meta = {
 						class="webtrotion-page-link inline-block"
 						href={getNavLink("/tags/" + tag.name + "/")}
 						title={`View posts with the tag: ${tag.name}`}
+            aria-label={`View posts with the tag: ${tag.name}`}
 						data-astro-prefetch
 					>
 						&#35;{tag.name}

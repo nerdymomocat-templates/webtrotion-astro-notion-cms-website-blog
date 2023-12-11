@@ -31,9 +31,9 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
-						<img src={post.Icon.Url} class={`h-4 w-4 flex-shrink-0 align-sub inline ${getIconTailwindFilterStyle(post.Icon.Url)}`} />
+						<img src={post.Icon.Url} class={`h-4 w-4 flex-shrink-0 align-sub inline ${getIconTailwindFilterStyle(post.Icon.Url)}`} alt=""/>
 					) : getTextToAstroIcon("document") ? (
-						<Icon name={getTextToAstroIcon("document")} class="inline h-4 w-4" />
+						<Icon name={getTextToAstroIcon("document")} class="inline h-4 w-4" aria-hidden="true"/>
 					) : (
 						"📄"
 					)}
