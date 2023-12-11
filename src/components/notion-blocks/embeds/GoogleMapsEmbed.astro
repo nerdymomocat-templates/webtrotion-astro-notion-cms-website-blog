@@ -16,7 +16,7 @@ const { url, caption } = Astro.props;
     <Icon name={getTextToAstroIcon("expand")} class="inline h-6 w-6" aria-hidden="true"/>
   </a>)}
 
-  <iframe data-src={url.toString()} allowfullscreen="" loading="lazy" class="max-w-full lazyload w-full h-full absolute top-0 left-0 border-none rounded-lg" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  <iframe src={url.toString()} allowfullscreen="" loading="lazy" class="max-w-full w-full h-full absolute top-0 left-0 border-none rounded-lg" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </div>
 
 <style>
