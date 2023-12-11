@@ -17,8 +17,8 @@ const tweetID = postURL.pathname.split("/")[3];
   <Tweet id={tweetID} />
 </div>
 <script>
-const elements = document.querySelectorAll('.astro-tweet-theme');
-elements.forEach((element) => {
+const twitterElements = document.querySelectorAll('.astro-tweet-theme');
+twitterElements.forEach((element) => {
     const htmlElement = element;
     htmlElement.style.setProperty('--tweet-container-margin','0')
     htmlElement.style.setProperty('--tweet-body-font-size','1rem')

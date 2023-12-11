@@ -87,7 +87,7 @@ const articleDate = new Date(post.Date).toISOString();
     const bottomTocNav = document.getElementById("bottom-toc-nav");
     const showBottomToc = document.getElementById("show-bottom-toc");
 
-		function callback(entries: IntersectionObserverEntry[]) {
+		function callback(entries) {
 			entries.forEach((entry) => {
 				if (entry.target === targetHeader) {
 					scrollBtn.dataset.show = (!entry.isIntersecting).toString();
