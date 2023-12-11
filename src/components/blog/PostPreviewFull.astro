@@ -5,9 +5,10 @@ import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
 import type { Post } from "src/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink } from "@/lib/blog-helpers";
+import { extractTargetBlocks, getNavLink, getPostLink } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
 import { convertToTailwindColor, convertToTailwindColorForBorder } from "@/lib/style-helpers";
+import { MENU_PAGES_COLLECTION } from "@/constants";
 
 // type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 // 	post: CollectionEntry<"post">;
@@ -40,6 +41,7 @@ const processedFile = await processFileBlocks(fileAtacchedBlocks);
 
 //TODO: what is this?
 // const postDate = post.data.updatedDate ?? post.data.publishDate;
+const postLink = getPostLink(post_full_preview.Slug, post_full_preview.Collection === MENU_PAGES_COLLECTION);
 ---
 
 <FormattedDate
@@ -48,11 +50,8 @@ const processedFile = await processFileBlocks(fileAtacchedBlocks);
 />
 
 <a
-	href={`#${post_full_preview.Slug}`}
-	id={post_full_preview.Slug}
-	onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);"
-	class="inline"
-	data-astro-prefetch
+	href={postLink}
+	class="inline no-underline webtrotion-page-link"
 >
 	<Tag class="font-bold">
 		{post_full_preview.Title}
@@ -104,19 +103,3 @@ const processedFile = await processFileBlocks(fileAtacchedBlocks);
 <section>
 	<NotionBlocks blocks={blocks} isRoot={true} />
 </section>
-
-<style>
-	h2::before {
-		content: "#";
-		position: absolute;
-		color: rgb(var(--accent));
-		margin-left: -1.5rem;
-		display: inline-block;
-		opacity: 0; /* Start with invisible content */
-		transition: opacity 0.3s ease; /* Transition the opacity */
-	}
-
-	h2:hover::before {
-		opacity: 1; /* Make the content visible on hover */
-	}
-</style>

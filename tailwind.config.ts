@@ -115,14 +115,8 @@ export default {
     require("@tailwindcss/aspect-ratio"),
     plugin(function ({ addComponents }) {
       addComponents({
-        ".cactus-link": {
-          "@apply bg-[size:100%_6px] bg-bottom bg-repeat-x": {},
-          backgroundImage:
-            "linear-gradient(transparent,transparent 5px,rgb(var(--theme-text)) 5px,rgb(var(--theme-text)))",
-          "&:hover": {
-            backgroundImage:
-              "linear-gradient(transparent,transparent 4px,rgb(var(--theme-link)) 4px,rgb(var(--theme-link)))",
-          },
+        ".webtrotion-page-link": {
+          "@apply underline decoration-wavy decoration-accent-2/20 hover:decoration-accent/40 underline-offset-2 hover:underline": {}
         },
         ".title": {
           "@apply text-2xl font-semibold text-accent-2": {},

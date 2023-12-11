@@ -145,6 +145,8 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 </>
 
 <script>
+
+	document.addEventListener("DOMContentLoaded", function () {
 	const scrollBtn = document.getElementById("to-top-btn");
 	const targetHeader = document.getElementById("blog-hero");
 
@@ -160,6 +162,6 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 	});
 
 	const observer = new IntersectionObserver(callback);
-	observer.observe(targetHeader);
+	observer.observe(targetHeader);});
 </script>
 )}
