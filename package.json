@@ -17,7 +17,6 @@
     "@astrojs/partytown": "^2.0.2",
     "@astrojs/rss": "^4.0.1",
     "@astrojs/tailwind": "^5.0.3",
-    "@floating-ui/dom": "^1.5.3",
     "@notionhq/client": "^2.2.13",
     "@sindresorhus/slugify": "^2.2.1",
     "astro": "^4.0.3",
