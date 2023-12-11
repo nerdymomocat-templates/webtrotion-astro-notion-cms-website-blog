@@ -173,6 +173,7 @@ const rss_path = getNavLink("/rss.xml");
 				if (!isClickInsideNav && mainHeader) {
 					// If the click is outside the navMenu and mainHeader exists, remove 'menu-open' attribute
 					mainHeader.classList.remove("menu-open");
+          toggleButton.setAttribute("aria-expanded", "false");
 				}
 			}
 		});
