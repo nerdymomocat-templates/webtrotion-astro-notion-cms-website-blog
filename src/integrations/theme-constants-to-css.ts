@@ -52,6 +52,10 @@ export default (): AstroIntegration => ({
   html body {
     @apply mx-auto flex min-h-screen max-w-3xl flex-col bg-bgColor px-8 pt-8 text-textColor antialiased overflow-x-hidden;
   }
+
+  * {
+    @apply scroll-mt-10
+  }
 }`;
 
       // Define the path to the output CSS file
