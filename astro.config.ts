@@ -56,7 +56,9 @@ export default defineConfig({
     applyBaseStyles: false
   }),
   // astroImageTools,
-  buildTimestampRecorder(), CustomIconDownloader(), EntryCacheEr(), PublicNotionCopier(), CSSWriter(), robotsTxt(), partytown({
+  buildTimestampRecorder(), CustomIconDownloader(), EntryCacheEr(), PublicNotionCopier(), CSSWriter(), robotsTxt({
+    sitemapBaseFileName: 'sitemap',
+  }), partytown({
     // Adds dataLayer.push as a forwarding-event.
     config: {
       forward: ["dataLayer.push"]
