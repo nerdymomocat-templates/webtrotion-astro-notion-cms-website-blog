@@ -22,7 +22,7 @@ const {hreflink, blocklinked, conditionmatch, post} = await getAnchorLinkAndBloc
       <NPagePopover linkedTo={hreflink} popoverSpanText={""} popoverTitle={post.Title} postId={post.PageId} excerpt={post.Excerpt}><slot /></NPagePopover>
     )
   ) : hreflink ? (
-    <a href={hreflink} class="text-link underline decoration-accent-2 hover:decoration-accent underline-offset-4">
+    <a href={hreflink} class="text-link webtrotion-page-link decoration-solid">
       <slot />
     </a>
   ) : (
