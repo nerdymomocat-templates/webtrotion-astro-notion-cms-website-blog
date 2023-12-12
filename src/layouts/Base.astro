@@ -68,14 +68,17 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
 
     const hidePopover = (popoverEl) => {
       if (popoverEl) {
-        popoverEl.classList.add('opacity-0');
+        popoverEl.style.visibility = 'hidden';
+        popoverEl.classList.add('hidden');
+        popoverEl.style.opacity = '0';
+        popoverEl.style.top = '0px';
+        popoverEl.style.left = '0px';
 
-        const transitionEndHandler = () => {
-          popoverEl.classList.add('hidden', 'invisible');
-          popoverEl.removeEventListener('transitionend', transitionEndHandler);
-        };
-        popoverEl.addEventListener('transitionend', transitionEndHandler);
-
+        const cleanup = cleanupAutoUpdate.get(popoverEl);
+        if (cleanup) {
+          cleanup();
+          cleanupAutoUpdate.delete(popoverEl);
+        }
         const openPopoverIndex = openPopovers.indexOf(popoverEl);
         if (openPopoverIndex !== -1) {
           openPopovers.splice(openPopoverIndex, 1);
@@ -87,14 +90,9 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       const level = getPopoverLevel(triggerEl);
       hideAllPopovers(level);
 
-      popoverEl.classList.remove('hidden');
-      requestAnimationFrame(() => {
-        popoverEl.classList.remove('invisible', 'opacity-0');
-      });
-
       const update = () => {
         computePosition(triggerEl, popoverEl, {
-          middleware: [offset(10), shift({ padding: 5 }), flip({ padding: 5 })]
+          middleware: [offset(10),shift({ padding: 5 }), flip({ padding: 5 })]
         }).then(({ x, y }) => {
           Object.assign(popoverEl.style, {
             left: `${x}px`,
@@ -105,6 +103,12 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       };
 
       update();
+      popoverEl.classList.remove('hidden');
+  requestAnimationFrame(() => {
+    popoverEl.style.visibility = 'visible';
+      popoverEl.style.opacity = '1';
+  });
+
       openPopovers.push(popoverEl);
       cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
     };
@@ -114,6 +118,11 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       const popoverEl = document.getElementById(popoverID);
 
       triggerEl.addEventListener('mouseenter', () => {
+        const timeoutId = hoverTimeouts.get(popoverEl);
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+          hoverTimeouts.delete(popoverEl);
+        }
         showPopover(triggerEl, popoverEl);
       });
 
@@ -156,6 +165,7 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       }
     });
   });
+
 </script>
 
 
