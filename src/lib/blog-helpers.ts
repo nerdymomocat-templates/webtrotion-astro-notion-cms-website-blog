@@ -466,7 +466,6 @@ export const parseYouTubeVideoIdTitle = async (url: URL): Promise<[string,string
   if (id){const res = await fetch(`https://noembed.com/embed?dataType=json&url=https://www.youtube.com/embed/${id}`);
   const data = await res.json();
   title = data.title;}
-  console.log(title, id);
   return [id,title];
 };
 
