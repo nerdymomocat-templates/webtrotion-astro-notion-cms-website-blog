@@ -45,16 +45,16 @@ const rss_path = getNavLink("/rss.xml");
 				) : siteInfo.logo && siteInfo.logo.Type === "external" ? (
 					<>
 						<img
-							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
-							src={siteInfo.logo.Url} alt="Site header image"
+							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0 lazyload"
+							data-src={siteInfo.logo.Url} alt="Site header image"
 						/>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
 					</>
 				) : siteInfo.logo && siteInfo.logo.Type === "file" && customIconURL ? (
 					<>
 						<img
-							src={customIconURL}
-							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0" alt="Site header image"
+							data-src={customIconURL}
+							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0 lazyload" alt="Site header image"
 						/>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
 					</>
