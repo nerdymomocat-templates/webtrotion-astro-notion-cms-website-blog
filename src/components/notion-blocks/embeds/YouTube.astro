@@ -1,0 +1,77 @@
+---
+export interface Props extends astroHTML.JSX.HTMLAttributes {
+  embedParams?: EmbedParams
+  thumbnailRes?: ThumbnailRes
+  title: string
+  videoId: string
+}
+
+interface EmbedParams {
+  autoplay?: ToggleParam
+  cc_lang_pref?: string
+  cc_load_policy?: ToggleParam
+  color?: 'red' | 'white'
+  controls?: ToggleParam
+  disablekb?: ToggleParam
+  enablejsapi?: ToggleParam
+  end?: number
+  fs?: ToggleParam
+  hl?: string
+  iv_load_policy?: 1 | '1' | 3 | '3'
+  list?: string
+  listType?: 'playlist' | 'user_uploads'
+  loop?: ToggleParam
+  modestbranding?: ToggleParam
+  origin?: string
+  playlist?: string
+  playslinline?: ToggleParam
+  rel?: ToggleParam
+  start?: number
+  widget_referrer?: string
+}
+
+type ToggleParam = 0 | '0' | 1 | '1'
+
+type ThumbnailRes = 120 | '120' | 'default' | 320 | '320' | 'medium' | 480 | '480' | 'high' | 640 | '640' | 'standard' | 1280 | '1280' | 'maxres'
+
+const QUALITY_PREFIXES = {
+  120: '',
+  default: '',
+  320: 'mq',
+  medium: 'mq',
+  480: 'hq',
+  high: 'hq',
+  640: 'sd',
+  standard: 'sd',
+  1280: 'maxres',
+  maxres: 'maxres',
+}
+
+let {
+  embedParams,
+  thumbnailRes = 'standard',
+  title,
+  videoId,
+  ...attrs
+} = Astro.props as Props
+
+let params: EmbedParams = {...{autoplay: 1, modestbranding: 1}, ...embedParams}
+
+let thumbnailUrl = `https://img.youtube.com/vi/${videoId}/${QUALITY_PREFIXES[thumbnailRes]}default.jpg`
+let embedQuery = Object.keys(params).map(key => `${key}=${params[key]}`).join('&')
+let embedUrl = `https://www.youtube.com/embed${videoId ? `/${videoId}` : ''}${embedQuery ? `?${embedQuery}` : ''}`
+let playButtonSvg = `<svg height="100%" version="1.1" viewBox="0 0 68 48" width="100%"><path d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#f00"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>`
+let gradientStyle = `.gradient{width:100%;height:49px;padding-bottom:50px;position:absolute;top:0;background-repeat:repeat-x;background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAADGCAYAAAAT+OqFAAAAdklEQVQoz42QQQ7AIAgEF/T/D+kbq/RWAlnQyyazA4aoAB4FsBSA/bFjuF1EOL7VbrIrBuusmrt4ZZORfb6ehbWdnRHEIiITaEUKa5EJqUakRSaEYBJSCY2dEstQY7AuxahwXFrvZmWl2rh4JZ07z9dLtesfNj5q0FU3A5ObbwAAAABJRU5ErkJggg==);pointer-events:none;}`
+let style = `<style>*{padding:0;margin:0;overflow:hidden}html,body{height:100%}img{position:absolute;width:100%;top:0;bottom:0;margin:auto}.button{position:absolute;left:50%;top:50%;width:68px;height:48px;margin-left:-34px;margin-top:-24px;}.top{position:absolute;top:18px;left:18px;right:18px;display:flex;flex-wrap:nowrap}.title{color:#fff;font-size:18px;white-space:nowrap;word-wrap:normal;text-shadow:0 0 2px rgba(0,0,0,.5);font-family:"YouTube Noto",Roboto,Arial,Helvetica,sans-serif;line-height:1.3;text-overflow:ellipsis;overflow:hidden;}${gradientStyle}</style>`
+let srcdoc = `${style}<a href="${embedUrl}"><img src="${thumbnailUrl}" alt="${title}"><div class="gradient"></div><div class="top"><div class="title">${title}</div></div><div class="button">${playButtonSvg}</div></a>`
+---
+<iframe
+  allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+  style="width: 100%; aspect-ratio: 16/9;"
+  {...attrs}
+  src={embedUrl}
+  srcdoc={srcdoc}
+  title={title}
+  class="border-none"
+/>

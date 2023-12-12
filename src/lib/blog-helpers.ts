@@ -444,24 +444,30 @@ export const isYouTubeURL = (url: URL): boolean => {
 // - https://www.youtube.com/v/0zM3nApSvMg?fs=1&amp;hl=en_US&amp;rel=0
 // - https://www.youtube.com/embed/0zM3nApSvMg?rel=0
 // - https://youtube.com/live/uOLwqWlpKbA
-export const parseYouTubeVideoId = (url: URL): string => {
-  if (!isYouTubeURL(url)) return "";
+export const parseYouTubeVideoIdTitle = async (url: URL): Promise<[string,string]> => {
+  if (!isYouTubeURL(url)) return ["",""];
+  let id ="";
 
   if (url.hostname === "youtu.be") {
-    return url.pathname.split("/")[1];
+    id= url.pathname.split("/")[1];
   } else if (url.pathname === "/watch") {
-    return url.searchParams.get("v") || "";
+    id= url.searchParams.get("v") || "";
   } else {
     const elements = url.pathname.split("/");
 
-    if (elements.length < 2) return "";
+    if (elements.length < 2) {id= ""};
 
     if (elements[1] === "v" || elements[1] === "embed" || elements[1] === "live") {
-      return elements[2];
+      id= elements[2];
     }
   }
 
-  return "";
+  let title="";
+  if (id){const res = await fetch(`https://noembed.com/embed?dataType=json&url=https://www.youtube.com/embed/${id}`);
+  const data = await res.json();
+  title = data.title;}
+  console.log(title, id);
+  return [id,title];
 };
 
 export const isEmbeddableURL = async (url: URL): Promise<boolean> => {
