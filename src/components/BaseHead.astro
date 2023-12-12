@@ -106,15 +106,11 @@ const faviconLink = getNavLink("/favicon.ico")
 	)
 }
 <script is:inline src={getNavLink("/scripts/lazysizes.min.js")} async=""></script>
-{
-  PUBLIC_GA_TRACKING_ID && (
-  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA_TRACKING_ID}`}></script>
-  <script type="text/partytown" define:vars={{ PUBLIC_GA_TRACKING_ID }}>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+<script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=G-J7JWVG489F`}></script>
+<script type="text/partytown">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
 
-    gtag('config', PUBLIC_GA_TRACKING_ID);
-  </script>
-)
-}
+  gtag('config',"G-J7JWVG489F");
+</script>

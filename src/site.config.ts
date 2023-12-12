@@ -16,8 +16,6 @@ export const siteInfo: SiteConfig = {
   author: AUTHOR,
   lang: "en",
   homePageSlug: HOME_PAGE_SLUG,
-  // Include view-transitions: https://docs.astro.build/en/guides/view-transitions/
-  includeViewTransitions: false,
   // Meta property, found in src/components/BaseHead.astro L:42
   ogLocale: "en",
   // Date.prototype.toLocaleDateString() parameters, found in src/utils/date.ts.

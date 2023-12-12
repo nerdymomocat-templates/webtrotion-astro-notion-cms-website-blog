@@ -18,7 +18,6 @@ export type SiteConfig = {
     locale: string | string[] | undefined;
     options: Intl.DateTimeFormatOptions;
   };
-  includeViewTransitions: boolean;
   homePageSlug: string;
   webmentions?: {
     link: string;
