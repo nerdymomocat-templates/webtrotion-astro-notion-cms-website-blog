@@ -125,7 +125,9 @@ export const getTextToAstroIcon = (text: string) => {
     "preview-pdf": "material-symbols:preview",
     "table-of-contents":"mdi:table-of-contents",
     "clear-search":"mdi:format-clear",
-    "close-search":"mdi:close-thick"
+    "close-search":"mdi:close-thick",
+    "checkbox-blank":"mdi:checkbox-blank-outline",
+    "checkbox-checked":"mdi:checkbox-marked"
   }
   if (text in textIconMap) {
     return textIconMap[text];

@@ -3,6 +3,8 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
+import { Icon } from "astro-iconify";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 export interface Props {
   block: interfaces.Block;
@@ -19,16 +21,13 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
 				<div key={index} class="mb-2" id={setId?b.Id:undefined}>
-					<div class={`flex max-w-full items-start ${getNotionColorToTailwindColor(b.ToDo.Color)}`}>
+					<div class={`flex max-w-full items-center ${getNotionColorToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
 						<div class="pr-2">
 							{/* Padding for the checkbox */}
-							<input
-								type="checkbox"
-								checked={b.ToDo.Checked}
-								disabled
-								class="checkbox h-4 w-4 rounded border-gray-300 bg-gray-100 dark:border-gray-600 dark:bg-gray-700"
-							/>
+
+              <Icon class="h-5 w-5 text-textColor/50" name={getTextToAstroIcon(b.ToDo.Checked?"checkbox-checked":"checkbox-blank")} aria-label={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} focusable="false" />
+
 						</div>
 						<div class="flex-1">
 							{/* Container for text, taking up the rest of the space */}
