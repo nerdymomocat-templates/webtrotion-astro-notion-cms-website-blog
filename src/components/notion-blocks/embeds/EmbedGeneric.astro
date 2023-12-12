@@ -18,7 +18,7 @@ const { url, caption } = Astro.props;
     <iframe
 	allowtransparency="true"
 	class="max-w-full h-[340px] w-full border-none rounded-lg lazyload"
+  loading="lazy"
 	data-src={url.toString()}
-	loading="lazy"
   title={caption}></iframe>
   </div>

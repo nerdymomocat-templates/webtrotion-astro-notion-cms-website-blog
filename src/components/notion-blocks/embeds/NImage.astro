@@ -31,10 +31,10 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
               <div>
                   {ENABLE_LIGHTBOX ? (
                       <a data-type="image" href={image} class="mediaglightbox" data-description={plainTextCaption} aria-label={`Open image with alt ${plainTextCaption} in lightbox`}>
-                          <img class="block max-w-full rounded-md" src={image} alt={plainTextCaption} loading="lazy"/>
+                          <img class="imagemedia block max-w-full rounded-md"  loading="lazy" src={image} alt={plainTextCaption}/>
                       </a>
                   ) : (
-                      <img class="block max-w-full rounded-md" src={image} alt={plainTextCaption} loading="lazy"/>
+                      <img class="imagemedia block max-w-full rounded-md" src={image} loading="lazy" alt={plainTextCaption}/>
                   )}
               </div>
               <Caption richTexts={block.NImage.Caption} block={block} as="figcaption" />
