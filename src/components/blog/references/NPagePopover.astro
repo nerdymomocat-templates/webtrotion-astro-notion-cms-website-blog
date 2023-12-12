@@ -18,7 +18,7 @@ let id = "id" + Math.random().toString(16).slice(2)+"---"+postId;
       <div class="p-3 space-y-2">
           <h3 class="font-semibold underline decoration-wavy decoration-accent-2/20 text-accent">{popoverTitle}</h3>
           {excerpt && <p>{excerpt}</p>}
-          <a href={linkedTo} class="flex max-w-full items-center font-medium text-blue-600 dark:text-blue-500 dark:hover:text-blue-600 hover:text-blue-700 hover:underline">{linkText}<svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <a href={linkedTo} class="flex max-w-full items-center font-medium text-link/90 hover:underline">{linkText}<svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
     </svg></a>
       </div>
