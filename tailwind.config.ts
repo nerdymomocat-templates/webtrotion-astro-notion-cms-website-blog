@@ -116,7 +116,7 @@ export default {
     plugin(function ({ addComponents }) {
       addComponents({
         ".webtrotion-page-link": {
-          "@apply underline decoration-wavy decoration-accent-2/20 hover:decoration-accent/40 underline-offset-2 hover:underline": {}
+          "@apply underline decoration-wavy decoration-accent-2/20 hover:decoration-accent-2/40 underline-offset-2 hover:underline": {}
         },
         ".title": {
           "@apply text-2xl font-semibold text-accent-2": {},

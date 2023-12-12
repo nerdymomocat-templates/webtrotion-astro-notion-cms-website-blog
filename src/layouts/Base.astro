@@ -166,5 +166,17 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
 
       )
       }
+      <script>
+        // Find the first image element on the page
+        var firstImage = document.querySelector('img');
+
+        // Check if an image element exists on the page
+        if (firstImage) {
+          // Log the source of the first image
+          console.log("First image source: " + firstImage);
+        } else {
+          console.log("No image element found on the page.");
+        }
+      </script>
    </body>
 </html>

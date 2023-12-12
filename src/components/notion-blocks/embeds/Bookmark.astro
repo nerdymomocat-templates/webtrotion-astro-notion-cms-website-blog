@@ -54,10 +54,11 @@ try {
 						<div class="mt-1.5 flex max-w-full">
 							<div class="min-w-4 mr-1.5 h-4 w-4">
 								<img
-									class="inline-block max-w-full lazyload"
-									data-src={`https://www.google.com/s2/favicons?domain=${url.hostname}`}
+									class="inline-block max-w-full"
+									src={`https://www.google.com/s2/favicons?domain=${url.hostname}`}
 									alt="title"
 									decoding="async"
+                  loading="lazy"
 								/>
 							</div>
 							<div class="overflow-hidden truncate whitespace-nowrap text-xs leading-4">
@@ -68,10 +69,11 @@ try {
 					<div class="flex-bookmark-image max-w-sm:hidden relative">
 						{metadata && metadata.image && (
 							<img
-								class="!absolute h-full w-full object-cover object-left-top lazyload"
-								data-src={metadata.image}
+								class="!absolute h-full w-full object-cover object-left-top"
+								src={metadata.image}
 								alt="title"
 								decoding="async"
+                loading="lazy"
 							/>
 						)}
 					</div>

@@ -153,24 +153,3 @@ const articleDate = new Date(post.Date).toISOString();
 		}
 	});
 </script>
-
-<script>
-	document.addEventListener("DOMContentLoaded", function () {
-		document.querySelectorAll("button.copy").forEach((button) => {
-			button.addEventListener("click", (ev) => {
-				const code = ev.currentTarget.getAttribute("data-code");
-				navigator.clipboard.writeText(code);
-				const svgBefore = button.querySelector(".copy-icon-before");
-				const svgAfter = button.querySelector(".copy-icon-done");
-				if (svgBefore && svgAfter) {
-					svgBefore.classList.toggle("hidden");
-					svgAfter.classList.toggle("hidden");
-					setTimeout(() => {
-						svgBefore.classList.toggle("hidden");
-						svgAfter.classList.toggle("hidden");
-					}, 1000);
-				}
-			});
-		});
-	});
-</script>
