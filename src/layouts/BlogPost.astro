@@ -43,17 +43,21 @@ const articleDate = new Date(post.Date).toISOString();
 			<div class="mt-12">
 				<slot />
 				<hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />
+        {REFERENCES && <ReferencesSection post={post} />}
 
-				{REFERENCES && <ReferencesSection post={post} />}
-
-				<WebMentions />
-
-				<PostComments />
 			</div>
 		</article>
 		{!!headings.length && <TOC headings={headings} />}
 		{!!headings.length && BOTTOM_TOC && <BottomTOC headings={headings} />}
 	</div>
+  <div class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-x-10">
+		<aside class="col-span-3" data-pagefind-ignore="all">
+
+  <WebMentions />
+
+  <PostComments />
+</aside>
+  </div>
 	<button
 		id="to-top-btn"
 		class={`z-30 fixed ${
