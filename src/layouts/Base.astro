@@ -23,25 +23,6 @@ meta: { title = siteInfo.title, description = siteInfo.description, ogImage, art
       <main id="main" class="lg:w-[125%]">
          <slot />
       </main>
-      <script>
-        var firstImage = null;
-        var mainSection = document.querySelector("main");
-        if (mainSection) {firstImage = mainSection.querySelector(".imagemedia");}
-        if (firstImage)
-        {var { top, left, bottom, right } = firstImage.getBoundingClientRect();
-         var { innerHeight, innerWidth } = window;
-        const isInViewPort = ((top > 0 && top < innerHeight) ||
-              (bottom > 0 && bottom < innerHeight)) &&
-              ((left > 0 && left < innerWidth) || (right > 0 && right < innerWidth));
-              if (isInViewPort) {
-           firstImage.setAttribute('loading', 'eager');
-
-        }
-
-            }
-
-
-      </script>
       <Footer />
       {/*Lightbox */}
       {

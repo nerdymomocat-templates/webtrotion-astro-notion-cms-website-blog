@@ -11,7 +11,7 @@ import { getCollections } from "@/utils";
 import slugify from "@sindresorhus/slugify";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
-import { getNavLink } from "@/lib/blog-helpers";
+import { getNavLink, resetFirstImage } from "@/lib/blog-helpers";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const posts = await getAllPosts();
@@ -73,7 +73,7 @@ const paginationProps = {
 		<section aria-label="Blog post list">
 			<ul class="space-y-8 text-start">
 				{
-					page.data.map((post) =>
+					resetFirstImage() && page.data.map((post) =>
 						FULL_PREVIEW_COLLECTIONS.includes(collection) ? (
 							<>
 								<li class="flex flex-col max-w-full flex-wrap gap-2 [&_q]:basis-full">

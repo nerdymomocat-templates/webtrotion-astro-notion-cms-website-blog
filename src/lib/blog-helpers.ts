@@ -10,7 +10,13 @@ import { getBlock, getPostByPageId } from "./notion/client";
 const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
 let referencesToPageCache: { [entryId: string]: { entryId: string, block: Block }[] } | null = null;
+let firstImage  = true;
 
+export function resetFirstImage() {firstImage=true; return firstImage;}
+export function getFirstImage() {
+  let returnval = firstImage;
+  if (firstImage){firstImage=false;}
+  return returnval; }
 
 export const filePath = (url: URL): string => {
   const [dir, filename] = url.pathname.split("/").slice(-2);

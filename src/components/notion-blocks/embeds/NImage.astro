@@ -1,7 +1,7 @@
 ---
 import { ENABLE_LIGHTBOX } from "../../../constants.ts";
 import * as interfaces from "../../../lib/interfaces.ts";
-import { filePath } from "../../../lib/blog-helpers";
+import { filePath, getFirstImage } from "../../../lib/blog-helpers";
 import Caption from "../Caption.astro";
 // import GLightbox from 'glightbox';
 
@@ -31,10 +31,10 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
               <div>
                   {ENABLE_LIGHTBOX ? (
                       <a data-type="image" href={image} class="mediaglightbox" data-description={plainTextCaption} aria-label={`Open image with alt ${plainTextCaption} in lightbox`}>
-                          <img class="imagemedia block max-w-full rounded-md"  loading="lazy" src={image} alt={plainTextCaption}/>
+                          <img class="imagemedia block max-w-full rounded-md"  loading={getFirstImage()?"eager":"lazy"} src={image} alt={plainTextCaption}/>
                       </a>
                   ) : (
-                      <img class="imagemedia block max-w-full rounded-md" src={image} loading="lazy" alt={plainTextCaption}/>
+                      <img class="imagemedia block max-w-full rounded-md" src={image} loading={getFirstImage()?"eager":"lazy"} alt={plainTextCaption}/>
                   )}
               </div>
               <Caption richTexts={block.NImage.Caption} block={block} as="figcaption" />

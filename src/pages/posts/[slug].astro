@@ -1,7 +1,7 @@
 ---
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import PostLayout from "@/layouts/BlogPost.astro";
-import { extractTargetBlocks } from "@/lib/blog-helpers";
+import { extractTargetBlocks, resetFirstImage } from "@/lib/blog-helpers";
 import {
 	getAllPosts,
 	getPostContentByPostId,
@@ -55,7 +55,7 @@ if (postFound) {
 	const processedFile = await processFileBlocks(fileAtacchedBlocks);
 }
 ---
-  {postFound &&
+  {postFound && resetFirstImage() &&
   (<PostLayout post={post} headings={headings}>
 	<div class="post-body max-w-prose">
 		 <NotionBlocks blocks={blocks} isRoot={true} />
