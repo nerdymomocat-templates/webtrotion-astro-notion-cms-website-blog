@@ -1,8 +1,8 @@
 ---
 import { Icon } from "astro-iconify";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
-import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)

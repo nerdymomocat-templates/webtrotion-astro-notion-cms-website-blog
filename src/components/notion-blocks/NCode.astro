@@ -20,6 +20,8 @@ import 'prismjs/components/prism-json'
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
 import { HTML_DIRECTIVE } from "@/constants";
+import { Icon } from "astro-iconify";
+import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 export interface Props {
 	block: interfaces.Block;
@@ -51,10 +53,9 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   <div class="code w-full mb-1 font-mono relative max-w-full" id={setId?block.Id:undefined}>
 	<div>
           <div class="flex max-w-full">
-            <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0" data-code={code} aria-label="copy code">
-              <svg class="inline h-5 w-5 transition-colors duration-300 svg-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                  <path fill="#888888" d="M19 21H8V7h11m0-2H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2m-3-4H4a2 2 0 0 0-2 2v14h2V3h12V1Z"/>
-              </svg>
+            <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-textColor/50" data-code={code} aria-label="copy code">
+              <Icon class="h-6 w-6 copy-icon-before" name={getTextToAstroIcon("clipboard-copy-code")} aria-label="copy code"/>
+              <Icon class="h-6 w-6 copy-icon-done hidden" name={getTextToAstroIcon("clipboard-copy-code-done")} aria-label="copied code"/>
             </button>
           </div>
 		{
@@ -68,22 +69,6 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 	</div>
 	<Caption richTexts={block.Code.Caption}  block={block}/>
 </div>
-
-<script>
-  document.querySelectorAll("button.copy").forEach((button) => {
-  button.addEventListener("click", (ev) => {
-    const svg = button.querySelector('.svg-icon path');
-    const code = ev.currentTarget.getAttribute("data-code");
-    navigator.clipboard.writeText(code);
-    if (svg) {
-      svg.setAttribute("fill", "limegreen");
-      setTimeout(() => {
-        svg.setAttribute("fill", "#888888");
-      }, 1000);
-    }
-  });
-});
-</script>
   )
 }
 <script>

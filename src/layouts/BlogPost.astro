@@ -56,7 +56,9 @@ const articleDate = new Date(post.Date).toISOString();
 	</div>
 	<button
 		id="to-top-btn"
-		class={`z-30 fixed ${BOTTOM_TOC?"bottom-20":"bottom-8"} sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12`}
+		class={`z-30 fixed ${
+			BOTTOM_TOC ? "bottom-20" : "bottom-8"
+		} sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12`}
 		aria-label="Back to Top"
 		data-show="false"
 		><svg
@@ -72,20 +74,25 @@ const articleDate = new Date(post.Date).toISOString();
 			<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 		</svg>
 	</button>
-  {BOTTOM_TOC && (<button
-  id="show-bottom-toc"
-  class={`z-30 fixed bottom-8 end-4 flex h-10 w-10 sm:hidden items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700`}
-  aria-label="Show table of contents"><Icon class="h-6 w-6" name={getTextToAstroIcon("table-of-contents")} aria-hidden="true"/>
-</button>)}
+	{
+		BOTTOM_TOC && (
+			<button
+				id="show-bottom-toc"
+				class={`fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden`}
+				aria-label="Show table of contents"
+			>
+				<Icon class="h-6 w-6" name={getTextToAstroIcon("table-of-contents")} aria-hidden="true" />
+			</button>
+		)
+	}
 </BaseLayout>
 
 <script>
-
 	document.addEventListener("DOMContentLoaded", function () {
 		const scrollBtn = document.getElementById("to-top-btn");
 		const targetHeader = document.getElementById("blog-hero");
-    const bottomTocNav = document.getElementById("bottom-toc-nav");
-    const showBottomToc = document.getElementById("show-bottom-toc");
+		const bottomTocNav = document.getElementById("bottom-toc-nav");
+		const showBottomToc = document.getElementById("show-bottom-toc");
 
 		function callback(entries) {
 			entries.forEach((entry) => {
@@ -101,47 +108,69 @@ const articleDate = new Date(post.Date).toISOString();
 		const observer = new IntersectionObserver(callback);
 		observer.observe(targetHeader);
 
-    if(bottomTocNav && showBottomToc) {showBottomToc.addEventListener("click", function() {
-    const showBottomTocBtn = this;
+		if (bottomTocNav && showBottomToc) {
+			showBottomToc.addEventListener("click", function () {
+				const showBottomTocBtn = this;
 
-    // Check if bottom-toc-nav is currently visible
-    const isVisible = bottomTocNav.classList.contains("vopacity-100");
+				// Check if bottom-toc-nav is currently visible
+				const isVisible = bottomTocNav.classList.contains("vopacity-100");
 
-    // Toggle visibility
-    if (isVisible) {
-        // Hide bottom-toc-nav
-        bottomTocNav.classList.remove("vopacity-100");
-        bottomTocNav.classList.add("vopacity-0");
+				// Toggle visibility
+				if (isVisible) {
+					// Hide bottom-toc-nav
+					bottomTocNav.classList.remove("vopacity-100");
+					bottomTocNav.classList.add("vopacity-0");
 
-        // Reset positions of buttons
-        scrollBtn.classList.remove("bottom-56");
-        scrollBtn.classList.add("bottom-20");
-        showBottomTocBtn.classList.remove("bottom-44");
-        showBottomTocBtn.classList.add("bottom-8");
-    } else {
-        // Show bottom-toc-nav
-        bottomTocNav.classList.remove("vopacity-0");
-        bottomTocNav.classList.add("vopacity-100");
+					// Reset positions of buttons
+					scrollBtn.classList.remove("bottom-56");
+					scrollBtn.classList.add("bottom-20");
+					showBottomTocBtn.classList.remove("bottom-44");
+					showBottomTocBtn.classList.add("bottom-8");
+				} else {
+					// Show bottom-toc-nav
+					bottomTocNav.classList.remove("vopacity-0");
+					bottomTocNav.classList.add("vopacity-100");
 
-        // Shift positions of buttons
-        scrollBtn.classList.remove("bottom-20");
-        scrollBtn.classList.add("bottom-56");
-        showBottomTocBtn.classList.remove("bottom-8");
-        showBottomTocBtn.classList.add("bottom-44");
+					// Shift positions of buttons
+					scrollBtn.classList.remove("bottom-20");
+					scrollBtn.classList.add("bottom-56");
+					showBottomTocBtn.classList.remove("bottom-8");
+					showBottomTocBtn.classList.add("bottom-44");
 
-        // Set a timer to hide bottom-toc-nav after 3 seconds
-        setTimeout(function() {
-            bottomTocNav.classList.remove("vopacity-100");
-            bottomTocNav.classList.add("vopacity-0");
+					// Set a timer to hide bottom-toc-nav after 3 seconds
+					setTimeout(function () {
+						bottomTocNav.classList.remove("vopacity-100");
+						bottomTocNav.classList.add("vopacity-0");
 
-            // Reset positions of buttons
-            scrollBtn.classList.remove("bottom-56");
-            scrollBtn.classList.add("bottom-20");
-            showBottomTocBtn.classList.remove("bottom-44");
-            showBottomTocBtn.classList.add("bottom-8");
-        }, 3000);
-    }
-});}
+						// Reset positions of buttons
+						scrollBtn.classList.remove("bottom-56");
+						scrollBtn.classList.add("bottom-20");
+						showBottomTocBtn.classList.remove("bottom-44");
+						showBottomTocBtn.classList.add("bottom-8");
+					}, 3000);
+				}
+			});
+		}
+	});
+</script>
 
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		document.querySelectorAll("button.copy").forEach((button) => {
+			button.addEventListener("click", (ev) => {
+				const code = ev.currentTarget.getAttribute("data-code");
+				navigator.clipboard.writeText(code);
+				const svgBefore = button.querySelector(".copy-icon-before");
+				const svgAfter = button.querySelector(".copy-icon-done");
+				if (svgBefore && svgAfter) {
+					svgBefore.classList.toggle("hidden");
+					svgAfter.classList.toggle("hidden");
+					setTimeout(() => {
+						svgBefore.classList.toggle("hidden");
+						svgAfter.classList.toggle("hidden");
+					}, 1000);
+				}
+			});
+		});
 	});
 </script>
