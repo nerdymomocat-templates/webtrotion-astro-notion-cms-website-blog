@@ -12,7 +12,7 @@ const { block, setId=true } = Astro.props;
 ---
 
 <div class="ntable relative overflow-x-auto pb-2 table-auto max-w-full" id={setId?block.Id:undefined}>
-	<table class="w-full text-left text-xs text-textColor/90">
+	<table class="w-full text-left text-sm text-textColor/90">
 		<tbody>
 			{
 				block.Table?.Rows.map((tableRow: interfaces.TableRow, j: number) => (

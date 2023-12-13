@@ -36,4 +36,7 @@
   * {
     @apply scroll-mt-10
   }
+  pre {
+    @apply rounded-md p-4 font-mono;
+  }
 }

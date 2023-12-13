@@ -56,6 +56,9 @@ export default (): AstroIntegration => ({
   * {
     @apply scroll-mt-10
   }
+  pre {
+    @apply rounded-md p-4 font-mono;
+  }
 }`;
 
       // Define the path to the output CSS file

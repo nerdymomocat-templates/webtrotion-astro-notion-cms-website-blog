@@ -2,7 +2,6 @@
 import type { SiteMeta } from "@/types";
 // import { siteConfig } from "@/site-config";
 import "../styles/global.css";
-import "../styles/syntax-coloring.css";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
 // import { GoogleAnalytics } from "astro-google-analytics";
@@ -108,8 +107,8 @@ const faviconLink = getNavLink("/favicon.ico")
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" async=""></script>
 {
   PUBLIC_GA_TRACKING_ID && (
-  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA_TRACKING_ID}`}></script>
-  <script type="text/partytown" define:vars={{ PUBLIC_GA_TRACKING_ID }}>
+  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA_TRACKING_ID}`} defer ></script>
+  <script type="text/partytown" define:vars={{ PUBLIC_GA_TRACKING_ID }} defer>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());

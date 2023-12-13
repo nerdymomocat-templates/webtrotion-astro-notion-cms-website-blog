@@ -1,27 +1,12 @@
 ---
-import Prism from "prismjs";
-import "prismjs/components/prism-css";
-import "prismjs/components/prism-diff";
-import "prismjs/components/prism-docker";
-import "prismjs/components/prism-elixir";
-import "prismjs/components/prism-go";
-import "prismjs/components/prism-hcl";
-import "prismjs/components/prism-java";
-import "prismjs/components/prism-json";
-import "prismjs/components/prism-python";
-import "prismjs/components/prism-ruby";
-import "prismjs/components/prism-sql";
-import "prismjs/components/prism-typescript";
-import "prismjs/components/prism-yaml";
-import 'prismjs/components/prism-latex'
-import 'prismjs/components/prism-markdown'
-import 'prismjs/components/prism-markup'
-import 'prismjs/components/prism-json'
+
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
 import { HTML_DIRECTIVE } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
+import NACode from "./NACode.astro";
+
 
 export interface Props {
 	block: interfaces.Block;
@@ -35,11 +20,12 @@ const code = block.Code.RichTexts.map(
 	(richText: interfaces.RichText) => richText.Text.Content,
 ).join("");
 const language = block.Code.Language.toLowerCase();
-const grammar = Prism.languages[language.toLowerCase()] || Prism.languages.javascript;
 const code_inject = HTML_DIRECTIVE? code.startsWith(HTML_DIRECTIVE):false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(' ');
 // <Fragment set:html={code.replace(HTML_DIRECTIVE,"")}/>
 ---
+
+
 {
   code_inject ?
   (
@@ -50,8 +36,8 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   )
   :
   (
-  <div class="code w-full mb-1 font-mono relative max-w-full" id={setId?block.Id:undefined}>
-	<div>
+  <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
+	<div class="max-h-[340px] overflow-scroll min-w-0">
           <div class="flex max-w-full">
             <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
                 const code = this.getAttribute('data-code');
@@ -74,9 +60,9 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 		{
 
 			language === 'mermaid' ? (
-         <pre class="rounded mermaid p-4 max-w-full">{code}</pre>
+         <pre class="rounded mermaid p-4 max-w-full font-mono">{code}</pre>
       ) : (
-          <pre class={`rounded whitespace-pre-wrap p-4 overflow-auto break-word leading-6 tabular-nums text-left no-hyphens bg-slate-900 text-sky-600 ${"language-"+language}`}><code set:html={Prism.highlight(code, grammar, language)} /></pre>
+      <NACode code={code} lang={language} theme="github-dark-dimmed"/>
       )
 		}
 	</div>
@@ -86,5 +72,5 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 }
 <script>
   import mermaid from 'mermaid'
-  mermaid.initialize({ startOnLoad: true, theme: 'neutral' })
+  mermaid.initialize({ startOnLoad: true, theme: 'base' })
 </script>
