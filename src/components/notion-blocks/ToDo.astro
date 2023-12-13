@@ -29,7 +29,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
               <Icon class="h-5 w-5 text-textColor/50" name={getTextToAstroIcon(b.ToDo.Checked?"checkbox-checked":"checkbox-blank")} aria-label={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} focusable="false" />
 
 						</div>
-						<div class="flex-1">
+						<div class="flex-1 min-w-0">
 							{/* Container for text, taking up the rest of the space */}
 							{b.ToDo.RichTexts.map((richText: interfaces.RichText) => {
 								if (b.ToDo.Checked) {
