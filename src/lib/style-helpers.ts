@@ -128,8 +128,8 @@ export const getTextToAstroIcon = (text: string) => {
     "close-search":"mdi:close-thick",
     "checkbox-blank":"mdi:checkbox-blank-outline",
     "checkbox-checked":"mdi:checkbox-marked",
-    "clipboard-copy-code":"mdi:clipboard-multiple-outline",
-    "clipboard-copy-code-done":"mdi:clipboard-check-multiple"
+    "clipboard-copy-code":"mdi:clipboard",
+    "clipboard-copy-code-done":"mdi:clipboard-check"
   }
   if (text in textIconMap) {
     return textIconMap[text];
