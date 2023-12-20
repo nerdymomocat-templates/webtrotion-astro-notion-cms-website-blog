@@ -20,7 +20,6 @@
     "@notionhq/client": "^2.2.13",
     "@sindresorhus/slugify": "^2.2.1",
     "astro": "^4.0.3",
-    "astro-google-fonts-optimizer": "^0.2.2",
     "astro-iconify": "^1.2.0",
     "astro-robots-txt": "^1.0.0",
     "astro-tweet": "https://gitpkg.now.sh/nerdymomocat-templates/astro-v4-tweet/packages/astro-tweet?main",
