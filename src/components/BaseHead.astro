@@ -75,6 +75,9 @@ const faviconLink = getNavLink("/favicon.ico")
 <meta property="twitter:url" content={canonicalURL} />
 <meta property="twitter:title" content={title} />
 <meta property="twitter:description" content={description} />
+{
+  GOOGLE_SEARCH_CONSOLE_META_TAG && (<meta name="google-site-verification" content={GOOGLE_SEARCH_CONSOLE_META_TAG} />)
+}
 {ogImage && (<meta property="twitter:image" content={socialImageURL} />)}
 
 {/* Sitemap */}
@@ -115,7 +118,4 @@ const faviconLink = getNavLink("/favicon.ico")
     gtag('config', PUBLIC_GA_TRACKING_ID);
   </script>
 )
-}
-{
-  GOOGLE_SEARCH_CONSOLE_META_TAG && (<meta name="google-site-verification" content={GOOGLE_SEARCH_CONSOLE_META_TAG} />)
 }
