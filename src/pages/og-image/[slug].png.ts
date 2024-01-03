@@ -5,6 +5,7 @@ import satori, { type SatoriOptions } from "satori";
 import { Resvg } from "@resvg/resvg-js";
 // import { siteConfig } from "@/site-config";
 import { getFormattedDate } from "@/utils";
+import { filePath } from "@/lib/blog-helpers";
 
 import JetBrainsMonoBold from "@/assets/JetBrainsMono-Bold.ttf";
 import BricolageGrotesque from "@/assets/BricolageGrotesque_SemiCondensed-Medium.ttf";
@@ -14,11 +15,19 @@ import { getCollections } from "@/utils";
 
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { OG_SETUP, LAST_BUILD_TIME, HOME_PAGE_SLUG } from "@/constants";
+import { OG_SETUP, LAST_BUILD_TIME, HOME_PAGE_SLUG, THEME } from "@/constants";
 
 import fs from 'fs';
 import sharp from 'sharp';
 import path from 'path';
+
+const rgbToHex = (rgb: string): string =>
+  "#" + rgb.split(" ").map(s => parseInt(s).toString(16).padStart(2, '0')).join("");
+
+const rgbToRgba = (rgb: string, alpha: number): string =>
+  `rgba(${rgb.split(" ").join(", ")}, ${alpha})`;
+
+
 
 const ogOptions: SatoriOptions = {
   width: 1200,
@@ -40,6 +49,44 @@ const ogOptions: SatoriOptions = {
   ],
 };
 
+const og_images_colors =
+{
+  "backgroundColor": THEME["colors"]["bg"]["light"] ? rgbToHex(THEME["colors"]["bg"]["light"]) : "white",
+  "boxShadow": "5px 5px 0px " + (THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"),
+  "border": "1px solid " + (THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"),
+  "titleColor": THEME["colors"]["accent"]["light"] ? rgbToHex(THEME["colors"]["accent"]["light"]) : "#374151",
+  "descColor": THEME["colors"]["text"]["light"] ? rgbToHex(THEME["colors"]["text"]["light"]) : "#374151",
+  "infoColor": THEME["colors"]["quote"]["light"] ? rgbToHex(THEME["colors"]["quote"]["light"]) : "#374151",
+  "backgroundImage": "radial-gradient(circle at 25px 25px, " + (THEME["colors"]["accent-2"]["light"] ? rgbToRgba(THEME["colors"]["accent-2"]["light"], 0.1) : "lightgray") + " 2%, transparent 0%),radial-gradient(circle at 75px 75px, " + (THEME["colors"]["accent-2"]["light"] ? rgbToRgba(THEME["colors"]["accent-2"]["light"], 0.1) : "lightgray") + " 2%, transparent 0%)",
+  "maskImage": "linear-gradient(to bottom, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.15) : "rgba(255, 255, 255, 0.15)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.15) : "rgba(255, 255, 255, 0.15)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.27) : "rgba(255, 255, 255, 0.3)") + " 80%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.1) : "rgba(255, 255, 255, 0.1)") + " 80%)"
+}
+
+//NOTE: INCOMPLETE, satori has issues with relative URLs
+
+let customIconURL: string = "";
+if (siteInfo.logo && siteInfo.logo.Type === "file") {
+  try {
+    customIconURL = "./public"+filePath(new URL(siteInfo.logo.Url));
+  } catch (err) {
+    console.log("Invalid DB custom icon URL");
+  }
+}
+
+// Function to convert image to base64
+const logoToBase64 = async (imagePath: string) => {
+  try {
+    const ext = path.extname(imagePath).slice(1).toLowerCase();
+    if (ext === 'webp') return null;
+    const buffer = await sharp(imagePath).resize(30, 30).toBuffer();
+    return `data:image/${ext === 'jpg' ? 'jpeg' : ext};base64,${buffer.toString('base64')}`;
+  } catch (err) {
+    console.error("Error processing the logo image:", err);
+    return null;
+  }
+};
+
+const logo_src = (siteInfo.logo && siteInfo.logo.Type === "external") ? siteInfo.logo.Url : (siteInfo.logo && siteInfo.logo.Type === "file" && customIconURL ? await logoToBase64(customIconURL) : null);
+
 const obj_img_sq_without_desc = function (title: string, pubDate: string, img_url: string) {
   return {
     "type": "div",
@@ -48,7 +95,8 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
         "display": "flex",
         "flexDirection": "column",
         "width": "100%",
-        "height": "100%"
+        "height": "100%",
+        "backgroundColor": og_images_colors["backgroundColor"]
       },
       "children": [
         {
@@ -58,11 +106,9 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
               "height": "100%",
               "width": "100%",
               "display": "flex",
-              "backgroundColor": "white",
               "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
-              null,
               {
                 "type": "div",
                 "props": {
@@ -75,7 +121,6 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                     "alignItems": "stretch"
                   },
                   "children": [
-                    null,
                     {
                       "type": "div",
                       "props": {
@@ -83,15 +128,14 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                           "display": "flex",
                           "flexDirection": "row",
                           "justifyContent": "space-between",
-                          "border": "1px solid #374151",
+                          "border": og_images_colors["border"],
                           "borderRadius": "8px",
-                          "boxShadow": "5px 5px 0px #374151",
+                          "boxShadow": og_images_colors["boxShadow"],
                           "width": "100%",
                           "height": "100%",
                           "padding": "10px"
                         },
                         "children": [
-                          null,
                           {
                             "type": "div",
                             "props": {
@@ -100,7 +144,6 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                 "flex": "1",
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "img",
                                   "props": {
@@ -117,7 +160,6 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                               ]
                             }
                           },
-                          null,
                           {
                             "type": "div",
                             "props": {
@@ -126,10 +168,9 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                 "flexDirection": "column",
                                 "flex": "1",
                                 "marginLeft": "16px",
-                                "paddingBottom":"44px"
+                                "paddingBottom": "44px"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -138,7 +179,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
                                       "padding": "10px 0 20px 0",
-                                      "color": "#374151",
+                                      "color": og_images_colors["titleColor"],
                                       "flex": "1",
                                       "display": "flex",
 
@@ -146,29 +187,26 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                     "children": title
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "16px",
                                       "fontWeight": "700",
-                                      "color": "#374151",
+                                      "color": og_images_colors["infoColor"],
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "fontFamily":"JetBrainsMono-Bold"
+                                      "fontFamily": "JetBrainsMono-Bold"
                                     },
                                     "children": [
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
                                           "children": pubDate
                                         }
                                       },
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
@@ -177,7 +215,18 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                             "alignItems": "center"
                                           },
                                           "children": [
-                                            null,
+                                            logo_src ? {
+                                              "type": "img",
+                                              "props": {
+                                                "src": logo_src,  // Add the source only if logo_src exists.
+                                                "style": {
+                                                  "height": "30px",
+                                                  "width": "30px",
+                                                  "objectFit": "contain",
+                                                  "objectPosition": "center"
+                                                }
+                                              }
+                                            } : null,
                                             {
                                               "type": "span",
                                               "props": {
@@ -218,7 +267,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
         "display": "flex",
         "flexDirection": "column",
         "width": "100%",
-        "height": "100%"
+        "height": "100%",
+        "backgroundColor": og_images_colors["backgroundColor"]
       },
       "children": [
         {
@@ -228,11 +278,9 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
               "height": "100%",
               "width": "100%",
               "display": "flex",
-              "backgroundColor": "white",
               "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
-              null,
               {
                 "type": "div",
                 "props": {
@@ -245,7 +293,6 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                     "alignItems": "stretch"
                   },
                   "children": [
-                    null,
                     {
                       "type": "div",
                       "props": {
@@ -253,15 +300,14 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                           "display": "flex",
                           "flexDirection": "row",
                           "justifyContent": "space-between",
-                          "border": "1px solid #374151",
+                          "border": og_images_colors["border"],
                           "borderRadius": "8px",
-                          "boxShadow": "5px 5px 0px #374151",
+                          "boxShadow": og_images_colors["boxShadow"],
                           "width": "100%",
                           "height": "100%",
                           "padding": "10px"
                         },
                         "children": [
-                          null,
                           {
                             "type": "div",
                             "props": {
@@ -270,7 +316,6 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                 "flex": "1"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "img",
                                   "props": {
@@ -287,7 +332,6 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                               ]
                             }
                           },
-                          null,
                           {
                             "type": "div",
                             "props": {
@@ -296,10 +340,9 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                 "flexDirection": "column",
                                 "flex": "1",
                                 "marginLeft": "16px",
-                                "paddingBottom":"44px"
+                                "paddingBottom": "44px"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -308,14 +351,13 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
                                       "padding": "10px 0 20px 0",
-                                      "color": "#374151",
+                                      "color": og_images_colors["titleColor"],
                                       "flex": "0.5",
                                       "display": "flex"
                                     },
                                     "children": title
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -324,7 +366,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "fontWeight": "700",
                                       "lineHeight": "2rem",
                                       "padding": "10px 0 20px 0",
-                                      "color": "#374151",
+                                      "color": og_images_colors["descColor"],
                                       "flex": "1",
                                       "display": "flex",
                                       "fontFamily": "JetBrainsMonoBold"
@@ -332,14 +374,13 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                     "children": desc
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "16px",
                                       "fontWeight": "700",
-                                      "color": "#374151",
+                                      "color": og_images_colors["infoColor"],
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
@@ -347,14 +388,12 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "fontFamily": "JetBrainsMonoBold"
                                     },
                                     "children": [
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
                                           "children": pubDate
                                         }
                                       },
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
@@ -363,7 +402,18 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                             "alignItems": "center"
                                           },
                                           "children": [
-                                            null,
+                                            logo_src ? {
+                                              "type": "img",
+                                              "props": {
+                                                "src": logo_src,  // Add the source only if logo_src exists.
+                                                "style": {
+                                                  "height": "30px",
+                                                  "width": "30px",
+                                                  "objectFit": "contain",
+                                                  "objectPosition": "center"
+                                                }
+                                              }
+                                            } : null,
                                             {
                                               "type": "span",
                                               "props": {
@@ -405,7 +455,8 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
         "display": "flex",
         "flexDirection": "column",
         "width": "100%",
-        "height": "100%"
+        "height": "100%",
+        "backgroundColor": og_images_colors["backgroundColor"]
       },
       "children": [
         {
@@ -420,13 +471,11 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
               "justifyContent": "center",
               "fontSize": "32px",
               "fontWeight": "700",
-              "backgroundColor": "white",
-              "backgroundImage": "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%),radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
+              "backgroundImage": og_images_colors["backgroundImage"],
               "backgroundSize": "100px 100px",
               "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
-              null,
               {
                 "type": "div",
                 "props": {
@@ -439,7 +488,6 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                     "alignItems": "stretch"
                   },
                   "children": [
-                    null,
                     {
                       "type": "div",
                       "props": {
@@ -447,9 +495,9 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                           "display": "flex",
                           "flexDirection": "row",
                           "justifyContent": "space-between",
-                          "border": "1px solid #374151",
+                          "border": og_images_colors["border"],
                           "borderRadius": "8px",
-                          "boxShadow": "5px 5px 0px #374151",
+                          "boxShadow": og_images_colors["boxShadow"],
                           "width": "100%",
                           "height": "100%",
                         },
@@ -462,10 +510,9 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                 "display": "flex",
                                 "flexDirection": "column",
                                 "flex": "1",
-                                "paddingBottom":"44px"
+                                "paddingBottom": "44px"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -474,37 +521,34 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                       "fontWeight": "700",
                                       "lineHeight": "4rem",
                                       "padding": "20px 30px",
-                                      "color": "#374151",
+                                      "color": og_images_colors["titleColor"],
                                       "flex": "1",
                                       "display": "flex"
                                     },
                                     "children": title
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "32px",
                                       "fontWeight": "700",
-                                      "color": "#374151",
+                                      "color": og_images_colors["infoColor"],
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
                                       "padding": "10px 30px",
-                                      "fontFamily":"JetBrainsMono-Bold"
+                                      "fontFamily": "JetBrainsMono-Bold"
                                     },
                                     "children": [
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
                                           "children": pubDate
                                         }
                                       },
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
@@ -513,7 +557,18 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                             "alignItems": "center"
                                           },
                                           "children": [
-                                            null,
+                                            logo_src ? {
+                                              "type": "img",
+                                              "props": {
+                                                "src": logo_src,  // Add the source only if logo_src exists.
+                                                "style": {
+                                                  "height": "30px",
+                                                  "width": "30px",
+                                                  "objectFit": "contain",
+                                                  "objectPosition": "center"
+                                                }
+                                              }
+                                            } : null,
                                             {
                                               "type": "span",
                                               "props": {
@@ -554,7 +609,8 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
         "display": "flex",
         "flexDirection": "column",
         "width": "100%",
-        "height": "100%"
+        "height": "100%",
+        "backgroundColor": og_images_colors["backgroundColor"]
       },
       "children": [
         {
@@ -569,13 +625,11 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
               "justifyContent": "center",
               "fontSize": "32px",
               "fontWeight": "700",
-              "backgroundColor": "white",
-              "backgroundImage": "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%),radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
+              "backgroundImage": og_images_colors["backgroundImage"],
               "backgroundSize": "100px 100px",
               "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
-              null,
               {
                 "type": "div",
                 "props": {
@@ -588,7 +642,6 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                     "alignItems": "stretch"
                   },
                   "children": [
-                    null,
                     {
                       "type": "div",
                       "props": {
@@ -596,15 +649,14 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                           "display": "flex",
                           "flexDirection": "row",
                           "justifyContent": "space-between",
-                          "border": "1px solid #374151",
+                          "border": og_images_colors["border"],
                           "borderRadius": "8px",
-                          "boxShadow": "5px 5px 0px #374151",
+                          "boxShadow": og_images_colors["boxShadow"],
                           "width": "100%",
                           "height": "100%",
                           "padding": "10px"
                         },
                         "children": [
-                          null,
                           {
                             "type": "div",
                             "props": {
@@ -612,10 +664,9 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                 "display": "flex",
                                 "flexDirection": "column",
                                 "flex": "1",
-                                "paddingBottom":"44px"
+                                "paddingBottom": "44px"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -624,54 +675,50 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                       "fontWeight": "700",
                                       "lineHeight": "4rem",
                                       "padding": "20px 30px",
-                                      "color": "#374151",
+                                      "color": og_images_colors["titleColor"],
                                       "flex": "0.5",
                                       "display": "flex"
                                     },
                                     "children": title
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "30px",
-                                      "fontFamily":"JetBrainsMono-Bold",
+                                      "fontFamily": "JetBrainsMono-Bold",
                                       "fontWeight": "700",
                                       "lineHeight": "2rem",
                                       "padding": "10px 30px",
-                                      "color": "#374151",
+                                      "color": og_images_colors["descColor"],
                                       "flex": "1",
                                       "display": "flex"
                                     },
                                     "children": desc
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "24px",
                                       "fontWeight": "700",
-                                      "color": "#374151",
+                                      "color": og_images_colors["infoColor"],
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
                                       "padding": "10px 20px",
-                                      "fontFamily":"JetBrainsMono-Bold"
+                                      "fontFamily": "JetBrainsMono-Bold"
                                     },
                                     "children": [
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
                                           "children": pubDate
                                         }
                                       },
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
@@ -680,7 +727,18 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                             "alignItems": "center"
                                           },
                                           "children": [
-                                            null,
+                                            logo_src ? {
+                                              "type": "img",
+                                              "props": {
+                                                "src": logo_src,  // Add the source only if logo_src exists.
+                                                "style": {
+                                                  "height": "30px",
+                                                  "width": "30px",
+                                                  "objectFit": "contain",
+                                                  "objectPosition": "center"
+                                                }
+                                              }
+                                            } : null,
                                             {
                                               "type": "span",
                                               "props": {
@@ -721,7 +779,8 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
         "display": "flex",
         "flexDirection": "column",
         "width": "100%",
-        "height": "100%"
+        "height": "100%",
+        "backgroundColor": og_images_colors["backgroundColor"]
       },
       "children": [
         {
@@ -736,11 +795,9 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
               "justifyContent": "center",
               "fontSize": "32px",
               "fontWeight": "700",
-              "backgroundColor": "white",
               "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
-              null,
               {
                 "type": "img",
                 "props": {
@@ -751,13 +808,12 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                     "left": "0",
                     "height": "100%",
                     "width": "100%",
-                    "maskImage": "linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.3) 80%, rgba(255, 255, 255, 0.1) 80%)",
+                    "maskImage": og_images_colors["maskImage"],
                     "objectFit": "cover"
                   },
                   "children": []
                 }
               },
-              null,
               {
                 "type": "div",
                 "props": {
@@ -770,7 +826,6 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                     "alignItems": "stretch"
                   },
                   "children": [
-                    null,
                     {
                       "type": "div",
                       "props": {
@@ -778,9 +833,9 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                           "display": "flex",
                           "flexDirection": "row",
                           "justifyContent": "space-between",
-                          "border": "1px solid #374151",
+                          "border": og_images_colors["border"],
                           "borderRadius": "8px",
-                          "boxShadow": "5px 5px 0px #374151",
+                          "boxShadow": og_images_colors["boxShadow"],
                           "width": "100%",
                           "height": "100%",
                           "padding": "10px"
@@ -794,10 +849,9 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                 "display": "flex",
                                 "flexDirection": "column",
                                 "flex": "1",
-                                "paddingBottom":"44px"
+                                "paddingBottom": "44px"
                               },
                               "children": [
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
@@ -806,37 +860,34 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
                                       "padding": "10px 20px",
-                                      "color": "#374151",
+                                      "color": og_images_colors["titleColor"],
                                       "flex": "1",
                                       "display": "flex"
                                     },
                                     "children": title
                                   }
                                 },
-                                null,
                                 {
                                   "type": "div",
                                   "props": {
                                     "style": {
                                       "fontSize": "24px",
                                       "fontWeight": "700",
-                                      "color": "#374151",
+                                      "color": og_images_colors["infoColor"],
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "fontFamily":"JetBrainsMono-Bold",
-                                      "padding":"10px 20px"
+                                      "fontFamily": "JetBrainsMono-Bold",
+                                      "padding": "10px 20px"
                                     },
                                     "children": [
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
                                           "children": pubDate
                                         }
                                       },
-                                      null,
                                       {
                                         "type": "div",
                                         "props": {
@@ -845,7 +896,18 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                             "alignItems": "center"
                                           },
                                           "children": [
-                                            null,
+                                            logo_src ? {
+                                              "type": "img",
+                                              "props": {
+                                                "src": logo_src,  // Add the source only if logo_src exists.
+                                                "style": {
+                                                  "height": "30px",
+                                                  "width": "30px",
+                                                  "objectFit": "contain",
+                                                  "objectPosition": "center"
+                                                }
+                                              }
+                                            } : null,
                                             {
                                               "type": "span",
                                               "props": {
@@ -916,7 +978,7 @@ export async function GET({ params: { slug } }: APIContext) {
   let fallback_markup;
 
   if (type == "postpage") {
-    const title = post?.Title ? (post.Slug == HOME_PAGE_SLUG? siteInfo.title: post.Title):siteInfo.title;
+    const title = post?.Title ? (post.Slug == HOME_PAGE_SLUG ? siteInfo.title : post.Title) : siteInfo.title;
     const postDate = getFormattedDate(
       post?.Date ?? post?.Date ?? Date.now()
     );
