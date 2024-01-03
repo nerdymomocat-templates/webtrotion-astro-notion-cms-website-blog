@@ -58,7 +58,7 @@ const og_images_colors =
   "descColor": THEME["colors"]["text"]["light"] ? rgbToHex(THEME["colors"]["text"]["light"]) : "#374151",
   "infoColor": THEME["colors"]["quote"]["light"] ? rgbToHex(THEME["colors"]["quote"]["light"]) : "#374151",
   "backgroundImage": "radial-gradient(circle at 25px 25px, " + (THEME["colors"]["accent-2"]["light"] ? rgbToRgba(THEME["colors"]["accent-2"]["light"], 0.1) : "lightgray") + " 2%, transparent 0%),radial-gradient(circle at 75px 75px, " + (THEME["colors"]["accent-2"]["light"] ? rgbToRgba(THEME["colors"]["accent-2"]["light"], 0.1) : "lightgray") + " 2%, transparent 0%)",
-  "maskImage": "linear-gradient(to bottom, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.15) : "rgba(255, 255, 255, 0.15)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.15) : "rgba(255, 255, 255, 0.15)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.27) : "rgba(255, 255, 255, 0.3)") + " 80%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.1) : "rgba(255, 255, 255, 0.1)") + " 80%)"
+  "maskImage": "linear-gradient(to bottom, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.1) : "rgba(255, 255, 255, 0.1)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.1) : "rgba(255, 255, 255, 0.1)") + " 30%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.25) : "rgba(255, 255, 255, 0.25)") + " 80%, " + (THEME["colors"]["bg"]["light"] ? rgbToRgba(THEME["colors"]["bg"]["light"], 0.1) : "rgba(255, 255, 255, 0.1)") + " 80%)"
 }
 
 //NOTE: INCOMPLETE, satori has issues with relative URLs
@@ -223,7 +223,8 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center"
+                                                  "objectPosition": "center",
+                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
@@ -410,7 +411,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center"
+                                                  "objectPosition": "center",
+                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
@@ -565,7 +567,8 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center"
+                                                  "objectPosition": "center",
+                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
@@ -735,7 +738,8 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center"
+                                                  "objectPosition": "center",
+                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
@@ -904,7 +908,8 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center"
+                                                  "objectPosition": "center",
+                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
