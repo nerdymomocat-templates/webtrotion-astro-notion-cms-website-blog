@@ -212,7 +212,8 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                         "props": {
                                           "style": {
                                             "display": "flex",
-                                            "alignItems": "center"
+                                            "alignItems": "center",
+                                            "gap": "10px"
                                           },
                                           "children": [
                                             logo_src ? {
@@ -220,11 +221,10 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                               "props": {
                                                 "src": logo_src,  // Add the source only if logo_src exists.
                                                 "style": {
-                                                  "height": "30px",
-                                                  "width": "30px",
+                                                  "height": "40px",
+                                                  "width": "40px",
                                                   "objectFit": "contain",
                                                   "objectPosition": "center",
-                                                  "marginRight": "5px"
                                                 }
                                               }
                                             } : null,
@@ -400,7 +400,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                         "props": {
                                           "style": {
                                             "display": "flex",
-                                            "alignItems": "center"
+                                            "alignItems": "center",
+                                            "gap": "10px"
                                           },
                                           "children": [
                                             logo_src ? {
@@ -411,8 +412,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center",
-                                                  "marginRight": "5px"
+                                                  "objectPosition": "center"
                                                 }
                                               }
                                             } : null,
@@ -556,7 +556,8 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                         "props": {
                                           "style": {
                                             "display": "flex",
-                                            "alignItems": "center"
+                                            "alignItems": "center",
+                                            "gap": "10px"
                                           },
                                           "children": [
                                             logo_src ? {
@@ -567,8 +568,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center",
-                                                  "marginRight": "5px"
+                                                  "objectPosition": "center"
                                                 }
                                               }
                                             } : null,
@@ -727,7 +727,8 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                         "props": {
                                           "style": {
                                             "display": "flex",
-                                            "alignItems": "center"
+                                            "alignItems": "center",
+                                            "gap": "10px"
                                           },
                                           "children": [
                                             logo_src ? {
@@ -738,8 +739,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center",
-                                                  "marginRight": "5px"
+                                                  "objectPosition": "center"
                                                 }
                                               }
                                             } : null,
@@ -897,7 +897,8 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                         "props": {
                                           "style": {
                                             "display": "flex",
-                                            "alignItems": "center"
+                                            "alignItems": "center",
+                                            "gap": "10px"
                                           },
                                           "children": [
                                             logo_src ? {
@@ -908,8 +909,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                                   "height": "30px",
                                                   "width": "30px",
                                                   "objectFit": "contain",
-                                                  "objectPosition": "center",
-                                                  "marginRight": "5px"
+                                                  "objectPosition": "center"
                                                 }
                                               }
                                             } : null,
