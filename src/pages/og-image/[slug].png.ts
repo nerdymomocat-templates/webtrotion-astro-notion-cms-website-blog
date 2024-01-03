@@ -7,6 +7,7 @@ import { Resvg } from "@resvg/resvg-js";
 import { getFormattedDate } from "@/utils";
 
 import JetBrainsMonoBold from "@/assets/JetBrainsMono-Bold.ttf";
+import BricolageGrotesque from "@/assets/BricolageGrotesque_SemiCondensed-Medium.ttf";
 //ADDITION
 import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
 import { getCollections } from "@/utils";
@@ -28,6 +29,12 @@ const ogOptions: SatoriOptions = {
       name: "JetBrainsMono-Bold",
       data: Buffer.from(JetBrainsMonoBold),
       weight: 700,
+      style: "normal",
+    },
+    {
+      name: "BricolageGrotesque-SemiBold",
+      data: Buffer.from(BricolageGrotesque),
+      weight: 500,
       style: "normal",
     },
   ],
@@ -52,7 +59,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
               "width": "100%",
               "display": "flex",
               "backgroundColor": "white",
-              "fontFamily": "JetBrainsMono-Bold"
+              "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
               null,
@@ -90,7 +97,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                             "props": {
                               "style": {
                                 "display": "flex",
-                                "flex": "1"
+                                "flex": "1",
                               },
                               "children": [
                                 null,
@@ -117,7 +124,9 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                               "style": {
                                 "display": "flex",
                                 "flexDirection": "column",
-                                "flex": "1"
+                                "flex": "1",
+                                "marginLeft": "16px",
+                                "paddingBottom":"44px"
                               },
                               "children": [
                                 null,
@@ -125,14 +134,14 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                   "type": "div",
                                   "props": {
                                     "style": {
-                                      "fontSize": "32px",
+                                      "fontSize": "42px",
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
-                                      "padding": "10px 0 50px 0",
+                                      "padding": "10px 0 20px 0",
                                       "color": "#374151",
                                       "flex": "1",
                                       "display": "flex",
-                                      "fontFamily": "monospace"
+
                                     },
                                     "children": title
                                   }
@@ -148,7 +157,8 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
-                                      "alignItems": "center"
+                                      "alignItems": "center",
+                                      "fontFamily":"JetBrainsMono-Bold"
                                     },
                                     "children": [
                                       null,
@@ -219,7 +229,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
               "width": "100%",
               "display": "flex",
               "backgroundColor": "white",
-              "fontFamily": "JetBrainsMono-Bold"
+              "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
               null,
@@ -284,7 +294,9 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                               "style": {
                                 "display": "flex",
                                 "flexDirection": "column",
-                                "flex": "1"
+                                "flex": "1",
+                                "marginLeft": "16px",
+                                "paddingBottom":"44px"
                               },
                               "children": [
                                 null,
@@ -295,11 +307,10 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "fontSize": "32px",
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
-                                      "padding": "10px 0 50px 0",
+                                      "padding": "10px 0 20px 0",
                                       "color": "#374151",
                                       "flex": "0.5",
-                                      "display": "flex",
-                                      "fontFamily": "monospace"
+                                      "display": "flex"
                                     },
                                     "children": title
                                   }
@@ -312,11 +323,11 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "fontSize": "24px",
                                       "fontWeight": "700",
                                       "lineHeight": "2rem",
-                                      "padding": "10px 0 50px 0",
+                                      "padding": "10px 0 20px 0",
                                       "color": "#374151",
                                       "flex": "1",
                                       "display": "flex",
-                                      "fontFamily": "monospace"
+                                      "fontFamily": "JetBrainsMonoBold"
                                     },
                                     "children": desc
                                   }
@@ -332,7 +343,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
-                                      "alignItems": "center"
+                                      "alignItems": "center",
+                                      "fontFamily": "JetBrainsMonoBold"
                                     },
                                     "children": [
                                       null,
@@ -356,7 +368,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                               "type": "span",
                                               "props": {
                                                 "style": {
-                                                  "marginRight": "16px"
+                                                  "marginRight": "16px",
+                                                  "fontFamily": "JetBrainsMonoBold"
                                                 },
                                                 "children": siteInfo.author
                                               }
@@ -410,7 +423,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
               "backgroundColor": "white",
               "backgroundImage": "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%),radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
               "backgroundSize": "100px 100px",
-              "fontFamily": "JetBrainsMono-Bold"
+              "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
               null,
@@ -439,7 +452,6 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                           "boxShadow": "5px 5px 0px #374151",
                           "width": "100%",
                           "height": "100%",
-                          "padding": "10px"
                         },
                         "children": [
                           null,
@@ -449,7 +461,8 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                               "style": {
                                 "display": "flex",
                                 "flexDirection": "column",
-                                "flex": "1"
+                                "flex": "1",
+                                "paddingBottom":"44px"
                               },
                               "children": [
                                 null,
@@ -457,10 +470,10 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                   "type": "div",
                                   "props": {
                                     "style": {
-                                      "fontSize": "52px",
+                                      "fontSize": "64px",
                                       "fontWeight": "700",
                                       "lineHeight": "4rem",
-                                      "padding": "10px 50px",
+                                      "padding": "20px 30px",
                                       "color": "#374151",
                                       "flex": "1",
                                       "display": "flex"
@@ -473,14 +486,15 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                   "type": "div",
                                   "props": {
                                     "style": {
-                                      "fontSize": "24px",
+                                      "fontSize": "32px",
                                       "fontWeight": "700",
                                       "color": "#374151",
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "padding": "10px"
+                                      "padding": "10px 30px",
+                                      "fontFamily":"JetBrainsMono-Bold"
                                     },
                                     "children": [
                                       null,
@@ -558,7 +572,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
               "backgroundColor": "white",
               "backgroundImage": "radial-gradient(circle at 25px 25px, lightgray 2%, transparent 0%),radial-gradient(circle at 75px 75px, lightgray 2%, transparent 0%)",
               "backgroundSize": "100px 100px",
-              "fontFamily": "JetBrainsMono-Bold"
+              "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
               null,
@@ -597,7 +611,8 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                               "style": {
                                 "display": "flex",
                                 "flexDirection": "column",
-                                "flex": "1"
+                                "flex": "1",
+                                "paddingBottom":"44px"
                               },
                               "children": [
                                 null,
@@ -608,7 +623,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                       "fontSize": "52px",
                                       "fontWeight": "700",
                                       "lineHeight": "4rem",
-                                      "padding": "10px 50px",
+                                      "padding": "20px 30px",
                                       "color": "#374151",
                                       "flex": "0.5",
                                       "display": "flex"
@@ -622,9 +637,10 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                   "props": {
                                     "style": {
                                       "fontSize": "30px",
+                                      "fontFamily":"JetBrainsMono-Bold",
                                       "fontWeight": "700",
                                       "lineHeight": "2rem",
-                                      "padding": "10px 50px",
+                                      "padding": "10px 30px",
                                       "color": "#374151",
                                       "flex": "1",
                                       "display": "flex"
@@ -644,7 +660,8 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "padding": "10px"
+                                      "padding": "10px 20px",
+                                      "fontFamily":"JetBrainsMono-Bold"
                                     },
                                     "children": [
                                       null,
@@ -720,7 +737,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
               "fontSize": "32px",
               "fontWeight": "700",
               "backgroundColor": "white",
-              "fontFamily": "JetBrainsMono"
+              "fontFamily": "BricolageGrotesque-SemiBold"
             },
             "children": [
               null,
@@ -734,7 +751,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                     "left": "0",
                     "height": "100%",
                     "width": "100%",
-                    "maskImage": "linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.15) 25%, rgba(255, 255, 255, 0.3) 90%, rgba(255, 255, 255, 0.1) 90%)",
+                    "maskImage": "linear-gradient(to bottom, rgba(255, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.15) 30%, rgba(255, 255, 255, 0.3) 80%, rgba(255, 255, 255, 0.1) 80%)",
                     "objectFit": "cover"
                   },
                   "children": []
@@ -776,7 +793,8 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                               "style": {
                                 "display": "flex",
                                 "flexDirection": "column",
-                                "flex": "1"
+                                "flex": "1",
+                                "paddingBottom":"44px"
                               },
                               "children": [
                                 null,
@@ -784,10 +802,10 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                   "type": "div",
                                   "props": {
                                     "style": {
-                                      "fontSize": "px",
+                                      "fontSize": "48px",
                                       "fontWeight": "700",
                                       "lineHeight": "3rem",
-                                      "padding": "10px 0 50px 0",
+                                      "padding": "10px 20px",
                                       "color": "#374151",
                                       "flex": "1",
                                       "display": "flex"
@@ -800,13 +818,15 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                   "type": "div",
                                   "props": {
                                     "style": {
-                                      "fontSize": "16px",
+                                      "fontSize": "24px",
                                       "fontWeight": "700",
                                       "color": "#374151",
                                       "display": "flex",
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
-                                      "alignItems": "center"
+                                      "alignItems": "center",
+                                      "fontFamily":"JetBrainsMono-Bold",
+                                      "padding":"10px 20px"
                                     },
                                     "children": [
                                       null,
