@@ -39,8 +39,6 @@ const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"],
 
 const processedFile = await processFileBlocks(fileAtacchedBlocks);
 
-//TODO: what is this?
-// const postDate = post.data.updatedDate ?? post.data.publishDate;
 const postLink = getPostLink(post_full_preview.Slug, post_full_preview.Collection === MENU_PAGES_COLLECTION);
 ---
 
@@ -65,7 +63,7 @@ const postLink = getPostLink(post_full_preview.Slug, post_full_preview.Collectio
 }
 {
 	post_full_preview.Tags.length > 0 && (
-		<div class="mt-1">
+		<div class="mt-1 gap-2">
 			<svg
 				aria-hidden="true"
 				focusable="false"
