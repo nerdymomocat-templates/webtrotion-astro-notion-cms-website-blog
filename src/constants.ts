@@ -40,7 +40,7 @@ export const OG_SETUP = key_value_from_json["og-setup"] || {
 // export const OPTIMIZE_IMAGES = key_value_from_json["optimize-images"] == null ? true : key_value_from_json["optimize-images"];
 export const OPTIMIZE_IMAGES = key_value_from_json["optimize-images"] || false;
 
-export const HTML_DIRECTIVE = key_value_from_json["html-directive"] || "";
+export const SHORTCODES = key_value_from_json["shortcodes"] || {"html":""};
 
 // Function to read the build start time from the file
 const readBuildStartTime = () => {

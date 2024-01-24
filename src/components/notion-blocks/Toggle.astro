@@ -14,11 +14,11 @@ export interface Props {
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<details class={`toggle ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
+<details class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
 	<summary class="flex cursor-pointer list-none list-image-none gap-2 max-w-full">
     <div>
-    <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="none" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-      <polyline points="12 8 18 14 12 20"></polyline>
+    <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="currentColor" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+<path d="M 8.3752 20.5202 a 0.7028 0.7028 90 0 0 0.7231 -0.0448 l 9.1 -6.3 a 0.7 0.7 90 0 0 0 -1.1508 l -9.1 -6.3 A 0.7 0.7 90 0 0 8 7.3 v 12.6 a 0.7 0.7 90 0 0 0.3752 0.6202 z"></path>
     </svg>
   </div>
   <div>

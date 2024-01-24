@@ -172,10 +172,11 @@ npm run dev
 | Key                       | Value |
 |---------------------------|-------|
 | public-ga-tracking-id     | Your google tracking property id. Steps [here](https://support.google.com/analytics/answer/9304153?hl=en&ref_topic=14088998&sjid=1644955229874584087-NC). |
+| google-search-console-html-tag | Content value of search console property verification tag. More [here](https://support.google.com/webmasters/answer/9008080?hl=en#meta_tag_verification) |
 | webmention                | Webmention API Key and link obtained from https://webmention.io/ |
 | custom-domain             | If you want to host the site somewhere else |
 | base-path                 | Or subdomain inside the custom domain |
-| html-directive            | Embed html code blocks that start with this line directly into the page |
+| shortocdes                | There are 3 shortcodes atm, one support, two in works. `html` shortcode is used to embed html code blocks that start with this line directly into the page |
 | references                | To show related pages, external links, and mentioned media at the end of the post. Set POPOVERS to true to display a snippet when hovering over a post link in the body. |
 | theme                     | Colors for light mode and dark mode |
 | fontfamily-google-fonts   | Combined URL link for all fonts you want to use from google fonts. Remember to escape spaces in font names if needed |
