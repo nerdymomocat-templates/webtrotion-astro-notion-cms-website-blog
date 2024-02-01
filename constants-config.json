@@ -36,8 +36,9 @@
   },
   "shortcodes": {
     "html": "<!DOCTYPE html>",
-    "alt-text": {"start":"--alt-text-start--", "end":"--alt-text-end--"},
-    "expressive-code": {"start":"--expressive-code-start--", "end":"--expressive-code-end--"}
+    "alt-text": {"start":"<<alt-text-start>>", "end":"<<alt-text-end>>"},
+    "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"},
+    "footnotes": {"start":"<<fnt-start>>", "end":"<<fnt-end>>"}
   },
   "recent-posts-on-home-page": false,
   "bottom-toc": true,

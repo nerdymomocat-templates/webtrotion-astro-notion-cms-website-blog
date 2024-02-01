@@ -104,6 +104,14 @@ export async function getAllEntries(): Promise<Post[]> {
             },
           },
         },
+        {
+          property: "Slug",
+          formula: {
+            rich_text: {
+              is_not_empty: true,
+            },
+          },
+        },
 
         ...(queryFilters?.and || []),
       ],
