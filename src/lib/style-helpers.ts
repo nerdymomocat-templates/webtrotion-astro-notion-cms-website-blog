@@ -70,6 +70,10 @@ export const getIconCssFilter = (iconUrl: string): string | null | undefined => 
   return match ? match[1] : null;
 }
 
+export const getToggleSVGPath = () => {
+  return "M 8.3752 20.5202 a 0.7028 0.7028 90 0 0 0.7231 -0.0448 l 9.1 -6.3 a 0.7 0.7 90 0 0 0 -1.1508 l -9.1 -6.3 A 0.7 0.7 90 0 0 8 7.3 v 12.6 a 0.7 0.7 90 0 0 0.3752 0.6202 z";
+}
+
 export const getIconTailwindFilterStyle = (url: string): string => {
   // if (!url.startsWith('https://www.notion.so/icons/')) {
   //       return '';

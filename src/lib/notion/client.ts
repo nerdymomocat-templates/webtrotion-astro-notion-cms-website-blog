@@ -107,7 +107,7 @@ export async function getAllEntries(): Promise<Post[]> {
         {
           property: "Slug",
           formula: {
-            rich_text: {
+            string: {
               is_not_empty: true,
             },
           },

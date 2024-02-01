@@ -3,6 +3,7 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { buildHeadingId } from "../../lib/blog-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
+import { getToggleSVGPath } from "@/lib/style-helpers";
 
 export interface Props {
 	block: interfaces.Block;
@@ -32,7 +33,7 @@ const id = buildHeadingId(block.Heading2);
 						stroke-width="2"
 						viewBox="0 0 24 24"
 					>
-          <path d="M 8.3752 20.5202 a 0.7028 0.7028 90 0 0 0.7231 -0.0448 l 9.1 -6.3 a 0.7 0.7 90 0 0 0 -1.1508 l -9.1 -6.3 A 0.7 0.7 90 0 0 8 7.3 v 12.6 a 0.7 0.7 90 0 0 0.3752 0.6202 z"></path>
+          <path d={getToggleSVGPath()}></path>
 					</svg>
 				</div>
 				<span class="inline">
