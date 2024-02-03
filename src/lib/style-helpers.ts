@@ -71,7 +71,7 @@ export const getIconCssFilter = (iconUrl: string): string | null | undefined => 
 }
 
 export const getToggleSVGPath = () => {
-  return "M 8.3752 20.5202 a 0.7028 0.7028 90 0 0 0.7231 -0.0448 l 9.1 -6.3 a 0.7 0.7 90 0 0 0 -1.1508 l -9.1 -6.3 A 0.7 0.7 90 0 0 8 7.3 v 12.6 a 0.7 0.7 90 0 0 0.3752 0.6202 z";
+  return "M 9.2075 8.5912 L 15.8925 12.45 L 9.2075 16.3087 Z";
 }
 
 export const getIconTailwindFilterStyle = (url: string): string => {

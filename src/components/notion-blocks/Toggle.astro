@@ -18,7 +18,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 <details class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
 	<summary class="flex cursor-pointer list-none list-image-none gap-2 max-w-full">
     <div>
-    <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="currentColor" height="20" width="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
+    <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="currentColor" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
 <path d={getToggleSVGPath()}></path>
     </svg>
   </div>
@@ -43,7 +43,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 	}
   /* This targets only the direct child SVG of the opened details */
 details[open] > summary > div >.flex-shrink-0.rotate-svg {
-  transform: rotate(90deg);
+  transform: rotateZ(90deg);
 }
 summary::-webkit-details-marker {
       display:none;
