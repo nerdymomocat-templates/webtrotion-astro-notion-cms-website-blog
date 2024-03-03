@@ -76,10 +76,10 @@ const paginationProps = {
 		<span class="text-xl">#{tag}</span>
 	</h1>
 	<section aria-label="Blog post list">
-		<ul class="space-y-8">
+		<ul class="space-y-4">
 			{
 				page.data.map((p) => (
-					<li class="flex max-w-full flex-col flex-wrap gap-2 [&_q]:basis-full">
+					<li class="flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full">
 						<PostPreview post={p} as="h2" withDesc />
 					</li>
 				))

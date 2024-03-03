@@ -42,10 +42,10 @@ try {
 					href={url.toString()}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="w-fill flex max-w-full select-none overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800"
+					class="w-full flex max-w-full select-none overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800 min-w-0 grow items-stretch	"
 				>
-					<div class="overflow-hidden p-3 text-left text-textColor/90">
-						<div class="trncate mb-0.5 h-6 overflow-hidden whitespace-nowrap text-base leading-5">
+					<div class="flex-bookmark-text overflow-hidden p-3 text-left text-textColor/90">
+						<div class="truncate mb-0.5 h-6 overflow-hidden whitespace-nowrap text-base leading-5">
 							{metadata && metadata.title}
 						</div>
 						<div class="h-8 overflow-hidden text-xs leading-4 opacity-80">
@@ -66,10 +66,10 @@ try {
 							</div>
 						</div>
 					</div>
-					<div class="flex-bookmark-image max-w-sm:hidden relative">
+					<div class="flex-bookmark-image hidden sm:block relative">
 						{metadata && metadata.image && (
 							<img
-								class="!absolute h-full w-full object-cover object-left-top"
+								class="!absolute h-full w-full object-contain object-right"
                 loading="lazy"
 								src={metadata.image}
 								alt="title"
@@ -87,5 +87,8 @@ try {
 <style>
 	.flex-bookmark-image {
 		flex: 1 1 180px;
+	}
+  .flex-bookmark-text {
+		flex: 4 1 180px;
 	}
 </style>

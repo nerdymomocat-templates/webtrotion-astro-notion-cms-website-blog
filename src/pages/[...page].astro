@@ -99,10 +99,10 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 
 		<section aria-label="Recent posts list">
 
-			<ul class="space-y-8 text-start">
+			<ul class="space-y-4 text-start">
 				{
 					recent_posts.map((post) =>
-							<li class="flex flex-col max-w-full flex-wrap gap-2 [&_q]:basis-full">
+							<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
 								<PostPreview post={post} as="h3" withDesc />
 							</li>
 						,
