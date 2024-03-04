@@ -39,7 +39,7 @@ const id = buildHeadingId(block.Heading1);
 				<span
 					class="inline"
 				>
-					<h2 class={`cursor-pointer toggle-h2 mb-4 mt-8 inline text-2xl ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
+					<h2 class={`cursor-pointer toggle-h2 mb-1 mt-8 inline text-2xl font-semibold ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
         navigator.clipboard.writeText(fullUrl);
         window.history.pushState(null, '', fullUrl);
@@ -62,7 +62,7 @@ const id = buildHeadingId(block.Heading1);
 			</div>
 		</details>
 	) : (
-			<h2 class={`cursor-pointer mb-4 mt-8 text-2xl font-normal ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
+			<h2 class={`cursor-pointer mb-1 mt-8 text-2xl font-semibold ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
         navigator.clipboard.writeText(fullUrl);
         window.history.pushState(null, '', fullUrl);

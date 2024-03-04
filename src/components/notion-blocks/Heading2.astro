@@ -19,7 +19,7 @@ const id = buildHeadingId(block.Heading2);
 
 {
 	block.Heading2.IsToggleable ? (
-		<details class="toggle mb-0 mt-8">
+		<details class="toggle mb-1 mt-6">
 			<summary class="flex cursor-pointer list-none gap-2 max-w-full">
 				<div>
 					<svg
@@ -37,7 +37,7 @@ const id = buildHeadingId(block.Heading2);
 					</svg>
 				</div>
 				<span class="inline">
-					<h3 class={`cursor-pointer toggle-h3 mb-4 mt-8 inline text-xl ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
+					<h3 class={`cursor-pointer toggle-h3 mb-1 mt-6 inline text-xl font-semibold ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
         navigator.clipboard.writeText(fullUrl);
         window.history.pushState(null, '', fullUrl);
@@ -62,7 +62,7 @@ const id = buildHeadingId(block.Heading2);
 		</details>
 	) : (
 
-			<h3 class={`cursor-pointer mb-4 mt-8 text-xl font-normal ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
+			<h3 class={`cursor-pointer mb-1 mt-6 text-xl font-semibold ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
         navigator.clipboard.writeText(fullUrl);
         window.history.pushState(null, '', fullUrl);

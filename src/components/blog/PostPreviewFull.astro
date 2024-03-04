@@ -7,7 +7,10 @@ import type { Post } from "src/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink, getPostLink } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
-import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
+import {
+	getNotionColorToTailwindColor,
+	getNotionColorToTailwindColorForBorder,
+} from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
 
 // type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
@@ -24,8 +27,8 @@ interface Props {
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
 const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
-const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
-	.filter((block) => {
+const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio"], blocks).filter(
+	(block) => {
 		if (!block) {
 			return false;
 		}
@@ -35,11 +38,15 @@ const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"],
 			imageOrVideoOrAudioOrFile.File &&
 			imageOrVideoOrAudioOrFile.File.Url
 		);
-	});
+	},
+);
 
 const processedFile = await processFileBlocks(fileAtacchedBlocks);
 
-const postLink = getPostLink(post_full_preview.Slug, post_full_preview.Collection === MENU_PAGES_COLLECTION);
+const postLink = getPostLink(
+	post_full_preview.Slug,
+	post_full_preview.Collection === MENU_PAGES_COLLECTION,
+);
 ---
 
 <FormattedDate
@@ -47,14 +54,11 @@ const postLink = getPostLink(post_full_preview.Slug, post_full_preview.Collectio
 	class="min-w-[120px] text-xs text-accent/90"
 />
 
-<a
-	href={postLink}
-	class="inline no-underline webtrotion-page-link"
->
-	<Tag class="font-bold">
+<Tag class="font-bold">
+	<a href={postLink} class="webtrotion-page-link inline no-underline">
 		{post_full_preview.Title}
-	</Tag>
-</a>
+	</a>
+</Tag>
 
 {
 	withDesc && post_full_preview.Excerpt && (
