@@ -37,8 +37,8 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   :
   (
   <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
-	<div class="max-h-[340px] overflow-scroll min-w-0">
-          <div class="flex max-w-full">
+    <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll"} min-w-0`}>
+                <div class="flex max-w-full">
             <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
                 const code = this.getAttribute('data-code');
                 navigator.clipboard.writeText(code);

@@ -28,6 +28,10 @@ export default {
 
   theme: {
     extend: {
+      screens: {
+        print: { raw: 'print' },
+        screen: { raw: 'screen' },
+      },
       colors: {
         bgColor: "rgb(var(--theme-bg) / <alpha-value>)",
         textColor: "rgb(var(--theme-text) / <alpha-value>)",

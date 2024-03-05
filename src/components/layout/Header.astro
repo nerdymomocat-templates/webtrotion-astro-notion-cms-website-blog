@@ -25,7 +25,7 @@ const rss_path = getNavLink("/rss.xml");
 
 <header
 	id="main-header"
-	class="group relative mb-16 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%]">
+	class="group relative mb-16 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%] print:hidden">
 	<div class="flex sm:flex-col">
 		<a
 			href={getNavLink("/")}
@@ -71,7 +71,7 @@ const rss_path = getNavLink("/rss.xml");
 				menuLinks.map((link) => (
 					<a
 						href={link.path}
-						class="px-4 py-4 underline-offset-4 sm:py-0 sm:hover:underline sm:hover:decoration-wavy sm:hover:decoration-accent-2/40"
+						class="px-4 py-4 underline-offset-4 sm:py-0 sm:hover:underline sm:hover:decoration-wavy sm:hover:decoration-accent-2/40 w-full sm:w-auto text-right sm:text-left"
 						aria-current={url.pathname === link.path ? "page" : false}
 						data-astro-prefetch
 					>

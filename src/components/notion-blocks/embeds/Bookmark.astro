@@ -66,8 +66,9 @@ try {
 							</div>
 						</div>
 					</div>
-					<div class="flex-bookmark-image hidden sm:block relative">
+
 						{metadata && metadata.image && (
+              <div class="flex-bookmark-image hidden sm:block relative">
 							<img
 								class="!absolute h-full w-full object-contain object-right"
                 loading="lazy"
@@ -75,8 +76,9 @@ try {
 								alt="title"
 								decoding="async"
 							/>
+            </div>
 						)}
-					</div>
+
 				</a>
 			</div>
 		)

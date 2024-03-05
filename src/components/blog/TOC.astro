@@ -13,7 +13,7 @@ const { headings } = Astro.props;
 const toc = generateToc(headings);
 ---
 
-<aside class="col-span-1 hidden text-left sm:sticky sm:top-20 sm:block">
+<aside class="col-span-1 hidden text-left sm:sticky sm:top-20 sm:block print:hidden">
 	{
 		!!toc.length && (
 			<>
