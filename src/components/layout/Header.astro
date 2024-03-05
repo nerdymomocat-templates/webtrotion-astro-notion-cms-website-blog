@@ -25,7 +25,7 @@ const rss_path = getNavLink("/rss.xml");
 
 <header
 	id="main-header"
-	class="group relative mb-16 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%] print:hidden">
+	class="group relative screen:mb-16 print mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%]">
 	<div class="flex sm:flex-col">
 		<a
 			href={getNavLink("/")}
@@ -64,7 +64,7 @@ const rss_path = getNavLink("/rss.xml");
 		</a>
 		<nav
 			id="navigation-menu"
-			class="md absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md bg-bgColor/90 py-2 text-base text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base"
+			class="print:hidden md absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md bg-bgColor/90 py-2 text-base text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base"
 			aria-label="Main menu"
 		>
 			{
@@ -81,7 +81,7 @@ const rss_path = getNavLink("/rss.xml");
 			}
 		</nav>
 	</div>
-	<div class="flex flex-row">
+	<div class="flex flex-row print:hidden">
 		<div class="h-10 w-10 items-center justify-center rounded-md p-1.5 hover:text-accent">
 			<a href={rss_path}
 				><Icon
