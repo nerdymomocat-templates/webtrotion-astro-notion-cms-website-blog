@@ -98,6 +98,7 @@
     "columns": 1,
     "excerpt": false
   },
+  "full-width-tweet-embeds": false,
   "optimize-images": true,
   "redirects": {}
 }

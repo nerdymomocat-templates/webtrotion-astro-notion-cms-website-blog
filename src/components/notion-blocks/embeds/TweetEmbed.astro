@@ -1,5 +1,6 @@
 ---
 import Tweet from 'astro-tweet';
+import { FULL_WIDTH_TWEETS } from '@/constants';
 export interface Props {
   url: URL
 }
@@ -13,7 +14,7 @@ const postURL =
 const tweetID = postURL.pathname.split("/")[3];
 // const tweetID = postURL.toString();
 ---
-{tweetID && (<div class="w-full max-w-[min(420px,96%)] mx-auto overflow-scroll">
+{tweetID && (<div class={`w-full ${FULL_WIDTH_TWEETS?"":"max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}>
   <Tweet id={tweetID} />
 </div>
 )

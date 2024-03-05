@@ -73,3 +73,5 @@ export const GISCUS = key_value_from_json["giscus"] || null;
 export const THEME = key_value_from_json["theme"] || {};
 
 export const GOOGLE_SEARCH_CONSOLE_META_TAG = key_value_from_json["google-search-console-html-tag"] || null;
+
+export const FULL_WIDTH_TWEETS = key_value_from_json["full-width-tweet-embeds"] || false;
