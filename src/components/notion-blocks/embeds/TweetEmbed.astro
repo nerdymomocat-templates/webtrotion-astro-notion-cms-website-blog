@@ -14,7 +14,7 @@ const postURL =
 const tweetID = postURL.pathname.split("/")[3];
 // const tweetID = postURL.toString();
 ---
-{tweetID && (<div class={`w-full ${FULL_WIDTH_TWEETS?"":"max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}>
+{tweetID && (<div class={`w-full ${FULL_WIDTH_TWEETS?"":"screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}>
   <Tweet id={tweetID} />
 </div>
 )
