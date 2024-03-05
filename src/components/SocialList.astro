@@ -3,6 +3,7 @@ import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
 import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
+import Divider from "./notion-blocks/Divider.astro";
 
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)
@@ -31,7 +32,7 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 const socialLinks = mapSocialLinks(SOCIALS);
 ---
 {socialLinks && (
-<div class="flex flex-wrap items-center gap-x-4">
+<div class="flex flex-wrap items-center gap-x-4 print:hidden">
 	<p>Find me on</p>
 	<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
 		{
@@ -50,4 +51,18 @@ const socialLinks = mapSocialLinks(SOCIALS);
 			))
 		}
 	</ul>
-</div>)}
+</div>
+<div class="screen:hidden w-full">
+  <hr class="mb-4">
+	<p class="text-left font-bold">Find me on:</p>
+	<ul>
+		{
+			socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
+				<li class="flex">
+						<p class="text-left">{friendlyName}: {link}</p>
+				</li>
+			))
+		}
+	</ul>
+</div>
+)}
