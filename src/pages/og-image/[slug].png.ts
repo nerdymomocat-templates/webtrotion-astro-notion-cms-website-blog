@@ -6,9 +6,8 @@ import { Resvg } from "@resvg/resvg-js";
 // import { siteConfig } from "@/site-config";
 import { getFormattedDate } from "@/utils";
 import { filePath } from "@/lib/blog-helpers";
+import fetch from "node-fetch";
 
-import JetBrainsMonoBold from "@/assets/JetBrainsMono-Bold.ttf";
-import BricolageGrotesque from "@/assets/BricolageGrotesque_SemiCondensed-Medium.ttf";
 //ADDITION
 import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
 import { getCollections } from "@/utils";
@@ -27,6 +26,39 @@ const rgbToHex = (rgb: string): string =>
 const rgbToRgba = (rgb: string, alpha: number): string =>
   `rgba(${rgb.split(" ").join(", ")}, ${alpha})`;
 
+  async function getFont(font_name: string, weight: number, font_url: string): Promise<SatoriOptions["fonts"]> {
+    // Remove '&display=swap' from the URL if it exists
+    const url = font_url.replace("&display=swap", "");
+
+    // Extract the first font weight from the URL
+    // const weight = parseInt(url.match(/wght@\d+/)?.[0]?.match(/\d+/)?.[0] || default_weight, 10);
+
+    const css = await fetch(url, {
+      headers: {
+        // Make sure it returns TTF.
+        "User-Agent":
+          "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1",
+      },
+    }).then((response) => response.text());
+
+    const match = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/);
+    if (!match) {
+      throw new Error(`Failed to find font URL}`);
+    }
+
+    const fontUrl = match[1];
+
+    const buffer = await fetch(fontUrl).then((response) => response.arrayBuffer());
+
+    return [
+      {
+        name: font_name,
+        style: "normal",
+        weight: weight,
+        data: buffer,
+      },
+    ] as SatoriOptions["fonts"];
+  }
 
 
 const ogOptions: SatoriOptions = {
@@ -34,18 +66,9 @@ const ogOptions: SatoriOptions = {
   height: 630,
   // debug: true,
   fonts: [
-    {
-      name: "JetBrainsMono-Bold",
-      data: Buffer.from(JetBrainsMonoBold),
-      weight: 700,
-      style: "normal",
-    },
-    {
-      name: "BricolageGrotesque-SemiBold",
-      data: Buffer.from(BricolageGrotesque),
-      weight: 500,
-      style: "normal",
-    },
+    ...(await getFont("title-font", 700, OG_SETUP["title-font-url"])),
+    ...(await getFont("footnote-font", 500, OG_SETUP["footnote-font-url"])),
+
   ],
 };
 
@@ -106,7 +129,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
               "height": "100%",
               "width": "100%",
               "display": "flex",
-              "fontFamily": "BricolageGrotesque-SemiBold"
+              "fontFamily": "title-font"
             },
             "children": [
               {
@@ -198,7 +221,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "fontFamily": "JetBrainsMono-Bold"
+                                      "fontFamily": "footnote-font"
                                     },
                                     "children": [
                                       {
@@ -279,7 +302,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
               "height": "100%",
               "width": "100%",
               "display": "flex",
-              "fontFamily": "BricolageGrotesque-SemiBold"
+              "fontFamily": "title-font"
             },
             "children": [
               {
@@ -475,7 +498,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
               "fontWeight": "700",
               "backgroundImage": og_images_colors["backgroundImage"],
               "backgroundSize": "100px 100px",
-              "fontFamily": "BricolageGrotesque-SemiBold"
+              "fontFamily": "title-font"
             },
             "children": [
               {
@@ -542,7 +565,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
                                       "padding": "10px 30px",
-                                      "fontFamily": "JetBrainsMono-Bold"
+                                      "fontFamily": "footnote-font"
                                     },
                                     "children": [
                                       {
@@ -630,7 +653,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
               "fontWeight": "700",
               "backgroundImage": og_images_colors["backgroundImage"],
               "backgroundSize": "100px 100px",
-              "fontFamily": "BricolageGrotesque-SemiBold"
+              "fontFamily": "title-font"
             },
             "children": [
               {
@@ -690,7 +713,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                   "props": {
                                     "style": {
                                       "fontSize": "30px",
-                                      "fontFamily": "JetBrainsMono-Bold",
+                                      "fontFamily": "footnote-font",
                                       "fontWeight": "700",
                                       "lineHeight": "2rem",
                                       "padding": "10px 30px",
@@ -713,7 +736,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
                                       "padding": "10px 20px",
-                                      "fontFamily": "JetBrainsMono-Bold"
+                                      "fontFamily": "footnote-font"
                                     },
                                     "children": [
                                       {
@@ -799,7 +822,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
               "justifyContent": "center",
               "fontSize": "32px",
               "fontWeight": "700",
-              "fontFamily": "BricolageGrotesque-SemiBold"
+              "fontFamily": "title-font"
             },
             "children": [
               {
@@ -882,7 +905,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "fontFamily": "JetBrainsMono-Bold",
+                                      "fontFamily": "footnote-font",
                                       "padding": "10px 20px"
                                     },
                                     "children": [

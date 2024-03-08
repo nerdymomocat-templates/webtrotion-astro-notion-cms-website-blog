@@ -69,25 +69,9 @@ export default defineConfig({
   },
   prefetch: true,
   vite: {
-    plugins: [rawFonts([".ttf"])],
+    plugins: [],
     optimizeDeps: {
       exclude: ["@resvg/resvg-js"]
     }
   }
 });
-function rawFonts(ext: Array<string>) {
-  return {
-    name: "vite-plugin-raw-fonts",
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore:next-line
-    transform(_, id) {
-      if (ext.some(e => id.endsWith(e))) {
-        const buffer = fs.readFileSync(id);
-        return {
-          code: `export default ${JSON.stringify(buffer)}`,
-          map: null
-        };
-      }
-    }
-  };
-}

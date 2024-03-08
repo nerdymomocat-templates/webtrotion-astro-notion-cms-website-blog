@@ -96,7 +96,9 @@
   "home-page-slug": "",
   "og-setup": {
     "columns": 1,
-    "excerpt": false
+    "excerpt": false,
+    "title-font-url":"https://fonts.googleapis.com/css2?family=Kreon:wght@500&display=swap",
+    "footnote-font-url":"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap"
   },
   "full-width-tweet-embeds": false,
   "optimize-images": true,

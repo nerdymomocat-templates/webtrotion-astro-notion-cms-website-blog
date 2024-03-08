@@ -30,16 +30,16 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   code_inject ?
   (
     <div class="injectedcode w-full mb-1 max-w-full" id={setId?block.Id:undefined}>
-    <iframe srcdoc={code.replace(SHORTCODES["html"],"") } class="max-w-full h-[340px] w-full border-none rounded-lg" loading="lazy" title={plainTextCaption}></iframe>
+    <iframe srcdoc={code.replace(SHORTCODES["html"],"") } class="max-w-full screen:h-[340px] w-full border-none rounded-lg" loading="lazy" title={plainTextCaption}></iframe>
   </div>
 
   )
   :
   (
   <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
-    <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll"} min-w-0`}>
+    <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "screen:max-h-[340px] overflow-scroll"} min-w-0`}>
                 <div class="flex max-w-full">
-            <button class="copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
+            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
                 const code = this.getAttribute('data-code');
                 navigator.clipboard.writeText(code);
                 const svgBefore = this.querySelector('.copy-icon-before');
