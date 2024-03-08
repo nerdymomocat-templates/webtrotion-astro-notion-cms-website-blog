@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
 import type { Block, Heading1, Heading2, Heading3, RichText, Column, ReferencesInPage, Post } from "./interfaces";
-import slugify from '@sindresorhus/slugify';
+import {slugify} from '../utils/slugify';
 import path from 'path';
 import fs from "node:fs";
 import { getBlock, getPostByPageId } from "./notion/client";

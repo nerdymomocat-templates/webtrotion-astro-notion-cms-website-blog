@@ -3,7 +3,7 @@ import type { MarkdownHeading } from "astro";
 import { HEADING_BLOCKS } from "@/constants";
 import type { Block } from "@/lib/interfaces";
 import type { Heading } from "@/types";
-import slugify from '@sindresorhus/slugify';
+import {slugify} from '@/utils';
 
 export interface TocItem extends MarkdownHeading {
   subheadings: Array<TocItem>;

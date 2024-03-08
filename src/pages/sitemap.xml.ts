@@ -3,7 +3,7 @@ import { getAllPosts, getAllPages } from "@/lib/notion/client";
 import { getPostLink } from '../lib/blog-helpers'
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getCollections } from "@/utils";
-import slugify from '@sindresorhus/slugify';
+import {slugify} from '@/utils';
 
 
 export const GET = async () => {

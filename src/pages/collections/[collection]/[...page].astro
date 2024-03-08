@@ -8,7 +8,7 @@ import Pagination from "src/components/Paginator.astro";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "@/lib/interfaces";
 import { getCollections } from "@/utils";
-import slugify from "@sindresorhus/slugify";
+import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink, resetFirstImage } from "@/lib/blog-helpers";

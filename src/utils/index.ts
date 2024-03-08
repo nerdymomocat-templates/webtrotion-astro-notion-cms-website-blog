@@ -3,7 +3,7 @@ import { getAllPages, getDatabase } from "@/lib/notion/client";
 // import { siteConfig } from "@/site-config";
 import type { Block, BlockTypes } from "@/lib/interfaces";
 import { MENU_PAGES_COLLECTION, HOME_PAGE_SLUG } from "@/constants";
-import slugify from '@sindresorhus/slugify';
+import {slugify} from '@/utils/slugify'
 import { getNavLink } from "@/lib/blog-helpers";
 // import { siteInfo } from "./site.config";
 
@@ -14,6 +14,7 @@ export { elementHasClass, toggleClass, rootHasDarkClass } from "./domElement";
 export { generateToc, buildHeadings } from "./generateToc";
 export type { TocItem } from "./generateToc";
 export { getWebmentionsForUrl } from "./webmentions";
+export {slugify} from "./slugify";
 // export { siteInfo } from "./site.config";
 
 //NOTE ADDED FROM HERE ON
