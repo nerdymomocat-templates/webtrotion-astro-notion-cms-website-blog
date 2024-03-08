@@ -24,6 +24,12 @@ export const filePath = (url: URL): string => {
   // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
 };
 
+export const buildTimeFilePath = (url: URL): string => {
+  const [dir, filename] = url.pathname.split("/").slice(-2);
+  return `/notion/${dir}/${filename}`;
+  // return path.join(BASE_PATH, `./src/notion-assets/${dir}/${filename}`);
+};
+
 export function getReferencesInPage(entryId: string) {
   // Load and aggregate data if referencesInPageCache is null
   if (referencesInPageCache === null) {

@@ -5,7 +5,7 @@ import satori, { type SatoriOptions } from "satori";
 import { Resvg } from "@resvg/resvg-js";
 // import { siteConfig } from "@/site-config";
 import { getFormattedDate } from "@/utils";
-import { filePath } from "@/lib/blog-helpers";
+import { buildTimeFilePath } from "@/lib/blog-helpers";
 import fetch from "node-fetch";
 
 //ADDITION
@@ -89,7 +89,8 @@ const og_images_colors =
 let customIconURL: string = "";
 if (siteInfo.logo && siteInfo.logo.Type === "file") {
   try {
-    const absolutePath = path.join(process.cwd(), 'public', filePath(new URL(siteInfo.logo.Url)));
+    const absolutePath = path.join(process.cwd(), 'public', buildTimeFilePath(new URL(siteInfo.logo.Url)));
+    // console.log(siteInfo.logo.Url);
     customIconURL = absolutePath;
   } catch (err) {
     console.log("Invalid DB custom icon URL");
