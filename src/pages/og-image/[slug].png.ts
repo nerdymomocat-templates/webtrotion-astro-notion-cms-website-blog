@@ -89,7 +89,8 @@ const og_images_colors =
 let customIconURL: string = "";
 if (siteInfo.logo && siteInfo.logo.Type === "file") {
   try {
-    customIconURL = "./public"+filePath(new URL(siteInfo.logo.Url));
+    const absolutePath = path.join(process.cwd(), 'public', filePath(new URL(siteInfo.logo.Url)));
+    customIconURL = absolutePath;
   } catch (err) {
     console.log("Invalid DB custom icon URL");
   }
