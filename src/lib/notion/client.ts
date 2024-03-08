@@ -62,6 +62,7 @@ import type {
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
+import { slugify } from "../../utils/slugify";
 import { extractReferencesInPage } from "../blog-helpers";
 
 
@@ -1214,7 +1215,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     Icon: icon,
     Cover: cover,
     Collection: prop.Collection?.select ? prop.Collection.select.name : "",
-    Slug: prop.Slug?.formula?.string ? prop.Slug.formula.string : "",
+    Slug: prop.Slug?.formula?.string ? slugify(prop.Slug.formula.string) : "",
     Date: prop['Publish Date']?.formula?.date ? prop['Publish Date']?.formula?.date.start : "",
     Tags: prop.Tags?.multi_select ? prop.Tags.multi_select : [],
     Excerpt:
