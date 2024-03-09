@@ -75,10 +75,13 @@ window.addEventListener('afterprint', function () {
         level++;
         el = el.parentElement;
       }
+      console.log(level - 1);
       return level - 1;
     };
 
     const hideAllPopovers = (level = 0) => {
+      console.log('hideAllPopovers called');
+      console.log(openPopovers);
       openPopovers.forEach(popoverEl => {
         if (getPopoverLevel(popoverEl) >= level) {
           hidePopover(popoverEl);
@@ -87,6 +90,7 @@ window.addEventListener('afterprint', function () {
     };
 
     const hidePopover = (popoverEl) => {
+      console.log('hidePopover called for', popoverEl);
       if (popoverEl) {
         popoverEl.style.visibility = 'hidden';
         popoverEl.classList.add('hidden');
@@ -174,14 +178,17 @@ window.addEventListener('afterprint', function () {
     });
 
     document.addEventListener('click', (event) => {
-      if (!event.target.closest('[data-popover-target]')) {
-        hideAllPopovers();
-      }
-    });
+  const popoverLink = event.target.closest('[data-popover-link]');
+  if (popoverLink) {
+    hideAllPopovers(-1);
+  } else if (!event.target.closest('[data-popover-target]')) {
+    hideAllPopovers(-1);
+  }
+});
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        hideAllPopovers();
+        hideAllPopovers(-1);
       }
     });
   });
