@@ -188,7 +188,7 @@ npm run dev
 | full-preview-collections  | Stream like view, where each post is a mini-blog in the same page as a scrollable page instead of being links to individual pages. Any Collection name added to this list will be rendered as stream view. |
 | hide-underscore-slugs-in-lists | If the slug starts with _, hide those in post lists, rss and sitemap, but still render them, so that you can share them |
 | home-page-slug            | By default is set to “home” but can be anything that you want for the renderer to recognize which is your home page from the database |
-| og-setup                  | Refers to open graph setup or those images you see when you share links. By default, it includes excerpts, and creates two columns if featured image is available |
+| og-setup                  | Open graph setup refers to the images displayed when sharing links. It includes excerpts and creates two columns if a featured image is available. You can customize the title and footnote fonts for the og-image, particularly for non-English blogs. Ensure that each URL has only one font and, if it has a weight, the weight is above 400 |
 | optimize-images           | Converts images to next-gen formats like webp for more responsive sites |
 | redirects                 | Intentional redirects, especially if you are moving systems that astro should redirect to |
 | bottom-toc                | Has a ToC navigation bar at bottom on smaller screens |
@@ -203,3 +203,5 @@ MIT
 - 📝 Remember, the cron schedule is by default set to every 8 hours. You can change it to run every 2 hours or if you want to push out a change immediately, you can also [manually run the github action](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) if you are deploying on github. The workflow name is “Deploy Github Pages”.
 - ℹ️ **Aggressive Caching**
 Remember that the setup uses aggressive caching for github actions. These caches are public. If you want to remove caches, you can go to [github action workflow](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) and manually delete the caches
+- ℹ️ **Multilingual/Non-English blogs**
+Open graph setup refers to the images displayed when sharing links. It includes excerpts and creates two columns if a featured image is available. **You can customize the title and footnote fonts for the og-image, particularly for non-English blogs.** Ensure that each URL has only one font and, if it has a weight, the weight is above 400
