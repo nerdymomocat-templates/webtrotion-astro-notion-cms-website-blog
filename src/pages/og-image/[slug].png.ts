@@ -207,6 +207,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                       "color": og_images_colors["titleColor"],
                                       "flex": "1",
                                       "display": "flex",
+                                      "fontFamily": "title-font"
 
                                     },
                                     "children": title
@@ -379,7 +380,8 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "padding": "10px 0 20px 0",
                                       "color": og_images_colors["titleColor"],
                                       "flex": "0.5",
-                                      "display": "flex"
+                                      "display": "flex",
+                                      "fontFamily": "title-font"
                                     },
                                     "children": title
                                   }
@@ -395,7 +397,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "color": og_images_colors["descColor"],
                                       "flex": "1",
                                       "display": "flex",
-                                      "fontFamily": "JetBrainsMonoBold"
+                                      "fontFamily": "footnote-font"
                                     },
                                     "children": desc
                                   }
@@ -411,7 +413,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                       "flexDirection": "row",
                                       "justifyContent": "space-between",
                                       "alignItems": "center",
-                                      "fontFamily": "JetBrainsMonoBold"
+                                      "fontFamily": "footnote-font"
                                     },
                                     "children": [
                                       {
@@ -446,7 +448,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                               "props": {
                                                 "style": {
                                                   "marginRight": "16px",
-                                                  "fontFamily": "JetBrainsMonoBold"
+                                                  "fontFamily": "footnote-font"
                                                 },
                                                 "children": siteInfo.author
                                               }
