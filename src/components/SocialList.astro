@@ -8,61 +8,103 @@ import Divider from "./notion-blocks/Divider.astro";
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)
 		.map(([key, value]): SocialLink => {
-			// Handling special case for email
 			let iconname = getTextToAstroIcon(key);
 			iconname = iconname ? iconname : "mdi:web";
 			if (key === "email") {
 				return {
 					name: iconname,
-					friendlyName: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the first letter
-					link: value.startsWith("mailto:") ? value : `mailto:${value}`,
+					friendlyName: key.charAt(0).toUpperCase() + key.slice(1),
+					link: value,
 					isWebmention: true,
 				};
 			}
 
 			return {
 				name: iconname,
-				friendlyName: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the first letter
+				friendlyName: key.charAt(0).toUpperCase() + key.slice(1),
 				link: value,
 			};
 		})
-		.filter((link) => link.link && link.link!=="mailto:"); // Filter out empty links
+		.filter((link) => link.link && link.link !== "mailto:");
 };
 
 const socialLinks = mapSocialLinks(SOCIALS);
 ---
+
+<script>
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const toast = document.getElementById('toast');
+      toast.classList.remove('opacity-0');
+      toast.classList.add('opacity-100');
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0');
+      }, 3000);
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
+  }
+
+  function handleEmailClick(event, email) {
+    event.preventDefault();
+    copyToClipboard(email);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailLinks = document.querySelectorAll('.email-link');
+    emailLinks.forEach(link => {
+      link.addEventListener('click', (event) => {
+        const email = link.getAttribute('data-email');
+        handleEmailClick(event, email);
+      });
+    });
+  });
+</script>
+
 {socialLinks && (
 <div class="flex flex-wrap items-center gap-x-4 print:hidden">
-	<p>Find me on</p>
-	<ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
-		{
-			socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
-				<li class="flex">
-					<a
-						class="inline-block p-1 sm:hover:text-link"
-						href={link}
-						target="_blank"
-						rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
-					>
-						<Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
-						<span class="sr-only">{friendlyName}</span>
-					</a>
-				</li>
-			))
-		}
-	</ul>
+  <p>Find me on</p>
+  <ul class="flex flex-1 items-center gap-x-2 sm:flex-initial">
+    {socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
+      <li class="flex">
+        {friendlyName === 'Email' ? (
+          <a
+            class="inline-block p-1 sm:hover:text-link email-link"
+            href="#"
+            data-email={link}
+            rel={`noopener noreferrer ${isWebmention ? 'me authn' : ''}`}
+          >
+            <Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
+            <span class="sr-only">{friendlyName}</span>
+          </a>
+        ) : (
+          <a
+            class="inline-block p-1 sm:hover:text-link"
+            href={link}
+            target="_blank"
+            rel={`noopener noreferrer ${isWebmention ? 'me authn' : ''}`}
+          >
+            <Icon class="h-6 w-6" name={name} aria-label={friendlyName} focusable="false" />
+            <span class="sr-only">{friendlyName}</span>
+          </a>
+        )}
+      </li>
+    ))}
+  </ul>
 </div>
+<div id="toast" class="fixed left-1/2 bottom-8 transform -translate-x-1/2 bg-gray-800 text-white text-center rounded px-4 py-2 opacity-0 transition-opacity duration-300">Email copied to clipboard</div>
 <div class="screen:hidden w-full">
   <hr class="mb-4">
-	<p class="text-left font-bold">Find me on:</p>
-	<ul>
-		{
-			socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
-				<li class="flex">
-						<p class="text-left">{friendlyName}: {link}</p>
-				</li>
-			))
-		}
-	</ul>
+  <p class="text-left font-bold">Find me on:</p>
+  <ul>
+    {socialLinks.map(({ link, name, friendlyName, isWebmention }) => (
+      <li class="flex">
+        <p class="text-left">
+          {friendlyName}: {link}
+        </p>
+      </li>
+    ))}
+  </ul>
 </div>
 )}
