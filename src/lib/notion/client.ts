@@ -1225,6 +1225,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
     FeaturedImage: featuredImage,
     Rank: prop.Rank.number ? prop.Rank.number : 0,
     LastUpdatedDate: prop['Last Updated Date']?.formula?.date ? prop['Last Updated Date']?.formula.date.start : "",
+    Pinned: (prop.Pinned && prop.Pinned.checkbox === true) ? true : false,
   };
   return post;
 }
