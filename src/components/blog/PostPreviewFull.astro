@@ -56,7 +56,7 @@ const postLink = getPostLink(
 />
 
 <Tag class="font-bold">
-  {post_full_preview.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={getTextToAstroIcon("pin")} aria-hidden="true" focusable="false" color="#D50B0D"/>)}
+  {post_full_preview.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={getTextToAstroIcon("pin")} aria-label="Pinned Post" focusable="false" color="#D50B0D"/>)}
 	<a href={postLink} class="webtrotion-page-link inline no-underline">
 		{post_full_preview.Title}
 	</a>
