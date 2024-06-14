@@ -24,6 +24,7 @@ export interface Post {
   Rank: number;
   LastUpdatedDate: string;
   LastUpdatedTimeStamp: Date;
+  Pinned: boolean;
 }
 
 export interface Block {
