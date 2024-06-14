@@ -14,7 +14,7 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 				return {
 					name: iconname,
 					friendlyName: key.charAt(0).toUpperCase() + key.slice(1),
-					link: value,
+					link: value.startsWith("mailto:") ? value.replace("mailto:", "") : value,
 					isWebmention: true,
 				};
 			}
@@ -25,7 +25,7 @@ const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLin
 				link: value,
 			};
 		})
-		.filter((link) => link.link && link.link !== "mailto:");
+		.filter((link) => link.link);
 };
 
 const socialLinks = mapSocialLinks(SOCIALS);
