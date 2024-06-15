@@ -16,18 +16,17 @@ import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 export const getStaticPaths = (async ({ paginate }) => {
-	const posts = await getAllPosts();
+	let posts = await getAllPosts();
+  // Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
+  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+    posts = posts.filter((post) => !post.Slug.startsWith("_"));
+}
 
 	const collections = await getCollectionsWDesc();
 
 	return collections.flatMap((collection) => {
 		// Initially filter posts based on the collection
 		let collectionPosts = posts.filter((post) => post.Collection === collection.name);
-
-		// Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
-		if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-			collectionPosts = collectionPosts.filter((post) => !post.Slug.startsWith("_"));
-		}
 
     // Sort posts to have pinned ones on top while maintaining the original order within each category
     collectionPosts.sort((a, b) => {

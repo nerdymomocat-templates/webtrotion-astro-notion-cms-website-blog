@@ -13,7 +13,8 @@ import {
   REQUEST_TIMEOUT_MS,
   MENU_PAGES_COLLECTION,
   OPTIMIZE_IMAGES,
-  LAST_BUILD_TIME
+  LAST_BUILD_TIME,
+  HIDE_UNDERSCORE_SLUGS_IN_LISTS
 } from "../../constants";
 import type * as responses from "./responses";
 import type * as requestParams from "./request-params";
@@ -470,8 +471,11 @@ export function getUniqueTags(posts: Post[]) {
 
 export async function getAllTags(): Promise<SelectProperty[]> {
   const allPosts = await getAllPosts();
+  const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
+		? allPosts.filter((post) => !post.Slug.startsWith("_"))
+		: allPosts;
 
-  return getUniqueTags(allPosts);
+  return getUniqueTags(filteredPosts);
 }
 
 export async function getAllTagsWithCounts(): Promise<{ name: string, count: number, description: string }[]> {

@@ -4,47 +4,55 @@ import type { Page, GetStaticPaths } from "astro";
 import PageLayout from "@/layouts/Base";
 import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
-import { getAllPosts } from "@/lib/notion/client";
+import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post } from "@/lib/notion/interfaces";
-
+import {slugify} from '@/utils';
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder, getTextToAstroIcon } from "@/lib/style-helpers";
 import { Icon } from "astro-iconify";
+import {  } from "@/lib/notion/client";
 
+export const getStaticPaths = (async ({ paginate }) => {
+	let posts = await getAllPosts();
+  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+    posts = posts.filter((post) => !post.Slug.startsWith("_"));
+		}
 
-export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
-	const allPosts = await getAllPosts();
+	const tags = await getUniqueTags(posts);
 
-	// Apply the underscore slug filter if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
-	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
-		? allPosts.filter((post) => !post.Slug.startsWith("_"))
-		: allPosts;
+	return tags.flatMap((tag) => {
+		// Initially filter posts based on the collection
+		let tagPosts = posts.filter((post) => post.Tags.some((postTag) => postTag.name === tag.name));
 
-	const uniqueTags = [...new Set(filteredPosts.flatMap((post) => post.Tags))];
+    // Sort posts to have pinned ones on top while maintaining the original order within each category
+    tagPosts.sort((a, b) => {
+        if (a.Pinned === b.Pinned) {
+            return 0; // maintain original order if both are pinned or both are not pinned
+        }
+        return a.Pinned ? -1 : 1; // pinned posts come first
+    });
 
-	return uniqueTags.flatMap((tag) => {
-    const filterPosts = filteredPosts.filter((post) =>
-    post.Tags.some((postTag) => postTag.name === tag.name)
-  );
-    console.log(tag, filterPosts);
-		return paginate(filterPosts, {
-      params: { tag: tag.name, description: tag.description, color: tag.color },
+		return paginate(tagPosts, {
+			params: { tag: slugify(tag.name) },
+      props: { tag: tag.name, description: tag.description, color:tag.color },
 			pageSize: 10,
 		});
 	});
-};
+}) satisfies GetStaticPaths;
 
 interface Props {
 	page: Page<Post>;
+    tag: string;
+  description: string;
+	color: string;
 }
 
-const { page } = Astro.props;
-const { tag, description, color } = Astro.params;
+const { page, tag, description, color } = Astro.props as Props;
 
 const meta = {
 	title: `Tag: ${tag}`,
-	description: `View all posts with the tag - ${tag}`,
+	description: description || `View all posts with the tag - ${tag}`,
 	ogImage: "/og-image/tagpage---" + tag + ".png",
 };
 
