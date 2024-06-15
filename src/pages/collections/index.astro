@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base";
 import { getNavLink } from "@/lib/blog-helpers";
-import { getCollections } from "@/utils";
+import { getCollectionsWDesc } from "@/utils";
 import {slugify} from '@/utils';
 
 const meta = {
@@ -10,24 +10,31 @@ const meta = {
 	ogImage: "/og-image/collectionsindex---index.png",
 };
 
-const collections = await getCollections();
+const collections = await getCollectionsWDesc();
 ---
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6">Collections</h1>
 	<ul class="space-y-4">
 		{
-			collections.map((collection) => (
-				<li class="flex max-w-full items-center gap-x-2">
-					<a
-						class="webtrotion-page-link inline-block"
-						href={getNavLink("/collections/" + slugify(collection) + "/")}
-						title={`View posts with in collection: ${collection}`}
-						data-astro-prefetch
-            aria-label={`View posts with in collection: ${collection}`}
-					>
-						{collection}
-					</a>
+			collections.map(({ name, description }) => (
+				<li class="flex flex-col max-w-full items-start gap-x-2">
+					<div>
+						<a
+							class="webtrotion-page-link inline-block"
+							href={getNavLink("/collections/" + slugify(name) + "/")}
+							title={`View posts within collection: ${name}`}
+							data-astro-prefetch
+							aria-label={`View posts within collection: ${name}`}
+						>
+							{name}
+						</a>
+					</div>
+					{description && description.trim() !== "" &&
+						<div>
+							<q class="block italic">{description}</q>
+						</div>
+					}
 				</li>
 			))
 		}

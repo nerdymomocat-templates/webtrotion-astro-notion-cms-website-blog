@@ -481,7 +481,7 @@ export async function getAllTagsWithCounts(): Promise<(SelectProperty & { count:
 
   allPosts.forEach((post) => {
     post.Tags.forEach((tag) => {
-      const tagName = tag.name;
+      const tagName = tag.name+tag.description;
       if (tagCounts[tagName]) {
         tagCounts[tagName]++;
       } else {

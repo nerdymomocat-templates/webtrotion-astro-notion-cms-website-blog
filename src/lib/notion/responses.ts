@@ -190,6 +190,7 @@ interface SelectOptionObject {
   name: string;
   id: string;
   color: string;
+  description: string;
 }
 
 interface StatusConfiguration {
@@ -286,6 +287,7 @@ interface SelectProperty {
   id: string;
   name: string;
   color: string;
+  description: string;
 }
 
 interface StatusProperty {

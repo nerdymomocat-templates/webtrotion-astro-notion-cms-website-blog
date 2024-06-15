@@ -27,6 +27,13 @@ export async function getCollections() {
   );
 }
 
+export async function getCollectionsWDesc() {
+  const { propertiesRaw } = await getDatabase();
+
+  return propertiesRaw.Collection.select!.options
+    .filter(({ name }) => name !== MENU_PAGES_COLLECTION)
+    .map(({ name, description }) => ({ name, description }));
+}
 
 export async function getMenu(): Promise<
   { title: string; path: string; children?: { title: string; path: string }[] }[]

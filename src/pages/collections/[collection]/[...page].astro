@@ -7,7 +7,7 @@ import PostPreviewFull from "src/components/blog/PostPreviewFull.astro";
 import Pagination from "src/components/Paginator.astro";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "@/lib/interfaces";
-import { getCollections } from "@/utils";
+import { getCollectionsWDesc } from "@/utils";
 import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
@@ -18,11 +18,11 @@ import { getTextToAstroIcon } from "@/lib/style-helpers";
 export const getStaticPaths = (async ({ paginate }) => {
 	const posts = await getAllPosts();
 
-	const collections = await getCollections();
+	const collections = await getCollectionsWDesc();
 
 	return collections.flatMap((collection) => {
 		// Initially filter posts based on the collection
-		let collectionPosts = posts.filter((post) => post.Collection === collection);
+		let collectionPosts = posts.filter((post) => post.Collection === collection.name);
 
 		// Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
 		if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
@@ -40,8 +40,8 @@ export const getStaticPaths = (async ({ paginate }) => {
 		const uniqueTags = getUniqueTags(collectionPosts);
 
 		return paginate(collectionPosts, {
-			params: { collection: slugify(collection) },
-			props: { collection, uniqueTags },
+			params: { collection: slugify(collection.name) },
+      props: { collection: collection.name, description: collection.description, uniqueTags },
 			pageSize: 10,
 		});
 	});
@@ -50,14 +50,15 @@ export const getStaticPaths = (async ({ paginate }) => {
 interface Props {
 	page: Page<Post>;
 	collection: string;
+  description: string;
 	uniqueTags: SelectProperty[];
 }
 
-const { page, collection, uniqueTags } = Astro.props as Props;
+const { page, collection, description, uniqueTags } = Astro.props as Props;
 
 const meta = {
 	title: `${collection}`,
-	description: "Read my collection of posts.",
+	description: description || "Read my collection of posts.",
 	ogImage: "/og-image/collectionpage---" + collection + ".png",
 };
 
@@ -79,6 +80,7 @@ const paginationProps = {
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6">{collection}</h1>
+  {description && <q class="block italic mb-6 -mt-3">{description}</q>}
 	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
 		<section aria-label="Blog post list" class="screen:col-span-3 print:col-span-full">
 			<ul class="space-y-4 text-start">
