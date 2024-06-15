@@ -474,33 +474,34 @@ export async function getAllTags(): Promise<SelectProperty[]> {
   return getUniqueTags(allPosts);
 }
 
-export async function getAllTagsWithCounts(): Promise<(SelectProperty & { count: number })[]> {
+export async function getAllTagsWithCounts(): Promise<{ name: string, count: number, description: string }[]> {
   const allPosts = await getAllPosts();
 
-  const tagCounts: Record<string, number> = {};
+  const tagCounts: Record<string, {count: number, description: string}> = {};
 
   allPosts.forEach((post) => {
     post.Tags.forEach((tag) => {
-      const tagName = tag.name+tag.description;
-      if (tagCounts[tagName]) {
-        tagCounts[tagName]++;
+      const tagName = tag.name;
+      if (tagCounts[tag.name]) {
+        tagCounts[tag.name].count++;
       } else {
-        tagCounts[tagName] = 1;
+        tagCounts[tagName] = {count: 1, description: tag.description};
       }
     });
   });
 
-  const tagsWithCounts = Object.entries(tagCounts).map(([tagName, count]) => ({
-    id: tagName.toLowerCase(),
-    name: tagName,
-    color: "",
-    count,
-  }));
+  // Convert the object to an array and sort it
+  const sortedTagCounts = Object.entries(tagCounts)
+    .map(([tagName, {count, description}]) => ({
+      name: tagName,
+      count,
+      description
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 
-  tagsWithCounts.sort((a, b) => a.name.localeCompare(b.name));
-
-  return tagsWithCounts;
+  return sortedTagCounts;
 }
+
 
 export function generateFilePath(url: URL, convertToWebP: boolean = false) {
   const BASE_DIR = "./public/notion/";

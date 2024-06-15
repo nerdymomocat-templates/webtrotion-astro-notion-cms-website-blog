@@ -9,6 +9,9 @@ import type { Post } from "@/lib/notion/interfaces";
 
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
+import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder, getTextToAstroIcon } from "@/lib/style-helpers";
+import { Icon } from "astro-iconify";
+
 
 export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 	const allPosts = await getAllPosts();
@@ -17,21 +20,16 @@ export const getStaticPaths: GetStaticPaths = async ({ paginate }) => {
 	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 		? allPosts.filter((post) => !post.Slug.startsWith("_"))
 		: allPosts;
-  //NOTE: allPosts is already sorted
-	// const allPostsByDate = filteredPosts.sort(
-	// 	(a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime(),
-	// );
 
 	const uniqueTags = [...new Set(filteredPosts.flatMap((post) => post.Tags))];
-
 
 	return uniqueTags.flatMap((tag) => {
     const filterPosts = filteredPosts.filter((post) =>
     post.Tags.some((postTag) => postTag.name === tag.name)
   );
-    //console.log(tag, filterPosts);
+    console.log(tag, filterPosts);
 		return paginate(filterPosts, {
-			params: { tag: tag.name },
+      params: { tag: tag.name, description: tag.description, color: tag.color },
 			pageSize: 10,
 		});
 	});
@@ -42,7 +40,7 @@ interface Props {
 }
 
 const { page } = Astro.props;
-const { tag } = Astro.params;
+const { tag, description, color } = Astro.params;
 
 const meta = {
 	title: `Tag: ${tag}`,
@@ -68,13 +66,12 @@ const paginationProps = {
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6 flex max-w-full items-center">
-		<a
-			href={getNavLink("/tags/")}
-			class="hove text-accent underline-offset-4 underline-offset-4 sm:hover:underline" aria-label="View all tags">Tags</a
-		>
-		<span class="me-3 ms-2">→</span>
-		<span class="text-xl">#{tag}</span>
+		<span class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
+      color + "-background",
+    )} ${getNotionColorToTailwindColorForBorder(color + "-background")}`}><Icon class="h-6 w-6 inline" name={getTextToAstroIcon("tag-outline")} aria-hidden="true" focusable="false"/> {tag}</>
 	</h1>
+  {description && <q class="block italic mb-6 -mt-3">{description}</q>}
+
 	<section aria-label="Blog post list">
 		<ul class="space-y-4">
 			{
