@@ -6,7 +6,7 @@ import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post } from "@/lib/notion/interfaces";
-import {slugify} from '@/utils';
+import {getTagsNameWDesc, slugify} from '@/utils';
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder, getTextToAstroIcon } from "@/lib/style-helpers";
@@ -20,6 +20,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 		}
 
 	const tags = await getUniqueTags(posts);
+  const tagsNameWDesc = await getTagsNameWDesc();
 
 	return tags.flatMap((tag) => {
 		// Initially filter posts based on the collection
@@ -35,7 +36,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 
 		return paginate(tagPosts, {
 			params: { tag: slugify(tag.name) },
-      props: { tag: tag.name, description: tag.description, color:tag.color },
+      props: { tag: tag.name, description: tagsNameWDesc[tag.name]?tagsNameWDesc[tag.name]:"", color:tag.color },
 			pageSize: 10,
 		});
 	});
@@ -76,7 +77,7 @@ const paginationProps = {
 	<h1 class="title mb-6 flex max-w-full items-center">
 		<span class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
       color + "-background",
-    )} ${getNotionColorToTailwindColorForBorder(color + "-background")}`}><Icon class="h-6 w-6 inline" name={getTextToAstroIcon("tag-outline")} aria-hidden="true" focusable="false"/> {tag}</>
+    )} ${getNotionColorToTailwindColorForBorder(color + "-background")}`}><Icon class="h-6 w-6 inline" name={getTextToAstroIcon("tag-outline")} aria-hidden="true" focusable="false"/> {tag}</span>
 	</h1>
   {description && <q class="block italic mb-6 -mt-3">{description}</q>}
 

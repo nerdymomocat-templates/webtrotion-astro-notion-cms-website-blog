@@ -2,6 +2,7 @@
 import PageLayout from "@/layouts/Base";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getAllTagsWithCounts } from "@/lib/notion/client";
+import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { slugify } from "@/utils";
 
 const allTags = await getAllTagsWithCounts();
@@ -18,20 +19,30 @@ const meta = {
 	<ul class="space-y-4">
 		{
 			allTags.map((tag) => (
-				<li class="flex max-w-full items-center gap-x-2">
-					<a
-						class="webtrotion-page-link inline-block"
+				<li class="flex flex-col max-w-full gap-x-2">
+          <div>
+            <a
+						class="inline-block"
 						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 						title={`View posts with the tag: ${tag.name}`}
             aria-label={`View posts with the tag: ${tag.name}`}
 						data-astro-prefetch
 					>
-						&#35;{tag.name}
-					</a>
+						<span class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
+      tag.color + "-background",
+    )} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}>{tag.name}</span></a>
+
 					<span class="inline-block">
-						- {tag.count} Post{tag.count > 1 && "s"}
+						: <a
+						class="webtrotion-page-link inline-block"
+						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+						title={`View posts with the tag: ${tag.name}`}
+            aria-label={`View posts with the tag: ${tag.name}`}
+						data-astro-prefetch
+					> {tag.count} Post{tag.count > 1 && "s"}</a>
 					</span>
-          {tag.description && <div><q class="line-clamp-3 block italic">{tag.description}</q></div>}
+        </div>
+          {tag.description && <div><q class="line-clamp-3 block italic mt-1">{tag.description}</q></div>}
 				</li>
 			))
 		}

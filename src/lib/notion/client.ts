@@ -65,6 +65,7 @@ import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
 import { extractReferencesInPage } from "../blog-helpers";
+import { getTagsNameWDesc } from "@/utils";
 
 
 const client = new Client({
@@ -478,26 +479,31 @@ export async function getAllTags(): Promise<SelectProperty[]> {
   return getUniqueTags(filteredPosts);
 }
 
-export async function getAllTagsWithCounts(): Promise<{ name: string, count: number, description: string }[]> {
+export async function getAllTagsWithCounts(): Promise<{ name: string, count: number, description: string , color:string}[]> {
   const allPosts = await getAllPosts();
+  const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
+		? allPosts.filter((post) => !post.Slug.startsWith("_"))
+		: allPosts;
+  const tagsNameWDesc = await getTagsNameWDesc();
+  const tagCounts: Record<string, {count: number, description: string, color:string}> = {};
 
-  const tagCounts: Record<string, {count: number, description: string}> = {};
-
-  allPosts.forEach((post) => {
+  filteredPosts.forEach((post) => {
     post.Tags.forEach((tag) => {
       const tagName = tag.name;
       if (tagCounts[tag.name]) {
         tagCounts[tag.name].count++;
       } else {
-        tagCounts[tagName] = {count: 1, description: tag.description};
+        tagCounts[tagName] = {count: 1, description: tagsNameWDesc[tag.name]?tagsNameWDesc[tag.name]:"", color:tag.color};
       }
     });
   });
 
+
   // Convert the object to an array and sort it
   const sortedTagCounts = Object.entries(tagCounts)
-    .map(([tagName, {count, description}]) => ({
+    .map(([tagName, {count, description, color}]) => ({
       name: tagName,
+      color,
       count,
       description
     }))
