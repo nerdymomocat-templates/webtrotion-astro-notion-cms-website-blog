@@ -14,6 +14,7 @@ import {
 import { MENU_PAGES_COLLECTION } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
+import { slugify } from "@/utils";
 
 // type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 // 	post: CollectionEntry<"post">;
@@ -78,7 +79,7 @@ const postLink = getPostLink(
 							tag.color + "-background",
 						)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
-						href={getNavLink("/tags/" + tag.name + "/")}
+						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 					>
 						{tag.name}
 					</a>{" "}

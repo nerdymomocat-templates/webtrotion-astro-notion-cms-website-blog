@@ -9,6 +9,7 @@ import { getNavLink, getPostLink } from "@/lib/blog-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
+import { slugify } from "@/utils";
 
 
 interface Props {
@@ -42,7 +43,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 							tag.color + "-background",
 						)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
-						href={getNavLink("/tags/" + tag.name + "/")}
+						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 					>
 						{tag.name}
 					</a>{" "}

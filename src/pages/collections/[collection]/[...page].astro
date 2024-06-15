@@ -116,7 +116,7 @@ const paginationProps = {
 									class={`flex items-center justify-center rounded-lg border p-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
 									)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
-									href={getNavLink("/tags/" + tag.name + "/")}
+									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>
 									{tag.name}

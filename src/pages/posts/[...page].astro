@@ -11,6 +11,7 @@ import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
+import { slugify } from "@/utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const posts = await getAllPosts();
@@ -82,7 +83,7 @@ const paginationProps = {
 									class={`flex items-center justify-center rounded-lg border p-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
 									)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
-									href={getNavLink("/tags/" + tag.name + "/")}
+									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>
 									{tag.name}
