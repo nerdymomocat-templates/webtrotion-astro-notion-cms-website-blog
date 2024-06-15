@@ -65,8 +65,6 @@ import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
 import { extractReferencesInPage } from "../blog-helpers";
-import { getTagsNameWDesc } from "@/utils";
-
 
 const client = new Client({
   auth: NOTION_API_SECRET,
@@ -484,7 +482,13 @@ export async function getAllTagsWithCounts(): Promise<{ name: string, count: num
   const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 		? allPosts.filter((post) => !post.Slug.startsWith("_"))
 		: allPosts;
-  const tagsNameWDesc = await getTagsNameWDesc();
+    const { propertiesRaw } = await getDatabase();
+  const options = propertiesRaw.Tags?.multi_select?.options || [];
+
+  const tagsNameWDesc = options.reduce((acc, option) => {
+    acc[option.name] = option.description || "";
+    return acc;
+  }, {});
   const tagCounts: Record<string, {count: number, description: string, color:string}> = {};
 
   filteredPosts.forEach((post) => {
