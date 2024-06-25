@@ -2,11 +2,10 @@
 
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
-import { SHORTCODES } from "@/constants";
+import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
-import NACode from "./NACode.astro";
-
+import { Code } from 'astro:components';
 
 export interface Props {
 	block: interfaces.Block;
@@ -23,6 +22,25 @@ const language = block.Code.Language.toLowerCase();
 const code_inject = SHORTCODES["html"]? code.startsWith(SHORTCODES["html"]):false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(' ');
 // <Fragment set:html={code.replace(SHORTCODES["html"],"")}/>
+
+const modifiedCode = code.split('\n')
+  .filter(line => {
+    const trimmedLine = line.trim();
+    return !(
+      /\/\/\s*\[!code --\](\s*$|\s+\S+)/.test(trimmedLine) ||
+      /\/\/\s*\[!code error\](\s*$|\s+\S+)/.test(trimmedLine) ||
+      /\/\/\s*\[!code warning\](\s*$|\s+\S+)/.test(trimmedLine)
+    );
+  })
+  .map(line => {
+    // Remove specified notations from comments and remove // if comment becomes empty
+    return line.replace(/\/\/.*/, comment => {
+      const cleanedComment = comment.replace(/\[!code (focus|--|\+\+|highlight|word:[^\]]+|error|warning)\]/g, '').trim();
+      return cleanedComment === '//' ? '' : cleanedComment;
+    });
+  })
+  .join('\n');
+
 ---
 
 
@@ -39,7 +57,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
     <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "screen:max-h-[340px] overflow-scroll"} min-w-0`}>
                 <div class="flex max-w-full">
-            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
+            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={modifiedCode} aria-label="copy code" onclick="
                 const code = this.getAttribute('data-code');
                 navigator.clipboard.writeText(code);
                 const svgBefore = this.querySelector('.copy-icon-before');
@@ -62,7 +80,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			language === 'mermaid' ? (
          <pre class="rounded mermaid p-4 max-w-full font-mono">{code}</pre>
       ) : (
-      <NACode code={code} lang={language} theme="github-dark-dimmed"/>
+      <Code code={code} lang={language}   theme={'github-dark-dimmed'} transformers={TRANSFORMER_FUNCTIONS_ARR}/>
       )
 		}
 	</div>

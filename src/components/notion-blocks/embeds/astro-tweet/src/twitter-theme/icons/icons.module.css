@@ -1,0 +1,9 @@
+.verified {
+  margin-left: 0.125rem;
+  max-width: 16px;
+  max-height: 16px;
+  height: 1em;
+  fill: currentColor;
+  user-select: none;
+  vertical-align: text-bottom;
+}

@@ -1,0 +1,13 @@
+---
+import TweetContent from "./TweetContent.astro";
+
+interface Props {
+  id: string;
+  // TODO: add support for custom components (do we need this though?)
+  // components?: TwitterComponents;
+  fetchOptions?: RequestInit;
+  onError?: ((error: any) => any) | undefined;
+}
+---
+
+<TweetContent {...Astro.props} />

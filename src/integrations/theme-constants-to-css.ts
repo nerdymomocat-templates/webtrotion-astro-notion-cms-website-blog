@@ -59,6 +59,87 @@ export default (): AstroIntegration => ({
   pre {
     @apply rounded-md p-4 font-mono;
   }
+
+  /* Common styles for pre elements */
+  pre.has-diff,
+  pre.has-focused,
+  pre.has-highlighted,
+  pre.has-diff code,
+  pre.has-focused code,
+  pre.has-highlighted code {
+    @apply inline-block min-w-full;
+  }
+
+  /* Styles for diff lines */
+  pre.has-diff .line.diff,
+  pre.has-highlighted .line.highlighted.error,
+  pre.has-highlighted .line.highlighted.warning {
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-8 pl-8 pr-4 box-border relative;
+  }
+
+  pre.has-diff .line.diff::before {
+    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
+  }
+
+  pre.has-diff .line.diff.remove {
+    @apply bg-red-500/20;
+  }
+
+  pre.has-diff .line.diff.remove::before {
+    @apply content-['-'];
+  }
+
+  pre.has-diff .line.diff.add {
+    @apply bg-blue-500/20;
+  }
+
+  pre.has-diff .line.diff.add::before {
+    @apply content-['+'];
+  }
+
+  /* Styles for focused lines */
+  pre.has-focused .line {
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border transition-all duration-300 ease-in-out;
+  }
+
+  pre.has-focused .line:not(.focused) {
+    @apply blur-[1px] opacity-50;
+  }
+
+  pre.has-focused:hover .line:not(.focused) {
+    @apply blur-0 opacity-100;
+  }
+
+  /* Styles for highlighted lines */
+  pre.has-highlighted .line.highlighted {
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border bg-gray-500/20;
+  }
+
+  /* Styles for highlighted words */
+  .highlighted-word {
+    @apply bg-gray-500/20 rounded px-1 -mx-[2px];
+  }
+
+  pre.has-highlighted .line.highlighted.error::before,
+  pre.has-highlighted .line.highlighted.warning::before {
+    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
+  }
+
+  pre.has-highlighted .line.highlighted.error {
+    @apply bg-red-500/30;
+  }
+
+  pre.has-highlighted .line.highlighted.error::before {
+    @apply content-['x'];
+  }
+
+  pre.has-highlighted .line.highlighted.warning {
+    @apply bg-yellow-500/20;
+  }
+
+  pre.has-highlighted .line.highlighted.warning::before {
+    @apply content-['!'];
+  }
 }`;
 
       // Define the path to the output CSS file
