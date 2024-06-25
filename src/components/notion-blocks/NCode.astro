@@ -1,63 +1,69 @@
 ---
-
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
 import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
-import { Code } from 'astro:components';
+import { Code } from "astro:components";
 
 export interface Props {
 	block: interfaces.Block;
-  setId?:boolean;
+	setId?: boolean;
 }
 
-const { block, setId=true } = Astro.props
+const { block, setId = true } = Astro.props;
+
+/*
+//TODO for cleaning up clipboard code
+Rules:
+1. Two things to do: remove lines and clean up comments in remaining lines
+2. For remove lines, only consider these commands: [!code --] or [!code warning] or [!code error]
+3. Remove the line when the command is after the comment mark (any number of spaces between comment mark and coommand are fine). there can be text after command.
+4. do not consider command or comment mark if they are part of a string literal enclosed with ` ` or " "
+5. if a line is not removed, then consider these commands: [!code --] [!code ++] [!code warning] [!code error] [!code highlight] [!code highlight:number_here] [!code word:word_here:number_here] [!code word:word_here] [!code focus] [!code focus:number_here].
+6. if these occur right after the comment mark (any number of spaces between comment mark and coommand are fine)
+and are not part of string literal, just remove the command from if it occurs after the comment mark (and is not in string literal).
+do not remove the line. there can be stuff after the command.
+7. if the part after comment mark is empty or only white spaces, remeove the comment mark. again remember comment marks that are part of string literals are not considered for this.
+*/
 
 
+// Usage remains the same
 const code = block.Code.RichTexts.map(
 	(richText: interfaces.RichText) => richText.Text.Content,
 ).join("");
-const language = block.Code.Language.toLowerCase();
-const code_inject = SHORTCODES["html"]? code.startsWith(SHORTCODES["html"]):false;
-const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(' ');
-// <Fragment set:html={code.replace(SHORTCODES["html"],"")}/>
+const language =
+	block.Code.Language.toLowerCase() === "plain text"
+		? "plaintext"
+		: block.Code.Language.toLowerCase();
+// const modifiedCode = processCode(code, language);
+const modifiedCode = code;
 
-const modifiedCode = code.split('\n')
-  .filter(line => {
-    const trimmedLine = line.trim();
-    return !(
-      /\/\/\s*\[!code --\](\s*$|\s+\S+)/.test(trimmedLine) ||
-      /\/\/\s*\[!code error\](\s*$|\s+\S+)/.test(trimmedLine) ||
-      /\/\/\s*\[!code warning\](\s*$|\s+\S+)/.test(trimmedLine)
-    );
-  })
-  .map(line => {
-    // Remove specified notations from comments and remove // if comment becomes empty
-    return line.replace(/\/\/.*/, comment => {
-      const cleanedComment = comment.replace(/\[!code (focus|--|\+\+|highlight|word:[^\]]+|error|warning)\]/g, '').trim();
-      return cleanedComment === '//' ? '' : cleanedComment;
-    });
-  })
-  .join('\n');
-
+const code_inject = SHORTCODES["html"] ? code.startsWith(SHORTCODES["html"]) : false;
+const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(" ");
 ---
 
-
 {
-  code_inject ?
-  (
-    <div class="injectedcode w-full mb-1 max-w-full" id={setId?block.Id:undefined}>
-    <iframe srcdoc={code.replace(SHORTCODES["html"],"") } class="max-w-full screen:h-[340px] w-full border-none rounded-lg" loading="lazy" title={plainTextCaption}></iframe>
-  </div>
-
-  )
-  :
-  (
-  <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
-    <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "screen:max-h-[340px] overflow-scroll"} min-w-0`}>
-                <div class="flex max-w-full">
-            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={modifiedCode} aria-label="copy code" onclick="
+	code_inject ? (
+		<div class="injectedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
+			<iframe
+				srcdoc={code.replace(SHORTCODES["html"], "")}
+				class="w-full max-w-full rounded-lg border-none screen:h-[340px]"
+				loading="lazy"
+				title={plainTextCaption}
+			/>
+		</div>
+	) : (
+		<div class="code relative mb-1 w-full max-w-full text-sm" id={setId ? block.Id : undefined}>
+			<div
+				class={`${language === "mermaid" ? "overflow-x-scroll" : "overflow-scroll screen:max-h-[340px]"} min-w-0`}
+			>
+				<div class="flex max-w-full">
+					<button
+						class="copy absolute right-0 top-0 cursor-pointer border-0 p-2 text-gray-500 print:hidden"
+						data-code={modifiedCode}
+						aria-label="copy code"
+						onclick="
                 const code = this.getAttribute('data-code');
                 navigator.clipboard.writeText(code);
                 const svgBefore = this.querySelector('.copy-icon-before');
@@ -70,25 +76,36 @@ const modifiedCode = code.split('\n')
                         svgAfter.classList.toggle('hidden');
                     }, 1000);
                 }
-            ">
-              <Icon class="h-6 w-6 copy-icon-before" name={getTextToAstroIcon("clipboard-copy-code")} aria-label="copy code"/>
-              <Icon class="h-6 w-6 copy-icon-done hidden" name={getTextToAstroIcon("clipboard-copy-code-done")} aria-label="copied code"/>
-            </button>
-          </div>
-		{
-
-			language === 'mermaid' ? (
-         <pre class="rounded mermaid p-4 max-w-full font-mono">{code}</pre>
-      ) : (
-      <Code code={code} lang={language}   theme={'github-dark-dimmed'} transformers={TRANSFORMER_FUNCTIONS_ARR}/>
-      )
-		}
-	</div>
-	<Caption richTexts={block.Code.Caption}  block={block}/>
-</div>
-  )
+            "
+					>
+						<Icon
+							class="copy-icon-before h-6 w-6"
+							name={getTextToAstroIcon("clipboard-copy-code")}
+							aria-label="copy code"
+						/>
+						<Icon
+							class="copy-icon-done hidden h-6 w-6"
+							name={getTextToAstroIcon("clipboard-copy-code-done")}
+							aria-label="copied code"
+						/>
+					</button>
+				</div>
+				{language === "mermaid" ? (
+					<pre class="mermaid max-w-full rounded p-4 font-mono">{code}</pre>
+				) : (
+					<Code
+						code={code}
+						lang={language}
+						theme={"github-dark-dimmed"}
+						transformers={TRANSFORMER_FUNCTIONS_ARR}
+					/>
+				)}
+			</div>
+			<Caption richTexts={block.Code.Caption} block={block} />
+		</div>
+	)
 }
 <script>
-  import mermaid from 'mermaid'
-  mermaid.initialize({ startOnLoad: true, theme: 'base' })
+	import mermaid from "mermaid";
+	mermaid.initialize({ startOnLoad: true, theme: "base" });
 </script>
