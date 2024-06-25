@@ -59,6 +59,37 @@ export default (): AstroIntegration => ({
   pre {
     @apply rounded-md p-4 font-mono;
   }
+
+  /* Styles for focused lines */
+  pre.has-focused .line:not(.focused) {
+    @apply blur-[1px] opacity-50;
+  }
+
+  /* Styles for diff (add/remove) */
+  pre.has-diff .line.diff.add {
+    @apply bg-blue-900/50 -mx-4 px-4 border-l-4 border-blue-500;
+  }
+  pre.has-diff .line.diff.remove {
+    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500 w-full block;
+  }
+
+  /* Styles for highlighted lines */
+  pre.has-highlighted .line.highlighted {
+    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+  }
+
+  /* Styles for highlighted words */
+  .highlighted-word {
+    @apply bg-blue-500/50 rounded px-1;
+  }
+
+  /* Styles for error and warning lines */
+  pre.has-highlighted .line.highlighted.error {
+    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500;
+  }
+  pre.has-highlighted .line.highlighted.warning {
+    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+  }
 }`;
 
       // Define the path to the output CSS file
