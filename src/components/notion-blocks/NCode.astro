@@ -5,8 +5,14 @@ import Caption from "./Caption.astro";
 import { SHORTCODES } from "@/constants";
 import { Icon } from "astro-iconify";
 import { getTextToAstroIcon } from "@/lib/style-helpers";
-import NACode from "./NACode.astro";
-
+import { Code } from 'astro:components';
+import {
+  transformerNotationFocus,
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+  transformerNotationErrorLevel
+} from '@shikijs/transformers';
 
 export interface Props {
 	block: interfaces.Block;
@@ -23,6 +29,17 @@ const language = block.Code.Language.toLowerCase();
 const code_inject = SHORTCODES["html"]? code.startsWith(SHORTCODES["html"]):false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(' ');
 // <Fragment set:html={code.replace(SHORTCODES["html"],"")}/>
+// Determine which transformers to use based on the code content
+// Function to get the appropriate transformers based on code content
+const getTransformers = (codeContent) => {
+  const transformers = [];
+  if (codeContent.includes('// [!code focus]')) transformers.push(transformerNotationFocus());
+  if (codeContent.includes('// [!code ++]') || codeContent.includes('[!code --]')) transformers.push(transformerNotationDiff());
+  if (codeContent.includes('// [!code highlight]')) transformers.push(transformerNotationHighlight());
+  if (codeContent.includes('// [!code word:')) transformers.push(transformerNotationWordHighlight());
+  if (codeContent.includes('// [!code error]') || codeContent.includes('[!code warning]')) transformers.push(transformerNotationErrorLevel());
+  return transformers;
+};
 ---
 
 
@@ -62,7 +79,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			language === 'mermaid' ? (
          <pre class="rounded mermaid p-4 max-w-full font-mono">{code}</pre>
       ) : (
-      <NACode code={code} lang={language} theme="github-dark-dimmed"/>
+      <Code code={code} lang={language}   theme={'github-dark-dimmed'} transformers={getTransformers(code)}/>
       )
 		}
 	</div>
@@ -70,6 +87,38 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 </div>
   )
 }
+<style is:global>
+  /* Styles for focused lines */
+  pre.has-focused .line:not(.focused) {
+    @apply blur-[1px] opacity-50;
+  }
+
+  /* Styles for diff (add/remove) */
+  pre.has-diff .line.diff.add {
+    @apply bg-blue-900/50 -mx-4 px-4 border-l-4 border-blue-500;
+  }
+  pre.has-diff .line.diff.remove {
+    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500;
+  }
+
+  /* Styles for highlighted lines */
+  pre.has-highlighted .line.highlighted {
+    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+  }
+
+  /* Styles for highlighted words */
+  .highlighted-word {
+    @apply bg-blue-500/50 rounded px-1;
+  }
+
+  /* Styles for error and warning lines */
+  pre.has-highlighted .line.highlighted.error {
+    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500;
+  }
+  pre.has-highlighted .line.highlighted.warning {
+    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+  }
+</style>
 <script>
   import mermaid from 'mermaid'
   mermaid.initialize({ startOnLoad: true, theme: 'base' })
