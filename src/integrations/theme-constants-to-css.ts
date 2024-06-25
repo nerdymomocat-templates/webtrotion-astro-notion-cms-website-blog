@@ -60,35 +60,85 @@ export default (): AstroIntegration => ({
     @apply rounded-md p-4 font-mono;
   }
 
+  /* Common styles for pre elements */
+  pre.has-diff,
+  pre.has-focused,
+  pre.has-highlighted,
+  pre.has-diff code,
+  pre.has-focused code,
+  pre.has-highlighted code {
+    @apply inline-block min-w-full;
+  }
+
+  /* Styles for diff lines */
+  pre.has-diff .line.diff,
+  pre.has-highlighted .line.highlighted.error,
+  pre.has-highlighted .line.highlighted.warning {
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-8 pl-8 pr-4 box-border relative;
+  }
+
+  pre.has-diff .line.diff::before {
+    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
+  }
+
+  pre.has-diff .line.diff.remove {
+    @apply bg-red-500/20;
+  }
+
+  pre.has-diff .line.diff.remove::before {
+    @apply content-['-'];
+  }
+
+  pre.has-diff .line.diff.add {
+    @apply bg-blue-500/20;
+  }
+
+  pre.has-diff .line.diff.add::before {
+    @apply content-['+'];
+  }
+
   /* Styles for focused lines */
+  pre.has-focused .line {
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border transition-[filter, opacity] duration-300 ease-in-out;
+  }
+
   pre.has-focused .line:not(.focused) {
     @apply blur-[1px] opacity-50;
   }
 
-  /* Styles for diff (add/remove) */
-  pre.has-diff .line.diff.add {
-    @apply bg-blue-900/50 -mx-4 px-4 border-l-4 border-blue-500;
-  }
-  pre.has-diff .line.diff.remove {
-    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500 w-full block;
+  pre.has-focused:hover .line:not(.focused) {
+    @apply blur-0 opacity-100;
   }
 
   /* Styles for highlighted lines */
   pre.has-highlighted .line.highlighted {
-    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border bg-gray-500/20;
   }
 
   /* Styles for highlighted words */
   .highlighted-word {
-    @apply bg-blue-500/50 rounded px-1;
+    @apply bg-gray-500/20 rounded px-1 -mx-0.5 shadow-[0_0_0_1px_rgba(255, 255, 255, 0.1)];
   }
 
-  /* Styles for error and warning lines */
-  pre.has-highlighted .line.highlighted.error {
-    @apply bg-red-900/50 -mx-4 px-4 border-l-4 border-red-500;
+  pre.has-highlighted .line.highlighted.error::before,
+  pre.has-highlighted .line.highlighted.warning::before {
+    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
   }
+
+  pre.has-highlighted .line.highlighted.error {
+    @apply bg-red-500/30;
+  }
+
+  pre.has-highlighted .line.highlighted.error::before {
+    @apply content-['x'];
+  }
+
   pre.has-highlighted .line.highlighted.warning {
-    @apply bg-yellow-900/50 -mx-4 px-4 border-l-4 border-yellow-500;
+    @apply bg-yellow-500/20;
+  }
+
+  pre.has-highlighted .line.highlighted.warning::before {
+    @apply content-['!'];
   }
 }`;
 
