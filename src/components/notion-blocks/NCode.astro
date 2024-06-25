@@ -23,17 +23,26 @@ const code_inject = SHORTCODES["html"]? code.startsWith(SHORTCODES["html"]):fals
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(' ');
 // <Fragment set:html={code.replace(SHORTCODES["html"],"")}/>
 
-// Determine which transformers to use based on the code content
-// Function to get the appropriate transformers based on code content
-// const getTransformers = (codeContent) => {
-//   const transformers = [];
-//   if (codeContent.includes('// [!code focus]')) transformers.push(transformerNotationFocus());
-//   if (codeContent.includes('// [!code ++]') || codeContent.includes('[!code --]')) transformers.push(transformerNotationDiff());
-//   if (codeContent.includes('// [!code highlight]')) transformers.push(transformerNotationHighlight());
-//   if (codeContent.includes('// [!code word:')) transformers.push(transformerNotationWordHighlight());
-//   if (codeContent.includes('// [!code error]') || codeContent.includes('[!code warning]')) transformers.push(transformerNotationErrorLevel());
-//   return transformers;
-// };
+const modifiedCode = code.split('\n')
+  .filter(line => {
+    const trimmedLine = line.trim();
+    return !(
+      /\/\/\s*\[!code --\](\s*$|\s+\S+)/.test(trimmedLine) ||
+      /\/\/\s*\[!code error\](\s*$|\s+\S+)/.test(trimmedLine) ||
+      /\/\/\s*\[!code warning\](\s*$|\s+\S+)/.test(trimmedLine)
+    );
+  })
+  .map(line => {
+    // Remove specified notations from comments and remove // if comment becomes empty
+    return line.replace(/\/\/.*/, comment => {
+      const cleanedComment = comment.replace(/\[!code (focus|--|\+\+|highlight|word:[^\]]+|error|warning)\]/g, '').trim();
+      return cleanedComment === '//' ? '' : cleanedComment;
+    });
+  })
+  .join('\n');
+
+console.log(modifiedCode);
+
 ---
 
 
@@ -50,7 +59,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
   <div class="code w-full mb-1 relative max-w-full text-sm" id={setId?block.Id:undefined}>
     <div class={`${language === 'mermaid' ? "overflow-x-scroll" : "screen:max-h-[340px] overflow-scroll"} min-w-0`}>
                 <div class="flex max-w-full">
-            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={code} aria-label="copy code" onclick="
+            <button class="print:hidden copy border-0 p-2 cursor-pointer absolute top-0 right-0 text-gray-500" data-code={modifiedCode} aria-label="copy code" onclick="
                 const code = this.getAttribute('data-code');
                 navigator.clipboard.writeText(code);
                 const svgBefore = this.querySelector('.copy-icon-before');
