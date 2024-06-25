@@ -25,10 +25,109 @@ Rules:
 and are not part of string literal, just remove the command from if it occurs after the comment mark (and is not in string literal).
 do not remove the line. there can be stuff after the command.
 7. if the part after comment mark is empty or only white spaces, remeove the comment mark. again remember comment marks that are part of string literals are not considered for this.
+
+--
+Currently shiki transformers only find the first occurence of comment mark and command use that.
+it also deals with tokenization such that '# [!code --]' is removed but '\# [!code --]' is not considered.
+but we don't care about that, because it should not be happening in the first place
 */
 
+const commentStyles = {
+	// Double slash comments
+	"//": [
+		"default",
+		"c",
+		"cpp",
+		"java",
+		"javascript",
+		"typescript",
+		"csharp",
+		"go",
+		"swift",
+		"kotlin",
+		"scala",
+		"rust",
+		"dart",
+		"css",
+		"php",
+		"pascal",
+		"groovy",
+	],
 
-// Usage remains the same
+	// Hash comments
+	"#": [
+		"python",
+		"ruby",
+		"perl",
+		"bash",
+		"powershell",
+		"php",
+		"yaml",
+		"toml",
+		"r",
+		"julia",
+		"elixir",
+	],
+
+	// Double dash comments
+	"--": ["haskell", "lua", "sql", "plsql", "ada"],
+
+	// Percent comments
+	"%": ["matlab", "octave", "latex", "katex", "erlang"],
+
+	// Semicolon comments
+	";": ["lisp", "clojure", "scheme", "ini"],
+
+	// Other specific comment styles
+	"⍝": ["apl"],
+	"!": ["fortran"],
+	"'": ["vb"],
+	"*>": ["cobol"],
+	"<!--": ["html"],
+
+	// Languages without standard comment syntax
+	"": ["brainfuck", "whitespace"],
+};
+
+function processCode(code: string, language: string): string {
+	const commentStyle =
+		Object.entries(commentStyles).find(([_, langs]) => langs.includes(language))?.[0] || "";
+
+	if (!commentStyle) return code;
+
+	const lines = code.split("\n");
+	const processedLines = lines.map((line) => {
+		const commentIndex = line.indexOf(commentStyle);
+		if (commentIndex === -1) return line;
+
+		const beforeComment = line.slice(0, commentIndex);
+		const afterComment = line.slice(commentIndex + commentStyle.length);
+		const commandRegex =
+			/^\s*(\[!code\s+(--|\+\+|warning|error|highlight(?::\d+)?|word:\w+(?::\d+)?|focus(?::\d+)?)\])(.*)/;
+		const match = afterComment.match(commandRegex);
+
+		if (match) {
+			const command = match[2];
+			const remainingContent = match[3].trim();
+
+			if (command === "--" || command === "warning" || command === "error") {
+				return "";
+			} else {
+				if (remainingContent) {
+					return beforeComment + commentStyle + " " + remainingContent;
+				} else {
+					return beforeComment.trimEnd();
+				}
+			}
+		}
+
+		return line;
+	});
+
+	return processedLines.filter((line) => line !== "").join("\n");
+}
+
+// Usage
 const code = block.Code.RichTexts.map(
 	(richText: interfaces.RichText) => richText.Text.Content,
 ).join("");
@@ -36,8 +135,8 @@ const language =
 	block.Code.Language.toLowerCase() === "plain text"
 		? "plaintext"
 		: block.Code.Language.toLowerCase();
-// const modifiedCode = processCode(code, language);
-const modifiedCode = code;
+
+const modifiedCode = processCode(code, language);
 
 const code_inject = SHORTCODES["html"] ? code.startsWith(SHORTCODES["html"]) : false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(" ");
@@ -54,13 +153,15 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			/>
 		</div>
 	) : (
-		<div class="code relative mb-1 w-full max-w-full text-sm" id={setId ? block.Id : undefined}>
+		<div class="code relative mb-1 w-full max-w-full text-sm z-0 group" id={setId ? block.Id : undefined}>
 			<div
 				class={`${language === "mermaid" ? "overflow-x-scroll" : "overflow-scroll screen:max-h-[340px]"} min-w-0`}
 			>
 				<div class="flex max-w-full">
 					<button
-						class="copy absolute right-0 top-0 cursor-pointer border-0 p-2 text-gray-500 print:hidden"
+  class="copy absolute right-0 top-0 cursor-pointer border-0 p-2 text-gray-500 print:hidden z-10
+         sm:opacity-100
+         md:opacity-0 md:transition-opacity md:duration-200 md:group-hover:opacity-100"
 						data-code={modifiedCode}
 						aria-label="copy code"
 						onclick="

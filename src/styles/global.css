@@ -54,7 +54,7 @@
   pre.has-diff .line.diff,
   pre.has-highlighted .line.highlighted.error,
   pre.has-highlighted .line.highlighted.warning {
-    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-8 pl-8 pr-4 box-border relative;
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-8 pl-8 pr-4 box-border relative z-0;
   }
 
   pre.has-diff .line.diff::before {
