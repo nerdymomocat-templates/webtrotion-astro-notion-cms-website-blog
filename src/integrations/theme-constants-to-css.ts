@@ -99,7 +99,7 @@ export default (): AstroIntegration => ({
 
   /* Styles for focused lines */
   pre.has-focused .line {
-    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border transition-[filter, opacity] duration-300 ease-in-out;
+    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border transition-all duration-300 ease-in-out;
   }
 
   pre.has-focused .line:not(.focused) {
@@ -117,7 +117,7 @@ export default (): AstroIntegration => ({
 
   /* Styles for highlighted words */
   .highlighted-word {
-    @apply bg-gray-500/20 rounded px-1 -mx-0.5 shadow-[0_0_0_1px_rgba(255, 255, 255, 0.1)];
+    @apply bg-gray-500/20 rounded px-1 -mx-[2px];
   }
 
   pre.has-highlighted .line.highlighted.error::before,
