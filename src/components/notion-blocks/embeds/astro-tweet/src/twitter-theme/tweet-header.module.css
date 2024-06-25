@@ -1,0 +1,107 @@
+.header {
+  display: flex;
+  padding-bottom: 0.75rem;
+  line-height: var(--tweet-header-line-height);
+  font-size: var(--tweet-header-font-size);
+  white-space: nowrap;
+  overflow-wrap: break-word;
+  overflow: hidden;
+}
+
+.avatar {
+  position: relative;
+  height: 30px;
+  width: 30px;
+}
+.avatarOverflow {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  overflow: hidden;
+  border-radius: 9999px;
+}
+.avatarSquare {
+  border-radius: 4px;
+}
+.avatarShadow {
+  height: 100%;
+  width: 100%;
+  transition-property: background-color;
+  transition-duration: 0.2s;
+  box-shadow: rgb(0 0 0 / 3%) 0px 0px 2px inset;
+}
+.avatarShadow:hover {
+  background-color: rgba(26, 26, 26, 0.15);
+}
+
+.author {
+  max-width: calc(100% - 84px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 0.3rem;
+}
+.authorLink {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}
+.authorLink:hover {
+  text-decoration-line: underline;
+}
+.authorVerified {
+  display: inline-flex;
+}
+.authorLinkText {
+  font-weight: bold;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.authorMeta {
+  display: flex;
+}
+.authorFollow {
+  display: flex;
+}
+.username {
+  color: var(--tweet-font-color-secondary);
+  text-decoration: none;
+  text-overflow: ellipsis;
+  word-break: normal;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.follow {
+  color: var(--tweet-color-blue-secondary);
+  text-decoration: none;
+  font-weight: 400;
+  font-size: x-small;
+}
+.follow:hover {
+  text-decoration-line: underline;
+}
+.separator {
+  padding: 0 0.25rem;
+}
+
+.brand {
+  margin-inline-start: auto;
+}
+@media (max-width: 400px) {
+  .brand {
+    display: none;
+  }
+}
+
+.twitterIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--tweet-twitter-icon-color);
+  fill: currentColor;
+  user-select: none;
+}
