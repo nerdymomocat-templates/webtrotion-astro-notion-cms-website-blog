@@ -4,6 +4,14 @@ const key_value_from_json = { ...config };
 import fs from 'fs';
 import path from 'path';
 
+import {
+  transformerNotationFocus,
+  transformerNotationDiff,
+  transformerNotationHighlight,
+  transformerNotationWordHighlight,
+  transformerNotationErrorLevel
+} from '@shikijs/transformers';
+
 export const NOTION_API_SECRET =
   import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
 export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["database-id"] || "";
@@ -75,3 +83,13 @@ export const THEME = key_value_from_json["theme"] || {};
 export const GOOGLE_SEARCH_CONSOLE_META_TAG = key_value_from_json["google-search-console-html-tag"] || null;
 
 export const FULL_WIDTH_TWEETS = key_value_from_json["full-width-tweet-embeds"] || false;
+
+const TRANSFORMER_FUNCTIONS_ARR = [
+  transformerNotationFocus(),
+  transformerNotationDiff(),
+  transformerNotationHighlight(),
+  transformerNotationWordHighlight(),
+  transformerNotationErrorLevel()
+];
+
+export { TRANSFORMER_FUNCTIONS_ARR };
