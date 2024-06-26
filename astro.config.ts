@@ -30,7 +30,7 @@ import CSSWriter from './src/integrations/theme-constants-to-css';
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
-
+import icon from "astro-icon";
 const key_value_from_json = {
   ...config
 };
@@ -45,6 +45,7 @@ function modifyRedirectPaths(redirects: Record<string, string>, basePath: string
   }
   return modifiedRedirects;
 }
+
 // https://astro.build/config
 export default defineConfig({
   site: getSite(),
@@ -57,13 +58,13 @@ export default defineConfig({
   }),
   // astroImageTools,
   buildTimestampRecorder(), CustomIconDownloader(), EntryCacheEr(), PublicNotionCopier(), CSSWriter(), robotsTxt({
-    sitemapBaseFileName: 'sitemap',
+    sitemapBaseFileName: 'sitemap'
   }), partytown({
     // Adds dataLayer.push as a forwarding-event.
     config: {
       forward: ["dataLayer.push"]
     }
-  })],
+  }), icon()],
   image: {
     domains: ["webmention.io"]
   },

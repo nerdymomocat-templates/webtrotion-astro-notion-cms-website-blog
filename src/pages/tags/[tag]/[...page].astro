@@ -10,7 +10,7 @@ import {getTagsNameWDesc, slugify} from '@/utils';
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder, getTextToAstroIcon } from "@/lib/style-helpers";
-import { Icon } from "astro-iconify";
+import { Icon } from 'astro-icon/components'
 import {  } from "@/lib/notion/client";
 
 export const getStaticPaths = (async ({ paginate }) => {

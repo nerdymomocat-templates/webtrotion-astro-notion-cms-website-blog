@@ -12,7 +12,7 @@ import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink, resetFirstImage } from "@/lib/blog-helpers";
-import { Icon } from "astro-iconify";
+import { Icon } from 'astro-icon/components'
 import { getTextToAstroIcon } from "@/lib/style-helpers";
 
 export const getStaticPaths = (async ({ paginate }) => {
