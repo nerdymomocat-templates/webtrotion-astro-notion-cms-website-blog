@@ -537,7 +537,7 @@ export function generateFilePath(url: URL, convertoAvif: boolean = false) {
 }
 
 export function isConvImageType(filepath: string) {
-  if (filepath.includes('.png') || filepath.includes('.jpg') || filepath.includes('.jpeg')) {
+  if (filepath.includes('.png') || filepath.includes('.jpg') || filepath.includes('.jpeg') || filepath.includes('.webp')) {
     return true;
   }
   return false;
