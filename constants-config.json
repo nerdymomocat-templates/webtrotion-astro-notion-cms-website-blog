@@ -32,13 +32,13 @@
     "external-links-in-page": true,
     "media-and-file-links-in-this-page": true,
     "links-to-this-page": true,
-    "popovers": true
+    "popovers": true,
+    "footnotes": true
   },
   "shortcodes": {
     "html": "<!DOCTYPE html>",
     "alt-text": {"start":"<<alt-text-start>>", "end":"<<alt-text-end>>"},
-    "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"},
-    "footnotes": {"start":"<<fnt-start>>", "end":"<<fnt-end>>"}
+    "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"}
   },
   "recent-posts-on-home-page": false,
   "bottom-toc": true,
