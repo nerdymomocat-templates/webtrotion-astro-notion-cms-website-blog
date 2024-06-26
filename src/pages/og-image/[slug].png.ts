@@ -101,7 +101,7 @@ if (siteInfo.logo && siteInfo.logo.Type === "file") {
 const logoToBase64 = async (imagePath: string) => {
   try {
     const ext = path.extname(imagePath).slice(1).toLowerCase();
-    if (ext === 'webp') return null;
+    if (ext === 'webp' || ext === 'avif') return null;
     const buffer = await sharp(imagePath).resize(30, 30).toBuffer();
     return `data:image/${ext === 'jpg' ? 'jpeg' : ext};base64,${buffer.toString('base64')}`;
   } catch (err) {
