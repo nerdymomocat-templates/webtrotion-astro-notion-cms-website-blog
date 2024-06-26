@@ -127,7 +127,7 @@ function processCode(code: string, language: string): string {
 }
 
 // Usage
-const code = block.Code.RichTexts.map(
+let code = block.Code.RichTexts.map(
 	(richText: interfaces.RichText) => richText.Text.Content,
 ).join("");
 const language =
@@ -135,7 +135,10 @@ const language =
 		? "plaintext"
 		: block.Code.Language.toLowerCase();
 
-const modifiedCode = processCode(code, language);
+const shiki_transform_code = SHORTCODES["shiki-transform"]? code.startsWith(SHORTCODES["shiki-transform"]): false;
+code = shiki_transform_code? code.replace(SHORTCODES["shiki-transform"],"").trimStart():code;
+
+const modifiedCode = shiki_transform_code? processCode(code, language):code;
 
 const code_inject = SHORTCODES["html"] ? code.startsWith(SHORTCODES["html"]) : false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(" ");
@@ -197,7 +200,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 						code={code}
 						lang={language}
 						theme={"github-dark-dimmed"}
-						transformers={TRANSFORMER_FUNCTIONS_ARR}
+						{...(shiki_transform_code ? { transformers: TRANSFORMER_FUNCTIONS_ARR } : {})}
 					/>
 				)}
 			</div>

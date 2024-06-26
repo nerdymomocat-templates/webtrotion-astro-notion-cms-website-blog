@@ -38,7 +38,8 @@
   "shortcodes": {
     "html": "<!DOCTYPE html>",
     "alt-text": {"start":"<<alt-text-start>>", "end":"<<alt-text-end>>"},
-    "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"}
+    "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"},
+    "shiki-transform": "<<shiki-transform>>"
   },
   "recent-posts-on-home-page": false,
   "bottom-toc": true,
