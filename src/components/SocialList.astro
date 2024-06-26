@@ -1,15 +1,14 @@
 ---
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
+import { getTextToSVGPath } from "@/lib/style-helpers";
 import { SOCIALS } from "@/constants";
 import type { SocialLink } from "@/types";
-import Divider from "./notion-blocks/Divider.astro";
 
 const mapSocialLinks = (socialLinksObject: { [key: string]: string }): SocialLink[] => {
 	return Object.entries(socialLinksObject)
 		.map(([key, value]): SocialLink => {
-			let iconname = getTextToAstroIcon(key);
-			iconname = iconname ? iconname : "mdi:web";
+			let iconname = getTextToSVGPath(key)? key: "web";
+			// let iconname = getTextToIconName(key) ? getTextToIconName(key) : "mdi:web";
 			if (key === "email") {
 				return {
 					name: iconname,

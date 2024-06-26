@@ -2,8 +2,7 @@
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
 import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 import { Code } from "astro:components";
 
 export interface Props {
@@ -181,12 +180,12 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 					>
 						<Icon
 							class="copy-icon-before h-6 w-6"
-							name={getTextToAstroIcon("clipboard-copy-code")}
+							name={"clipboard-copy-code"}
 							aria-label="copy code"
 						/>
 						<Icon
 							class="copy-icon-done hidden h-6 w-6"
-							name={getTextToAstroIcon("clipboard-copy-code-done")}
+							name={"clipboard-copy-code-done"}
 							aria-label="copied code"
 						/>
 					</button>

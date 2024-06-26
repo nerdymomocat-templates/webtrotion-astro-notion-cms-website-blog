@@ -10,8 +10,7 @@ import PostComments from "@/components/blog/PostComments";
 import { BOTTOM_TOC, REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import BottomTOC from "@/components/blog/BottomTOC.astro";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 
 interface Props {
 	post: Post;
@@ -85,7 +84,7 @@ const articleDate = new Date(post.Date).toISOString();
 				class={`fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden print:hidden`}
 				aria-label="Show table of contents"
 			>
-				<Icon class="h-6 w-6" name={getTextToAstroIcon("table-of-contents")} aria-hidden="true" />
+				<Icon class="h-6 w-6" name={"table-of-contents"} aria-hidden="true" />
 			</button>
 		)
 	}

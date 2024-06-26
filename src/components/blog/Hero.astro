@@ -4,8 +4,7 @@ import type { Post } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { areDifferentDates } from "@/utils/date";
 import { getNavLink } from "@/lib/blog-helpers";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 import { slugify } from "@/utils";
 
 interface Props {
@@ -42,7 +41,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 {
 	post.Tags.length > 0 && (
 		<div class="mt-2">
-        <Icon class="h-6 w-6 inline-block me-1" name={getTextToAstroIcon("tag-outline")} aria-hidden="true" focusable="false"/>
+        <Icon class="h-6 w-6 inline-block me-1" name={"tag-outline"} aria-hidden="true" focusable="false"/>
 			{post.Tags.map((tag, i) => (
 				<>
 					<a

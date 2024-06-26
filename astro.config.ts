@@ -30,7 +30,6 @@ import CSSWriter from './src/integrations/theme-constants-to-css';
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
-import icon from "astro-icon";
 const key_value_from_json = {
   ...config
 };
@@ -64,7 +63,7 @@ export default defineConfig({
     config: {
       forward: ["dataLayer.push"]
     }
-  }), icon()],
+  })],
   image: {
     domains: ["webmention.io"]
   },

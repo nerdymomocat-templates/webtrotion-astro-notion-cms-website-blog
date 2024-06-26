@@ -2,8 +2,7 @@
 // Heavy inspiration taken from Astro Starlight -> https://github.com/withastro/starlight/blob/main/packages/starlight/components/Search.astro
 
 import "@pagefind/default-ui/css/ui.css";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 ---
 
 <site-search id="search" class="ms-auto">
@@ -37,7 +36,7 @@ import { getTextToAstroIcon } from "@/lib/style-helpers";
 			<button
 				data-close-modal
 				class="ms-auto cursor-pointer rounded-md bg-zinc-200 p-2 font-semibold dark:bg-zinc-700" aria-label="Close Search"
-				><Icon class="h-6 w-6 inline" name={getTextToAstroIcon("close-search")} aria-hidden="true"/></button
+				><Icon class="h-6 w-6 inline" name={"close-search"} aria-hidden="true"/></button
 			>
 			{
 				import.meta.env.DEV ? (

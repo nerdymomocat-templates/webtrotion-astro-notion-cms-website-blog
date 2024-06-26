@@ -3,8 +3,7 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 
 export interface Props {
   block: interfaces.Block;
@@ -26,7 +25,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 						<div class="pr-2 mt-1">
 							{/* Padding for the checkbox */}
 
-              <Icon class="h-5 w-5 text-textColor/50" name={getTextToAstroIcon(b.ToDo.Checked?"checkbox-checked":"checkbox-blank")} aria-label={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} focusable="false" />
+              <Icon class="h-5 w-5 text-textColor/50" name={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} aria-label={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} focusable="false" />
 
 						</div>
 						<div class="flex-1 min-w-0">

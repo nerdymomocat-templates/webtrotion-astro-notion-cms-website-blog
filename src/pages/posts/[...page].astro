@@ -9,8 +9,7 @@ import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 import { slugify } from "@/utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -73,7 +72,7 @@ const paginationProps = {
 			!!uniqueTags.length && (
 				<aside class="col-span-3 sm:col-span-1 print:hidden">
 					<h2 class="mb-4 flex items-center text-lg font-semibold text-accent-2">
-            <Icon class="h-6 w-6" name={getTextToAstroIcon("tag-multiple")} aria-hidden="true" focusable="false"/>
+            <Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
 						Tags
 					</h2>
 					<ul class="flex flex-wrap gap-2">

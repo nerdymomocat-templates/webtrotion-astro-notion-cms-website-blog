@@ -4,8 +4,7 @@ import { isYouTubeURL, parseYouTubeVideoIdTitle } from "../../../lib/blog-helper
 import Caption from "../Caption.astro";
 import { filePath } from "../../../lib/blog-helpers";
 import EmbedGeneric from "./EmbedGeneric.astro";
-import { getTextToAstroIcon } from "@/lib/style-helpers";
-import { Icon } from 'astro-icon/components'
+import Icon from '@/components/Icon';
 import { ENABLE_LIGHTBOX } from "@/constants";
 import YouTube from "./YouTube.astro";
 
@@ -46,7 +45,7 @@ const youtubeVidIdTitle = isThisYoutubeURL?await parseYouTubeVideoIdTitle(url):[
       {
 						ENABLE_LIGHTBOX && (
 							<a href={videoUrl} class="mediaglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent-2" data-description={plainTextCaption} aria-label="Click to expand">
-								<Icon name={getTextToAstroIcon("expand")} class="inline h-6 w-6" aria-hidden="true"/>
+								<Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true"/>
 							</a>
 						)
 					}

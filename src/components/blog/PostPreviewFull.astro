@@ -12,8 +12,7 @@ import {
 	getNotionColorToTailwindColorForBorder,
 } from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
-import { Icon } from 'astro-icon/components'
-import { getTextToAstroIcon } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 import { slugify } from "@/utils";
 
 // type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
@@ -57,7 +56,7 @@ const postLink = getPostLink(
 />
 
 <Tag class="font-bold">
-  {post_full_preview.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={getTextToAstroIcon("pin")} aria-label="Pinned Post" focusable="false" color="#D50B0D"/>)}
+  {post_full_preview.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={"pin"} aria-label="Pinned Post" focusable="false" color="#D50B0D"/>)}
 	<a href={postLink} class="webtrotion-page-link inline no-underline">
 		{post_full_preview.Title}
 	</a>
@@ -71,7 +70,7 @@ const postLink = getPostLink(
 {
 	post_full_preview.Tags.length > 0 && (
 		<div class="mt-1 gap-2">
-      <Icon class="h-4 w-4 inline-block me-1" name={getTextToAstroIcon("tag-outline")} aria-hidden="true" focusable="false"/>
+      <Icon class="h-4 w-4 inline-block me-1" name={"tag-outline"} aria-hidden="true" focusable="false"/>
 			{post_full_preview.Tags.map((tag, i) => (
 				<>
 					<a

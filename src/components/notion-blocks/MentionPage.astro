@@ -3,8 +3,8 @@ import { Post } from "../../lib/interfaces.ts";
 import { getPostByPageId } from "../../lib/notion/client";
 import { getPostLink } from "../../lib/blog-helpers.ts";
 import { MENU_PAGES_COLLECTION, REFERENCES } from "@/constants";
-import { getTextToAstroIcon, getIconTailwindFilterStyle, isNotionIconURL } from "@/lib/style-helpers";
-import { Icon } from 'astro-icon/components'
+import { getIconTailwindFilterStyle, isNotionIconURL } from "@/lib/style-helpers";
+import Icon from '@/components/Icon';
 // import { rootHasDarkClass } from "@/utils";
 
 export interface Props {
@@ -32,11 +32,9 @@ const hreflink=post?getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLEC
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
 						<img src={post.Icon.Url} class={`h-4 w-4 flex-shrink-0 align-sub inline ${getIconTailwindFilterStyle(post.Icon.Url)}`} alt=""/>
-					) : getTextToAstroIcon("document") ? (
-						<Icon name={getTextToAstroIcon("document")} class="inline h-4 w-4" aria-hidden="true"/>
-					) : (
-						"📄"
-					)}
+					) :
+						(<Icon name={"document"} class="inline h-4 w-4" aria-hidden="true"/>)
+					}
 				</span>
 				<span class="w-full inline">{post.Title}</span>
 			</>

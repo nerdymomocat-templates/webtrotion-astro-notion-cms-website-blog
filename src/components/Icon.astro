@@ -1,0 +1,40 @@
+---
+import {getTextToSVGPath} from "@/lib/style-helpers";
+
+export interface Props {
+  name: string;
+  class?: string;
+  'aria-hidden'?: string;
+  'aria-label'?: string;
+  color?: string;
+  focusable?: string;
+}
+
+const {
+  name,
+  class: className,
+  'aria-hidden': ariaHiddenString,
+  'aria-label': ariaLabel,
+  color,
+  focusable
+} = Astro.props;
+
+const path = getTextToSVGPath(name);
+
+// Convert aria-hidden string to boolean
+const ariaHidden = ariaHiddenString === 'true' ? true : ariaHiddenString === 'false' ? false : undefined;
+---
+{path && (
+  <svg
+    viewBox="0 0 24 24"
+    aria-hidden={ariaHidden}
+    aria-label={ariaLabel}
+    class={className}
+    {...focusable !== undefined && { focusable: focusable }}
+  >
+    <path
+      fill={color || "currentColor"}
+      d={path}
+    ></path>
+  </svg>
+)}
