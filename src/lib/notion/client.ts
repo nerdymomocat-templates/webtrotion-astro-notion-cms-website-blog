@@ -517,7 +517,7 @@ export async function getAllTagsWithCounts(): Promise<{ name: string, count: num
 }
 
 
-export function generateFilePath(url: URL, convertoAvif: boolean = false) {
+export function generateFilePath(url: URL, convertoWebp: boolean = false) {
   const BASE_DIR = "./public/notion/";
   if (!fs.existsSync(BASE_DIR)) {
     fs.mkdirSync(BASE_DIR);
@@ -530,14 +530,14 @@ export function generateFilePath(url: URL, convertoAvif: boolean = false) {
   const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
   let filepath = `${dir}/${filename}`;
 
-  if (convertoAvif && isConvImageType(filename)) {
-    filepath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.avif`
+  if (convertoWebp && isConvImageType(filename)) {
+    filepath = `${dir}/${filename.substring(0, filename.lastIndexOf('.'))}.webp`
   }
   return filepath;
 }
 
 export function isConvImageType(filepath: string) {
-  if (filepath.includes('.png') || filepath.includes('.jpg') || filepath.includes('.jpeg') || filepath.includes('.webp')) {
+  if (filepath.includes('.png') || filepath.includes('.jpg') || filepath.includes('.jpeg') || filepath.includes('.avif')) {
     return true;
   }
   return false;
@@ -604,13 +604,13 @@ export async function downloadFile(url: URL, optimize_img: boolean = true, isFav
 
 
   if (isImage && isConvImageType(filepath) && optimize_img) {
-    // Process and write only the optimized avif image
-    const avifPath = generateFilePath(url, true);
-    // console.log('Writing to', avifPath);
+    // Process and write only the optimized webp image
+    const webpPath = generateFilePath(url, true);
+    // console.log('Writing to', webpPath);
     await stream.pipe(sharp()
       // .resize({ width: 1024 }) // Adjust the size as needed for "medium"
-      .avif({ quality: 80 })) // Adjust quality as needed
-      .toFile(avifPath)
+      .webp({ quality: 80 })) // Adjust quality as needed
+      .toFile(webpPath)
       .catch(err => {
         console.error('Error processing image:', err);
       });
@@ -852,7 +852,7 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
           image.File = {
             Type: blockObject.image.type,
             Url: blockObject.image.file.url,
-            OptimizedUrl: isConvImageType(blockObject.image.file.url) && OPTIMIZE_IMAGES ? (blockObject.image.file.url.substring(0, blockObject.image.file.url.lastIndexOf('.')) + ".avif") : blockObject.image.file.url,
+            OptimizedUrl: isConvImageType(blockObject.image.file.url) && OPTIMIZE_IMAGES ? (blockObject.image.file.url.substring(0, blockObject.image.file.url.lastIndexOf('.')) + ".webp") : blockObject.image.file.url,
             ExpiryTime: blockObject.image.file.expiry_time,
           };
         }
