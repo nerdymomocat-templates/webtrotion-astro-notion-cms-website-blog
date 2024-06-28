@@ -35,8 +35,8 @@ const articleDate = new Date(post.Date).toISOString();
 <BaseLayout
 	meta={{ title: post.Title, description: post.Excerpt, articleDate, ogImage: socialImage }}
 >
-	<div class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-x-10">
-		<article class="screen:col-span-3 break-words print:col-span-full" data-pagefind-body>
+	<div class="screen:max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
+		<article class="break-words" data-pagefind-body>
 			<div id="blog-hero"><BlogHero post={post} /></div>
 			<!-- <div id="blog-hero"><BlogHero content={post} /></div> -->
 			<div class="mt-8">
@@ -49,8 +49,8 @@ const articleDate = new Date(post.Date).toISOString();
 		{!!headings.length && <TOC headings={headings} />}
 		{!!headings.length && BOTTOM_TOC && <BottomTOC headings={headings} />}
 	</div>
-  <div class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-x-10 print:hidden">
-		<aside class="col-span-3" data-pagefind-ignore="all">
+  <div class="print:hidden">
+		<aside class="" data-pagefind-ignore="all">
 
   <WebMentions />
 

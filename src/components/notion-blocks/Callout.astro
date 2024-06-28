@@ -13,7 +13,7 @@ export interface Props {
 
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
-<div class={`callout flex my-2 mx-auto py-4 px-3 w-full max-w-full leading-6 rounded border ${getNotionColorToTailwindColor(block.Callout.Color)} ${getNotionColorToTailwindColorForBorder(block.Callout.Color)}`} id={setId?block.Id:undefined}>
+<div class={`callout flex my-2 mx-auto py-4 px-3 w-full max-w-full leading-6 rounded border ${getNotionColorToTailwindColor(block.Callout.Color)} border-none`} id={setId?block.Id:undefined}>
     <div class="m-0 leading-6 mr-2">
         {
             block.Callout.Icon.Type === "emoji" ? (
