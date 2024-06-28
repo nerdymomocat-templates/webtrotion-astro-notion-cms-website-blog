@@ -61,7 +61,7 @@ And I did not want that. We want something that converts well into a static site
 
 # Key Features
 
-- Astro v4.0
+- Astro v4.11
 - **Integrates with Notion to create a website and not just a blog**
 - **Single file configuration**
 - TailwindCSS Utility classes **with Notion Color Matching for everything.**
@@ -75,7 +75,8 @@ And I did not want that. We want something that converts well into a static site
 - **Giscus comments**
 - Auto-generated sitemap
 - [Pagefind](https://pagefind.app/) static search library integration
-- Astro Icon
+- **Pinned Posts**
+- **Shiki Transformers for Code Blocks**
 - **API request output caching on Github Actions for fast build times**
 - **Mini blog streams (idea copied from [Linus’s stream](https://stream.thesephist.com/))**
 - **Auto-generated related content and pages that link to this page**
@@ -152,6 +153,7 @@ Dark mode preview
 | Explicit Publish Date | By default, the formula considers the date notion page was created to be publish date. You can override it by setting a date for this property. |
 | Explicit Publish Date | By default, the formula considers the date notion page was last edited to be last edited date. You can override it by setting a date for this property. |
 | Rank | Want to order single pages (Updates before Papers?) Set rank in ascending order |
+| Pinned | Pins post to the top of any collection page, except those tagged with MENU_PAGES_COLLECTION |
 
 ⚠️ **Don’t rename the columns of DB.** They are used in the astro code. You can reorder the columns or add any other columns you want.
 
@@ -176,7 +178,7 @@ npm run dev
 | webmention                | Webmention API Key and link obtained from https://webmention.io/ |
 | custom-domain             | If you want to host the site somewhere else |
 | base-path                 | Or subdomain inside the custom domain |
-| shortocdes                | There are 3 shortcodes atm, one support, two in works. `html` shortcode is used to embed html code blocks that start with this line directly into the page |
+| shortocdes                | There are 3 shortcodes atm, two supported, two in works. `html` shortcode is used to embed html code blocks that start with this line directly into the page. `shiki-transform` is used to transform code blocks into more expressive representations |
 | references                | To show related pages, external links, and mentioned media at the end of the post. Set POPOVERS to true to display a snippet when hovering over a post link in the body. |
 | theme                     | Colors for light mode and dark mode |
 | fontfamily-google-fonts   | Combined URL link for all fonts you want to use from google fonts. Remember to escape spaces in font names if needed |
@@ -191,7 +193,6 @@ npm run dev
 | og-setup                  | Open graph setup refers to the images displayed when sharing links. It includes excerpts and creates two columns if a featured image is available. You can customize the title and footnote fonts for the og-image, particularly for non-English blogs. Ensure that each URL has only one font and, if it has a weight, the weight is above 400 |
 | optimize-images           | Converts images to next-gen formats like webp for more responsive sites |
 | redirects                 | Intentional redirects, especially if you are moving systems that astro should redirect to |
-| bottom-toc                | Has a ToC navigation bar at bottom on smaller screens |
 
 # License
 
@@ -205,3 +206,7 @@ MIT
 Remember that the setup uses aggressive caching for github actions. These caches are public. If you want to remove caches, you can go to [github action workflow](https://docs.github.com/en/actions/using-workflows/manually-running-a-workflow) and manually delete the caches
 - ℹ️ **Multilingual/Non-English blogs**
 Open graph setup refers to the images displayed when sharing links. It includes excerpts and creates two columns if a featured image is available. **You can customize the title and footnote fonts for the og-image, particularly for non-English blogs.** Ensure that each URL has only one font and, if it has a weight, the weight is above 400
+
+If you end up using webtrotion, please consider buying me a coffee here:
+
+[Support Nerdy Momo Cat on Ko-fi! ❤️. ko-fi.com/nerdymomocat](https://ko-fi.com/nerdymomocat)
