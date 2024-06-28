@@ -42,7 +42,6 @@
     "shiki-transform": "<<shiki-transform>>"
   },
   "recent-posts-on-home-page": false,
-  "bottom-toc": true,
   "theme": {
     "colors": {
       "bg": {

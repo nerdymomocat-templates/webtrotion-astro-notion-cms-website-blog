@@ -72,8 +72,6 @@ export const REFERENCES = key_value_from_json["references"] || null;
 
 export const RECENT_POSTS_ON_HOME_PAGE = key_value_from_json["recent-posts-on-home-page"] || false;
 
-export const BOTTOM_TOC = key_value_from_json["bottom-toc"] || false;
-
 export const SOCIALS = key_value_from_json["socials"] || {};
 
 export const GISCUS = key_value_from_json["giscus"] || null;

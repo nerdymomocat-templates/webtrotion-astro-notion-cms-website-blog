@@ -7,10 +7,9 @@ import WebMentions from "@/components/blog/webmentions/index";
 import type { Post } from "src/lib/interfaces";
 import type { Heading } from "@/types";
 import PostComments from "@/components/blog/PostComments";
-import { BOTTOM_TOC, REFERENCES } from "@/constants";
+import { REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import BottomTOC from "@/components/blog/BottomTOC.astro";
-import Icon from '@/components/Icon';
 
 interface Props {
 	post: Post;
@@ -47,7 +46,6 @@ const articleDate = new Date(post.Date).toISOString();
 			</div>
 		</article>
 		{!!headings.length && <TOC headings={headings} />}
-		{!!headings.length && BOTTOM_TOC && <BottomTOC headings={headings} />}
 	</div>
   <div class="print:hidden">
 		<aside class="" data-pagefind-ignore="all">
@@ -59,9 +57,7 @@ const articleDate = new Date(post.Date).toISOString();
   </div>
 	<button
 		id="to-top-btn"
-		class={`z-30 fixed print:hidden ${
-			BOTTOM_TOC ? "bottom-20" : "bottom-8"
-		} sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12`}
+		class={"z-30 fixed print:hidden bottom-20 sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"}
 		aria-label="Back to Top"
 		data-show="false"
 		><svg
