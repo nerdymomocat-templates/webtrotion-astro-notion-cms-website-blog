@@ -19,6 +19,8 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 		block.Quote.Color,
 	)}`} id={setId?block.Id:undefined}
 >
+<div class="p-1">
 	{block.Quote.RichTexts.map((richText: interfaces.RichText) => <RichText richText={richText}  blockID={block.Id}/>)}
 	{block.Quote.Children && renderChildren && <NotionBlocks blocks={block.Quote.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>}
+</div>
 </blockquote>

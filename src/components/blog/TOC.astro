@@ -2,7 +2,7 @@
 import type { MarkdownHeading } from "astro";
 import { generateToc } from "src/utils/generateToc";
 import TOCHeading from "./TOCHeading.astro";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 
 interface Props {
 	headings: Array<MarkdownHeading>;
@@ -12,14 +12,16 @@ const { headings } = Astro.props;
 const toc = generateToc(headings);
 ---
 
-<aside class="toc-container fixed right-4 top-40 z-10 block print:hidden group">
+<aside
+	class="toc-container group fixed bottom-40 right-4 top-auto z-10 block sm:bottom-auto sm:top-40 print:hidden"
+>
 	<div
-		class="visual-container absolute right-0 top-6 hidden sm:flex w-8 flex-col items-end space-y-2 overflow-hidden bg-bgColor p-2 transition-opacity duration-500"
+		class="visual-container absolute right-0 top-6 hidden w-8 flex-col items-end space-y-2 overflow-hidden bg-bgColor p-2 transition-opacity duration-500 sm:flex"
 	>
 		{toc.map((heading) => <TOCHeading heading={heading} visualOnly={true} />)}
 	</div>
 	<div
-		class="toc-content invisible sm:group-hover:visible sm:group-hover:opacity-100 sm:group-hover:translate-x-0 absolute right-1 top-0 max-h-[68vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200 sm:right-1 sm:top-0"
+		class="toc-content invisible absolute bottom-0 right-1 max-h-[68vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200 sm:bottom-auto sm:top-0 sm:group-hover:visible sm:group-hover:translate-x-0 sm:group-hover:opacity-100"
 	>
 		<ul class="mt-2 text-sm">
 			{toc.map((heading) => <TOCHeading heading={heading} />)}
@@ -27,161 +29,182 @@ const toc = generateToc(headings);
 	</div>
 </aside>
 
-    <button
-      id="show-bottom-toc"
-      class="fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden print:hidden"
-      aria-label="Toggle table of contents"
-    >
-      <Icon class="h-6 w-6 bottom-toc-icon transition-opacity duration-300" name="table-of-contents" aria-hidden="true" />
-      <Icon class="h-6 w-6 close-bottom-toc-icon absolute opacity-0 transition-opacity duration-300" name="close" aria-hidden="true" />
-    </button>
-    <script>
-      const tocContainer = document.querySelector(".toc-container");
-      const tocContent = document.querySelector(".toc-content");
-      const visualContainer = tocContainer?.querySelector(".visual-container");
-      const bottomTocButton = document.getElementById("show-bottom-toc");
-      const bottomTocOpen = document.querySelector(".bottom-toc-icon");
-      const bottomTocClose = document.querySelector(".close-bottom-toc-icon");
+<button
+	id="show-bottom-toc"
+	class="fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden print:hidden"
+	aria-label="Toggle table of contents"
+>
+	<Icon
+		class="bottom-toc-icon h-6 w-6 transition-opacity duration-300"
+		name="table-of-contents"
+		aria-hidden="true"
+	/>
+	<Icon
+		class="close-bottom-toc-icon absolute h-6 w-6 opacity-0 transition-opacity duration-300"
+		name="close"
+		aria-hidden="true"
+	/>
+</button>
+<script>
+	document.addEventListener("DOMContentLoaded", () => {
+		const tocContainer = document.querySelector(".toc-container");
+		const tocContent = document.querySelector(".toc-content");
+		const visualContainer = tocContainer?.querySelector(".visual-container");
+		const bottomTocButton = document.getElementById("show-bottom-toc");
+		const bottomTocOpen = document.querySelector(".bottom-toc-icon");
+		const bottomTocClose = document.querySelector(".close-bottom-toc-icon");
 
-      function debounce(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-          const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-          };
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-        };
-      }
+		function debounce(func, wait) {
+			let timeout;
+			return function executedFunction(...args) {
+				const later = () => {
+					clearTimeout(timeout);
+					func(...args);
+				};
+				clearTimeout(timeout);
+				timeout = setTimeout(later, wait);
+			};
+		}
 
-      if (tocContainer && tocContent && visualContainer && bottomTocButton && bottomTocOpen && bottomTocClose) {
-        const toggleBottomToc = (event) => {
-          event.stopPropagation();
-          const isVisible = tocContent.classList.toggle("invisible");
-          tocContent.classList.toggle("opacity-0", isVisible);
-          tocContent.classList.toggle("translate-x-4", isVisible);
+		if (
+			tocContainer &&
+			tocContent &&
+			visualContainer &&
+			bottomTocButton &&
+			bottomTocOpen &&
+			bottomTocClose
+		) {
+			const toggleBottomToc = (event) => {
+				event.stopPropagation();
+				const isVisible = tocContent.classList.toggle("invisible");
+				tocContent.classList.toggle("opacity-0", isVisible);
+				tocContent.classList.toggle("translate-x-4", isVisible);
 
-          if (isVisible) {
-            bottomTocOpen.classList.remove("opacity-0");
-            bottomTocClose.classList.add("opacity-0");
-          } else {
-            bottomTocOpen.classList.add("opacity-0");
-            bottomTocClose.classList.remove("opacity-0");
-          }
-        };
+				if (isVisible) {
+					bottomTocOpen.classList.remove("opacity-0");
+					bottomTocClose.classList.add("opacity-0");
+				} else {
+					bottomTocOpen.classList.add("opacity-0");
+					bottomTocClose.classList.remove("opacity-0");
+				}
+			};
 
-        const handleResize = debounce(() => {
-          tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
-          bottomTocOpen.classList.remove("opacity-0");
-          bottomTocClose.classList.add("opacity-0");
-        }, 250);
+			const handleResize = debounce(() => {
+				tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
+				bottomTocOpen.classList.remove("opacity-0");
+				bottomTocClose.classList.add("opacity-0");
+			}, 250);
 
-        window.addEventListener("resize", handleResize);
+			window.addEventListener("resize", handleResize);
 
-        bottomTocButton.addEventListener("click", toggleBottomToc);
+			bottomTocButton.addEventListener("click", toggleBottomToc);
 
-        tocContent.addEventListener("click", (event) => {
-          const target = event.target;
-          if (target.tagName === "A" && window.innerWidth < 640) {
-            tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
-            bottomTocOpen.classList.remove("opacity-0");
-            bottomTocClose.classList.add("opacity-0");
-          }
-        });
+			tocContent.addEventListener("click", (event) => {
+				const target = event.target;
+				if (target.tagName === "A" && window.innerWidth < 640) {
+					tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
+					bottomTocOpen.classList.remove("opacity-0");
+					bottomTocClose.classList.add("opacity-0");
+				}
+			});
 
-        document.addEventListener("click", (event) => {
-          if (window.innerWidth < 640 && !tocContainer.contains(event.target) && event.target !== bottomTocButton) {
-            tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
-            bottomTocOpen.classList.remove("opacity-0");
-            bottomTocClose.classList.add("opacity-0");
-          }
-        });
-      }
+			document.addEventListener("click", (event) => {
+				if (
+					window.innerWidth < 640 &&
+					!tocContainer.contains(event.target) &&
+					event.target !== bottomTocButton
+				) {
+					tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
+					bottomTocOpen.classList.remove("opacity-0");
+					bottomTocClose.classList.add("opacity-0");
+				}
+			});
+		}
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const headings = document.querySelectorAll("h2[id], h3[id], h4[id]");
-        const visuals = document.querySelectorAll('[id^="-vistocid--"]');
-        const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
+		const headings = document.querySelectorAll("h2[id], h3[id], h4[id]");
+		const visuals = document.querySelectorAll('[id^="-vistocid--"]');
+		const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
 
-        const highlightTocItem = (tocLink, tocVisual) => {
-          tocLinks.forEach(l => l.classList.remove("!text-quote"));
-          visuals.forEach(v => {
-            v.classList.remove("bg-accent");
-            v.classList.add("bg-accent/25");
-          });
+		const highlightTocItem = (tocLink, tocVisual) => {
+			tocLinks.forEach((l) => l.classList.remove("!text-quote"));
+			visuals.forEach((v) => {
+				v.classList.remove("bg-accent");
+				v.classList.add("bg-accent/25");
+			});
 
-          if (tocLink) {
-            tocLink.classList.add("!text-quote");
-          }
-          if (tocVisual) {
-            tocVisual.classList.remove("bg-accent/25");
-            tocVisual.classList.add("bg-accent");
-          }
-        };
+			if (tocLink) {
+				tocLink.classList.add("!text-quote");
+			}
+			if (tocVisual) {
+				tocVisual.classList.remove("bg-accent/25");
+				tocVisual.classList.add("bg-accent");
+			}
+		};
 
-        const scrollTocToLink = (tocLink) => {
-          if (tocLink instanceof HTMLElement && tocContent instanceof HTMLElement) {
-            const tocRect = tocContent.getBoundingClientRect();
-            const linkRect = tocLink.getBoundingClientRect();
-            if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
-              tocContent.scrollTop = tocLink.offsetTop - tocContent.offsetTop - tocContent.clientHeight / 2 + linkRect.height / 2;
-            }
-          }
-        };
+		const scrollTocToLink = (tocLink) => {
+			if (tocLink instanceof HTMLElement && tocContent instanceof HTMLElement) {
+				const tocRect = tocContent.getBoundingClientRect();
+				const linkRect = tocLink.getBoundingClientRect();
+				if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
+					tocContent.scrollTop =
+						tocLink.offsetTop -
+						tocContent.offsetTop -
+						tocContent.clientHeight / 2 +
+						linkRect.height / 2;
+				}
+			}
+		};
 
-        let isManualScrolling = false;
+		let isManualScrolling = false;
 
-        const observerCallback = (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting && !isManualScrolling) {
-              const id = entry.target.getAttribute("id");
-              const tocVisual = document.querySelector(`[id="-vistocid--${id}"]`);
-              const tocLink = document.querySelector(`[id="-tocid--${id}"]`);
-              highlightTocItem(tocLink, tocVisual);
-              scrollTocToLink(tocLink);
-            }
-          });
-        };
+		const observerCallback = (entries) => {
+			entries.forEach((entry) => {
+				if (entry.isIntersecting && !isManualScrolling) {
+					const id = entry.target.getAttribute("id");
+					const tocVisual = document.querySelector(`[id="-vistocid--${id}"]`);
+					const tocLink = document.querySelector(`[id="-tocid--${id}"]`);
+					highlightTocItem(tocLink, tocVisual);
+					scrollTocToLink(tocLink);
+				}
+			});
+		};
 
-        const observerOptions = {
-          rootMargin: "-10px 0px -90% 0px",
-          threshold: 0,
-        };
+		const observerOptions = {
+			rootMargin: "-10px 0px -90% 0px",
+			threshold: 0,
+		};
 
-        const tocObserver = new IntersectionObserver(observerCallback, observerOptions);
-        headings.forEach(heading => tocObserver.observe(heading));
+		const tocObserver = new IntersectionObserver(observerCallback, observerOptions);
+		headings.forEach((heading) => tocObserver.observe(heading));
 
-        tocLinks.forEach(link => {
-          link.addEventListener('click', (event) => {
-            event.preventDefault();
-            const targetId = link.getAttribute('href').substring(1);
-            const targetHeading = document.getElementById(targetId);
+		tocLinks.forEach((link) => {
+			link.addEventListener("click", (event) => {
+				event.preventDefault();
+				const targetId = link.getAttribute("href").substring(1);
+				const targetHeading = document.getElementById(targetId);
 
-            if (targetHeading) {
-              isManualScrolling = true;
-              history.pushState(null, '', `#${targetId}`);
-              targetHeading.scrollIntoView({ behavior: 'smooth' });
-              const tocVisual = document.querySelector(`[id="-vistocid--${targetId}"]`);
-              highlightTocItem(link, tocVisual);
-              setTimeout(() => {
-                isManualScrolling = false;
-                scrollTocToLink(link);
-              }, 1000);
-            }
-          });
-        });
+				if (targetHeading) {
+					isManualScrolling = true;
+					history.pushState(null, "", `#${targetId}`);
+					targetHeading.scrollIntoView({ behavior: "smooth" });
+					const tocVisual = document.querySelector(`[id="-vistocid--${targetId}"]`);
+					highlightTocItem(link, tocVisual);
+					setTimeout(() => {
+						isManualScrolling = false;
+						scrollTocToLink(link);
+					}, 1000);
+				}
+			});
+		});
 
-        if (window.location.hash) {
-          const initialId = window.location.hash.substring(1);
-          const initialTocLink = document.querySelector(`[id="-tocid--${initialId}"]`);
-          if (initialTocLink) {
-            const tocVisual = document.querySelector(`[id="-vistocid--${initialId}"]`);
-            highlightTocItem(initialTocLink, tocVisual);
-            scrollTocToLink(initialTocLink);
-          }
-        }
-      });
-    </script>
-
-
+		if (window.location.hash) {
+			const initialId = window.location.hash.substring(1);
+			const initialTocLink = document.querySelector(`[id="-tocid--${initialId}"]`);
+			if (initialTocLink) {
+				const tocVisual = document.querySelector(`[id="-vistocid--${initialId}"]`);
+				highlightTocItem(initialTocLink, tocVisual);
+				scrollTocToLink(initialTocLink);
+			}
+		}
+	});
+</script>
