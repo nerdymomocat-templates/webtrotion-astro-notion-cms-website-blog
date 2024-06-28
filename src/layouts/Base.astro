@@ -75,13 +75,13 @@ window.addEventListener('afterprint', function () {
         level++;
         el = el.parentElement;
       }
-      console.log(level - 1);
+      // console.log(level - 1);
       return level - 1;
     };
 
     const hideAllPopovers = (level = 0) => {
-      console.log('hideAllPopovers called');
-      console.log(openPopovers);
+      // console.log('hideAllPopovers called');
+      // console.log(openPopovers);
       openPopovers.forEach(popoverEl => {
         if (getPopoverLevel(popoverEl) >= level) {
           hidePopover(popoverEl);
@@ -90,7 +90,7 @@ window.addEventListener('afterprint', function () {
     };
 
     const hidePopover = (popoverEl) => {
-      console.log('hidePopover called for', popoverEl);
+      // console.log('hidePopover called for', popoverEl);
       if (popoverEl) {
         popoverEl.style.visibility = 'hidden';
         popoverEl.classList.add('hidden');

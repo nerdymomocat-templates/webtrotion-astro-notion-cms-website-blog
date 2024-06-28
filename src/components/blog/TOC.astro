@@ -4,63 +4,162 @@ import { generateToc } from "src/utils/generateToc";
 import TOCHeading from "./TOCHeading.astro";
 
 interface Props {
-  headings: Array<MarkdownHeading>;
+	headings: Array<MarkdownHeading>;
 }
 
 const { headings } = Astro.props;
 const toc = generateToc(headings);
 ---
 
-<aside class="toc-container fixed top-40 right-4 hidden sm:block print:hidden z-10">
-  <div class="visual-container w-8 p-2 flex flex-col items-end space-y-2 overflow-hidden absolute top-6 right-0 transition-opacity duration-500 bg-bgColor">
-    {toc.map((heading) => (
-      <TOCHeading heading={heading} visualOnly={true} />
-    ))}
-  </div>
-  <div class="toc-content invisible opacity-0 translate-x-4 transition-all duration-200 absolute top-0 right-1 bg-bgColor border border-accent/10 rounded-xl p-2 max-h-[78vh] overflow-y-auto w-60 shadow-xl shadow-accent/5">
-    <ul class="mt-2 text-sm">
-      {toc.map((heading) => (
-        <TOCHeading heading={heading} />
-      ))}
-    </ul>
-  </div>
+<aside class="toc-container fixed right-4 top-40 z-10 hidden sm:block print:hidden">
+	<div
+		class="visual-container absolute right-0 top-6 flex w-8 flex-col items-end space-y-2 overflow-hidden bg-bgColor p-2 transition-opacity duration-500"
+	>
+		{toc.map((heading) => <TOCHeading heading={heading} visualOnly={true} />)}
+	</div>
+	<div
+		class="toc-content invisible absolute right-1 top-0 max-h-[70vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200"
+	>
+		<ul class="mt-2 text-sm">
+			{toc.map((heading) => <TOCHeading heading={heading} />)}
+		</ul>
+	</div>
 </aside>
 
 <script>
-  const tocContainer = document.querySelector('.toc-container');
-  const tocContent = document.querySelector('.toc-content');
-  const visualContainer = tocContainer?.querySelector('.visual-container');
+	const tocContainer = document.querySelector(".toc-container");
+	const tocContent = document.querySelector(".toc-content");
+	const visualContainer = tocContainer?.querySelector(".visual-container");
 
-  if (tocContainer && tocContent && visualContainer) {
-    const showContent = () => {
-      tocContent.classList.remove('invisible', 'opacity-0', 'translate-x-4');
-      tocContent.classList.add('visible', 'opacity-100', 'translate-x-0');
-      visualContainer.classList.add('opacity-0', 'duration-0');
-      visualContainer.classList.remove('duration-500');
-      (visualContainer as HTMLElement).offsetHeight; // Trigger reflow
-      visualContainer.classList.remove('duration-0');
-      visualContainer.classList.add('duration-500');
-    };
+	if (tocContainer && tocContent && visualContainer) {
+		const showContent = () => {
+			tocContent.classList.remove("invisible", "opacity-0", "translate-x-4");
+			tocContent.classList.add("visible", "opacity-100", "translate-x-0");
+			visualContainer.classList.add("opacity-0", "duration-0");
+			visualContainer.classList.remove("duration-500");
+			(visualContainer as HTMLElement).offsetHeight; // Trigger reflow
+			visualContainer.classList.remove("duration-0");
+			visualContainer.classList.add("duration-500");
+		};
 
-    const hideContent = () => {
-      tocContent.classList.remove('visible', 'opacity-100', 'translate-x-0');
-      tocContent.classList.add('invisible', 'opacity-0', 'translate-x-4');
-      visualContainer.classList.remove('opacity-0');
-    };
+		const hideContent = () => {
+			tocContent.classList.remove("visible", "opacity-100", "translate-x-0");
+			tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
+			visualContainer.classList.remove("opacity-0");
+		};
 
-    tocContainer.addEventListener('mouseenter', showContent);
-    tocContainer.addEventListener('mouseleave', hideContent);
+		tocContainer.addEventListener("mouseenter", showContent);
+		tocContainer.addEventListener("mouseleave", hideContent);
 
-    // Close the TOC when clicking a link
-    tocContent.addEventListener('click', (event) => {
-      const target = event.target as Element;
-      if (target.tagName === 'A') {
-        hideContent();
-        event.preventDefault();
-        setTimeout(() => {
-          window.location.href = (target as HTMLAnchorElement).href;
-        }, 50);
-      }
-    });
-  }
+		// Close the TOC when clicking a link
+		tocContent.addEventListener("click", (event) => {
+			const target = event.target as Element;
+			if (target.tagName === "A") {
+				hideContent();
+				event.preventDefault();
+				setTimeout(() => {
+					window.location.href = (target as HTMLAnchorElement).href;
+				}, 50);
+			}
+		});
+	}
+
+	document.addEventListener("DOMContentLoaded", () => {
+		const smBreakpoint = 640; // This matches Tailwind's sm breakpoint
+
+		const initTOCHighlight = () => {
+			const headings = document.querySelectorAll("h2[id], h3[id], h4[id]");
+			const visuals = document.querySelectorAll('[id^="-vistocid--"]');
+			const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
+			const tocContent = document.querySelector(".toc-content");
+
+			const observerOptions = {
+				rootMargin: "0px 0px -40% 0px",
+				threshold: 1.0,
+			};
+
+			let lastActiveHeading: Element | null | undefined = null;
+
+			const highlightTocItem = (tocLink: Element | null) => {
+				tocLinks.forEach((l) => {
+					l.classList.remove("!text-quote");
+				});
+				if (tocLink) {
+					tocLink.classList.add("!text-quote");
+
+					if (tocLink instanceof HTMLElement && tocContent instanceof HTMLElement) {
+						const tocRect = tocContent.getBoundingClientRect();
+						const linkRect = tocLink.getBoundingClientRect();
+
+						if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
+							tocContent.scrollTop =
+								tocLink.offsetTop -
+								tocContent.offsetTop -
+								tocContent.clientHeight / 2 +
+								linkRect.height / 2;
+						}
+					}
+				}
+			};
+
+			const observer = new IntersectionObserver((entries) => {
+				entries.forEach((entry) => {
+					const id = entry.target.getAttribute("id");
+					const tocVisual = document.querySelector(`[id="-vistocid--${id}"]`);
+					const tocLink = document.querySelector(`[id="-tocid--${id}"]`);
+
+					if (entry.isIntersecting) {
+						visuals.forEach((v) => v.classList.remove("bg-accent"));
+						if (tocVisual) tocVisual.classList.add("bg-accent");
+						highlightTocItem(tocLink);
+						lastActiveHeading = entry.target;
+					} else if (entry.target === lastActiveHeading) {
+						const visibleHeadings = Array.from(headings).filter(
+							(h) => h.getBoundingClientRect().top <= window.innerHeight / 2,
+						);
+						if (visibleHeadings.length > 0) {
+							const nearestHeading = visibleHeadings[visibleHeadings.length - 1];
+							if (nearestHeading) {
+								const nearestId = nearestHeading.getAttribute("id");
+								if (nearestId) {
+									const nearestVisual = document.querySelector(`[id="-vistocid--${nearestId}"]`);
+									const nearestLink = document.querySelector(`[id="-tocid--${nearestId}"]`);
+
+									visuals.forEach((v) => v.classList.remove("bg-accent"));
+									if (nearestVisual instanceof Element) nearestVisual.classList.add("bg-accent");
+									highlightTocItem(nearestLink);
+									lastActiveHeading = nearestHeading;
+								}
+							}
+						}
+					}
+				});
+			}, observerOptions);
+
+			headings.forEach((heading) => observer.observe(heading));
+
+			return observer;
+		};
+
+		let tocObserver: IntersectionObserver | null;
+
+		const checkScreenSize = () => {
+			if (window.innerWidth >= smBreakpoint) {
+				if (!tocObserver) {
+					tocObserver = initTOCHighlight();
+				}
+			} else {
+				if (tocObserver) {
+					tocObserver.disconnect();
+					tocObserver = null;
+				}
+			}
+		};
+
+		// Initial check
+		checkScreenSize();
+
+		// Listen for window resize events
+		window.addEventListener("resize", checkScreenSize);
+	});
 </script>
