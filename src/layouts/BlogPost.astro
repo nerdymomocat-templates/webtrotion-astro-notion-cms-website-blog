@@ -77,25 +77,12 @@ const articleDate = new Date(post.Date).toISOString();
 			<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 		</svg>
 	</button>
-	{
-		BOTTOM_TOC && (
-			<button
-				id="show-bottom-toc"
-				class={`fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden print:hidden`}
-				aria-label="Show table of contents"
-			>
-				<Icon class="h-6 w-6" name={"table-of-contents"} aria-hidden="true" />
-			</button>
-		)
-	}
 </BaseLayout>
 
 <script>
 	document.addEventListener("DOMContentLoaded", function () {
 		const scrollBtn = document.getElementById("to-top-btn");
 		const targetHeader = document.getElementById("blog-hero");
-		const bottomTocNav = document.getElementById("bottom-toc-nav");
-		const showBottomToc = document.getElementById("show-bottom-toc");
 
 		function callback(entries) {
 			entries.forEach((entry) => {
@@ -110,49 +97,5 @@ const articleDate = new Date(post.Date).toISOString();
 		});
 		const observer = new IntersectionObserver(callback);
 		observer.observe(targetHeader);
-
-		if (bottomTocNav && showBottomToc) {
-			showBottomToc.addEventListener("click", function () {
-				const showBottomTocBtn = this;
-
-				// Check if bottom-toc-nav is currently visible
-				const isVisible = bottomTocNav.classList.contains("vopacity-100");
-
-				// Toggle visibility
-				if (isVisible) {
-					// Hide bottom-toc-nav
-					bottomTocNav.classList.remove("vopacity-100");
-					bottomTocNav.classList.add("vopacity-0");
-
-					// Reset positions of buttons
-					scrollBtn.classList.remove("bottom-56");
-					scrollBtn.classList.add("bottom-20");
-					showBottomTocBtn.classList.remove("bottom-44");
-					showBottomTocBtn.classList.add("bottom-8");
-				} else {
-					// Show bottom-toc-nav
-					bottomTocNav.classList.remove("vopacity-0");
-					bottomTocNav.classList.add("vopacity-100");
-
-					// Shift positions of buttons
-					scrollBtn.classList.remove("bottom-20");
-					scrollBtn.classList.add("bottom-56");
-					showBottomTocBtn.classList.remove("bottom-8");
-					showBottomTocBtn.classList.add("bottom-44");
-
-					// Set a timer to hide bottom-toc-nav after 3 seconds
-					setTimeout(function () {
-						bottomTocNav.classList.remove("vopacity-100");
-						bottomTocNav.classList.add("vopacity-0");
-
-						// Reset positions of buttons
-						scrollBtn.classList.remove("bottom-56");
-						scrollBtn.classList.add("bottom-20");
-						showBottomTocBtn.classList.remove("bottom-44");
-						showBottomTocBtn.classList.add("bottom-8");
-					}, 3000);
-				}
-			});
-		}
 	});
 </script>
