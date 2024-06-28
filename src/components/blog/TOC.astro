@@ -35,7 +35,6 @@ const toc = generateToc(headings);
       <Icon class="h-6 w-6 bottom-toc-icon transition-opacity duration-300" name="table-of-contents" aria-hidden="true" />
       <Icon class="h-6 w-6 close-bottom-toc-icon absolute opacity-0 transition-opacity duration-300" name="close" aria-hidden="true" />
     </button>
-
     <script>
       const tocContainer = document.querySelector(".toc-container");
       const tocContent = document.querySelector(".toc-content");
@@ -84,7 +83,6 @@ const toc = generateToc(headings);
         const headings = document.querySelectorAll("h2[id], h3[id], h4[id]");
         const visuals = document.querySelectorAll('[id^="-vistocid--"]');
         const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
-        const tocContent = document.querySelector(".toc-content");
 
         const highlightTocItem = (tocLink, tocVisual) => {
           tocLinks.forEach(l => l.classList.remove("!text-quote"));
@@ -100,25 +98,28 @@ const toc = generateToc(headings);
             tocVisual.classList.remove("bg-accent/25");
             tocVisual.classList.add("bg-accent");
           }
+        };
 
+        const scrollTocToLink = (tocLink) => {
           if (tocLink instanceof HTMLElement && tocContent instanceof HTMLElement) {
-            requestAnimationFrame(() => {
-              const tocRect = tocContent.getBoundingClientRect();
-              const linkRect = tocLink.getBoundingClientRect();
-              if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
-                tocContent.scrollTop = tocLink.offsetTop - tocContent.offsetTop - tocContent.clientHeight / 2 + linkRect.height / 2;
-              }
-            });
+            const tocRect = tocContent.getBoundingClientRect();
+            const linkRect = tocLink.getBoundingClientRect();
+            if (linkRect.top < tocRect.top || linkRect.bottom > tocRect.bottom) {
+              tocContent.scrollTop = tocLink.offsetTop - tocContent.offsetTop - tocContent.clientHeight / 2 + linkRect.height / 2;
+            }
           }
         };
 
+        let isManualScrolling = false;
+
         const observerCallback = (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting) {
+            if (entry.isIntersecting && !isManualScrolling) {
               const id = entry.target.getAttribute("id");
               const tocVisual = document.querySelector(`[id="-vistocid--${id}"]`);
               const tocLink = document.querySelector(`[id="-tocid--${id}"]`);
               highlightTocItem(tocLink, tocVisual);
+              scrollTocToLink(tocLink);
             }
           });
         };
@@ -130,7 +131,54 @@ const toc = generateToc(headings);
 
         const tocObserver = new IntersectionObserver(observerCallback, observerOptions);
         headings.forEach(heading => tocObserver.observe(heading));
+
+        // Add click event listeners to TOC links
+        tocLinks.forEach(link => {
+          link.addEventListener('click', (event) => {
+            event.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetHeading = document.getElementById(targetId);
+
+            if (targetHeading) {
+              isManualScrolling = true;
+              // Update URL
+              history.pushState(null, '', `#${targetId}`);
+
+              // Scroll to target
+              targetHeading.scrollIntoView({ behavior: 'smooth' });
+
+              // Highlight TOC item
+              const tocVisual = document.querySelector(`[id="-vistocid--${targetId}"]`);
+              highlightTocItem(link, tocVisual);
+
+              // Wait for scrolling to finish
+              setTimeout(() => {
+                isManualScrolling = false;
+                scrollTocToLink(link);
+              }, 1000); // Adjust this timeout if needed
+            }
+          });
+        });
+
+        // Handle initial hash in URL
+        if (window.location.hash) {
+          const initialId = window.location.hash.substring(1);
+          const initialTocLink = document.querySelector(`[id="-tocid--${initialId}"]`);
+          if (initialTocLink) {
+            const tocVisual = document.querySelector(`[id="-vistocid--${initialId}"]`);
+            highlightTocItem(initialTocLink, tocVisual);
+            scrollTocToLink(initialTocLink);
+          }
+        }
       });
     </script>
+
+
+
+
+
+
+
+
 
 
