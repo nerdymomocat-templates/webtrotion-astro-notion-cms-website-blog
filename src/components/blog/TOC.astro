@@ -43,6 +43,18 @@ const toc = generateToc(headings);
       const bottomTocOpen = document.querySelector(".bottom-toc-icon");
       const bottomTocClose = document.querySelector(".close-bottom-toc-icon");
 
+      function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+          const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+          };
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+        };
+      }
+
       if (tocContainer && tocContent && visualContainer && bottomTocButton && bottomTocOpen && bottomTocClose) {
         const toggleBottomToc = (event) => {
           event.stopPropagation();
@@ -58,6 +70,14 @@ const toc = generateToc(headings);
             bottomTocClose.classList.remove("opacity-0");
           }
         };
+
+        const handleResize = debounce(() => {
+          tocContent.classList.add("invisible", "opacity-0", "translate-x-4");
+          bottomTocOpen.classList.remove("opacity-0");
+          bottomTocClose.classList.add("opacity-0");
+        }, 250);
+
+        window.addEventListener("resize", handleResize);
 
         bottomTocButton.addEventListener("click", toggleBottomToc);
 
@@ -132,7 +152,6 @@ const toc = generateToc(headings);
         const tocObserver = new IntersectionObserver(observerCallback, observerOptions);
         headings.forEach(heading => tocObserver.observe(heading));
 
-        // Add click event listeners to TOC links
         tocLinks.forEach(link => {
           link.addEventListener('click', (event) => {
             event.preventDefault();
@@ -141,26 +160,18 @@ const toc = generateToc(headings);
 
             if (targetHeading) {
               isManualScrolling = true;
-              // Update URL
               history.pushState(null, '', `#${targetId}`);
-
-              // Scroll to target
               targetHeading.scrollIntoView({ behavior: 'smooth' });
-
-              // Highlight TOC item
               const tocVisual = document.querySelector(`[id="-vistocid--${targetId}"]`);
               highlightTocItem(link, tocVisual);
-
-              // Wait for scrolling to finish
               setTimeout(() => {
                 isManualScrolling = false;
                 scrollTocToLink(link);
-              }, 1000); // Adjust this timeout if needed
+              }, 1000);
             }
           });
         });
 
-        // Handle initial hash in URL
         if (window.location.hash) {
           const initialId = window.location.hash.substring(1);
           const initialTocLink = document.querySelector(`[id="-tocid--${initialId}"]`);
@@ -172,13 +183,5 @@ const toc = generateToc(headings);
         }
       });
     </script>
-
-
-
-
-
-
-
-
 
 
