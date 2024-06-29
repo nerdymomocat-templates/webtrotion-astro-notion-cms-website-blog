@@ -200,7 +200,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 						code={code}
 						lang={language}
 						theme={"github-dark-dimmed"}
-						{...(shiki_transform_code ? { transformers: TRANSFORMER_FUNCTIONS_ARR } : {})}
+						transformers= {TRANSFORMER_FUNCTIONS_ARR}
 					/>
 				)}
 			</div>
