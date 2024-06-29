@@ -34,30 +34,6 @@ export const getNotionColorToTailwindColor = (s: string) => {
   return colorMap[kebabCase];
 };
 
-export const getNotionColorToTailwindColorForBorder = (s: string) => {
-  // Convert snake_case to kebab-case
-  const kebabCase = s.replaceAll("_", "-");
-
-  // Unified mapping of custom colors to Tailwind classes for text and background colors
-  const colorMap = {
-    // Background color classes
-    'gray-background': 'border-gray-200 dark:border-gray-900',
-    'brown-background': 'border-amber-200 dark:border-amber-900', // No exact brown in Tailwind, using amber
-    'orange-background': 'border-orange-200 dark:border-orange-900',
-    'yellow-background': 'border-yellow-200 dark:border-yellow-900',
-    'green-background': 'bg-emerald-200 dark:border-emerald-900',
-    'blue-background': 'border-sky-200 dark:border-sky-900',
-    'purple-background': 'border-purple-200 dark:border-purple-900',
-    'pink-background': 'border-pink-200 dark:border-pink-900',
-    'red-background': 'border-red-200 dark:border-red-900',
-    'default-background': 'border-gray-200 dark:border-gray-700',
-    'default': 'border-gray-200 dark:border-gray-700'
-  };
-
-  // Return the Tailwind color classes, defaulting to the input if no mapping is found
-  return colorMap[kebabCase];
-};
-
 export const getIconCssFilter = (iconUrl: string): string | null | undefined => {
   // Regular expression to match the pattern:
   // (1) Any characters after the last underscore

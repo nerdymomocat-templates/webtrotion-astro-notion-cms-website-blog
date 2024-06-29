@@ -2,7 +2,7 @@
 import PageLayout from "@/layouts/Base";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getAllTagsWithCounts } from "@/lib/notion/client";
-import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { slugify } from "@/utils";
 
 const allTags = await getAllTagsWithCounts();
@@ -30,7 +30,7 @@ const meta = {
 					>
 						<span class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
       tag.color + "-background",
-    )} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}>{tag.name}</span></a>
+    )} `}>{tag.name}</span></a>
 
 					<span class="inline-block">
 						: <a

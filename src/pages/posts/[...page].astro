@@ -6,7 +6,7 @@ import PostPreview from "@/components/blog/PostPreview";
 import Pagination from "@/components/Paginator";
 import { getAllPosts, getAllTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "src/lib/interfaces";
-import { getNotionColorToTailwindColor, getNotionColorToTailwindColorForBorder } from "@/lib/style-helpers";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import Icon from '@/components/Icon';
@@ -81,7 +81,7 @@ const paginationProps = {
 								<a
 									class={`flex items-center justify-center rounded-lg border p-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
-									)} ${getNotionColorToTailwindColorForBorder(tag.color + "-background")}`}
+									)}`}
 									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>

@@ -15,7 +15,7 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
 <blockquote
-	class={`nquote !px-2 my-4 border-s-4 border-gray-300 dark:border-gray-500 ${getNotionColorToTailwindColor(
+	class={`nquote !px-2 my-4 border-s-4 border-gray-600 dark:border-gray-300 ${getNotionColorToTailwindColor(
 		block.Quote.Color,
 	)}`} id={setId?block.Id:undefined}
 >
