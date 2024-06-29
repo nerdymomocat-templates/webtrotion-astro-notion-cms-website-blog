@@ -46,6 +46,10 @@ export default {
           'bg-dark': '#252525', //this is notion's choice
           // 'bg-dark': '#566670' //this is my choice
         },
+        nlgray:{
+          'bg-light':'#F1F1F0',
+          'bg-dark':'#373737'
+        },
         nbrown: {
           'txt-light': '#64473A',
           'txt-dark': '#937264',

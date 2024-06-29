@@ -46,7 +46,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 				<>
 					<a
 						class={`inline-block rounded-lg p-1 mt-1 ${getNotionColorToTailwindColor(
-							tag.color + "-background",
+							tag.color + "-background", true
 						)}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
 						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
