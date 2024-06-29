@@ -45,7 +45,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 			{post.Tags.map((tag, i) => (
 				<>
 					<a
-						class={`inline-block rounded-lg border p-1 mt-1 ${getNotionColorToTailwindColor(
+						class={`inline-block rounded-lg p-1 mt-1 ${getNotionColorToTailwindColor(
 							tag.color + "-background",
 						)}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}

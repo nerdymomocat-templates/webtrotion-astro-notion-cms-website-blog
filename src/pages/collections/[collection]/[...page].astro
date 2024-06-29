@@ -112,7 +112,7 @@ const paginationProps = {
 						{uniqueTags.map((tag) => (
 							<li>
 								<a
-									class={`flex items-center justify-center rounded-lg border p-1 ${getNotionColorToTailwindColor(
+									class={`flex items-center justify-center rounded-lg p-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
 									)}`}
 									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
