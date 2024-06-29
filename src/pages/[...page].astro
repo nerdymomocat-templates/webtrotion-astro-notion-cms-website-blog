@@ -85,15 +85,15 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 		ogImage: `/og-image/${page.Slug}.png`,
 	}}
 >
-	<div class="sm:grid sm:grid-cols-4 sm:items-start sm:gap-x-10">
-		<article class="screen:col-span-3 break-words print:col-span-full" data-pagefind-body>
+	<div class="screen:max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
+		<article class="break-words" data-pagefind-body>
 			<div class="">
 				<NotionBlocks blocks={blocks} isRoot={true} />
 			</div>
 		</article>
 	</div>
 {RECENT_POSTS_ON_HOME_PAGE && recent_posts && (
-  <div>
+  <div class="screen:max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
     <a href="#auto-recent-posts" id="auto-recent-posts" class="inline" onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);">
             <h2 class="mb-4 mt-8 text-2xl font-normal hasId"><strong class="font-semibold">Recent Posts</strong></h2></a>
 
