@@ -47,7 +47,7 @@ const articleDate = new Date(post.Date).toISOString();
 		</article>
 		{!!headings.length && <TOC headings={headings} />}
 	</div>
-  <div class="print:hidden">
+  <div class="print:hidden screen:max-w-[708px] sm:mr-20">
 		<aside class="" data-pagefind-ignore="all">
 
   <WebMentions />
