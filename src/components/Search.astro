@@ -104,7 +104,7 @@ import Icon from '@/components/Icon';
 
 		onWindowKeydown = (e: KeyboardEvent) => {
 			// check if it's the / key
-			if (e.key === "/" && !this.dialog.open) {
+			if ((((e.metaKey || e.ctrlKey) && e.key === 'k') ||(e.key === "/")) && !this.dialog.open) {
 				this.openModal();
 				e.preventDefault();
 			}

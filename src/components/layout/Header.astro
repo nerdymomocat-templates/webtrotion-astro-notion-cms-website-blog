@@ -162,21 +162,6 @@ const rss_path = getNavLink("/rss.xml");
 				}
 			}
 		});
-
-    document.addEventListener('keydown', function(event) {
-  // Check if Cmd+K (Mac) or Ctrl+K (Windows) is pressed
-  if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
-    event.preventDefault(); // Prevent the default browser behavior
-
-    // Get the site-search element
-    const siteSearch = document.querySelector('site-search');
-
-    // If the site-search element exists and has an openModal method, call it
-    if (siteSearch && typeof siteSearch.openModal === 'function') {
-      siteSearch.openModal();
-    }
-  }
-});
 	});
 
 
