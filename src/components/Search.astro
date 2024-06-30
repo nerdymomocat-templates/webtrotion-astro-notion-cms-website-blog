@@ -203,14 +203,4 @@ import Icon from '@/components/Icon';
 		--pagefind-ui-border-width: 1px;
 	}
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.innerWidth <= 640) {
-    document.querySelectorAll('.pagefind-ui__filter-block').forEach(block => {
-      block.removeAttribute('open');
-      console.log("removed!");
-    });
-  }
-});
-</script>
 
