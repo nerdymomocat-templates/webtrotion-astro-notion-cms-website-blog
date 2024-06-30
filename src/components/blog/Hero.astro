@@ -20,7 +20,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 };
 ---
 
-<h1 class="title mb-3 sm:mb-1">{post.Title}</h1>
+<h1 class="title mb-3 sm:mb-1" data-pagefind-filter=`collections:${post.Collection}`>{post.Title}</h1>
 <div class="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
@@ -50,7 +50,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 						)}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
 						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-						data-pagefind-filter="tag"
+						data-pagefind-filter="tags"
 					>
 						{tag.name}
 					</a>{" "}
