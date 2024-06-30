@@ -3,7 +3,7 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
-import { getToggleSVGPath } from "../../lib/style-helpers.ts";
+import Icon from "../Icon.astro";
 
 export interface Props {
   block: interfaces.Block;
@@ -18,9 +18,15 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 {renderChildren? <details class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
 	<summary class="flex cursor-pointer list-none list-image-none gap-2 max-w-full">
     <div>
-    <svg class="flex-shrink-0 transition-all duration-300 rotate-svg" fill="currentColor" height="24" width="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-<path d={getToggleSVGPath()}></path>
-    </svg>
+      <Icon
+					name={"toggle-triangle"}
+					class="h-6 w-6 flex-shrink-0 transition-all duration-300 rotate-svg"
+					aria-label="Toggle open/close"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+				/>
   </div>
   <div>
 		{
@@ -35,9 +41,18 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 	<div class="pl-8">
 		{block.Toggle.Children && renderChildren && <NotionBlocks blocks={block.Toggle.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>}
 	</div>
-</details>: <div class="flex max-w-full my-1"><div><svg class="flex-shrink-0" fill="whitesmoke" height="24" width="24" stroke="whitesmoke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24">
-<path d={getToggleSVGPath()}></path>
-    </svg></div>{
+</details>: <div class="flex max-w-full my-1"><div>
+  <Icon
+					name={"toggle-triangle"}
+					class="h-6 w-6 flex-shrink-0"
+					aria-label="Toggle open/close"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          fill="whitesmoke"
+				/>
+</div>{
 
 block.Toggle.RichTexts.map((richText: interfaces.RichText) => (
   <RichText richText={richText}  blockID={block.Id}/>

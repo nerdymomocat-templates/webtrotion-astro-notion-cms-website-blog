@@ -3,7 +3,7 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { buildHeadingId } from "../../lib/blog-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
-import { getToggleSVGPath } from "@/lib/style-helpers";
+import Icon from "@/components/Icon";
 
 export interface Props {
 	block: interfaces.Block;
@@ -22,19 +22,15 @@ const id = buildHeadingId(block.Heading2);
 		<details class="toggle mb-1 mt-6">
 			<summary class="flex cursor-pointer list-none gap-2 max-w-full">
 				<div>
-					<svg
-						class="rotate-svg mt-1 flex-shrink-0 transition-all duration-300"
-						fill="currentColor"
-						height="24"
-						width="24"
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						viewBox="0 0 24 24"
-					>
-          <path d={getToggleSVGPath()}></path>
-					</svg>
+          <Icon
+					name={"toggle-triangle"}
+					class="h-6 w-6 flex-shrink-0 transition-all duration-300 rotate-svg mt-[3px]"
+					aria-label="Toggle open/close"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+				/>
 				</div>
 				<span class="inline">
 					<h3 class={`cursor-pointer toggle-h3 mb-1 mt-6 inline text-xl font-semibold ${setId ? "hasId" : "noId"}`} id={setId ? id : undefined} onclick="

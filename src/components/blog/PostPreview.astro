@@ -24,7 +24,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 
 <FormattedDate date={new Date(post.Date)} class="min-w-[120px] text-xs text-accent/90" />
 <Tag>
-  {post.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={"pin"} aria-label="Pinned Post" focusable="false" color="#D50B0D"/>)}
+  {post.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={"pin"} aria-label="Pinned Post" focusable="false" fill="#D50B0D"/>)}
 
 	<a href={postLink} class="webtrotion-page-link" data-astro-prefetch>
 		{post.Title}

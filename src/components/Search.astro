@@ -11,22 +11,7 @@ import Icon from '@/components/Icon';
 		disabled
 		class="flex h-10 w-10 items-center justify-center rounded-md ring-zinc-400 transition-all hover:text-accent"
 	>
-		<svg
-			aria-label="search"
-			class="h-6 w-6"
-			xmlns="http://www.w3.org/2000/svg"
-			width="16"
-			height="16"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			stroke-width="1.5"
-		>
-			<path stroke="none" d="M0 0h24v24H0z"></path>
-			<path d="M3 10a7 7 0 1 0 14 0 7 7 0 1 0-14 0M21 21l-6-6"></path>
-		</svg>
+    <Icon class="h-7 w-7" name={"search"}/>
 	</button>
 	<dialog
 		aria-label="search"
@@ -48,7 +33,7 @@ import Icon from '@/components/Icon';
 					</div>
 				) : (
 					<div class="search-container">
-						<div id="cactus__search" />
+						<div id="webtrotion__search" />
 					</div>
 				)
 			}
@@ -85,11 +70,18 @@ import Icon from '@/components/Icon';
 			onIdle(async () => {
 				const { PagefindUI } = await import("@pagefind/default-ui");
 				new PagefindUI({
-					element: "#cactus__search",
+					element: "#webtrotion__search",
 					baseUrl: import.meta.env.BASE_URL,
 					bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
 					showImages: false,
 					showSubResults: true,
+          showEmptyFilters: false,
+          openFilters: ['Tags'],
+    translations: {
+        placeholder: "Tip: Use ⌘K or ^K to open search",
+        zero_results: "Couldn't find [SEARCH_TERM]"
+    }
+
 				});
 			});
 		}
@@ -141,16 +133,16 @@ import Icon from '@/components/Icon';
 		--pagefind-ui-font: inherit;
 	}
 
-	#cactus__search .pagefind-ui__search-clear {
+	#webtrotion__search .pagefind-ui__search-clear {
 		width: calc(60px * var(--pagefind-ui-scale));
 		padding: 0;
 		background-color: transparent;
 		overflow: hidden;
 	}
-	#cactus__search .pagefind-ui__search-clear:focus {
+	#webtrotion__search .pagefind-ui__search-clear:focus {
 		outline: 1px solid theme("colors.accent-2");
 	}
-	#cactus__search .pagefind-ui__search-clear::before {
+	#webtrotion__search .pagefind-ui__search-clear::before {
 		content: "";
 		-webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'  %3E%3Cpath d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E")
 			center / 60% no-repeat;
@@ -162,18 +154,18 @@ import Icon from '@/components/Icon';
 		height: 100%;
 	}
 
-	#cactus__search .pagefind-ui__result {
+	#webtrotion__search .pagefind-ui__result {
     padding: 12px;
 		border: 0;
 	}
   @media (max-width: 640px){
-    #cactus__search .pagefind-ui__drawer {
+    #webtrotion__search .pagefind-ui__drawer {
         gap: 12px !important;
     }
   }
 
 
-	#cactus__search .pagefind-ui__result-link {
+	#webtrotion__search .pagefind-ui__result-link {
 		background-size: 100% 6px;
 		background-position: bottom;
 		background-repeat: repeat-x;
@@ -185,7 +177,7 @@ import Icon from '@/components/Icon';
 		);
 	}
 
-	#cactus__search .pagefind-ui__result-link:hover {
+	#webtrotion__search .pagefind-ui__result-link:hover {
 		text-decoration: none;
 		background-image: linear-gradient(
 			transparent,
@@ -195,7 +187,7 @@ import Icon from '@/components/Icon';
 		);
 	}
 
-	#cactus__search mark {
+	#webtrotion__search mark {
 		color: theme("colors.quote");
 		background-color: transparent;
 		font-weight: 600;
@@ -203,7 +195,7 @@ import Icon from '@/components/Icon';
 </style>
 
 <style>
-	#cactus__search {
+	#webtrotion__search {
 		--pagefind-ui-primary: theme("colors.accent");
 		--pagefind-ui-text: theme("colors.textColor");
 		--pagefind-ui-background: theme("colors.bgColor");

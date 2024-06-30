@@ -7,7 +7,8 @@ import metascraperTitle from "metascraper-title";
 import NBlocksPopover from "./NBlocksPopover.astro";
 import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
 import { REFERENCES } from "@/constants";
-import { getToggleSVGPath } from "@/lib/style-helpers";
+import Icon from "@/components/Icon.astro";
+
 interface Props {
 	post: Post;
 	filteredReferencesInPage: ReferencesInPage[];
@@ -98,19 +99,15 @@ if (groupedReferences && urlMap) {
 		<details class="toggle" id="external-links">
 			<summary class="flex cursor-pointer list-none list-outside gap-2 max-w-full">
 				<div class="-ml-7">
-          <svg
-						class="rotate-svg flex-shrink-0 transition-all duration-300"
-						fill="currentColor"
-						height="24"
-						width="24"
-						stroke="currentColor"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						stroke-width="2"
-						viewBox="0 0 24 24"
-					>
-          <path d={getToggleSVGPath()}></path>
-					</svg>
+          <Icon
+					name={"toggle-triangle"}
+					class="h-6 w-6 flex-shrink-0 transition-all duration-300 rotate-svg"
+					aria-label="Toggle open/close"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+				/>
 				</div>
 				<div>
 					<span class="font-semibold">

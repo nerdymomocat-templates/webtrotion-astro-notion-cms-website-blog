@@ -46,10 +46,6 @@ export const getIconCssFilter = (iconUrl: string): string | null | undefined => 
   return match ? match[1] : null;
 }
 
-export const getToggleSVGPath = () => {
-  return "M 9.2075 8.5912 L 15.8925 12.45 L 9.2075 16.3087 Z";
-}
-
 export const getIconTailwindFilterStyle = (url: string): string => {
   // if (!url.startsWith('https://www.notion.so/icons/')) {
   //       return '';
@@ -110,7 +106,12 @@ export const getTextToAstroIcon = (text: string) => {
     "clipboard-copy-code-done":"mdi:clipboard-check",
     "tag-multiple":"mdi:tag-multiple-outline",
     "pin":"mdi:pin",
-    "tag-outline":"mdi:tag-outline"
+    "tag-outline":"mdi:tag-outline",
+    "search":"mdi:search",
+    "theme-dark":"iconoir:half-moon",
+    "theme-light":"iconoir:sun-light",
+    "to-top": "mdi:keyboard-arrow-up",
+    "menu": "mdi:hamburger-menu"
   }
   if (text in textIconMap) {
     return textIconMap[text];
@@ -150,7 +151,13 @@ export const getTextToSVGPath = (text: string) => {
     "pin":"M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2z",
     "tag-outline":"m21.41 11.58l-9-9A2 2 0 0 0 11 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 .59 1.42l9 9A2 2 0 0 0 13 22a2 2 0 0 0 1.41-.59l7-7A2 2 0 0 0 22 13a2 2 0 0 0-.59-1.42M13 20l-9-9V4h7l9 9M6.5 5A1.5 1.5 0 1 1 5 6.5A1.5 1.5 0 0 1 6.5 5",
     "web": "M16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2m-5.15 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M14.34 14H9.66c-.1-.66-.16-1.32-.16-2s.06-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2M12 19.96c-.83-1.2-1.5-2.53-1.91-3.96h3.82c-.41 1.43-1.08 2.76-1.91 3.96M8 8H5.08A7.92 7.92 0 0 1 9.4 4.44C8.8 5.55 8.35 6.75 8 8m-2.92 8H8c.35 1.25.8 2.45 1.4 3.56A8 8 0 0 1 5.08 16m-.82-2C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2M12 4.03c.83 1.2 1.5 2.54 1.91 3.97h-3.82c.41-1.43 1.08-2.77 1.91-3.97M18.92 8h-2.95a15.7 15.7 0 0 0-1.38-3.56c1.84.63 3.37 1.9 4.33 3.56M12 2C6.47 2 2 6.5 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2",
-    "mdi:open-in-new": "M14 3v2h3.59l-9.83 9.83l1.41 1.41L19 6.41V10h2V3m-2 16H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2z"
+    "open-in-new": "M14 3v2h3.59l-9.83 9.83l1.41 1.41L19 6.41V10h2V3m-2 16H5V5h7V3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7h-2z",
+    "search": "M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5l-1.5 1.5l-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16A6.5 6.5 0 0 1 3 9.5A6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14S14 12 14 9.5S12 5 9.5 5",
+    "theme-dark":"M3 11.507a9.493 9.493 0 0 0 18 4.219c-8.507 0-12.726-4.22-12.726-12.726A9.49 9.49 0 0 0 3 11.507",
+    "theme-light":"M12 18a6 6 0 1 0 0-12a6 6 0 0 0 0 12m10-6h1M12 2V1m0 22v-1m8-2l-1-1m1-15l-1 1M4 20l1-1M4 4l1 1m-4 7h1",
+    "to-top": "M7.41 18.41L6 17l6-6l6 6l-1.41 1.41L12 13.83zm0-6L6 11l6-6l6 6l-1.41 1.41L12 7.83z",
+    "toggle-triangle": "M 9.2075 8.5912 L 15.8925 12.45 L 9.2075 16.3087 Z",
+    "menu": "M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3"
   }
   if (text in textSvgMap) {
     return textSvgMap[text];

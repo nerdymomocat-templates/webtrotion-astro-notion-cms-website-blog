@@ -11,6 +11,7 @@ import type { Post } from "../lib/interfaces";
 import { siteInfo } from "@/siteInfo";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
+import Icon from "@/components/Icon.astro";
 
 export async function getStaticPaths() {
 	const pages = await getAllPages();
@@ -129,16 +130,12 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 	class="z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
 	aria-label="Back to Top"
 	data-show="false"
-	><svg
-		xmlns="http://www.w3.org/2000/svg"
-		aria-hidden="true"
-		focusable="false"
-		fill="none"
-		viewBox="0 0 24 24"
-		stroke-width="2"
-		stroke="currentColor"
-		class="h-6 w-6"
-	>
+	><Icon
+    name={"to-top"}
+    class="h-6 w-6"
+    aria-label="Go Back to Top"
+    stroke-linecap="round"
+  />
 		<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5"></path>
 	</svg>
 </button>

@@ -1,40 +1,42 @@
 ---
-import {getTextToSVGPath} from "@/lib/style-helpers";
+import type { HTMLAttributes } from 'astro/types';
+import { getTextToSVGPath } from "@/lib/style-helpers";
 
-export interface Props {
+interface Props extends HTMLAttributes<'svg'> {
   name: string;
-  class?: string;
-  'aria-hidden'?: string;
-  'aria-label'?: string;
-  color?: string;
-  focusable?: string;
+  pathProps?: HTMLAttributes<'path'>;
 }
 
 const {
   name,
-  class: className,
-  'aria-hidden': ariaHiddenString,
-  'aria-label': ariaLabel,
-  color,
-  focusable
+  pathProps,
+  fill,
+  viewBox,
+  ...svgProps
 } = Astro.props;
 
 const path = getTextToSVGPath(name);
 
-// Convert aria-hidden string to boolean
-const ariaHidden = ariaHiddenString === 'true' ? true : ariaHiddenString === 'false' ? false : undefined;
+// Prepare path props
+const finalPathProps: HTMLAttributes<'path'> = {
+  d: path,
+  ...pathProps,
+  fill: fill || pathProps?.fill || "currentColor"
+};
+
+// Prepare SVG props
+const finalSvgProps: HTMLAttributes<'svg'> = {
+  ...svgProps,
+  viewBox: viewBox || "0 0 24 24"
+};
+
+// Convert aria-hidden string to boolean if it exists
+if (typeof finalSvgProps['aria-hidden'] === 'string') {
+  finalSvgProps['aria-hidden'] = finalSvgProps['aria-hidden'] === 'true' ? true : finalSvgProps['aria-hidden'] === 'false' ? false : undefined;
+}
 ---
 {path && (
-  <svg
-    viewBox="0 0 24 24"
-    aria-hidden={ariaHidden}
-    aria-label={ariaLabel}
-    class={className}
-    {...focusable !== undefined && { focusable: focusable }}
-  >
-    <path
-      fill={color || "currentColor"}
-      d={path}
-    ></path>
+  <svg {...finalSvgProps}>
+    <path {...finalPathProps} />
   </svg>
 )}
