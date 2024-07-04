@@ -14,7 +14,7 @@ import { getCollections } from "@/utils";
 
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { OG_SETUP, LAST_BUILD_TIME, HOME_PAGE_SLUG, THEME } from "@/constants";
+import { OG_SETUP, LAST_BUILD_TIME, HOME_PAGE_SLUG, THEME, MENU_PAGES_COLLECTION } from "@/constants";
 
 import fs from 'fs';
 import sharp from 'sharp';
@@ -112,7 +112,7 @@ const logoToBase64 = async (imagePath: string) => {
 
 const logo_src = (siteInfo.logo && siteInfo.logo.Type === "external") ? siteInfo.logo.Url : (siteInfo.logo && siteInfo.logo.Type === "file" && customIconURL ? await logoToBase64(customIconURL) : null);
 
-const obj_img_sq_without_desc = function (title: string, pubDate: string, img_url: string) {
+const obj_img_sq_without_desc = function (title: string, pubDate: string, img_url: string, author:string) {
   return {
     "type": "div",
     "props": {
@@ -260,7 +260,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
                                                 "style": {
                                                   "marginRight": "16px"
                                                 },
-                                                "children": siteInfo.author
+                                                "children": author
                                               }
                                             }
                                           ]
@@ -286,7 +286,7 @@ const obj_img_sq_without_desc = function (title: string, pubDate: string, img_ur
   }
 }
 
-const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: string, img_url: string) {
+const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: string, img_url: string, author:string) {
   return {
     "type": "div",
     "props": {
@@ -450,7 +450,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
                                                   "marginRight": "16px",
                                                   "fontFamily": "footnote-font"
                                                 },
-                                                "children": siteInfo.author
+                                                "children": author
                                               }
                                             }
                                           ]
@@ -476,7 +476,7 @@ const obj_img_sq_with_desc = function (title: string, pubDate: string, desc: str
   }
 }
 
-const obj_img_none_without_desc = function (title: string, pubDate: string) {
+const obj_img_none_without_desc = function (title: string, pubDate: string, author:string) {
   return {
     "type": "div",
     "props": {
@@ -605,7 +605,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
                                                 "style": {
                                                   "marginRight": "16px"
                                                 },
-                                                "children": siteInfo.author
+                                                "children": author
                                               }
                                             }
                                           ]
@@ -631,7 +631,7 @@ const obj_img_none_without_desc = function (title: string, pubDate: string) {
   }
 }
 
-const obj_img_none_with_desc = function (title: string, pubDate: string, desc: string) {
+const obj_img_none_with_desc = function (title: string, pubDate: string, desc: string, author:string) {
   return {
     "type": "div",
     "props": {
@@ -776,7 +776,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
                                                 "style": {
                                                   "marginRight": "16px"
                                                 },
-                                                "children": siteInfo.author
+                                                "children": author
                                               }
                                             }
                                           ]
@@ -802,7 +802,7 @@ const obj_img_none_with_desc = function (title: string, pubDate: string, desc: s
   }
 }
 
-const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
+const obj_img_bg = function (title: string, pubDate: string, img_url: string, author:string) {
   return {
     "type": "div",
     "props": {
@@ -946,7 +946,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string) {
                                                 "style": {
                                                   "marginRight": "16px"
                                                 },
-                                                "children": siteInfo.author
+                                                "children": author
                                               }
                                             }
                                           ]
@@ -1008,35 +1008,36 @@ export async function GET({ params: { slug } }: APIContext) {
 
   let chosen_markup;
   let fallback_markup;
-
+  let author = siteInfo.author;
   if (type == "postpage") {
     const title = post?.Title ? (post.Slug == HOME_PAGE_SLUG ? siteInfo.title : post.Title) : siteInfo.title;
-    const postDate = getFormattedDate(
+    const postDate = ((post?.Slug == HOME_PAGE_SLUG) || (post?.Collection && MENU_PAGES_COLLECTION.includes(post?.Collection)))?"":getFormattedDate(
       post?.Date ?? post?.Date ?? Date.now()
     );
+    author = post?.Slug == HOME_PAGE_SLUG?"":siteInfo.author;
     if (OG_SETUP['columns'] == 1 && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
-      chosen_markup = obj_img_bg(title, postDate, post.FeaturedImage.Url);
+      chosen_markup = obj_img_bg(title, postDate, post.FeaturedImage.Url, author);
     } else if (OG_SETUP['columns'] && post?.FeaturedImage && post?.FeaturedImage.ExpiryTime && (Date.parse(post?.FeaturedImage.ExpiryTime) > Date.now()) && (post.FeaturedImage.Url.includes(".jpg") || post.FeaturedImage.Url.includes(".png") || post.FeaturedImage.Url.includes(".jpeg"))) {
-      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_sq_with_desc(title, postDate, post?.Excerpt, post.FeaturedImage.Url) : obj_img_sq_without_desc(title, postDate, post.FeaturedImage.Url);
+      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_sq_with_desc(title, postDate, post?.Excerpt, post.FeaturedImage.Url, author) : obj_img_sq_without_desc(title, postDate, post.FeaturedImage.Url, author);
     } else {
-      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_none_with_desc(title, postDate, post?.Excerpt) : obj_img_none_without_desc(title, postDate);
+      chosen_markup = post?.Excerpt && OG_SETUP['excerpt'] ? obj_img_none_with_desc(title, postDate, post?.Excerpt, author) : obj_img_none_without_desc(title, postDate, author);
     }
-    fallback_markup = post?.Excerpt ? obj_img_none_with_desc(title, postDate, post?.Excerpt) : obj_img_none_without_desc(title, postDate);
+    fallback_markup = post?.Excerpt ? obj_img_none_with_desc(title, postDate, post?.Excerpt, author) : obj_img_none_without_desc(title, postDate, author);
   }
   else if (type == "collectionpage") {
-    chosen_markup = obj_img_none_without_desc(keyStr + " : " + "A collection of posts", " ");
+    chosen_markup = obj_img_none_without_desc(keyStr + " : " + "A collection of posts", " ", author);
   }
   else if (type == "tagsindex") {
-    chosen_markup = obj_img_none_without_desc("All topics I've written about", " ");
+    chosen_markup = obj_img_none_without_desc("All topics I've written about", " ", author);
   }
   else if (type == "collectionsindex") {
-    chosen_markup = obj_img_none_without_desc("All collections that hold my posts", " ");
+    chosen_markup = obj_img_none_without_desc("All collections that hold my posts", " ", author);
   }
   else if (type == "tagpage") {
-    chosen_markup = obj_img_none_without_desc("All posts tagged with #" + keyStr, " ");
+    chosen_markup = obj_img_none_without_desc("All posts tagged with #" + keyStr, " ", author);
   }
   else {
-    chosen_markup = obj_img_none_without_desc("All posts in one place", " ");
+    chosen_markup = obj_img_none_without_desc("All posts in one place", " ", author);
   }
 
   // const svg = await satori(chosen_markup, ogOptions);
