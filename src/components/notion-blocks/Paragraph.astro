@@ -14,7 +14,7 @@ export interface Props {
 const { block, headings, renderChildren = true, setId=true } = Astro.props;
 ---
 
-<div class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`} id={setId?block.Id:undefined}>
+<p class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`} id={setId?block.Id:undefined}>
 	{
 		block.Paragraph.RichTexts.map((richText) => (
 			<RichText richText={richText} blockID={block.Id} />
@@ -28,4 +28,4 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 			<NotionBlocks blocks={block.Paragraph.Children} headings={headings} setId={setId} renderChildren={renderChildren}/>
 		)
 	}
-</div>
+</p>
