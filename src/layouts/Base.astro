@@ -199,5 +199,35 @@ window.addEventListener('afterprint', function () {
 
       )
       }
+      <script type="module">
+        document.addEventListener('DOMContentLoaded', function() {
+          const dataTables = document.querySelectorAll('table.datatable');
+          if (dataTables.length > 0) {
+            // Load simple-datatables script
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/umd/simple-datatables.min.js';
+            script.onload = initDataTables;
+            document.head.appendChild(script);
+
+            // Load simple-datatables CSS
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/style.min.css';
+            document.head.appendChild(link);
+          }
+        });
+
+        function initDataTables() {
+          const dataTables = document.querySelectorAll('table.datatable');
+          let options = {
+    searchable: true, paging:false,
+    // scrollY:"680px"
+};
+          dataTables.forEach(table => {
+            new simpleDatatables.DataTable(table, options);
+          });
+        }
+      </script>
+
    </body>
 </html>
