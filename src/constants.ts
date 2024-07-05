@@ -49,9 +49,12 @@ export const OG_SETUP = key_value_from_json["og-setup"] || {
 export const OPTIMIZE_IMAGES = key_value_from_json["optimize-images"] || false;
 
 export const SHORTCODES = key_value_from_json["shortcodes"] || {
-  "html": "",
+  "html-render": "",
+  "html-inject": "",
   "alt-text": null,
-  "expressive-code": null
+  "expressive-code": null,
+  "shiki-transform": "",
+  "table":""
 };
 
 // Function to read the build start time from the file

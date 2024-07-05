@@ -140,21 +140,26 @@ code = shiki_transform_code? code.replace(SHORTCODES["shiki-transform"],"").trim
 
 const modifiedCode = shiki_transform_code? processCode(code, language):code;
 
-const code_inject = SHORTCODES["html"] ? code.startsWith(SHORTCODES["html"]) : false;
+const code_render = SHORTCODES["html-render"] ? code.startsWith(SHORTCODES["html-render"]) : false;
+const code_inject = SHORTCODES["html-inject"] ? code.startsWith(SHORTCODES["html-inject"]) : false;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(" ");
 ---
 
 {
-	code_inject ? (
-		<div class="injectedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
+	code_render ? (
+		<div class="renderedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
 			<iframe
-				srcdoc={code.replace(SHORTCODES["html"], "")}
+				srcdoc={code.replace(SHORTCODES["html-render"], "")}
 				class="w-full max-w-full rounded-lg border-none screen:h-[340px]"
 				loading="lazy"
 				title={plainTextCaption}
 			/>
 		</div>
-	) : (
+	) : (code_inject? (
+  <div class="injectedcode mb-1 max-w-full" id={setId ? block.Id : undefined}>
+  <Fragment set:html={code.replace(SHORTCODES["html-inject"], "")} />
+  <Caption richTexts={block.Code.Caption} block={block} />
+  </div>):(
 		<div class="code relative mb-1 w-full max-w-full text-sm z-0 group" id={setId ? block.Id : undefined}>
 			<div
 				class={`${language === "mermaid" ? "overflow-x-scroll" : "overflow-scroll screen:max-h-[340px]"} min-w-0`}
@@ -206,7 +211,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			</div>
 			<Caption richTexts={block.Code.Caption} block={block} />
 		</div>
-	)
+	))
 }
 <script>
 	import mermaid from "mermaid";

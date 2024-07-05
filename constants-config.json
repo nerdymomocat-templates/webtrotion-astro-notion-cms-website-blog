@@ -36,10 +36,12 @@
     "footnotes": true
   },
   "shortcodes": {
-    "html": "<!DOCTYPE html>",
+    "html-render": "<!DOCTYPE html> <!-- iframe -->",
+    "html-inject": "<!DOCTYPE html> <!-- inject -->",
     "alt-text": {"start":"<<alt-text-start>>", "end":"<<alt-text-end>>"},
     "expressive-code": {"start":"<<expressive-code-start>>", "end":"<<expressive-code-end>>"},
-    "shiki-transform": "<<shiki-transform>>"
+    "shiki-transform": "<<shiki-transform>>",
+    "table":"<<🗂️>>"
   },
   "recent-posts-on-home-page": false,
   "theme": {

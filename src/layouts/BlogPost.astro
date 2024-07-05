@@ -30,7 +30,7 @@ const socialImage = ogImage ? ogImage : `/og-image/${post.Slug}.png`;
 const articleDate = new Date(post.Date).toISOString();
 ---
 
-<!-- <BaseLayout meta={{ title, description, articleDate, ogImage: socialImage }}> -->
+{/* <BaseLayout meta={{ title, description, articleDate, ogImage: socialImage }}> */}
 <BaseLayout
 	meta={{ title: post.Title, description: post.Excerpt, articleDate, ogImage: socialImage }}
 >
