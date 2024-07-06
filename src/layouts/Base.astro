@@ -201,198 +201,213 @@ window.addEventListener('afterprint', function () {
       }
 <script type="module">
   document.addEventListener('DOMContentLoaded', function() {
-    const dataTables = document.querySelectorAll('table.datatable');
-    if (dataTables.length > 0) {
-      // Load simple-datatables script
-      const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/umd/simple-datatables.min.js';
-      script.onload = initDataTables;
-      document.head.appendChild(script);
+  const dataTables = document.querySelectorAll('table.datatable');
+  if (dataTables.length > 0) {
+  // Load simple-datatables script
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/umd/simple-datatables.min.js';
+  script.onload = initDataTables;
+  document.head.appendChild(script);
 
-      // Load simple-datatables CSS
-      const link = document.createElement('link');
-      link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/style.min.css';
-      document.head.appendChild(link);
+  // Load simple-datatables CSS
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/style.min.css';
+  document.head.appendChild(link);
 
-      // Add custom styles
-      const style = document.createElement('style');
-      style.textContent = `
-        .datatable-input {
-          padding: 3px 12px;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          font-size: 14px;
-          transition: all 0.3s ease;
-          width: 100%;
-          box-sizing: border-box;
-        }
-        .datatable-input:focus {
-          border-color: #007bff;
-          outline: none;
-          box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        .filter-toggle {
-          background: none;
-          border: none;
-          font-size: 20px;
-          cursor: pointer;
-          padding: 0 10px;
-          transition: all 0.3s ease;
-        }
-        .filter-toggle:hover {
-          opacity: 0.7;
-        }
-        .filter-row, .search-inputs {
-          transition: all 0.3s ease;
-          max-height: 50px;
-          opacity: 1;
-          overflow: hidden;
-        }
-        .filter-row.hide, .search-inputs.hide {
-          max-height: 0;
-          display:none;
-          opacity: 0;
-          padding-top: 0;
-          padding-bottom: 0;
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-      `;
-      document.head.appendChild(style);
-    }
+  // Add custom styles
+  const style = document.createElement('style');
+  style.textContent = `
+         .datatable-input {
+           padding: 3px 12px;
+           border: 1px solid #ccc;
+           border-radius: 4px;
+           font-size: 14px;
+           transition: all 0.3s ease;
+           width: 100%;
+           box-sizing: border-box;
+         }
+         .datatable-input:focus {
+           border-color: #007bff;
+           outline: none;
+           box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+         }
+         .filter-toggle {
+           background: none;
+           border: none;
+           font-size: 20px;
+           cursor: pointer;
+           padding: 0 10px;
+           transition: all 0.3s ease;
+         }
+         .filter-toggle:hover {
+           opacity: 0.7;
+         }
+         .filter-row, .search-inputs {
+           transition: all 0.3s ease;
+           max-height: 50px;
+           opacity: 1;
+           overflow: hidden;
+         }
+         .filter-row.hide, .search-inputs.hide {
+           max-height: 0;
+           display:none;
+           opacity: 0;
+           padding-top: 0;
+           padding-bottom: 0;
+           margin-top: 0;
+           margin-bottom: 0;
+         }
+         .datatable-top {
+           display: flex;
+           justify-content: space-between;
+           align-items: center;
+           padding: 10px;
+           border-top: 2px solid #333;
+           border-bottom: 2px solid #333;
+           margin-bottom: 10px;
+           background: #f9f9f9;
+           box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+         }
+         .datatable-info {
+           font-style: italic;
+           font-weight: bold;
+           color: #666;
+         }
+       `;
+  document.head.appendChild(style);
+  }
   });
 
   function initDataTables() {
-    const dataTables = document.querySelectorAll('table.datatable');
-    let options = {
-      searchable: true,
-      paging: false,
-      labels:{"info":"{rows} entries"},
-      tableRender: (_data, table, type) => {
-        if (type === "print") {
-          return table;
-        }
-        const tHead = table.childNodes[0];
-        const filterHeaders = {
-          nodeName: "TR",
-          attributes: {
-            class: "filter-row hide",
-          },
-          childNodes: tHead.childNodes[0].childNodes.map(
-            (_th, index) => ({
-              nodeName: "TH",
-              childNodes: [
-                {
-                  nodeName: "INPUT",
-                  attributes: {
-                    class: "datatable-input",
-                    type: "search",
-                    "data-columns": `[${index}]`,
-                  }
-                }
-              ]
-            })
-          )
-        };
-        tHead.childNodes.push(filterHeaders);
-        return table;
-      },
-      template: (options, dom) => `
-        <div class='${options.classes.top}'>
-          <div style="display: flex; align-items: center;">
-            <button class="filter-toggle" style="padding: 8px;">
-    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
-        <path fill="currentColor" d="M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z"/>
-    </svg>
-</button>
-            <div class='${options.classes.search} search-inputs hide' style="display: flex; gap: 10px;">
-              <input class='${options.classes.input}' placeholder='OR search' type='search' title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
-              <input class='${options.classes.input}' placeholder='AND search' type='search' data-and="true" title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
-            </div>
-          </div>
-        </div>
-        <div class='${options.classes.container}'${options.scrollY.length ? ` style='height: ${options.scrollY}; overflow-Y: auto;'` : ""}></div>
-        <div class='${options.classes.bottom}'>
-          <div class='${options.classes.info}'></div>
-        </div>
-      `
-    };
-
-    dataTables.forEach(table => {
-      const dt = new simpleDatatables.DataTable(table, options);
-
-      // Custom search function
-      const customSearch = (query, row, andSearch) => {
-        const searchTerms = query.toLowerCase().split(' ');
-        const rowData = row.toLowerCase();
-
-        if (andSearch) {
-          return searchTerms.every(term => rowData.includes(term));
-        } else {
-          return searchTerms.some(term => rowData.includes(term));
-        }
-      };
-
-      // Override the default search behavior
-      dt.on('datatable.search', function(query, matched) {
-        const andSearchInput = this.wrapperDOM.querySelector('input[data-and="true"]');
-        const andSearchQuery = andSearchInput ? andSearchInput.value : '';
-        const columnFilters = Array.from(this.wrapperDOM.querySelectorAll('.datatable-input')).map(input => input.value);
-
-        this.data.forEach((row, index) => {
-          const tr = this.activeRows[index];
-          const orMatch = customSearch(query, row.join(' '), false);
-          const andMatch = customSearch(andSearchQuery, row.join(' '), true);
-          const columnMatch = columnFilters.every((filter, i) =>
-            filter === '' || customSearch(filter, row[i], false)
-          );
-
-          if (orMatch && andMatch && columnMatch) {
-            tr.style.display = '';
-          } else {
-            tr.style.display = 'none';
-          }
-        });
-
-        this.update();
-        this.emit('datatable.afterSearch', query, matched);
-      });
-
-      // Add event listener for AND search
-      const andSearchInput = dt.wrapperDOM.querySelector('input[data-and="true"]');
-      andSearchInput.addEventListener('keyup', function() {
-        dt.search(dt.input.value);
-      });
-
-      // Add event listeners for column filters
-      const columnFilters = dt.wrapperDOM.querySelectorAll('.datatable-input');
-      columnFilters.forEach(input => {
-        input.addEventListener('keyup', function() {
-          dt.search(dt.input.value);
-        });
-      });
-
-      // Add event listener for filter toggle button
-      const filterToggle = dt.wrapperDOM.querySelector('.filter-toggle');
-      const filterRow = dt.wrapperDOM.querySelector('.filter-row');
-      const searchInputs = dt.wrapperDOM.querySelector('.search-inputs');
-      filterToggle.addEventListener('click', function() {
-        const columnFilters = dt.wrapperDOM.querySelectorAll('.datatable-input');
-        const areAllEmpty = Array.from(columnFilters).every(input => input.value === '');
-        const isHidden = filterRow.classList.contains('hide');
-
-        if (isHidden || !areAllEmpty) {
-          filterRow.classList.remove('hide');
-          searchInputs.classList.remove('hide');
-        } else {
-          filterRow.classList.add('hide');
-          searchInputs.classList.add('hide');
-        }
-      });
-    });
+  const dataTables = document.querySelectorAll('table.datatable');
+  let options = {
+  searchable: true,
+  paging: false,
+  labels:{"info":"{rows} entries"},
+  tableRender: (_data, table, type) => {
+  if (type === "print") {
+  return table;
   }
-</script>
+  const tHead = table.childNodes[0];
+  const filterHeaders = {
+  nodeName: "TR",
+  attributes: {
+  class: "filter-row hide",
+  },
+  childNodes: tHead.childNodes[0].childNodes.map(
+  (_th, index) => ({
+  nodeName: "TH",
+  childNodes: [
+  {
+  nodeName: "INPUT",
+  attributes: {
+  class: "datatable-input",
+  type: "search",
+  "data-columns": `[${index}]`,
+  }
+  }
+  ]
+  })
+  )
+  };
+  tHead.childNodes.push(filterHeaders);
+  return table;
+  },
+  template: (options, dom) => `
+         <div class='${options.classes.top}'>
+           <div style="display: flex; align-items: center;">
+             <button class="filter-toggle" style="padding: 8px;">
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
+                 <path fill="currentColor" d="M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z"/>
+               </svg>
+             </button>
+             <div class='${options.classes.search} search-inputs hide' style="display: flex; gap: 10px;">
+               <input class='${options.classes.input}' placeholder='OR search' type='search' title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
+               <input class='${options.classes.input}' placeholder='AND search' type='search' data-and="true" title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
+             </div>
+           </div>
+           <div class='${options.classes.info}'></div>
+         </div>
+         <div class='${options.classes.container}'${options.scrollY.length ? ` style='height: ${options.scrollY}; overflow-Y: auto;'` : ""}></div>
+       `
+  };
+
+  dataTables.forEach(table => {
+  const dt = new simpleDatatables.DataTable(table, options);
+
+  // Custom search function
+  const customSearch = (query, row, andSearch) => {
+  const searchTerms = query.toLowerCase().split(' ');
+  const rowData = row.toLowerCase();
+
+  if (andSearch) {
+  return searchTerms.every(term => rowData.includes(term));
+  } else {
+  return searchTerms.some(term => rowData.includes(term));
+  }
+  };
+
+  // Override the default search behavior
+  dt.on('datatable.search', function(query, matched) {
+  const andSearchInput = this.wrapperDOM.querySelector('input[data-and="true"]');
+  const andSearchQuery = andSearchInput ? andSearchInput.value : '';
+  const columnFilters = Array.from(this.wrapperDOM.querySelectorAll('.datatable-input')).map(input => input.value);
+
+  this.data.forEach((row, index) => {
+  const tr = this.activeRows[index];
+  const orMatch = customSearch(query, row.join(' '), false);
+  const andMatch = customSearch(andSearchQuery, row.join(' '), true);
+  const columnMatch = columnFilters.every((filter, i) =>
+  filter === '' || customSearch(filter, row[i], false)
+  );
+
+  if (orMatch && andMatch && columnMatch) {
+  tr.style.display = '';
+  } else {
+  tr.style.display = 'none';
+  }
+  });
+
+  this.update();
+  this.emit('datatable.afterSearch', query, matched);
+  });
+
+  // Add event listener for AND search
+  const andSearchInput = dt.wrapperDOM.querySelector('input[data-and="true"]');
+  andSearchInput.addEventListener('keyup', function() {
+  dt.search(dt.input.value);
+  });
+
+  // Add event listeners for column filters
+  const columnFilters = dt.wrapperDOM.querySelectorAll('.datatable-input');
+  columnFilters.forEach(input => {
+  input.addEventListener('keyup', function() {
+  dt.search(dt.input.value);
+  });
+  });
+
+  // Add event listener for filter toggle button
+  const filterToggle = dt.wrapperDOM.querySelector('.filter-toggle');
+  const filterRow = dt.wrapperDOM.querySelector('.filter-row');
+  const searchInputs = dt.wrapperDOM.querySelector('.search-inputs');
+  filterToggle.addEventListener('click', function() {
+  const columnFilters = dt.wrapperDOM.querySelectorAll('.datatable-input');
+  const areAllEmpty = Array.from(columnFilters).every(input => input.value === '');
+  const isHidden = filterRow.classList.contains('hide');
+
+  if (isHidden || !areAllEmpty) {
+  filterRow.classList.remove('hide');
+  searchInputs.classList.remove('hide');
+  } else {
+  filterRow.classList.add('hide');
+  searchInputs.classList.add('hide');
+  }
+  });
+  });
+  }
+ </script>
+
 
 
 
