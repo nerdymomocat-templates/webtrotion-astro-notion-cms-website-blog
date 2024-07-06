@@ -112,7 +112,8 @@ export const getTextToAstroIcon = (text: string) => {
     "theme-light":"iconoir:sun-light",
     "to-top": "mdi:keyboard-arrow-up",
     "menu": "mdi:hamburger-menu",
-    "filter":"mdi:filter"
+    "filter":"mdi:filter",
+    "table-search":"mdi:table-search"
   }
   if (text in textIconMap) {
     return textIconMap[text];
@@ -159,7 +160,8 @@ export const getTextToSVGPath = (text: string) => {
     "to-top": "M7.41 18.41L6 17l6-6l6 6l-1.41 1.41L12 13.83zm0-6L6 11l6-6l6 6l-1.41 1.41L12 7.83z",
     "toggle-triangle": "M 9.2075 8.5912 L 15.8925 12.45 L 9.2075 16.3087 Z",
     "menu": "M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3",
-    "filter": "M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z"
+    "filter": "M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z",
+    "table-search": "M19.3 17.89c1.32-2.1.7-4.89-1.41-6.21a4.52 4.52 0 0 0-6.21 1.41C10.36 15.2 11 18 13.09 19.3c1.47.92 3.33.92 4.8 0L21 22.39L22.39 21zm-2-.62c-.98.98-2.56.97-3.54 0c-.97-.98-.97-2.56.01-3.54c.97-.97 2.55-.97 3.53 0c.96.99.95 2.57-.03 3.54zM19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5.81a6.3 6.3 0 0 1-1.31-2H5v-4h4.18c.16-.71.43-1.39.82-2H5V8h6v2.81a6.3 6.3 0 0 1 2-1.31V8h6v2a6.5 6.5 0 0 1 2 2V6a2 2 0 0 0-2-2"
   }
   if (text in textSvgMap) {
     return textSvgMap[text];

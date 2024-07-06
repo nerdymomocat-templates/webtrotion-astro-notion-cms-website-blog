@@ -334,6 +334,7 @@ window.addEventListener('afterprint', function () {
                     class: "datatable-input",
                     type: "search",
                     "data-columns": `[${index}]`,
+                    "aria-label": `Filter column ${index + 1}`,
                   }
                 }
               ]
@@ -346,14 +347,14 @@ window.addEventListener('afterprint', function () {
       template: (options, dom) => `
         <div class='${options.classes.top}'>
           <div class="datatable-top-left">
-            <button class="filter-toggle" style="padding: 8px;">
+            <button class="filter-toggle" style="padding: 8px;" aria-label="Toggle filters and search">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 30 30">
-                <path fill="currentColor" d="M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z"/>
+                <path fill="currentColor" d="M19.3 17.89c1.32-2.1.7-4.89-1.41-6.21a4.52 4.52 0 0 0-6.21 1.41C10.36 15.2 11 18 13.09 19.3c1.47.92 3.33.92 4.8 0L21 22.39L22.39 21zm-2-.62c-.98.98-2.56.97-3.54 0c-.97-.98-.97-2.56.01-3.54c.97-.97 2.55-.97 3.53 0c.96.99.95 2.57-.03 3.54zM19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5.81a6.3 6.3 0 0 1-1.31-2H5v-4h4.18c.16-.71.43-1.39.82-2H5V8h6v2.81a6.3 6.3 0 0 1 2-1.31V8h6v2a6.5 6.5 0 0 1 2 2V6a2 2 0 0 0-2-2"/>
               </svg>
             </button>
             <div class='${options.classes.search} search-inputs hide' style="display: flex; gap: 10px;">
-              <input class='${options.classes.input}' placeholder='OR search' type='search' title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
-              <input class='${options.classes.input}' placeholder='AND search' type='search' data-and="true" title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
+              <input class='${options.classes.input}' placeholder='OR search' type='search' aria-label='OR search' title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
+              <input class='${options.classes.input}' placeholder='AND search' type='search' aria-label='AND search' data-and="true" title='${options.labels.searchTitle}'${dom.id ? ` aria-controls="${dom.id}"` : ""}>
             </div>
           </div>
           <div class='${options.classes.info}'></div>
@@ -430,14 +431,20 @@ window.addEventListener('afterprint', function () {
           filterRow.classList.remove('hide');
           searchInputs.classList.remove('hide');
           datatableTop.classList.add('filter-active');
+          filterToggle.setAttribute('aria-expanded', 'true');
         } else {
           filterRow.classList.add('hide');
           searchInputs.classList.add('hide');
           datatableTop.classList.remove('filter-active');
+          filterToggle.setAttribute('aria-expanded', 'false');
         }
       });
+
+      // Set initial aria-expanded state
+      filterToggle.setAttribute('aria-expanded', 'false');
     });
   }
 </script>
+
    </body>
 </html>
