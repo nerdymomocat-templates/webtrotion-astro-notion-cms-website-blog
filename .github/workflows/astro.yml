@@ -27,10 +27,10 @@ jobs:
     steps:
 
       - name: Checkout your repository using git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 21
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Cache node manually
         id: npm-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./node_modules
           key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
@@ -50,12 +50,12 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Restore cached tmp
         if: steps.npm-cache.outputs.cache-hit == 'true'
         id: cache-tmp-restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./tmp
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
@@ -65,7 +65,7 @@ jobs:
       - name: Restore cached public
         if: steps.npm-cache.outputs.cache-hit == 'true'
         id: cache-public-restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: ./public
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
@@ -93,20 +93,20 @@ jobs:
 
       - name: Save new tmp cache
         id: cache-tmp-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./tmp
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save new public cache
         id: cache-public-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./public
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
 
@@ -122,7 +122,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
 
   workflow-keepalive:
     if: github.event_name == 'schedule'

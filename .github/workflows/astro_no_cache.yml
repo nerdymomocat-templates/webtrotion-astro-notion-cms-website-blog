@@ -24,10 +24,10 @@ jobs:
     steps:
 
       - name: Checkout your repository using git
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 21
 
@@ -37,7 +37,7 @@ jobs:
 
       - name: Setup Pages
         id: pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v5
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
@@ -60,14 +60,14 @@ jobs:
 
       - name: Save new tmp cache
         id: cache-tmp-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./tmp
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save new public cache
         id: cache-public-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./public
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
@@ -76,13 +76,13 @@ jobs:
 
       - name: Save node cache manually
         id: npm-cache
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: ./node_modules
           key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
 
@@ -98,4 +98,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
