@@ -111,7 +111,8 @@ export const getTextToAstroIcon = (text: string) => {
     "theme-dark":"iconoir:half-moon",
     "theme-light":"iconoir:sun-light",
     "to-top": "mdi:keyboard-arrow-up",
-    "menu": "mdi:hamburger-menu"
+    "menu": "mdi:hamburger-menu",
+    "filter":"mdi:filter"
   }
   if (text in textIconMap) {
     return textIconMap[text];
@@ -157,7 +158,8 @@ export const getTextToSVGPath = (text: string) => {
     "theme-light":"M12 18a6 6 0 1 0 0-12a6 6 0 0 0 0 12m10-6h1M12 2V1m0 22v-1m8-2l-1-1m1-15l-1 1M4 20l1-1M4 4l1 1m-4 7h1",
     "to-top": "M7.41 18.41L6 17l6-6l6 6l-1.41 1.41L12 13.83zm0-6L6 11l6-6l6 6l-1.41 1.41L12 7.83z",
     "toggle-triangle": "M 9.2075 8.5912 L 15.8925 12.45 L 9.2075 16.3087 Z",
-    "menu": "M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3"
+    "menu": "M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3",
+    "filter": "M14 12v7.88c.04.3-.06.62-.29.83a.996.996 0 0 1-1.41 0l-2.01-2.01a.99.99 0 0 1-.29-.83V12h-.03L4.21 4.62a1 1 0 0 1 .17-1.4c.19-.14.4-.22.62-.22h14c.22 0 .43.08.62.22a1 1 0 0 1 .17 1.4L14.03 12z"
   }
   if (text in textSvgMap) {
     return textSvgMap[text];
