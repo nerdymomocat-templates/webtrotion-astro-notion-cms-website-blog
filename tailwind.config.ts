@@ -44,7 +44,9 @@ export default {
           'txt-dark': '#979A9B',
           'bg-light': '#EBECED',
           'bg-dark': '#252525', //this is notion's choice
-          // 'bg-dark': '#566670' //this is my choice
+          // 'bg-dark': '#566670', //this is my choice
+          'table-header-bg-light': '#F7F6F3',
+          'table-header-bg-dark': '#FFFFFF',
         },
         nlgray:{
           'bg-light':'#F1F1F0',
