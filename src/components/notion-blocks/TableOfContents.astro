@@ -11,11 +11,12 @@ export interface Props {
 
 const { block, headings, setId=true } = Astro.props;
 ---
-
-<div class="table-of-contents" id={setId?block.Id:undefined}>
+<div class="table-of-contents" id={setId ? block.Id : undefined}>
 	{
 		headings.map((headingBlock: interfaces.Block) => {
 			const heading = headingBlock.Heading1 || headingBlock.Heading2 || headingBlock.Heading3;
+			const headingText = heading.RichTexts.map((richText: interfaces.RichText) => richText.PlainText).join("");
+			const headingId = buildHeadingId(heading);
 
 			let indentClass = "";
 			if (headingBlock.Type === "heading_2") {
@@ -26,12 +27,13 @@ const { block, headings, setId=true } = Astro.props;
 
 			return (
 				<a
-					href={`#${buildHeadingId(heading)}`}
+					href={`#${headingId}`}
 					class={`block leading-7 table-of-contents hover:font-bold ${getNotionColorToTailwindColor(
 						block.TableOfContents.Color,
 					)} ${indentClass}`}
+					aria-label={`Jump to section: ${headingText}`}
 				>
-					{heading.RichTexts.map((richText: interfaces.RichText) => richText.PlainText).join("")}
+					{headingText}
 				</a>
 			);
 		})
