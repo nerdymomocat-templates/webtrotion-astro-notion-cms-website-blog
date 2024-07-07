@@ -124,14 +124,10 @@ window.addEventListener('afterprint', function () {
           }
       };
 
-      const createPopover = (triggerEl) => {
-
-          const popoverID = triggerEl.dataset.popoverTarget;
-          const template = document.getElementById(`template-${popoverID}`);
-          if (!template) return null;
-          const popoverEl = template.content.firstElementChild.cloneNode(true);
-          document.body.appendChild(popoverEl);
-          triggerEl.addEventListener('mouseleave', () => {
+      const addPTEventListeners = (triggerEl, popoverEl) =>
+      {
+        if (triggerEl&& popoverEl){
+        triggerEl.addEventListener('mouseleave', () => {
               const timeoutId = setTimeout(() => {
                   hidePopover(popoverEl);
               }, 100);
@@ -152,6 +148,35 @@ window.addEventListener('afterprint', function () {
           popoverEl.addEventListener('mouseleave', () => {
               hidePopover(popoverEl);
           });
+        }
+
+          triggerEl.addEventListener('mouseenter', () => {
+              const timeoutId = popoverEl? hoverTimeouts.get(popoverEl):null;
+              if (timeoutId) {
+                  clearTimeout(timeoutId);
+                  hoverTimeouts.delete(popoverEl);
+              }
+              showPopover(triggerEl);
+          });
+
+          triggerEl.addEventListener('focus', () => {
+              showPopover(triggerEl);
+          });
+      }
+
+      const createPopover = (triggerEl) => {
+
+          const popoverID = triggerEl.dataset.popoverTarget;
+          const template = document.getElementById(`template-${popoverID}`);
+          if (!template) return null;
+          const popoverEl = template.content.firstElementChild.cloneNode(true);
+          triggerEl.parentNode.insertBefore(popoverEl, triggerEl.nextSibling);
+          addPTEventListeners(triggerEl, popoverEl);
+          // Add event listeners to any new popover triggers within this popover
+    const nestedTriggers = popoverEl.querySelectorAll('[data-popover-target]');
+    nestedTriggers.forEach(nestedTrigger => {
+      addPTEventListeners(nestedTrigger, null);
+    });
           return popoverEl;
 
       };
@@ -197,21 +222,7 @@ window.addEventListener('afterprint', function () {
       };
 
       popoverTriggers.forEach(triggerEl => {
-          const popoverID = triggerEl.dataset.popoverTarget;
-          const popoverEl = document.getElementById(popoverID);
-
-          triggerEl.addEventListener('mouseenter', () => {
-              const timeoutId = popoverEl? hoverTimeouts.get(popoverEl):null;
-              if (timeoutId) {
-                  clearTimeout(timeoutId);
-                  hoverTimeouts.delete(popoverEl);
-              }
-              showPopover(triggerEl);
-          });
-
-          triggerEl.addEventListener('focus', () => {
-              showPopover(triggerEl);
-          });
+          addPTEventListeners(triggerEl, null);
       });
 
       document.addEventListener('click', (event) => {
