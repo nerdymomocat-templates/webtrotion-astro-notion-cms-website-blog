@@ -6,69 +6,82 @@ import NotionBlocks from "../NotionBlocks.astro";
 import Icon from "../Icon.astro";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId=true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 ---
 
-{renderChildren? <details class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`} id={setId?block.Id:undefined}>
-	<summary class="flex cursor-pointer list-none list-image-none gap-2 max-w-full">
-    <div>
-      <Icon
-					name={"toggle-triangle"}
-					class="h-6 w-6 flex-shrink-0 transition-all duration-300 rotate-svg"
-					aria-label="Toggle open/close"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-				/>
-  </div>
-  <div>
-		{
-
-			block.Toggle.RichTexts.map((richText: interfaces.RichText) => (
-				<RichText richText={richText}  blockID={block.Id}/>
-			))
-
-		}
-    </div>
-	</summary>
-	<div class="pl-8">
-		{block.Toggle.Children && renderChildren && <NotionBlocks blocks={block.Toggle.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>}
-	</div>
-</details>: <div class="flex max-w-full my-1"><div>
-  <Icon
+{
+	renderChildren ? (
+		<details
+			class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`}
+			id={setId ? block.Id : undefined}
+		>
+			<summary class="flex max-w-full cursor-pointer list-none list-image-none gap-2">
+				<div>
+					<Icon
+						name={"toggle-triangle"}
+						class="rotate-svg h-6 w-6 flex-shrink-0 transition-all duration-300"
+						aria-label="Toggle open/close"
+						stroke="currentColor"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+					/>
+				</div>
+				<div>
+					{block.Toggle.RichTexts.map((richText: interfaces.RichText) => (
+						<RichText richText={richText} blockID={block.Id} />
+					))}
+				</div>
+			</summary>
+			<div class="pl-8">
+				{block.Toggle.Children && renderChildren && (
+					<NotionBlocks
+						blocks={block.Toggle.Children}
+						headings={headings}
+						renderChildren={renderChildren}
+						setId={setId}
+					/>
+				)}
+			</div>
+		</details>
+	) : (
+		<div class="my-1 flex max-w-full">
+			<div>
+				<Icon
 					name={"toggle-triangle"}
 					class="h-6 w-6 flex-shrink-0"
 					aria-label="Toggle open/close"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          fill="whitesmoke"
+					stroke="currentColor"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					fill="whitesmoke"
 				/>
-</div>{
-
-block.Toggle.RichTexts.map((richText: interfaces.RichText) => (
-  <RichText richText={richText}  blockID={block.Id}/>
-))
-
-}</div>}
+			</div>
+      <div>
+			{block.Toggle.RichTexts.map((richText: interfaces.RichText) => (
+				<RichText richText={richText} blockID={block.Id} />
+			))}
+      </div>
+		</div>
+	)
+}
 
 <style>
 	.toggle > summary > a {
 		display: inline;
 	}
-  /* This targets only the direct child SVG of the opened details */
-details[open] > summary > div >.flex-shrink-0.rotate-svg {
-  transform: rotateZ(90deg);
-}
-summary::-webkit-details-marker {
-      display:none;
-   }
+	/* This targets only the direct child SVG of the opened details */
+	details[open] > summary > div > .flex-shrink-0.rotate-svg {
+		transform: rotateZ(90deg);
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
 </style>
