@@ -7,28 +7,41 @@ interface Props {
   postId: string;
   linkText?:string
 }
-const { excerpt="", linkedTo, popoverSpanText, popoverTitle, postId,linkText="Read more", } = Astro.props;
+const { excerpt="", linkedTo, popoverSpanText, popoverTitle, postId, linkText="Read more" } = Astro.props;
 let id = "id" + Math.random().toString(16).slice(2)+"---"+postId;
-
-
 ---
-  <span class="text-link p-0.5 font-medium webtrotion-page-link"><span data-popover-target=`popover-description-${id}` data-popover-placement="bottom-end" class="cursor-pointer" id=`popover-click-${id}`>{popoverSpanText?popoverSpanText:<slot/>}<span class="sr-only">Show information for the linked content</span></span></span>
-  <div data-popover id=`popover-description-${id}` role="tooltip" class="popoverEl hidden invisible w-72 absolute z-40  inline-block text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400">
+
+<span class="text-link p-0.5 font-medium webtrotion-page-link">
+  <span
+    data-popover-target={`popover-description-${id}`}
+    data-popover-placement="bottom-end"
+    class="cursor-pointer"
+    id={`popover-click-${id}`}
+  >
+    {popoverSpanText ? popoverSpanText : <slot/>}
+    <span class="sr-only">Show information for the linked content</span>
+  </span>
+</span>
+
+<template id={`template-popover-description-${id}`}>
+  <div
+    data-popover
+    id={`popover-description-${id}`}
+    role="tooltip"
+    class="popoverEl hidden invisible w-72 absolute z-40 inline-block text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400"
+  >
     <a href={linkedTo}>
       <div class="p-3 space-y-2">
-          <h3 class="font-semibold underline decoration-wavy decoration-accent-2/20 text-accent">{popoverTitle}</h3>
-          {excerpt && <p>{excerpt}</p>}
-          <a href={linkedTo} data-popover-link class="flex max-w-full items-center font-medium text-link/90 hover:underline">{linkText}<svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-    </svg></a>
+        <h3 class="font-semibold underline decoration-wavy decoration-accent-2/20 text-accent">{popoverTitle}</h3>
+        {excerpt && <p>{excerpt}</p>}
+        <a href={linkedTo} data-popover-link class="flex max-w-full items-center font-medium text-link/90 hover:underline">
+          {linkText}
+          <svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+          </svg>
+        </a>
       </div>
     </a>
-      <div data-popper-arrow></div>
+    <div data-popper-arrow></div>
   </div>
-  <style>
-    .popoverEl{
-      left:0;
-      top:0;
-      max-width: calc(100vw - 10px);
-    }
-  </style>
+</template>
