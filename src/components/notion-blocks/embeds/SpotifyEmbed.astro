@@ -1,9 +1,19 @@
 ---
 export interface Props {
 	url: URL;
-  caption: string | undefined;
+	caption: string | undefined;
 }
 
 const { url, caption } = Astro.props;
 ---
-<iframe class="spotify-embed border-none max-w-full lazyload" style="border-radius:12px" loading="lazy"  data-src={url.toString()} width="100%" height="152"allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" title={caption}></iframe>
+
+<iframe
+	class="spotify-embed lazyload max-w-full border-none"
+	style="border-radius:12px"
+	loading="lazy"
+	data-src={url.toString()}
+	width="100%"
+	height="152"
+	allowfullscreen=""
+	allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+	title={caption}></iframe>

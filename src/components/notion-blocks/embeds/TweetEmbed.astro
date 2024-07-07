@@ -1,21 +1,26 @@
 ---
-import AstroTweet from './astro-tweet'
-import { FULL_WIDTH_TWEETS } from '@/constants';
+import AstroTweet from "./astro-tweet";
+import { FULL_WIDTH_TWEETS } from "@/constants";
 export interface Props {
-  url: URL
+	url: URL;
 }
 
-const { url } = Astro.props
+const { url } = Astro.props;
 
 const postURL =
-  url.hostname === 'x.com' || url.hostname === 'www.x.com'
-    ? new URL(url.pathname, 'https://twitter.com')
-    : url
+	url.hostname === "x.com" || url.hostname === "www.x.com"
+		? new URL(url.pathname, "https://twitter.com")
+		: url;
 const tweetID = postURL.pathname.split("/")[3];
 // const tweetID = postURL.toString();
 ---
-{tweetID && (<div class={`w-full ${FULL_WIDTH_TWEETS?"":"screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}>
-  <AstroTweet id={tweetID} />
-</div>
-)
+
+{
+	tweetID && (
+		<div
+			class={`w-full ${FULL_WIDTH_TWEETS ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
+		>
+			<AstroTweet id={tweetID} />
+		</div>
+	)
 }

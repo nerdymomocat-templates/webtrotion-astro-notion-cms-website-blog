@@ -6,7 +6,7 @@ import RichTextB from "./RichText.astro";
 export interface Props {
 	richTexts: interfaces.RichText[];
 	block?: interfaces.Block;
-  as?: HTMLTag;
+	as?: HTMLTag;
 }
 
 const { richTexts, block, as: Tag = "div" } = Astro.props;
@@ -14,7 +14,7 @@ const { richTexts, block, as: Tag = "div" } = Astro.props;
 
 {
 	(
-		<Tag class="min-w-0 caption pt-1 text-sm text-textColor/70">
+		<Tag class="caption min-w-0 pt-1 text-sm text-textColor/70">
 			{richTexts.map((richText: interfaces.RichText) => (
 				<RichTextB richText={richText} blockID={block.Id} />
 			))}

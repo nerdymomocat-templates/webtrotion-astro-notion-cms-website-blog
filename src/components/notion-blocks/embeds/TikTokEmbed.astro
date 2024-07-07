@@ -1,7 +1,7 @@
 ---
 export interface Props {
 	url: URL;
-  caption: string | undefined;
+	caption: string | undefined;
 }
 
 const { url, caption } = Astro.props;
@@ -10,18 +10,23 @@ const videoId = url.pathname.split("/")[3];
 //NOTE partytown does not seem to work with tiktok embed script
 ---
 
-<div class="max-w-[325px] overflow-x-auto my-6 mx-auto rounded-lg tiktok-wrapper">
-  <blockquote class="tiktok-embed" cite={url.toString()} data-video-id={videoId}>
-    <section>
-      <a target="_blank" title={user} href="https://www.tiktok.com/{user}?refer=embed" class="text-link">{user}</a>
-    </section>
-  </blockquote>
+<div class="tiktok-wrapper mx-auto my-6 max-w-[325px] overflow-x-auto rounded-lg">
+	<blockquote class="tiktok-embed" cite={url.toString()} data-video-id={videoId}>
+		<section>
+			<a
+				target="_blank"
+				title={user}
+				href="https://www.tiktok.com/{user}?refer=embed"
+				class="text-link">{user}</a
+			>
+		</section>
+	</blockquote>
 </div>
 
 <style>
-  blockquote.tiktok-embed {
-    margin: 0;
-  }
+	blockquote.tiktok-embed {
+		margin: 0;
+	}
 </style>
 
 <script src="https://www.tiktok.com/embed.js" defer></script>

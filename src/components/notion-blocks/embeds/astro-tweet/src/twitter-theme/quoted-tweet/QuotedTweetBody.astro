@@ -3,10 +3,10 @@ import type { EnrichedQuotedTweet } from "../../utils.js";
 import styles from "./quoted-tweet-body.module.css";
 
 interface Props {
-  tweet: EnrichedQuotedTweet;
+	tweet: EnrichedQuotedTweet;
 }
 ---
 
 <p class={styles.root}>
-  {Astro.props.tweet.entities.map((item, i) => <span>{item.text}</span>)}
+	{Astro.props.tweet.entities.map((item, i) => <span>{item.text}</span>)}
 </p>

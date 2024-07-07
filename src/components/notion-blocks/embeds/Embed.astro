@@ -1,72 +1,71 @@
 ---
-import * as interfaces from '../../../lib/interfaces.ts'
+import * as interfaces from "../../../lib/interfaces.ts";
 import {
-  isTweetURL,
-  isTikTokURL,
-  isInstagramURL,
-  isPinterestURL,
-  isCodePenURL,
-  isSpotifyURL,
-  isGoogleMapsURL,
-  isEmbeddableURL
-} from '../../../lib/blog-helpers.ts'
+	isTweetURL,
+	isTikTokURL,
+	isInstagramURL,
+	isPinterestURL,
+	isCodePenURL,
+	isSpotifyURL,
+	isGoogleMapsURL,
+	isEmbeddableURL,
+} from "../../../lib/blog-helpers.ts";
 import Caption from "../Caption.astro";
 
-import Bookmark from './Bookmark.astro'
-import TweetEmbed from './TweetEmbed.astro'
-import TikTokEmbed from './TikTokEmbed.astro'
-import InstagramEmbed from './InstagramEmbed.astro'
-import PinterestEmbed from './PinterestEmbed.astro'
-import CodePenEmbed from './CodePenEmbed.astro'
-import EmbedGeneric from './EmbedGeneric.astro'
-import SpotifyEmbed from './SpotifyEmbed.astro'
-import GoogleMapsEmbed from './GoogleMapsEmbed.astro';
+import Bookmark from "./Bookmark.astro";
+import TweetEmbed from "./TweetEmbed.astro";
+import TikTokEmbed from "./TikTokEmbed.astro";
+import InstagramEmbed from "./InstagramEmbed.astro";
+import PinterestEmbed from "./PinterestEmbed.astro";
+import CodePenEmbed from "./CodePenEmbed.astro";
+import EmbedGeneric from "./EmbedGeneric.astro";
+import SpotifyEmbed from "./SpotifyEmbed.astro";
+import GoogleMapsEmbed from "./GoogleMapsEmbed.astro";
 
 export interface Props {
-  block: interfaces.Block
-  urlMap: { [key: string]: string }
-  setId?:boolean;
+	block: interfaces.Block;
+	urlMap: { [key: string]: string };
+	setId?: boolean;
 }
-const { block, urlMap, setId=true } = Astro.props
-let url: URL
+const { block, urlMap, setId = true } = Astro.props;
+let url: URL;
 try {
-  url = new URL(block.Embed.Url)
+	url = new URL(block.Embed.Url);
 } catch (err) {
-  console.log(err)
+	console.log(err);
 }
-const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(' ');
-
+const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(" ");
 ---
-<div class="embedded-info pb-2 max-w-full" id={setId?block.Id:undefined}>
-{
-  url ? (
-    isTweetURL(url) ? (
-      <TweetEmbed url={url} />
-    ) : isTikTokURL(url) ? (
-      <TikTokEmbed url={url} caption={plainTextCaption} />
-    ) : isInstagramURL(url) ? (
-      <InstagramEmbed url={url} caption={plainTextCaption} />
-    ) : isPinterestURL(url) ? (
-      <PinterestEmbed url={url} caption={plainTextCaption}/>
-    ) : isCodePenURL(url) ? (
-      <CodePenEmbed url={url} caption={plainTextCaption}/>
-    ) : isSpotifyURL(url)? (
-    <SpotifyEmbed url={url} caption={plainTextCaption}/>
-      ):
-      isGoogleMapsURL(url)? (
-    <GoogleMapsEmbed url={url} caption={plainTextCaption}/>
-      ): await isEmbeddableURL(url) ? (
-      <EmbedGeneric url={url} caption={plainTextCaption}/>
-    ): (
-      <Bookmark block={block} urlMap={urlMap} />
-    )
-  ) : null
-}
-<Caption richTexts={block.Embed?.Caption}  block={block}/>
+
+<div class="embedded-info max-w-full pb-2" id={setId ? block.Id : undefined}>
+	{
+		url ? (
+			isTweetURL(url) ? (
+				<TweetEmbed url={url} />
+			) : isTikTokURL(url) ? (
+				<TikTokEmbed url={url} caption={plainTextCaption} />
+			) : isInstagramURL(url) ? (
+				<InstagramEmbed url={url} caption={plainTextCaption} />
+			) : isPinterestURL(url) ? (
+				<PinterestEmbed url={url} caption={plainTextCaption} />
+			) : isCodePenURL(url) ? (
+				<CodePenEmbed url={url} caption={plainTextCaption} />
+			) : isSpotifyURL(url) ? (
+				<SpotifyEmbed url={url} caption={plainTextCaption} />
+			) : isGoogleMapsURL(url) ? (
+				<GoogleMapsEmbed url={url} caption={plainTextCaption} />
+			) : (await isEmbeddableURL(url)) ? (
+				<EmbedGeneric url={url} caption={plainTextCaption} />
+			) : (
+				<Bookmark block={block} urlMap={urlMap} />
+			)
+		) : null
+	}
+	<Caption richTexts={block.Embed?.Caption} block={block} />
 </div>
 
 <style>
-  #instagram-embed-0{
-    min-width: unset !important;
-  }
+	#instagram-embed-0 {
+		min-width: unset !important;
+	}
 </style>

@@ -7,9 +7,8 @@ import type { Post } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { getNavLink, getPostLink } from "@/lib/blog-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { slugify } from "@/utils";
-
 
 interface Props {
 	post: Post;
@@ -19,12 +18,21 @@ interface Props {
 
 const { post, as: Tag = "div", withDesc = false } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
-
 ---
 
 <FormattedDate date={new Date(post.Date)} class="min-w-[120px] text-xs text-accent/90" />
 <Tag>
-  {post.Pinned && (<Icon class="h-6 w-6 inline-block me-1" name={"pin"} aria-label="Pinned Post" focusable="false" fill="#D50B0D"/>)}
+	{
+		post.Pinned && (
+			<Icon
+				class="me-1 inline-block h-6 w-6"
+				name={"pin"}
+				aria-label="Pinned Post"
+				focusable="false"
+				fill="#D50B0D"
+			/>
+		)
+	}
 
 	<a href={postLink} class="webtrotion-page-link" data-astro-prefetch>
 		{post.Title}
@@ -34,12 +42,18 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 {
 	post.Tags.length > 0 && (
 		<div class="mt-1">
-      <Icon class="h-4 w-4 inline-block me-1" name={"tag-outline"} aria-hidden="true" focusable="false"/>
+			<Icon
+				class="me-1 inline-block h-4 w-4"
+				name={"tag-outline"}
+				aria-hidden="true"
+				focusable="false"
+			/>
 			{post.Tags.map((tag, i) => (
 				<>
 					<a
 						class={`inline-block rounded-md text-sm ${getNotionColorToTailwindColor(
-							tag.color + "-background", true
+							tag.color + "-background",
+							true,
 						)}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
 						href={getNavLink("/tags/" + slugify(tag.name) + "/")}

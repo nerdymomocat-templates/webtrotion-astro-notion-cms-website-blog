@@ -2,7 +2,7 @@
 import PageLayout from "@/layouts/Base";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getCollectionsWDesc } from "@/utils";
-import {slugify} from '@/utils';
+import { slugify } from "@/utils";
 
 const meta = {
 	title: "All Collections",
@@ -18,7 +18,7 @@ const collections = await getCollectionsWDesc();
 	<ul class="space-y-4">
 		{
 			collections.map(({ name, description }) => (
-				<li class="flex flex-col max-w-full items-start gap-x-2">
+				<li class="flex max-w-full flex-col items-start gap-x-2">
 					<div>
 						<a
 							class="webtrotion-page-link inline-block"
@@ -30,11 +30,11 @@ const collections = await getCollectionsWDesc();
 							{name}
 						</a>
 					</div>
-					{description && description.trim() !== "" &&
+					{description && description.trim() !== "" && (
 						<div>
 							<q class="block italic">{description}</q>
 						</div>
-					}
+					)}
 				</li>
 			))
 		}

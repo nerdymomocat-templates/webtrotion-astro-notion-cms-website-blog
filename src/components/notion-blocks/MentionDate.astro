@@ -1,5 +1,5 @@
 ---
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 
 export interface Props {
 	mention_date: string;
@@ -8,8 +8,6 @@ export interface Props {
 const { mention_date } = Astro.props;
 const text = "🗓️";
 ---
-{
-  text
-    ? <Icon name={text} class="inline h-5 w-5" aria-hidden="true"/>
-    : text
-} {' '+mention_date}
+
+{text ? <Icon name={text} class="inline h-5 w-5" aria-hidden="true" /> : text}
+{" " + mention_date}

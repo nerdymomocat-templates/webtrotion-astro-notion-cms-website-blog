@@ -4,16 +4,16 @@ import { isYouTubeURL, parseYouTubeVideoIdTitle } from "../../../lib/blog-helper
 import Caption from "../Caption.astro";
 import { filePath } from "../../../lib/blog-helpers";
 import EmbedGeneric from "./EmbedGeneric.astro";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { ENABLE_LIGHTBOX } from "@/constants";
 import YouTube from "./YouTube.astro";
 
 export interface Props {
 	block: interfaces.Block;
-  setId?:boolean;
+	setId?: boolean;
 }
 
-const { block, setId=true } = Astro.props;
+const { block, setId = true } = Astro.props;
 
 let url: URL | null = null;
 let videoUrl = "";
@@ -23,37 +23,36 @@ if (block.Video.External) {
 } else if (block.Video.File) {
 	videoUrl = filePath(new URL(block.Video.File.Url));
 }
-const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainText).join(' ');
-const isThisYoutubeURL = url? isYouTubeURL(url):false;
-const youtubeVidIdTitle = isThisYoutubeURL?await parseYouTubeVideoIdTitle(url):["",""];
+const plainTextCaption = block.Video?.Caption.map((richText) => richText.PlainText).join(" ");
+const isThisYoutubeURL = url ? isYouTubeURL(url) : false;
+const youtubeVidIdTitle = isThisYoutubeURL ? await parseYouTubeVideoIdTitle(url) : ["", ""];
 ---
 
-<div class="video relative" id={setId?block.Id:undefined}>
+<div class="video relative" id={setId ? block.Id : undefined}>
 	{
 		videoUrl &&
 			(url ? (
-      isThisYoutubeURL ? (
-      <YouTube
-  title={youtubeVidIdTitle[1]}
-  videoId={youtubeVidIdTitle[0]}
-/>
+				isThisYoutubeURL ? (
+					<YouTube title={youtubeVidIdTitle[1]} videoId={youtubeVidIdTitle[0]} />
 				) : (
 					<EmbedGeneric url={url} caption={plainTextCaption} />
 				)
 			) : (
-      <>
-      {
-						ENABLE_LIGHTBOX && (
-							<a href={videoUrl} class="mediaglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent-2" data-description={plainTextCaption} aria-label="Click to expand">
-								<Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true"/>
-							</a>
-						)
-					}
-					<video class="max-w-full h-[340px] w-full border-none rounded-lg" controls>
+				<>
+					{ENABLE_LIGHTBOX && (
+						<a
+							href={videoUrl}
+							class="mediaglightbox absolute right-4 top-4 z-10 m-2 cursor-pointer text-accent-2"
+							data-description={plainTextCaption}
+							aria-label="Click to expand"
+						>
+							<Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true" />
+						</a>
+					)}
+					<video class="h-[340px] w-full max-w-full rounded-lg border-none" controls>
 						<source src={videoUrl} type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>
-
 				</>
 			))
 	}

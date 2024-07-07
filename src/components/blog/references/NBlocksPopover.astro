@@ -1,30 +1,73 @@
 ---
-import type { Block } from '@/lib/interfaces';
-import NotionBlocks from '../../NotionBlocks.astro';
+import type { Block } from "@/lib/interfaces";
+import NotionBlocks from "../../NotionBlocks.astro";
 interface Props {
 	block: Block;
-  linkedTo: string;
-  popoverSpanText: string;
-  popoverTitle?: string;
-  linkText?:string;
-  font?:string;
+	linkedTo: string;
+	popoverSpanText: string;
+	popoverTitle?: string;
+	linkText?: string;
+	font?: string;
 }
-const { block, linkedTo, popoverSpanText, popoverTitle="", linkText="Read more", font="" } = Astro.props;
-let id = "id" + Math.random().toString(16).slice(2)+"---"+block.Id;
-
-
+const {
+	block,
+	linkedTo,
+	popoverSpanText,
+	popoverTitle = "",
+	linkText = "Read more",
+	font = "",
+} = Astro.props;
+let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
 ---
-  <span class="text-link no-underline hover:underline hover:decoration-accent-2/40 hover:underline-offset-2"><span data-popover-target=`popover-description-${id}` data-popover-placement="bottom-end" class={`cursor-pointer ${font}`} >{popoverSpanText?popoverSpanText:<slot/>}<span class="sr-only">Show information for the linked content</span></span></span>
-  <template id=`template-popover-description-${id}`>
-  <div data-popover id=`popover-description-${id}` role="tooltip" class="popoverEl hidden invisible w-72 absolute z-40 inline-block text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0  dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400">
-    <a href={linkedTo}>
-      <div class="p-3 space-y-2">
-          {popoverTitle && <h3 class="font-semibold underline decoration-wavy decoration-accent-2/20 text-accent">{popoverTitle}</h3>}
-          <NotionBlocks blocks={[block]} renderChildren={false} setId={false}/>
-          <a href={linkedTo} data-popover-link class="flex max-w-full items-center font-medium text-link/90 hover:underline">{linkText}<svg class="w-2 h-2 ms-1.5 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
-    </svg></a>
-      </div>
-    </a>
-  </div>
+
+<span
+	class="text-link no-underline hover:underline hover:decoration-accent-2/40 hover:underline-offset-2"
+	><span
+		data-popover-target=`popover-description-${id}`
+		data-popover-placement="bottom-end"
+		class={`cursor-pointer ${font}`}
+		>{popoverSpanText ? popoverSpanText : <slot />}<span class="sr-only"
+			>Show information for the linked content</span
+		></span
+	></span
+>
+<template id=`template-popover-description-${id}`>
+	<div
+		data-popover
+		id=`popover-description-${id}`
+		role="tooltip"
+		class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg border border-gray-200 bg-white text-sm text-gray-500 opacity-0 shadow-sm transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+	>
+		<a href={linkedTo}>
+			<div class="space-y-2 p-3">
+				{
+					popoverTitle && (
+						<h3 class="font-semibold text-accent underline decoration-accent-2/20 decoration-wavy">
+							{popoverTitle}
+						</h3>
+					)
+				}
+				<NotionBlocks blocks={[block]} renderChildren={false} setId={false} />
+				<a
+					href={linkedTo}
+					data-popover-link
+					class="flex max-w-full items-center font-medium text-link/90 hover:underline"
+					>{linkText}<svg
+						class="ms-1.5 h-2 w-2 rtl:rotate-180"
+						aria-hidden="true"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 6 10"
+					>
+						<path
+							stroke="currentColor"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="m1 9 4-4-4-4"></path>
+					</svg></a
+				>
+			</div>
+		</a>
+	</div>
 </template>

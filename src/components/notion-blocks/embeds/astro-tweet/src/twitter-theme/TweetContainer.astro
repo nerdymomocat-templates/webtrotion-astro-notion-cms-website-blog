@@ -3,14 +3,14 @@ import styles from "./tweet-container.module.css";
 import "./theme.css";
 
 interface Props {
-  className?: string;
+	className?: string;
 }
 
 const { className } = Astro.props;
 ---
 
-<div class={`astro-tweet-theme ${styles.root} ${className || ''}`}>
-  <article class={styles.article}>
-    <slot />
-  </article>
+<div class={`astro-tweet-theme ${styles.root} ${className || ""}`}>
+	<article class={styles.article}>
+		<slot />
+	</article>
 </div>

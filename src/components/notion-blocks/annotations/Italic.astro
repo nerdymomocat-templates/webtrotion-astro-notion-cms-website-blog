@@ -9,10 +9,11 @@ const { richText } = Astro.props;
 ---
 
 {
-	/* prettier-ignore */
 	richText.Annotation.Italic ? (
-  <em class="font-italic"><slot /></em>
-  ) : (
-    <slot />
-  )
+		<em class="font-italic">
+			<slot />
+		</em>
+	) : (
+		<slot />
+	)
 }

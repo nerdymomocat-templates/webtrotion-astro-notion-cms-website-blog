@@ -4,7 +4,7 @@ import type { Post } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { areDifferentDates } from "@/utils/date";
 import { getNavLink } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { slugify } from "@/utils";
 
 interface Props {
@@ -20,8 +20,10 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 };
 ---
 
-<h1 class="title mb-3 sm:mb-1" data-pagefind-filter=`collections:${post.Collection}`>{post.Title}</h1>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-2 max-w-full">
+<h1 class="title mb-3 sm:mb-1" data-pagefind-filter=`collections:${post.Collection}`>
+	{post.Title}
+</h1>
+<div class="flex max-w-full flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
 	</p>
@@ -41,12 +43,18 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 {
 	post.Tags.length > 0 && (
 		<div class="mt-2">
-        <Icon class="h-6 w-6 inline-block me-1" name={"tag-outline"} aria-hidden="true" focusable="false"/>
+			<Icon
+				class="me-1 inline-block h-6 w-6"
+				name={"tag-outline"}
+				aria-hidden="true"
+				focusable="false"
+			/>
 			{post.Tags.map((tag, i) => (
 				<>
 					<a
-						class={`inline-block rounded-lg p-1 mt-1 ${getNotionColorToTailwindColor(
-							tag.color + "-background", true
+						class={`mt-1 inline-block rounded-lg p-1 ${getNotionColorToTailwindColor(
+							tag.color + "-background",
+							true,
 						)}`}
 						aria-label={`View more blogs with the tag ${tag.name}`}
 						href={getNavLink("/tags/" + slugify(tag.name) + "/")}

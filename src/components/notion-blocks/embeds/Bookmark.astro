@@ -9,10 +9,10 @@ import Caption from "../Caption.astro";
 export interface Props {
 	block: interfaces.Block;
 	urlMap: { [key: string]: string };
-  setId?:boolean;
+	setId?: boolean;
 }
 
-const { block, urlMap, setId=true } = Astro.props;
+const { block, urlMap, setId = true } = Astro.props;
 
 const urlString = (block.Bookmark || block.LinkPreview || block.Embed).Url;
 const metascraper = createMetascraper([
@@ -34,7 +34,7 @@ try {
 }
 ---
 
-<div class="bookmark pb-2" id={setId?block.Id:undefined}>
+<div class="bookmark pb-2" id={setId ? block.Id : undefined}>
 	{
 		url && (
 			<div class="flex w-full max-w-full overflow-hidden text-sm">
@@ -42,20 +42,20 @@ try {
 					href={url.toString()}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="w-full flex max-w-full select-none overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800 min-w-0 grow items-stretch	"
+					class="flex w-full min-w-0 max-w-full grow select-none items-stretch overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800	"
 				>
 					<div class="flex-bookmark-text overflow-hidden p-3 text-left text-textColor/90">
-						<div class="truncate mb-0.5 h-6 overflow-hidden whitespace-nowrap text-base leading-5">
+						<div class="mb-0.5 h-6 overflow-hidden truncate whitespace-nowrap text-base leading-5">
 							{metadata && metadata.title}
 						</div>
 						<div class="h-8 overflow-hidden text-xs leading-4 opacity-80">
 							{metadata && metadata.description}
 						</div>
 						<div class="mt-1.5 flex max-w-full">
-							<div class="min-w-4 mr-1.5 h-4 w-4">
+							<div class="mr-1.5 h-4 w-4 min-w-4">
 								<img
 									class="inline-block max-w-full"
-                  loading="lazy"
+									loading="lazy"
 									src={`https://www.google.com/s2/favicons?domain=${url.hostname}`}
 									alt="title"
 									decoding="async"
@@ -67,18 +67,17 @@ try {
 						</div>
 					</div>
 
-						{metadata && metadata.image && (
-              <div class="flex-bookmark-image hidden sm:block relative">
+					{metadata && metadata.image && (
+						<div class="flex-bookmark-image relative hidden sm:block">
 							<img
 								class="!absolute h-full w-full object-contain object-right"
-                loading="lazy"
+								loading="lazy"
 								src={metadata.image}
 								alt="title"
 								decoding="async"
 							/>
-            </div>
-						)}
-
+						</div>
+					)}
 				</a>
 			</div>
 		)
@@ -90,7 +89,7 @@ try {
 	.flex-bookmark-image {
 		flex: 1 1 180px;
 	}
-  .flex-bookmark-text {
+	.flex-bookmark-text {
 		flex: 4 1 180px;
 	}
 </style>

@@ -47,16 +47,15 @@ if (groupedReferences) {
 		try {
 			url = new URL(hrefLink);
 			urlList.push(url);
-      for (const block of groupedReferences[hrefLink]) {
-			const result = await getReferenceLink(post.PageId, undefined, block, true);
-			blockIdLinks[block.Id] = result[0];
-		}
+			for (const block of groupedReferences[hrefLink]) {
+				const result = await getReferenceLink(post.PageId, undefined, block, true);
+				blockIdLinks[block.Id] = result[0];
+			}
 		} catch (err) {
 			console.log(err);
 			delete groupedReferences[hrefLink];
 			continue;
 		}
-
 	}
 }
 
@@ -80,12 +79,12 @@ if (groupedReferences && urlMap) {
 				if (!metadata || (metadata && !metadata.title)) {
 					delete groupedReferences[hrefLink];
 					continue;
+				} else {
+					hrefMetaData[hrefLink] = metadata;
 				}
-				else {hrefMetaData[hrefLink] = metadata;}
+			} else {
+				delete groupedReferences[hrefLink];
 			}
-      else{
-        delete groupedReferences[hrefLink];
-      }
 		} catch (err) {
 			console.log(err);
 			delete groupedReferences[hrefLink];
@@ -94,67 +93,69 @@ if (groupedReferences && urlMap) {
 	}
 }
 ---
+
 {
-	groupedReferences && Object.keys(groupedReferences).length>0 && urlMap && (
-		<details class="toggle" id="external-links">
-			<summary class="flex cursor-pointer list-none list-outside gap-2 max-w-full">
-				<div class="-ml-7">
-          <Icon
-					name={"toggle-triangle"}
-					class="h-6 w-6 flex-shrink-0 transition-all duration-300 rotate-svg"
-					aria-label="Toggle open/close"
-          stroke="currentColor"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-				/>
+	groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap && (
+		<>
+			<details class="toggle" id="external-links">
+				<summary class="flex max-w-full cursor-pointer list-outside list-none gap-2">
+					<div class="-ml-7">
+						<Icon
+							name={"toggle-triangle"}
+							class="rotate-svg h-6 w-6 flex-shrink-0 transition-all duration-300"
+							aria-label="Toggle open/close"
+							stroke="currentColor"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+						/>
+					</div>
+					<div>
+						<span class="font-semibold">External Links On This Page</span>
+					</div>
+				</summary>
+				<div class="pl-2">
+					{Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
+						<div key={hrefLink}>
+							<div class="inline-block">
+								<a
+									href={hrefLink}
+									class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4"
+								>
+									{hrefMetaData[hrefLink].title.length > 35
+										? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
+										: hrefMetaData[hrefLink].title}
+								</a>
+								{" at "}
+								{REFERENCES && REFERENCES["popovers"] ? (
+									<>
+										{blocks.map((block, index) => (
+											<NBlocksPopover
+												block={block}
+												linkedTo={blockIdLinks[block.Id]}
+												popoverSpanText={`[${index + 1}]`}
+												font={"font-mono"}
+											/>
+										))}
+									</>
+								) : (
+									<>
+										{blocks.map((block, index) => (
+											<a href={blockIdLinks[block.Id]} class="font-mono text-link">
+												{`[${index + 1}]`}
+											</a>
+										))}
+									</>
+								)}
+							</div>
+						</div>
+					))}
 				</div>
-				<div>
-					<span class="font-semibold">
-						External Links On This Page
-					</span>
-				</div>
-			</summary>
-			<div class="pl-2">
-        {Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
-          <div key={hrefLink}>
-            <div class="inline-block">
-              <a href={hrefLink} class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4">
-                    {hrefMetaData[hrefLink].title.length > 35
-                      ? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
-                      : hrefMetaData[hrefLink].title}
-                  </a>
-                  {" at "}
-              {REFERENCES && REFERENCES["popovers"] ? (
-                <>
-
-                  {blocks.map((block, index) => (
-                    <NBlocksPopover
-                      block={block}
-                      linkedTo={blockIdLinks[block.Id]}
-                      popoverSpanText={`[${index + 1}]`}
-                      font = {"font-mono"}
-                    />
-                  ))}
-                </>
-              ) : (
-                <>
-                  {blocks.map((block, index) => (
-                    <a href={blockIdLinks[block.Id]} class="text-link font-mono">
-                      {`[${index + 1}]`}
-                    </a>
-                  ))}
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </details>
-    <br>
-  )
+			</details>
+			<br />
+		</>
+	)
 }
-
 
 <style>
 	.toggle > summary > a {
@@ -163,7 +164,7 @@ if (groupedReferences && urlMap) {
 	details[open] > summary > div > .flex-shrink-0.rotate-svg {
 		transform: rotate(90deg);
 	}
-  summary::-webkit-details-marker {
-      display:none;
-   }
+	summary::-webkit-details-marker {
+		display: none;
+	}
 </style>

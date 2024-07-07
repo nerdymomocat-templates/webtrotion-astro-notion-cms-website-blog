@@ -22,7 +22,6 @@ jobs:
     environment: github-pages
     timeout-minutes: 45
     steps:
-
       - name: Checkout your repository using git
         uses: actions/checkout@v4
 
@@ -85,8 +84,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
-
-
 
   deploy:
     needs: build

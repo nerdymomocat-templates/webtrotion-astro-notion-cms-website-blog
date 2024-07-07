@@ -2,7 +2,7 @@
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
 import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { Code } from "astro:components";
 
 export interface Props {
@@ -127,18 +127,20 @@ function processCode(code: string, language: string): string {
 }
 
 // Usage
-let code = block.Code.RichTexts.map(
-	(richText: interfaces.RichText) => richText.Text.Content,
-).join("");
+let code = block.Code.RichTexts.map((richText: interfaces.RichText) => richText.Text.Content).join(
+	"",
+);
 const language =
 	block.Code.Language.toLowerCase() === "plain text"
 		? "plaintext"
 		: block.Code.Language.toLowerCase();
 
-const shiki_transform_code = SHORTCODES["shiki-transform"]? code.startsWith(SHORTCODES["shiki-transform"]): false;
-code = shiki_transform_code? code.replace(SHORTCODES["shiki-transform"],"").trimStart():code;
+const shiki_transform_code = SHORTCODES["shiki-transform"]
+	? code.startsWith(SHORTCODES["shiki-transform"])
+	: false;
+code = shiki_transform_code ? code.replace(SHORTCODES["shiki-transform"], "").trimStart() : code;
 
-const modifiedCode = shiki_transform_code? processCode(code, language):code;
+const modifiedCode = shiki_transform_code ? processCode(code, language) : code;
 
 const code_render = SHORTCODES["html-render"] ? code.startsWith(SHORTCODES["html-render"]) : false;
 const code_inject = SHORTCODES["html-inject"] ? code.startsWith(SHORTCODES["html-inject"]) : false;
@@ -155,20 +157,24 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 				title={plainTextCaption}
 			/>
 		</div>
-	) : (code_inject? (
-  <div class="injectedcode mb-1 max-w-full" id={setId ? block.Id : undefined}>
-  <Fragment set:html={code.replace(SHORTCODES["html-inject"], "")} />
-  <Caption richTexts={block.Code.Caption} block={block} />
-  </div>):(
-		<div class="code relative mb-1 w-full max-w-full text-sm z-0 group" id={setId ? block.Id : undefined}>
+	) : code_inject ? (
+		<div class="injectedcode mb-1 max-w-full" id={setId ? block.Id : undefined}>
+			<Fragment set:html={code.replace(SHORTCODES["html-inject"], "")} />
+			<Caption richTexts={block.Code.Caption} block={block} />
+		</div>
+	) : (
+		<div
+			class="code group relative z-0 mb-1 w-full max-w-full text-sm"
+			id={setId ? block.Id : undefined}
+		>
 			<div
 				class={`${language === "mermaid" ? "overflow-x-scroll" : "overflow-scroll screen:max-h-[340px]"} min-w-0`}
 			>
 				<div class="flex max-w-full">
 					<button
-  class="copy absolute right-0 top-0 cursor-pointer border-0 p-2 text-gray-500 print:hidden z-10
-         sm:opacity-100
-         md:opacity-0 md:transition-opacity md:duration-200 md:group-hover:opacity-100"
+						class="copy absolute right-0 top-0 z-10 cursor-pointer border-0 p-2 text-gray-500 sm:opacity-100
+         md:opacity-0
+         md:transition-opacity md:duration-200 md:group-hover:opacity-100 print:hidden"
 						data-code={modifiedCode}
 						aria-label="copy code"
 						onclick="
@@ -205,13 +211,13 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 						code={code}
 						lang={language}
 						theme={"github-dark-dimmed"}
-						transformers= {TRANSFORMER_FUNCTIONS_ARR}
+						transformers={TRANSFORMER_FUNCTIONS_ARR}
 					/>
 				)}
 			</div>
 			<Caption richTexts={block.Code.Caption} block={block} />
 		</div>
-	))
+	)
 }
 <script>
 	import mermaid from "mermaid";

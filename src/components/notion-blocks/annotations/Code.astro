@@ -9,10 +9,11 @@ const { richText } = Astro.props;
 ---
 
 {
-	/* prettier-ignore */
 	richText.Annotation.Code ? (
-    <code class="px-1 border-none font-mono bg-gray-100 dark:bg-gray-800 text-rose-800 dark:text-rose-300 rounded"><slot /></code>
-  ) : (
-    <slot />
-  )
+		<code class="rounded border-none bg-gray-100 px-1 font-mono text-rose-800 dark:bg-gray-800 dark:text-rose-300">
+			<slot />
+		</code>
+	) : (
+		<slot />
+	)
 }

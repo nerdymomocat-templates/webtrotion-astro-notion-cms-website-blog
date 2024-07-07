@@ -5,22 +5,36 @@ import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId=true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 ---
 
 <blockquote
 	class={`nquote !px-2 my-4 border-s-4 border-gray-600 dark:border-gray-300 ${getNotionColorToTailwindColor(
 		block.Quote.Color,
-	)}`} id={setId?block.Id:undefined}
+	)}`}
+	id={setId ? block.Id : undefined}
 >
-<div class="p-1">
-	{block.Quote.RichTexts.map((richText: interfaces.RichText) => <RichText richText={richText}  blockID={block.Id}/>)}
-	{block.Quote.Children && renderChildren && <NotionBlocks blocks={block.Quote.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>}
-</div>
+	<div class="p-1">
+		{
+			block.Quote.RichTexts.map((richText: interfaces.RichText) => (
+				<RichText richText={richText} blockID={block.Id} />
+			))
+		}
+		{
+			block.Quote.Children && renderChildren && (
+				<NotionBlocks
+					blocks={block.Quote.Children}
+					headings={headings}
+					renderChildren={renderChildren}
+					setId={setId}
+				/>
+			)
+		}
+	</div>
 </blockquote>

@@ -3,7 +3,7 @@ import Search from "../Search.astro";
 import { getMenu } from "@/utils";
 import { siteInfo } from "@/site.config";
 import { filePath, getNavLink } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import ThemeIcon from "../ThemeIcon.astro";
 
 const menuLinks = await getMenu();
@@ -24,7 +24,8 @@ const rss_path = getNavLink("/rss.xml");
 
 <header
 	id="main-header"
-	class="group relative screen:mb-16 print mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%]">
+	class="print group relative mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%] screen:mb-16"
+>
 	<div class="flex sm:flex-col">
 		<a
 			href={getNavLink("/")}
@@ -43,16 +44,19 @@ const rss_path = getNavLink("/rss.xml");
 					<>
 						<img
 							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
-							loading="eager" src={siteInfo.logo.Url} alt="Site header image"
+							loading="eager"
+							src={siteInfo.logo.Url}
+							alt="Site header image"
 						/>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
 					</>
 				) : siteInfo.logo && siteInfo.logo.Type === "file" && customIconURL ? (
 					<>
 						<img
-              loading="eager"
+							loading="eager"
 							src={customIconURL}
-							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0" alt="Site header image"
+							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
+							alt="Site header image"
 						/>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
 					</>
@@ -63,14 +67,14 @@ const rss_path = getNavLink("/rss.xml");
 		</a>
 		<nav
 			id="navigation-menu"
-			class="print:hidden md absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md bg-bgColor/90 py-2 text-base text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base"
+			class="md absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md bg-bgColor/90 py-2 text-base text-accent shadow backdrop-blur group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden"
 			aria-label="Main menu"
 		>
 			{
 				menuLinks.map((link) => (
 					<a
 						href={link.path}
-						class="px-4 py-4 underline-offset-4 sm:py-0 sm:hover:underline sm:hover:decoration-wavy sm:hover:decoration-accent-2/40 w-full sm:w-auto text-right sm:text-left"
+						class="w-full px-4 py-4 text-right underline-offset-4 sm:w-auto sm:py-0 sm:text-left sm:hover:underline sm:hover:decoration-accent-2/40 sm:hover:decoration-wavy"
 						aria-current={url.pathname === link.path ? "page" : false}
 						data-astro-prefetch
 					>
@@ -83,39 +87,33 @@ const rss_path = getNavLink("/rss.xml");
 	<div class="flex flex-row print:hidden">
 		<div class="h-10 w-10 items-center justify-center rounded-md p-1.5 hover:text-accent">
 			<a href={rss_path}
-				><Icon
-					name={"rss"}
-					class="h-7 w-7 hover:text-accent"
-					aria-label="Open RSS Link"
-				/></a
+				><Icon name={"rss"} class="h-7 w-7 hover:text-accent" aria-label="Open RSS Link" /></a
 			>
 		</div>
-		<Search/>
+		<Search />
 		<ThemeIcon />
 		<mobile-button>
 			<button
 				id="toggle-navigation-menu"
-				class="group relative ms-4 py-4 h-7 w-7 sm:invisible sm:hidden"
+				class="group relative ms-4 h-7 w-7 py-4 sm:invisible sm:hidden"
 				type="button"
 				aria-label="Open main menu"
 				aria-expanded="false"
 				aria-haspopup="menu"
 			>
-
-
-        <Icon
-        name={"menu"}
-        class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 transition-all group-aria-expanded:scale-0 group-aria-expanded:opacity-0"
-        aria-hidden="true"
+				<Icon
+					name={"menu"}
+					class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 transition-all group-aria-expanded:scale-0 group-aria-expanded:opacity-0"
+					aria-hidden="true"
 					focusable="false"
-      />
+				/>
 
-        <Icon
-        name={"close"}
-        class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100 text-accent"
-        aria-hidden="true"
+				<Icon
+					name={"close"}
+					class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-accent text-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
+					aria-hidden="true"
 					focusable="false"
-      />
+				/>
 			</button>
 		</mobile-button>
 	</div>
@@ -158,11 +156,9 @@ const rss_path = getNavLink("/rss.xml");
 				if (!isClickInsideNav && mainHeader) {
 					// If the click is outside the navMenu and mainHeader exists, remove 'menu-open' attribute
 					mainHeader.classList.remove("menu-open");
-          toggleButton.setAttribute("aria-expanded", "false");
+					toggleButton.setAttribute("aria-expanded", "false");
 				}
 			}
 		});
 	});
-
-
 </script>

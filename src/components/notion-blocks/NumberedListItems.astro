@@ -8,16 +8,16 @@ export interface Props {
 	block: interfaces.Block;
 	level: number;
 	headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, level, headings, renderChildren = true, setId=true   } = Astro.props;
+const { block, level, headings, renderChildren = true, setId = true } = Astro.props;
 
 const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 ---
 
-<div class="numbered-list" id={setId?block.Id:undefined}>
+<div class="numbered-list" id={setId ? block.Id : undefined}>
 	<ol
 		class="list-outside space-y-1 pl-6"
 		style={`list-style-type: ${listTypes[level % 3]} !important;`}
@@ -25,7 +25,10 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 		{
 			block.ListItems.filter((b: interfaces.Block) => b.Type === "numbered_list_item").map(
 				(b: interfaces.Block) => (
-					<li class={getNotionColorToTailwindColor(b.NumberedListItem.Color)} id={setId?b.Id:undefined}>
+					<li
+						class={getNotionColorToTailwindColor(b.NumberedListItem.Color)}
+						id={setId ? b.Id : undefined}
+					>
 						{b.NumberedListItem.RichTexts.map((richText: interfaces.RichText) => (
 							<RichText richText={richText} blockID={b.Id} />
 						))}
@@ -34,7 +37,8 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 								blocks={b.NumberedListItem.Children}
 								level={level + 1}
 								headings={headings}
-                renderChildren={renderChildren} setId={setId}
+								renderChildren={renderChildren}
+								setId={setId}
 							/>
 						)}
 					</li>

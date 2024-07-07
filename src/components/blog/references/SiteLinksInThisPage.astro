@@ -1,109 +1,110 @@
 ---
-import type { Block, Post, ReferencesInPage } from '@/lib/interfaces';
-import NBlocksPopover from './NBlocksPopover.astro';
-import { getReferenceLink } from '@/lib/blog-helpers';
-import NPagePopover from './NPagePopover.astro';
-import { REFERENCES } from '@/constants';
+import type { Block, Post, ReferencesInPage } from "@/lib/interfaces";
+import NBlocksPopover from "./NBlocksPopover.astro";
+import { getReferenceLink } from "@/lib/blog-helpers";
+import NPagePopover from "./NPagePopover.astro";
+import { REFERENCES } from "@/constants";
 interface Props {
 	post: Post;
-  filteredReferencesInPage: ReferencesInPage[];
+	filteredReferencesInPage: ReferencesInPage[];
 }
 const { post, filteredReferencesInPage } = Astro.props;
-const groupedReferences: { [key: string]: Block[] } =
-filteredReferencesInPage.reduce((acc, ref) => {
-    // Group by direct_nonmedia_link and collect Block objects
-    if (ref.link_to_pageid) {
-      const key = ref.link_to_pageid;
-      acc[key] = acc[key] || [];
-      acc[key].push(ref.block);
-    }
+const groupedReferences: { [key: string]: Block[] } = filteredReferencesInPage.reduce(
+	(acc, ref) => {
+		// Group by direct_nonmedia_link and collect Block objects
+		if (ref.link_to_pageid) {
+			const key = ref.link_to_pageid;
+			acc[key] = acc[key] || [];
+			acc[key].push(ref.block);
+		}
 
-    // Group by each Href in external_hrefs and collect Block objects
-    ref.other_pages.forEach(richText => {
-      if (richText.InternalHref?.PageId) {
-        const key = richText.InternalHref.PageId;
-        acc[key] = acc[key] || [];
-        acc[key].push(ref.block);
-      }
-      else if (richText.Mention?.Page?.PageId) {
-        const key = richText.Mention.Page.PageId;
-        acc[key] = acc[key] || [];
-        acc[key].push(ref.block);
-      }
-    });
+		// Group by each Href in external_hrefs and collect Block objects
+		ref.other_pages.forEach((richText) => {
+			if (richText.InternalHref?.PageId) {
+				const key = richText.InternalHref.PageId;
+				acc[key] = acc[key] || [];
+				acc[key].push(ref.block);
+			} else if (richText.Mention?.Page?.PageId) {
+				const key = richText.Mention.Page.PageId;
+				acc[key] = acc[key] || [];
+				acc[key].push(ref.block);
+			}
+		});
 
-    return acc;
-  }, {});
+		return acc;
+	},
+	{},
+);
 
-  const entryIdLinksEntry = {};
+const entryIdLinksEntry = {};
 const blockIdLinks = {};
-const entryIdsToDel:string[] = [];
+const entryIdsToDel: string[] = [];
 
 if (groupedReferences) {
-  for (const entryId of Object.keys(groupedReferences)) {
-    const res_entry = await getReferenceLink(post.PageId, entryId);
-    if (!res_entry[1]){entryIdsToDel.push(entryId); continue;}
-    entryIdLinksEntry[entryId] = res_entry
-    for (const block of groupedReferences[entryId]) {
-      const result = await getReferenceLink(post.PageId, undefined, block, true);
-      blockIdLinks[block.Id] = result[0];
-    }
-  }
+	for (const entryId of Object.keys(groupedReferences)) {
+		const res_entry = await getReferenceLink(post.PageId, entryId);
+		if (!res_entry[1]) {
+			entryIdsToDel.push(entryId);
+			continue;
+		}
+		entryIdLinksEntry[entryId] = res_entry;
+		for (const block of groupedReferences[entryId]) {
+			const result = await getReferenceLink(post.PageId, undefined, block, true);
+			blockIdLinks[block.Id] = result[0];
+		}
+	}
 }
-entryIdsToDel.forEach(entryId => {
-  delete groupedReferences[entryId];
+entryIdsToDel.forEach((entryId) => {
+	delete groupedReferences[entryId];
 });
-
-
-
 ---
+
 {
-  groupedReferences && Object.keys(groupedReferences).length > 0 && (
-    <div>
-      <span class="font-semibold">
-        Other Pages Mentioned On This Page
-      </span>
-      {Object.entries(groupedReferences).map(([entryId, blocks]) => (
-        <div class="ml-2" key={entryId}>
-          <div class="inline-block">
-            {REFERENCES && REFERENCES["popovers"] ? (
-              <>
-                <NPagePopover
-                  linkedTo={entryIdLinksEntry[entryId][0]}
-                  popoverSpanText={entryIdLinksEntry[entryId][1].Title}
-                  popoverTitle={entryIdLinksEntry[entryId][1].Title}
-                  postId={entryId}
-                  excerpt={entryIdLinksEntry[entryId][1].Excerpt}
-                />
-                {" at "}
-                {blocks.map((block, index) => (
-                  <NBlocksPopover
-                    key={block.Id}
-                    block={block}
-                    linkedTo={blockIdLinks[block.Id]}
-                    popoverSpanText={`[${index + 1}]`}
-                    font = {"font-mono"}
-                  />
-                ))}
-              </>
-            ) : (
-              <>
-                <a href={entryIdLinksEntry[entryId][0]} class="text-link">{entryIdLinksEntry[entryId][1].Title} </a>
-                {" at "}
-                {blocks.map((block, index) => (
-                  <a href={blockIdLinks[block.Id]} class="text-link font-mono">{`[${index + 1}]`} </a>
-                ))}
-              </>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-    <br>
-  )
+	groupedReferences && Object.keys(groupedReferences).length > 0 && (
+		<>
+			<div>
+				<span class="font-semibold">Other Pages Mentioned On This Page</span>
+				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
+					<div class="ml-2" key={entryId}>
+						<div class="inline-block">
+							{REFERENCES && REFERENCES["popovers"] ? (
+								<>
+									<NPagePopover
+										linkedTo={entryIdLinksEntry[entryId][0]}
+										popoverSpanText={entryIdLinksEntry[entryId][1].Title}
+										popoverTitle={entryIdLinksEntry[entryId][1].Title}
+										postId={entryId}
+										excerpt={entryIdLinksEntry[entryId][1].Excerpt}
+									/>
+									{" at "}
+									{blocks.map((block, index) => (
+										<NBlocksPopover
+											key={block.Id}
+											block={block}
+											linkedTo={blockIdLinks[block.Id]}
+											popoverSpanText={`[${index + 1}]`}
+											font={"font-mono"}
+										/>
+									))}
+								</>
+							) : (
+								<>
+									<a href={entryIdLinksEntry[entryId][0]} class="text-link">
+										{entryIdLinksEntry[entryId][1].Title}{" "}
+									</a>
+									{" at "}
+									{blocks.map((block, index) => (
+										<a href={blockIdLinks[block.Id]} class="font-mono text-link">
+											{`[${index + 1}]`}{" "}
+										</a>
+									))}
+								</>
+							)}
+						</div>
+					</div>
+				))}
+			</div>
+			<br />
+		</>
+	)
 }
-
-
-
-
-

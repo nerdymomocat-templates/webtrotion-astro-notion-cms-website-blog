@@ -9,7 +9,7 @@ import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { slugify } from "@/utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -55,12 +55,12 @@ const paginationProps = {
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6">Posts</h1>
-	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
-		<section aria-label="Blog post list" class="print:col-span-full screen:col-span-3">
+	<div class="grid grid-cols-3 gap-y-16 sm:grid-cols-4 sm:items-start sm:gap-x-8">
+		<section aria-label="Blog post list" class="screen:col-span-3 print:col-span-full">
 			<ul class="space-y-4 text-start">
 				{
 					page.data.map((post) => (
-						<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
+						<li class="flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full">
 							<PostPreview post={post} as="h2" withDesc />
 						</li>
 					))
@@ -72,7 +72,7 @@ const paginationProps = {
 			!!uniqueTags.length && (
 				<aside class="col-span-3 sm:col-span-1 print:hidden">
 					<h2 class="mb-4 flex items-center text-lg font-semibold text-accent-2">
-            <Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
+						<Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false" />
 						Tags
 					</h2>
 					<ul class="flex flex-wrap gap-2">
@@ -80,7 +80,8 @@ const paginationProps = {
 							<li>
 								<a
 									class={`flex items-center justify-center rounded-lg p-1 ${getNotionColorToTailwindColor(
-										tag.color + "-background", true
+										tag.color + "-background",
+										true,
 									)}`}
 									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 									aria-label={`View all posts with the tag: ${tag.name}`}
@@ -91,11 +92,7 @@ const paginationProps = {
 						))}
 					</ul>
 					<span class="mt-4 block sm:text-end">
-						<a
-							class="sm:hover:text-accent"
-							href={getNavLink("/tags/")}
-							aria-label="View all tags"
-						>
+						<a class="sm:hover:text-accent" href={getNavLink("/tags/")} aria-label="View all tags">
 							View all →
 						</a>
 					</span>

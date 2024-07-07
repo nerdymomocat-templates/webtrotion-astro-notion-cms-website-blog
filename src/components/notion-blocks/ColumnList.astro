@@ -1,23 +1,28 @@
 ---
-import * as interfaces from '../../lib/interfaces.ts'
-import NotionBlocks from '../NotionBlocks.astro'
+import * as interfaces from "../../lib/interfaces.ts";
+import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId=true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 ---
 
-<div class="block sm:flex flex-wrap w-full mx-auto my-4 gap-x-4 md:flex-nowrap max-w-full">
-  {
-    block.ColumnList.Columns.map((column: interfaces.Column) => (
-      <div  class="ncolumns w-full flex-1 min-w-0 basis-44 sm:w-44 md:w-auto max-w-full">
-        <NotionBlocks blocks={column.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>
-      </div>
-    ))
-  }
+<div class="mx-auto my-4 block w-full max-w-full flex-wrap gap-x-4 sm:flex md:flex-nowrap">
+	{
+		block.ColumnList.Columns.map((column: interfaces.Column) => (
+			<div class="ncolumns w-full min-w-0 max-w-full flex-1 basis-44 sm:w-44 md:w-auto">
+				<NotionBlocks
+					blocks={column.Children}
+					headings={headings}
+					renderChildren={renderChildren}
+					setId={setId}
+				/>
+			</div>
+		))
+	}
 </div>

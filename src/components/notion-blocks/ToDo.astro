@@ -3,32 +3,36 @@ import * as interfaces from "../../lib/interfaces.ts";
 import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 import RichText from "./RichText.astro";
 import NotionBlocks from "../NotionBlocks.astro";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId=true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 ---
 
-<div class="to-do pl-2 leading-7" id={setId?block.Id:undefined}>
+<div class="to-do pl-2 leading-7" id={setId ? block.Id : undefined}>
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
-				<div key={index} class="mb-2" id={setId?b.Id:undefined}>
+				<div key={index} class="mb-2" id={setId ? b.Id : undefined}>
 					<div class={`flex max-w-full items-start ${getNotionColorToTailwindColor(b.ToDo.Color)}`}>
 						{/* Flex container for the checkbox and text */}
-						<div class="pr-2 mt-1">
+						<div class="mt-1 pr-2">
 							{/* Padding for the checkbox */}
 
-              <Icon class="h-5 w-5 text-textColor/50" name={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} aria-label={b.ToDo.Checked?"checkbox-checked":"checkbox-blank"} focusable="false" />
-
+							<Icon
+								class="h-5 w-5 text-textColor/50"
+								name={b.ToDo.Checked ? "checkbox-checked" : "checkbox-blank"}
+								aria-label={b.ToDo.Checked ? "checkbox-checked" : "checkbox-blank"}
+								focusable="false"
+							/>
 						</div>
-						<div class="flex-1 min-w-0">
+						<div class="min-w-0 flex-1">
 							{/* Container for text, taking up the rest of the space */}
 							{b.ToDo.RichTexts.map((richText: interfaces.RichText) => {
 								if (b.ToDo.Checked) {
@@ -39,14 +43,19 @@ const { block, headings, renderChildren = true, setId=true } = Astro.props;
 										</span>
 									);
 								}
-								return <RichText richText={richText} blockID={b.Id}/>;
+								return <RichText richText={richText} blockID={b.Id} />;
 							})}
 						</div>
 					</div>
 					{b.HasChildren && renderChildren && (
 						<div class="mt-1">
 							{/* Margin for spacing between the to-do and its children */}
-							<NotionBlocks blocks={b.ToDo.Children} headings={headings} renderChildren={renderChildren} setId={setId}/>
+							<NotionBlocks
+								blocks={b.ToDo.Children}
+								headings={headings}
+								renderChildren={renderChildren}
+								setId={setId}
+							/>
 						</div>
 					)}
 				</div>

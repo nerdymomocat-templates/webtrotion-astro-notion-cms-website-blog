@@ -1,49 +1,21 @@
 {
-  "extends": "astro/tsconfigs/strictest",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "verbatimModuleSyntax": true,
-    "lib": [
-      "DOM"
-    ],
-    "paths": {
-      "@/*": [
-        "src/*"
-      ],
-      "@/assets/*": [
-        "src/assets/*"
-      ],
-      "@/components/*": [
-        "src/components/*.astro"
-      ],
-      "@/layouts/*": [
-        "src/layouts/*.astro"
-      ],
-      "@/utils": [
-        "src/utils/index.ts"
-      ],
-      "@/stores/*": [
-        "src/stores/*"
-      ],
-      "@/types": [
-        "src/types.ts"
-      ],
-      "@/lib/notion/*": [
-        "src/lib/notion/*"
-      ],
-      "@/siteInfo": [
-        "src/site.config.ts"
-      ],
-    },
-  },
-  "include": [
-    "src",
-    "*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*",
-    ".vscode",
-    "dist"
-  ]
+	"extends": "astro/tsconfigs/strictest",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"verbatimModuleSyntax": true,
+		"lib": ["DOM"],
+		"paths": {
+			"@/*": ["src/*"],
+			"@/assets/*": ["src/assets/*"],
+			"@/components/*": ["src/components/*.astro"],
+			"@/layouts/*": ["src/layouts/*.astro"],
+			"@/utils": ["src/utils/index.ts"],
+			"@/stores/*": ["src/stores/*"],
+			"@/types": ["src/types.ts"],
+			"@/lib/notion/*": ["src/lib/notion/*"],
+			"@/siteInfo": ["src/site.config.ts"]
+		}
+	},
+	"include": ["src", "*.ts"],
+	"exclude": ["node_modules", "**/node_modules/*", ".vscode", "dist"]
 }

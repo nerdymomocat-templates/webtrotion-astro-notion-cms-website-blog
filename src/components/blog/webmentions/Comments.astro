@@ -1,6 +1,6 @@
 ---
 import { Image } from "astro:assets";
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import type { WebmentionsChildren } from "@/types";
 
 interface Props {
@@ -67,12 +67,7 @@ const comments = mentions.filter(
 									rel="noopener noreferrer"
 									title="Vist the source of this mention"
 								>
-									<Icon
-										class="h-5 w-5"
-										name="open-in-new"
-										aria-hidden="true"
-										focusable="false"
-									/>
+									<Icon class="h-5 w-5" name="open-in-new" aria-hidden="true" focusable="false" />
 								</a>
 							</div>
 							<p class="mb-0 mt-1 break-words [word-break:break-word]">{mention.content?.text}</p>

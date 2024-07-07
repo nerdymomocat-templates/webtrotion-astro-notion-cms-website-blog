@@ -19,30 +19,44 @@ const meta = {
 	<ul class="space-y-4">
 		{
 			allTags.map((tag) => (
-				<li class="flex flex-col max-w-full gap-x-2">
-          <div>
-            <a
-						class="inline-block"
-						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-						title={`View posts with the tag: ${tag.name}`}
-            aria-label={`View posts with the tag: ${tag.name}`}
-						data-astro-prefetch
-					>
-						<span class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
-      tag.color + "-background", true
-    )} `}>{tag.name}</span></a>
+				<li class="flex max-w-full flex-col gap-x-2">
+					<div>
+						<a
+							class="inline-block"
+							href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+							title={`View posts with the tag: ${tag.name}`}
+							aria-label={`View posts with the tag: ${tag.name}`}
+							data-astro-prefetch
+						>
+							<span
+								class={`rounded-lg border p-1 ${getNotionColorToTailwindColor(
+									tag.color + "-background",
+									true,
+								)} `}
+							>
+								{tag.name}
+							</span>
+						</a>
 
-					<span class="inline-block">
-						: <a
-						class="webtrotion-page-link inline-block"
-						href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-						title={`View posts with the tag: ${tag.name}`}
-            aria-label={`View posts with the tag: ${tag.name}`}
-						data-astro-prefetch
-					> {tag.count} Post{tag.count > 1 && "s"}</a>
-					</span>
-        </div>
-          {tag.description && <div><q class="line-clamp-3 block italic mt-1">{tag.description}</q></div>}
+						<span class="inline-block">
+							:{" "}
+							<a
+								class="webtrotion-page-link inline-block"
+								href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+								title={`View posts with the tag: ${tag.name}`}
+								aria-label={`View posts with the tag: ${tag.name}`}
+								data-astro-prefetch
+							>
+								{" "}
+								{tag.count} Post{tag.count > 1 && "s"}
+							</a>
+						</span>
+					</div>
+					{tag.description && (
+						<div>
+							<q class="mt-1 line-clamp-3 block italic">{tag.description}</q>
+						</div>
+					)}
 				</li>
 			))
 		}

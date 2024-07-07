@@ -1,15 +1,20 @@
 ---
-import NotionBlocks from '../NotionBlocks.astro'
-import * as interfaces from '../../lib/interfaces'
+import NotionBlocks from "../NotionBlocks.astro";
+import * as interfaces from "../../lib/interfaces";
 
 export interface Props {
-  block: interfaces.Block;
-  headings: interfaces.Block[];
-  renderChildren?: boolean; // Make this optional
-  setId?:boolean;
+	block: interfaces.Block;
+	headings: interfaces.Block[];
+	renderChildren?: boolean; // Make this optional
+	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId=true } = Astro.props;
+const { block, headings, renderChildren = true, setId = true } = Astro.props;
 ---
 
-<NotionBlocks blocks={block.SyncedBlock.Children} headings={headings} renderChildren={renderChildren} setId={setId} />
+<NotionBlocks
+	blocks={block.SyncedBlock.Children}
+	headings={headings}
+	renderChildren={renderChildren}
+	setId={setId}
+/>

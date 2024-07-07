@@ -1,5 +1,5 @@
 ---
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 const { order = 0 } = Astro.props;
 // https://docs.astro.build/en/tutorial/6-islands/2/
 ---
@@ -11,8 +11,26 @@ const { order = 0 } = Astro.props;
 		class="group relative h-10 w-10 rounded-md p-2 ring-zinc-400 transition-all hover:text-accent"
 		aria-label="Toggle Dark Mode"
 	>
-  <Icon class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all dark:scale-100 dark:opacity-100" name={"theme-light"} aria-label="Set Light Theme" id="sun-svg" stroke='currentColor' fill="none" stroke-width='1.5' stroke-linecap='round'/>
-  <Icon class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all dark:scale-0 dark:opacity-0" name={"theme-dark"} aria-label="Set Dark Theme" id="moon-svg" stroke='currentColor' fill="none" stroke-width='1.5' stroke-linecap='round'/>
+		<Icon
+			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all dark:scale-100 dark:opacity-100"
+			name={"theme-light"}
+			aria-label="Set Light Theme"
+			id="sun-svg"
+			stroke="currentColor"
+			fill="none"
+			stroke-width="1.5"
+			stroke-linecap="round"
+		/>
+		<Icon
+			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all dark:scale-0 dark:opacity-0"
+			name={"theme-dark"}
+			aria-label="Set Dark Theme"
+			id="moon-svg"
+			stroke="currentColor"
+			fill="none"
+			stroke-width="1.5"
+			stroke-linecap="round"
+		/>
 	</button>
 </theme-toggle>
 

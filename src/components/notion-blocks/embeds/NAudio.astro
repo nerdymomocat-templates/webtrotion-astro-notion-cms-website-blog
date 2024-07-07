@@ -5,10 +5,10 @@ import { filePath } from "../../../lib/blog-helpers";
 
 export interface Props {
 	block: interfaces.Block;
-  setId?:boolean;
+	setId?: boolean;
 }
 
-const { block,  setId=true } = Astro.props;
+const { block, setId = true } = Astro.props;
 
 let url: URL | null = null;
 let audioUrl = "";
@@ -20,13 +20,13 @@ if (block.NAudio.External) {
 }
 ---
 
-<div class="audio-elem p-2" id={setId?block.Id:undefined}>
+<div class="audio-elem p-2" id={setId ? block.Id : undefined}>
 	{
 		audioUrl && (
-			<audio class="max-w-full"controls src={audioUrl}>
+			<audio class="max-w-full" controls src={audioUrl}>
 				Your browser does not support the audio element.
 			</audio>
 		)
 	}
-	<Caption richTexts={block.NAudio.Caption}  block={block} />
+	<Caption richTexts={block.NAudio.Caption} block={block} />
 </div>

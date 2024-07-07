@@ -4,8 +4,8 @@ import { Verified, VerifiedBusiness, VerifiedGovernment } from "./icons/index";
 import styles from "./verified-badge.module.css";
 
 interface Props {
-  user: TweetUser;
-  className?: string;
+	user: TweetUser;
+	className?: string;
 }
 
 const { user, className } = Astro.props;
@@ -14,26 +14,26 @@ let Icon = Verified;
 let iconClassName: string | null = styles.verifiedBlue;
 
 if (verified) {
-  if (!user.is_blue_verified) {
-    iconClassName = styles.verifiedOld;
-  }
-  switch (user.verified_type) {
-    case "Government":
-      Icon = VerifiedGovernment;
-      iconClassName = styles.verifiedGovernment;
-      break;
-    case "Business":
-      Icon = VerifiedBusiness;
-      iconClassName = null;
-      break;
-  }
+	if (!user.is_blue_verified) {
+		iconClassName = styles.verifiedOld;
+	}
+	switch (user.verified_type) {
+		case "Government":
+			Icon = VerifiedGovernment;
+			iconClassName = styles.verifiedGovernment;
+			break;
+		case "Business":
+			Icon = VerifiedBusiness;
+			iconClassName = null;
+			break;
+	}
 }
 ---
 
 {
-  verified ? (
-  <div class={`${className || ''} ${iconClassName || ''}`}>
-      <Icon />
-    </div>
-  ) : null
+	verified ? (
+		<div class={`${className || ""} ${iconClassName || ""}`}>
+			<Icon />
+		</div>
+	) : null
 }

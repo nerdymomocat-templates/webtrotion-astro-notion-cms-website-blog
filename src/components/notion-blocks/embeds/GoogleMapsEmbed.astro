@@ -1,25 +1,40 @@
 ---
-import Icon from '@/components/Icon';
+import Icon from "@/components/Icon";
 import { ENABLE_LIGHTBOX } from "@/constants";
 export interface Props {
 	url: URL;
-  caption: string | undefined;
+	caption: string | undefined;
 }
 
 const { url, caption } = Astro.props;
 ---
 
-<div class="relative w-full aspect-ratio-4-3">
-  <!-- Icon for triggering lightbox, positioned at the bottom right corner -->
-  {ENABLE_LIGHTBOX && (<a href={url.toString()} class="embedglightbox absolute top-4 right-4 m-2 cursor-pointer z-10 text-accent-2" aria-label="Click to expand" >
-    <Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true"/>
-  </a>)}
+<div class="aspect-ratio-4-3 relative w-full">
+	<!-- Icon for triggering lightbox, positioned at the bottom right corner -->
+	{
+		ENABLE_LIGHTBOX && (
+			<a
+				href={url.toString()}
+				class="embedglightbox absolute right-4 top-4 z-10 m-2 cursor-pointer text-accent-2"
+				aria-label="Click to expand"
+			>
+				<Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true" />
+			</a>
+		)
+	}
 
-  <iframe data-src={url.toString()} allowfullscreen="" loading="lazy" class="max-w-full w-full h-full absolute top-0 left-0 border-none rounded-lg lazyload" referrerpolicy="no-referrer-when-downgrade" title="google maps embed"}></iframe>
+	<iframe
+		data-src={url.toString()}
+		allowfullscreen=""
+		loading="lazy"
+		class="lazyload absolute left-0 top-0 h-full w-full max-w-full rounded-lg border-none"
+		referrerpolicy="no-referrer-when-downgrade"
+		title="google maps embed"
+		}></iframe>
 </div>
 
 <style>
-  .aspect-ratio-4-3 {
-    padding-top: 75%; /* 3/4 = 75% for 4:3 Aspect Ratio */
-}
+	.aspect-ratio-4-3 {
+		padding-top: 75%; /* 3/4 = 75% for 4:3 Aspect Ratio */
+	}
 </style>

@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   schedule:
-    - cron: '0 */8 * * *'
+    - cron: "0 */8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -25,7 +25,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: github-pages
     steps:
-
       - name: Checkout your repository using git
         uses: actions/checkout@v4
 
@@ -59,8 +58,7 @@ jobs:
         with:
           path: ./tmp
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys:
-            ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-
+          restore-keys: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-
 
       - name: Restore cached public
         if: steps.npm-cache.outputs.cache-hit == 'true'
@@ -69,8 +67,7 @@ jobs:
         with:
           path: ./public
           key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys:
-            ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-
+          restore-keys: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
@@ -109,8 +106,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ env.BUILD_PATH }}/dist
-
-
 
   deploy:
     needs: build
