@@ -28,6 +28,7 @@ import CustomIconDownloader from "./src/integrations/custom-icon-downloader";
 import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
 import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
+import rssContentIntegration from './src/integrations/rss-content-integration';
 import CSSWriter from "./src/integrations/theme-constants-to-css";
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
@@ -67,6 +68,7 @@ export default defineConfig({
 		CustomIconDownloader(),
 		EntryCacheEr(),
 		PublicNotionCopier(),
+    rssContentIntegration(),
 		CSSWriter(),
 		robotsTxt({
 			sitemapBaseFileName: "sitemap",
