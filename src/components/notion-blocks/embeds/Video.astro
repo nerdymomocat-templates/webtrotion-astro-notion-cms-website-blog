@@ -49,7 +49,12 @@ const youtubeVidIdTitle = isThisYoutubeURL ? await parseYouTubeVideoIdTitle(url)
 							<Icon name={"expand"} class="inline h-6 w-6" aria-hidden="true" />
 						</a>
 					)}
-					<video class="h-[340px] w-full max-w-full rounded-lg border-none" controls>
+					<video
+						class="lazyload h-[340px] w-full max-w-full rounded-lg border-none"
+						preload="metadata"
+						muted
+						controls
+					>
 						<source src={videoUrl} type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>

@@ -6,6 +6,7 @@ import type { TwitterComponents } from "./types.js";
 import MediaImg from "./MediaImg.astro";
 import styles from "./tweet-media.module.css";
 import TweetMediaVideo from "./TweetMediaVideo.astro";
+import { getFirstImage } from "@/lib/blog-helpers";
 
 const getSkeletonStyle = (media: MediaDetails, itemCount: number) => {
 	let paddingBottom = 56.25; // default of 16x9
@@ -52,6 +53,7 @@ const Img = components?.MediaImg ?? MediaImg;
 								alt={media.ext_alt_text || "Image"}
 								class={styles.image}
 								draggable
+								loading={getFirstImage() ? "eager" : "lazy"}
 							/>
 						</a>
 					) : (
