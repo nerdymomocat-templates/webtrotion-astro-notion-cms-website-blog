@@ -17,12 +17,6 @@ const { media } = Astro.props;
 const mp4Video = getMp4Video(media);
 ---
 
-<video
-	class={`lazyload ${mediaStyles.image}`}
-	poster={getMediaUrl(media, "small")}
-	controls
-	muted
-	preload="none"
->
+<video class={mediaStyles.image} poster={getMediaUrl(media, "small")} controls muted preload="none">
 	<source src={mp4Video.url} type={mp4Video.content_type} />
 </video>
