@@ -7,27 +7,32 @@ import NotionBlocks from "../NotionBlocks.astro";
 export interface Props {
 	block: interfaces.Block;
 	headings: interfaces.Block[];
-	renderChildren?: boolean; // Make this optional
+	renderChildren?: boolean;
 	setId?: boolean;
 }
 
 const { block, headings, renderChildren = true, setId = true } = Astro.props;
+
+const hasChildren = block.Paragraph.Children && block.Paragraph.Children.length > 0;
+const Tag = hasChildren && renderChildren ? 'div' : 'p';
 ---
 
-<div
+<Tag
 	class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`}
 	id={setId ? block.Id : undefined}
 >
 	{block.Paragraph.RichTexts.map((richText) => <RichText richText={richText} blockID={block.Id} />)}
 	{block.Paragraph.RichTexts.length === 0 && <br />}
 	{
-		block.Paragraph.Children && renderChildren && (
-			<NotionBlocks
-				blocks={block.Paragraph.Children}
-				headings={headings}
-				setId={setId}
-				renderChildren={renderChildren}
-			/>
+		hasChildren && renderChildren && (
+			<div class="pl-6">
+				<NotionBlocks
+					blocks={block.Paragraph.Children}
+					headings={headings}
+					setId={setId}
+					renderChildren={renderChildren}
+				/>
+			</div>
 		)
 	}
-</div>
+</Tag>
