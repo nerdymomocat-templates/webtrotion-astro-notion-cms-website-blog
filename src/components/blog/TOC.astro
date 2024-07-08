@@ -21,7 +21,7 @@ const toc = generateToc(headings);
 		{toc.map((heading) => <TOCHeading heading={heading} visualOnly={true} />)}
 	</div>
 	<div
-		class="toc-content invisible absolute bottom-0 right-1 max-h-[68vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200 sm:bottom-auto sm:top-0 sm:group-hover:visible sm:group-hover:translate-x-0 sm:group-hover:opacity-100"
+		class="toc-content invisible absolute bottom-0 right-1 max-h-[55vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200 sm:bottom-auto sm:top-0 sm:max-h-[68vh] sm:group-hover:visible sm:group-hover:translate-x-0 sm:group-hover:opacity-100"
 	>
 		<ul class="mt-2 text-sm">
 			{toc.map((heading) => <TOCHeading heading={heading} />)}

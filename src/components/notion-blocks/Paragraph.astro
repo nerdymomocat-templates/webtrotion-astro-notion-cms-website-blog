@@ -14,7 +14,7 @@ export interface Props {
 const { block, headings, renderChildren = true, setId = true } = Astro.props;
 
 const hasChildren = block.Paragraph.Children && block.Paragraph.Children.length > 0;
-const Tag = hasChildren && renderChildren ? 'div' : 'p';
+const Tag = hasChildren && renderChildren ? "div" : "p";
 ---
 
 <Tag
