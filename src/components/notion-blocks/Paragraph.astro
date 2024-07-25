@@ -18,7 +18,7 @@ const Tag = hasChildren && renderChildren ? "div" : "p";
 ---
 
 <Tag
-	class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 text-base min-h-7`}
+	class={`${getNotionColorToTailwindColor(block.Paragraph.Color)} my-1 min-h-7`}
 	id={setId ? block.Id : undefined}
 >
 	{block.Paragraph.RichTexts.map((richText) => <RichText richText={richText} blockID={block.Id} />)}
