@@ -24,6 +24,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     environment: github-pages
+    timeout-minutes: 45
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v4
