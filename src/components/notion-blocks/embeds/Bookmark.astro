@@ -30,10 +30,9 @@ try {
 	const html = urlMap[urlString];
 	if (html) {
 		metadata = await metascraper({ html, url });
-    if (metadata && metadata.title=="Just a moment...")
-    {
-      notDNSForbidden = false;
-    }
+		if (metadata && metadata.title == "Just a moment...") {
+			notDNSForbidden = false;
+		}
 	}
 } catch (err) {
 	console.log(err);
@@ -42,7 +41,7 @@ try {
 
 <div class="bookmark pb-2" id={setId ? block.Id : undefined}>
 	{
-		url && notDNSForbidden?(
+		url && notDNSForbidden ? (
 			<div class="flex w-full max-w-full overflow-hidden text-sm">
 				<a
 					href={url.toString()}
@@ -86,7 +85,8 @@ try {
 					)}
 				</a>
 			</div>
-		):(<div class="flex w-full max-w-full overflow-hidden text-sm">
+		) : (
+			<div class="flex w-full max-w-full overflow-hidden text-sm">
 				<a
 					href={url.toString()}
 					target="_blank"
@@ -110,7 +110,8 @@ try {
 						</div>
 					</div>
 				</a>
-			</div>)
+			</div>
+		)
 	}
 	<Caption richTexts={(block.Bookmark || block.LinkPreview || block.Embed).Caption} block={block} />
 </div>
