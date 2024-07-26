@@ -44,89 +44,130 @@ import Icon from "@/components/Icon";
 </site-search>
 
 <script>
-	class SiteSearch extends HTMLElement {
-		private openBtn: HTMLButtonElement;
-		private closeBtn: HTMLButtonElement;
-		private dialog: HTMLDialogElement;
-		private dialogFrame: HTMLDivElement;
+  class SiteSearch extends HTMLElement {
+    private openBtn: HTMLButtonElement;
+    private closeBtn: HTMLButtonElement;
+    private dialog: HTMLDialogElement;
+    private dialogFrame: HTMLDivElement;
+    private observer: MutationObserver;
+    private initialized: boolean = false;
+    private idleCallbackId: number | null = null;
 
-		constructor() {
-			super();
-			this.openBtn = this.querySelector<HTMLButtonElement>("button[data-open-modal]")!;
-			this.closeBtn = this.querySelector<HTMLButtonElement>("button[data-close-modal]")!;
-			this.dialog = this.querySelector("dialog")!;
-			this.dialogFrame = this.querySelector(".dialog-frame")!;
+    constructor() {
+        super();
+        this.openBtn = this.querySelector<HTMLButtonElement>("button[data-open-modal]")!;
+        this.closeBtn = this.querySelector<HTMLButtonElement>("button[data-close-modal]")!;
+        this.dialog = this.querySelector("dialog")!;
+        this.dialogFrame = this.querySelector(".dialog-frame")!;
 
-			this.openBtn.addEventListener("click", this.openModal);
-			this.openBtn.disabled = false;
-			this.closeBtn.addEventListener("click", this.closeModal);
-		}
+        this.openBtn.addEventListener("click", this.openModal);
+        this.openBtn.disabled = false;
+        this.closeBtn.addEventListener("click", this.closeModal);
 
-		connectedCallback() {
-			// Listen for keyboard shortcut
-			window.addEventListener("keydown", this.onWindowKeydown);
+        // Initialize MutationObserver
+        this.observer = new MutationObserver(this.queueDOMCheck);
+    }
 
-			// only add pagefind in production
-			if (import.meta.env.DEV) return;
-			const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
-			onIdle(async () => {
-				const { PagefindUI } = await import("@pagefind/default-ui");
-				new PagefindUI({
-					element: "#webtrotion__search",
-					baseUrl: import.meta.env.BASE_URL,
-					bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
-					showImages: false,
-					showSubResults: true,
-					showEmptyFilters: false,
-					openFilters: ["Tags"],
-					translations: {
-						placeholder: "Tip: Use ⌘K or ^K to open search",
-						zero_results: "Couldn't find [SEARCH_TERM]",
-					},
-				});
-			});
-		}
+    connectedCallback() {
+        window.addEventListener("keydown", this.onWindowKeydown);
 
-		disconnectedCallback() {
-			window.removeEventListener("keydown", this.onWindowKeydown);
-		}
+        if (import.meta.env.DEV) return;
+        const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
+        onIdle(async () => {
+            const { PagefindUI } = await import("@pagefind/default-ui");
+            new PagefindUI({
+                element: "#webtrotion__search",
+                baseUrl: import.meta.env.BASE_URL,
+                bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
+                showImages: false,
+                showSubResults: true,
+                showEmptyFilters: false,
+                openFilters: ["Tags"],
+                translations: {
+                    placeholder: "Tip: Use ⌘K or ^K to open search",
+                    zero_results: "Couldn't find [SEARCH_TERM]",
+                },
+            });
 
-		onWindowClick = (event: MouseEvent) => {
-			// check if it's a link
-			const isLink = "href" in (event.target || {});
-			// make sure the click is either a link or outside of the dialog
-			if (
-				isLink ||
-				(document.body.contains(event.target as Node) &&
-					!this.dialogFrame.contains(event.target as Node))
-			)
-				this.closeModal();
-		};
+            // Start observing the dialog for changes
+            this.observer.observe(this.dialog, { childList: true, subtree: true });
+        });
+    }
 
-		onWindowKeydown = (e: KeyboardEvent) => {
-			// check if it's the / key
-			if ((((e.metaKey || e.ctrlKey) && e.key === "k") || e.key === "/") && !this.dialog.open) {
-				this.openModal();
-				e.preventDefault();
-			}
-		};
+    disconnectedCallback() {
+        window.removeEventListener("keydown", this.onWindowKeydown);
+        this.observer.disconnect();
+        if (this.idleCallbackId !== null) {
+            (window.cancelIdleCallback || clearTimeout)(this.idleCallbackId);
+        }
+    }
 
-		openModal = (event?: MouseEvent) => {
-			this.dialog.showModal();
-			this.querySelector("input")?.focus();
-			event?.stopPropagation();
-			window.addEventListener("click", this.onWindowClick);
-		};
+    queueDOMCheck = () => {
+        if (this.initialized) return;
 
-		closeModal = () => {
-			if (this.dialog.open) {
-				this.dialog.close();
-				window.removeEventListener("click", this.onWindowClick);
-			}
-		};
-	}
+        if (this.idleCallbackId !== null) {
+            (window.cancelIdleCallback || clearTimeout)(this.idleCallbackId);
+        }
 
-	customElements.define("site-search", SiteSearch);
+        const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 0));
+        this.idleCallbackId = onIdle(this.checkForFilterBlocks);
+    }
+
+    checkForFilterBlocks = () => {
+        this.idleCallbackId = null;
+        if (this.initialized) return;
+
+        const filterBlocks = this.dialog.querySelectorAll('.pagefind-ui__filter-block');
+        if (filterBlocks.length >= 2) {
+            this.initializeFilterBlocks(filterBlocks);
+            this.initialized = true;
+            this.observer.disconnect();
+        }
+    }
+
+    initializeFilterBlocks = (filterBlocks: NodeListOf<Element>) => {
+        const secondFilterBlock = filterBlocks[1] as HTMLDetailsElement;
+        if (window.innerWidth >= 640) { // Tailwind's sm breakpoint
+            secondFilterBlock.setAttribute('open', '');
+        } else {
+            secondFilterBlock.removeAttribute('open');
+        }
+    }
+
+    onWindowClick = (event: MouseEvent) => {
+        const isLink = "href" in (event.target || {});
+        if (
+            isLink ||
+            (document.body.contains(event.target as Node) &&
+                !this.dialogFrame.contains(event.target as Node))
+        )
+            this.closeModal();
+    };
+
+    onWindowKeydown = (e: KeyboardEvent) => {
+        if (((e.metaKey || e.ctrlKey) && e.key === "k") && !this.dialog.open) {
+            this.openModal();
+            e.preventDefault();
+        }
+    };
+
+    openModal = (event?: MouseEvent) => {
+        this.dialog.showModal();
+        this.querySelector("input")?.focus();
+        event?.stopPropagation();
+        window.addEventListener("click", this.onWindowClick);
+    };
+
+    closeModal = () => {
+        if (this.dialog.open) {
+            this.dialog.close();
+            window.removeEventListener("click", this.onWindowClick);
+        }
+    };
+}
+
+customElements.define("site-search", SiteSearch);
+
 </script>
 
 <style is:global>
@@ -158,6 +199,7 @@ import Icon from "@/components/Icon";
 	#webtrotion__search .pagefind-ui__result {
 		padding: 12px;
 		border: 0;
+    overflow-x: hidden;
 	}
 	@media (max-width: 640px) {
 		#webtrotion__search .pagefind-ui__drawer {
