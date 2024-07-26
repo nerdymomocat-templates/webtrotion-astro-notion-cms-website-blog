@@ -3,6 +3,7 @@ import type { AstroIntegration } from "astro";
 import config from "../../constants-config.json";
 const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
+import path from "path";
 
 export default (): AstroIntegration => ({
 	name: "theme-constants-to-css",
@@ -149,6 +150,11 @@ ${createCssVariables("dark")}
 
 			// Define the path to the output CSS file
 			const cssOutputPath = "src/styles/global.css";
+      // Ensure the directory exists
+      const dir = path.dirname(cssOutputPath);
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
 
 			// Write the CSS content to the file
 			fs.writeFileSync(cssOutputPath, cssContent);
