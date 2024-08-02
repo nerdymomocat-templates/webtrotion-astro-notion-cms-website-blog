@@ -23,6 +23,9 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 <h1 class="title mb-3 sm:mb-1" data-pagefind-filter=`collections:${post.Collection}`>
 	{post.Title}
 </h1>
+{
+  post.Excerpt && <q class="mb-2 block italic">{post.Excerpt}</q>
+}
 <div class="flex max-w-full flex-wrap items-center gap-x-3 gap-y-2">
 	<p class="font-semibold">
 		<FormattedDate date={new Date(post.Date)} dateTimeOptions={dateTimeOptions} />
