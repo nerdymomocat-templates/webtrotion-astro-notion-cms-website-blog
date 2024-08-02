@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
 import type {
 	Block,

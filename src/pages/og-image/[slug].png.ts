@@ -6,7 +6,6 @@ import { Resvg } from "@resvg/resvg-js";
 // import { siteConfig } from "@/site-config";
 import { getFormattedDate } from "@/utils";
 import { buildTimeFilePath } from "@/lib/blog-helpers";
-import fetch from "node-fetch";
 
 //ADDITION
 import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
