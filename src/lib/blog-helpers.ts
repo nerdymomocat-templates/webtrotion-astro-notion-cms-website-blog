@@ -18,6 +18,7 @@ const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
 let referencesToPageCache: { [entryId: string]: { entryId: string; block: Block }[] } | null = null;
 let firstImage = true;
+let track_current_page_id: string | null = null;
 
 export function resetFirstImage() {
 	firstImage = true;
@@ -29,6 +30,13 @@ export function getFirstImage() {
 		firstImage = false;
 	}
 	return returnval;
+}
+export function setTrackCurrentPageId(pageId: string) {
+	track_current_page_id = pageId;
+	return true;
+}
+export function getTrackCurrentPageId() {
+	return track_current_page_id;
 }
 
 export const filePath = (url: URL): string => {
@@ -342,11 +350,18 @@ export const getAnchorLinkAndBlock = async (
 			conditionmatch: "external",
 			post: post,
 		};
+	} else if (block_linked_id && post && post.PageId === track_current_page_id) {
+		return {
+			hreflink: `${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}/#${block_linked_id}`,
+			blocklinked: null,
+			conditionmatch: "block_current_page",
+			post: post,
+		};
 	} else if (block_linked_id && post) {
 		return {
 			hreflink: `${getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION)}/#${block_linked_id}`,
 			blocklinked: block_linked,
-			conditionmatch: "block_current_or_other_page",
+			conditionmatch: "block_other_page",
 			post: post,
 		};
 	} else if (post) {

@@ -1,7 +1,7 @@
 ---
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import PostLayout from "@/layouts/BlogPost.astro";
-import { extractTargetBlocks, resetFirstImage } from "@/lib/blog-helpers";
+import { extractTargetBlocks, resetFirstImage, setTrackCurrentPageId } from "@/lib/blog-helpers";
 import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
@@ -55,7 +55,7 @@ if (postFound) {
 ---
 
 {
-	postFound && resetFirstImage() && (
+	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
 		<PostLayout post={post} headings={headings}>
 			<div class="post-body screen:max-w-[708px] print:w-full">
 				<NotionBlocks blocks={blocks} isRoot={true} />

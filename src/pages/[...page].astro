@@ -2,7 +2,7 @@
 import PageLayout from "../layouts/Base.astro";
 // import PostPreview from "../components/blog/PostPreview.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, resetFirstImage } from "../lib/blog-helpers";
+import { extractTargetBlocks, getNavLink, resetFirstImage, setTrackCurrentPageId } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
 
@@ -88,7 +88,7 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 }
 ---
 
-{pageFound && resetFirstImage() && (
+{pageFound && resetFirstImage() && setTrackCurrentPageId(page.PageId) && (
   <>
 
 <PageLayout

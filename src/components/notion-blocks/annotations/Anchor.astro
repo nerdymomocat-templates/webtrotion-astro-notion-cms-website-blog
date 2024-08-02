@@ -19,10 +19,10 @@ const { hreflink, blocklinked, conditionmatch, post } = await getAnchorLinkAndBl
 	REFERENCES &&
 	REFERENCES["popovers"] &&
 	conditionmatch &&
-	["block_current_or_other_page", "other_page"].includes(conditionmatch) &&
+	["block_other_page", "other_page"].includes(conditionmatch) &&
 	post &&
 	post.Title ? (
-		conditionmatch === "block_current_or_other_page" ? (
+		conditionmatch === "block_other_page" ? (
 			<NBlocksPopover
 				block={blocklinked}
 				linkedTo={hreflink}
@@ -43,14 +43,23 @@ const { hreflink, blocklinked, conditionmatch, post } = await getAnchorLinkAndBl
 			</NPagePopover>
 		)
 	) : hreflink ? (
-		<a
-			href={hreflink}
-			class="webtrotion-page-link text-link decoration-solid"
-			target="_blank"
-			rel="noopener noreferrer"
-		>
-			<slot />
-		</a>
+		conditionmatch === "block_current_page" ? (
+			<a
+				href={hreflink}
+				class="text-link no-underline hover:underline hover:decoration-accent-2/40 hover:underline-offset-2"
+			>
+				<slot />
+			</a>
+		) : (
+			<a
+				href={hreflink}
+				class="webtrotion-page-link text-link decoration-solid"
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				<slot />
+			</a>
+		)
 	) : (
 		<slot />
 	)
