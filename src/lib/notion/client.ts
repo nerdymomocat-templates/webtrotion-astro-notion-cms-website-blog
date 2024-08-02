@@ -72,7 +72,28 @@ const client = new Client({
 
 let allEntriesCache: Post[] | null = null;
 let dbCache: Database | null = null;
-let blockIdPostIdMap: { [blockId: string]: string } | null = null;
+let blockIdPostIdMap: { [key: string]: string } | null = null;
+
+const BUILDCACHE_DIR = "./buildcache";
+
+// Generic function to save data to buildcache
+function saveBuildcache<T>(filename: string, data: T): void {
+	if (!fs.existsSync(BUILDCACHE_DIR)) {
+		fs.mkdirSync(BUILDCACHE_DIR, { recursive: true });
+	}
+	const filePath = path.join(BUILDCACHE_DIR, filename);
+	fs.writeFileSync(filePath, JSON.stringify(data), "utf8");
+}
+
+// Generic function to load data from buildcache
+function loadBuildcache<T>(filename: string): T | null {
+	const filePath = path.join(BUILDCACHE_DIR, filename);
+	if (fs.existsSync(filePath)) {
+		const data = fs.readFileSync(filePath, "utf8");
+		return JSON.parse(data) as T;
+	}
+	return null;
+}
 
 const numberOfRetry = 2;
 
@@ -82,6 +103,12 @@ export async function getAllEntries(): Promise<Post[]> {
 	if (allEntriesCache !== null) {
 		return allEntriesCache;
 	}
+
+	allEntriesCache = loadBuildcache<Post[]>("allEntries.json");
+	if (allEntriesCache) {
+		return allEntriesCache;
+	}
+
 	// console.log("Did not find cache for getAllEntries");
 
 	const queryFilters: QueryFilters = {};
@@ -166,6 +193,7 @@ export async function getAllEntries(): Promise<Post[]> {
 		(a, b) => new Date(b.Date).getTime() - new Date(a.Date).getTime(),
 	);
 	//console.log("posts Cache", postsCache);
+	saveBuildcache("allEntries.json", allEntriesCache);
 	return allEntriesCache;
 }
 
@@ -284,36 +312,64 @@ export async function getPostContentByPostId(
 		fs.mkdirSync(tmpDir, { recursive: true });
 	}
 
+	let blocks: Block[];
+	let referencesInPage: ReferencesInPage[] | null;
+
 	if (!isPostUpdatedAfterLastBuild && fs.existsSync(cacheFilePath)) {
 		// If the post was not updated after the last build and cache file exists, return the cached data
 		console.log("Hit cache for", post.Slug);
-		const cachedData = JSON.parse(fs.readFileSync(cacheFilePath, "utf-8"));
-		let referencesInPage = null;
-		if (!fs.existsSync(cacheReferencesInPageFilePath)) {
-			referencesInPage = extractReferencesInPage(post.PageId, cachedData);
+		blocks = JSON.parse(fs.readFileSync(cacheFilePath, "utf-8"));
+		if (fs.existsSync(cacheReferencesInPageFilePath)) {
+			referencesInPage = JSON.parse(fs.readFileSync(cacheReferencesInPageFilePath, "utf-8"));
+		} else {
+			referencesInPage = extractReferencesInPage(post.PageId, blocks);
 			fs.writeFileSync(
 				cacheReferencesInPageFilePath,
 				JSON.stringify(referencesInPage, null, 2),
 				"utf-8",
 			);
-		} else {
-			referencesInPage = JSON.parse(fs.readFileSync(cacheReferencesInPageFilePath, "utf-8"));
 		}
-		return { blocks: cachedData, referencesInPage: referencesInPage };
 	} else {
 		// If the post was updated after the last build or cache does not exist, fetch new data
-		const allBlocks = await getAllBlocksByBlockId(post.PageId);
-
+		blocks = await getAllBlocksByBlockId(post.PageId);
 		// Write the new data to the cache file
-		fs.writeFileSync(cacheFilePath, JSON.stringify(allBlocks, null, 2), "utf-8");
-		const referencesInPage = extractReferencesInPage(post.PageId, allBlocks);
+		fs.writeFileSync(cacheFilePath, JSON.stringify(blocks, null, 2), "utf-8");
+		referencesInPage = extractReferencesInPage(post.PageId, blocks);
 		fs.writeFileSync(
 			cacheReferencesInPageFilePath,
 			JSON.stringify(referencesInPage, null, 2),
 			"utf-8",
 		);
-		return { blocks: allBlocks, referencesInPage: referencesInPage };
 	}
+
+	// Update the blockIdPostIdMap
+	updateBlockIdPostIdMap(post.PageId, blocks);
+
+	return { blocks, referencesInPage };
+}
+
+function formatUUID(id: string): string {
+	if (id.includes("-")) return id; // Already formatted
+	return id.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
+}
+
+function updateBlockIdPostIdMap(postId: string, blocks: Block[]) {
+	if (blockIdPostIdMap === null) {
+		blockIdPostIdMap = loadBuildcache<{ [key: string]: string }>("blockIdPostIdMap.json") || {};
+	}
+
+	blocks.forEach((block) => {
+		blockIdPostIdMap[formatUUID(block.Id)] = formatUUID(postId);
+	});
+
+	saveBuildcache("blockIdPostIdMap.json", blockIdPostIdMap);
+}
+
+export function getBlockIdPostIdMap(): { [key: string]: string } {
+	if (blockIdPostIdMap === null) {
+		blockIdPostIdMap = loadBuildcache<{ [key: string]: string }>("blockIdPostIdMap.json") || {};
+	}
+	return blockIdPostIdMap;
 }
 
 export function createReferencesToThisEntry(
@@ -442,6 +498,26 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 }
 
 export async function getBlock(blockId: string): Promise<Block | null> {
+	// First, check if the block-id exists in our mapping
+	const blockIdPostIdMap = getBlockIdPostIdMap();
+	const postId = blockIdPostIdMap[formatUUID(blockId)];
+
+	if (postId) {
+		// If we have a mapping, look for the block in the cached post JSON
+		const tmpDir = "./tmp";
+		const cacheFilePath = path.join(tmpDir, `${postId}.json`);
+
+		if (fs.existsSync(cacheFilePath)) {
+			const cachedBlocks: Block[] = JSON.parse(fs.readFileSync(cacheFilePath, "utf-8"));
+			const block = cachedBlocks.find((b) => b.Id === formatUUID(blockId));
+
+			if (block) {
+				return block;
+			}
+		}
+	}
+	// console.log("Did not find cache for blockId: " + formatUUID(blockId));
+	// If we couldn't find the block in our cache, fall back to the API call
 	const params: requestParams.RetrieveBlock = {
 		block_id: blockId,
 	};
@@ -467,7 +543,14 @@ export async function getBlock(blockId: string): Promise<Block | null> {
 			},
 		);
 
-		return _buildBlock(res);
+		const block = _buildBlock(res);
+
+		// Update our mapping and cache with this new block
+		if (!postId) {
+			updateBlockIdPostIdMap(blockId, [block]);
+		}
+
+		return block;
 	} catch (error) {
 		// Log the error if necessary
 		console.error("Error retrieving block:" + blockId, error);
@@ -716,6 +799,10 @@ export async function getDatabase(): Promise<Database> {
 	if (dbCache !== null) {
 		return Promise.resolve(dbCache);
 	}
+	dbCache = loadBuildcache<Database>("database.json");
+	if (dbCache) {
+		return dbCache;
+	}
 
 	const params: requestParams.RetrieveDatabase = {
 		database_id: DATABASE_ID,
@@ -779,7 +866,7 @@ export async function getDatabase(): Promise<Database> {
 	};
 
 	dbCache = database;
-
+	saveBuildcache("database.json", dbCache);
 	return database;
 }
 

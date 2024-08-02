@@ -27,6 +27,7 @@ const getSite = function () {
 import CustomIconDownloader from "./src/integrations/custom-icon-downloader";
 import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
+import DeleteBuildCache from "./src/integrations/delete-build-cache";
 import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
 import robotsTxt from "astro-robots-txt";
@@ -67,6 +68,7 @@ export default defineConfig({
 		CustomIconDownloader(),
 		EntryCacheEr(),
 		PublicNotionCopier(),
+		DeleteBuildCache(),
 		CSSWriter(),
 		robotsTxt({
 			sitemapBaseFileName: "sitemap",

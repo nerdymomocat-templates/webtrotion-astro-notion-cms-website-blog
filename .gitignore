@@ -31,3 +31,4 @@ public/assets/preloaded/*
 tmp/*
 !tmp/.gitkeep
 src/styles/global.css
+buildcache/
