@@ -1,5 +1,4 @@
 import { defineConfig } from "astro/config";
-// import { remarkReadingTime } from "./src/utils/remark-reading-time";
 import tailwind from "@astrojs/tailwind";
 import path from "path";
 import { CUSTOM_DOMAIN, BASE_PATH } from "./src/constants";
