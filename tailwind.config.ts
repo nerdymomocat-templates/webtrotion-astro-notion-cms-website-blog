@@ -49,10 +49,10 @@ export default {
 				"accent-2": "rgb(var(--theme-accent-2) / <alpha-value>)",
 				quote: "rgb(var(--theme-quote) / <alpha-value>)",
 				ngray: {
-					"txt-light": "#9B9A97",
-					"txt-dark": "#979A9B",
-					"bg-light": "#EBECED",
-					"bg-dark": "#252525", //this is notion's choice
+					"txt-light": "#787774",
+					"txt-dark": "#9B9B9B",
+					"bg-light": "#F1F1EF",
+					"bg-dark": "#2F2F2F", //this is notion's choice
 					// 'bg-dark': '#566670', //this is my choice
 					"table-header-bg-light": "#F7F6F3",
 					"table-header-bg-dark": "#FFFFFF",
@@ -62,59 +62,59 @@ export default {
 					"bg-dark": "#373737",
 				},
 				nbrown: {
-					"txt-light": "#64473A",
-					"txt-dark": "#937264",
-					"bg-light": "#ede4df",
-					"bg-dark": "#2E2724",
+					"txt-light": "#9F6B53",
+					"txt-dark": "#BA856F",
+					"bg-light": "#F4EEEE",
+					"bg-dark": "#4A3228",
 					// 'bg-dark': '#514E4B'
 				},
 				norange: {
 					"txt-light": "#D9730D",
-					"txt-dark": "#FFA344",
-					"bg-light": "#FAEBDD",
-					"bg-dark": "#36291F",
+					"txt-dark": "#C77D48",
+					"bg-light": "#FBECDD",
+					"bg-dark": "#5C3B23",
 					// 'bg-dark': '#70544A'
 				},
 				nyellow: {
-					"txt-light": "#DFAB01",
-					"txt-dark": "#FFDC49",
-					"bg-light": "#FBF3DB",
-					"bg-dark": "#372E20",
+					"txt-light": "#CB912F",
+					"txt-dark": "#CA9849",
+					"bg-light": "#FBEDD6",
+					"bg-dark": "#56452F",
 					// 'bg-dark': '#707049'
 				},
 				ngreen: {
-					"txt-light": "#0F7B6C",
-					"txt-dark": "#4DAB9A",
-					"bg-light": "#DDEDEA",
-					"bg-dark": "#242B26",
+					"txt-light": "#448361",
+					"txt-dark": "#529E72",
+					"bg-light": "#EDF3EC",
+					"bg-dark": "#243D30",
 					// 'bg-dark': '#41706A'
 				},
 				nblue: {
-					"txt-light": "#0B6E99",
-					"txt-dark": "#529CCA",
-					"bg-light": "#DDEBF1",
-					"bg-dark": "#1F282D",
+					"txt-light": "#337EA9",
+					"txt-dark": "#5E87C9",
+					"bg-light": "#E7F3F8",
+					"bg-dark": "#143A4E",
 					// 'bg-dark': '#41727A'
 				},
 				npurple: {
-					"txt-light": "#6940A5",
-					"txt-dark": "#9A6DD7",
-					"bg-light": "#EAE4F2",
-					"bg-dark": "#2A2430",
+					"txt-light": "#9065B0",
+					"txt-dark": "#9D68D3",
+					"bg-light": "#F7F3F8",
+					"bg-dark": "#3C2D49",
 					// 'bg-dark': '#5A5672'
 				},
 				npink: {
-					"txt-light": "#AD1A72",
-					"txt-dark": "#E255A1",
-					"bg-light": "#F4DFEB",
-					"bg-dark": "#2E2328",
+					"txt-light": "#C14C8A",
+					"txt-dark": "#9D68D3",
+					"bg-light": "#FBF2F5",
+					"bg-dark": "#4E2C3C",
 					// 'bg-dark': '#6A4C64'
 				},
 				nred: {
-					"txt-light": "#E03E3E",
-					"txt-dark": "#FF7369",
-					"bg-light": "#FBE4E4",
-					"bg-dark": "#332523",
+					"txt-light": "#D44C47",
+					"txt-dark": "#DF5452",
+					"bg-light": "#FDEBEC",
+					"bg-dark": "#522E2A",
 					// 'bg-dark': '#6A4545'
 				},
 			},
