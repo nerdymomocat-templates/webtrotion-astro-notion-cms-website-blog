@@ -20,7 +20,7 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 <div
 	className={`
     callout mx-auto my-2 flex w-full max-w-full rounded px-3 py-4 leading-6
-    ${getNotionColorToTailwindColor(block.Callout.Color, true)}
+    ${getNotionColorToTailwindColor(block.Callout.Color, true, true)}
   `}
 	id={setId ? block.Id : undefined}
 >

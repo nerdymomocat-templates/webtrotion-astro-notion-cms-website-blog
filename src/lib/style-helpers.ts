@@ -1,5 +1,9 @@
 // eslint-disable-next-line prettier/prettier
-export const getNotionColorToTailwindColor = (s: string, colorForDefault: boolean = false) => {
+export const getNotionColorToTailwindColor = (
+	s: string,
+	colorForDefault: boolean = false,
+	isCallout: boolean = false,
+) => {
 	// Convert snake_case to kebab-case
 	const kebabCase = s.replaceAll("_", "-");
 
@@ -15,7 +19,7 @@ export const getNotionColorToTailwindColor = (s: string, colorForDefault: boolea
 		purple: "text-npurple-txt-light dark:text-npurple-txt-dark",
 		pink: "text-npink-txt-light dark:text-npink-txt-dark",
 		red: "text-nred-txt-light dark:text-nred-txt-dark",
-		default: colorForDefault ? "border border-gray-200 dark:border-gray-700" : "",
+		default: "",
 
 		// Background color classes
 		"gray-background": "px-1 rounded bg-ngray-bg-light dark:bg-ngray-bg-dark",
@@ -28,7 +32,9 @@ export const getNotionColorToTailwindColor = (s: string, colorForDefault: boolea
 		"pink-background": "px-1 rounded bg-npink-bg-light dark:bg-npink-bg-dark",
 		"red-background": "px-1 rounded bg-nred-bg-light dark:bg-nred-bg-dark",
 		"default-background": colorForDefault
-			? "px-1 rounded bg-nlgray-bg-light dark:bg-nlgray-bg-dark"
+			? isCallout
+				? "px-1 rounded border border-nlgray-bg-light dark:border-nlgray-bg-dark"
+				: "px-1 rounded bg-nlgray-bg-light dark:bg-nlgray-bg-dark"
 			: "",
 	};
 
