@@ -58,6 +58,8 @@ export default {
 					"bg-tag-dark": "#5A5A5A",
 					"table-header-bg-light": "#F7F6F3",
 					"table-header-bg-dark": "#FFFFFF",
+					"callout-border-light": "#DFDFDE",
+					"callout-border-dark": "#373737",
 				},
 				nlgray: {
 					"bg-tag-light": "#F1F1F0",

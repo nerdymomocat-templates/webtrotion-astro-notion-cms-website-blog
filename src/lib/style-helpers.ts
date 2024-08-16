@@ -47,7 +47,7 @@ export const getNotionColorToTailwindColor = (s: string, isTag: boolean = false)
 			: "bg-nred-bg-light dark:bg-nred-bg-dark",
 		"default-background": isTag
 			? "bg-nlgray-bg-tag-light dark:bg-nlgray-bg-tag-dark"
-			: "border border-nlgray-bg-light dark:border-nlgray-bg-dark",
+			: "border border-ngray-callout-border-light dark:border-ngray-callout-border-dark",
 	};
 
 	// Return the Tailwind color classes, defaulting to the input if no mapping is found
