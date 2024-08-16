@@ -51,7 +51,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 			{post.Tags.map((tag, i) => (
 				<>
 					<a
-						class={`inline-block rounded-md text-sm ${getNotionColorToTailwindColor(
+						class={`inline-block rounded-md px-1 text-sm ${getNotionColorToTailwindColor(
 							tag.color + "-background",
 							true,
 						)}`}

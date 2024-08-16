@@ -10,7 +10,8 @@ const { richText } = Astro.props;
 ---
 
 {
-	richText.Annotation.Color && richText.Annotation.Color !== "default" ? (
+	richText.Annotation.Color &&
+	!["default", "default_background", "default-background"].includes(richText.Annotation.Color) ? (
 		<span class={getNotionColorToTailwindColor(richText.Annotation.Color)}>
 			<slot />
 		</span>

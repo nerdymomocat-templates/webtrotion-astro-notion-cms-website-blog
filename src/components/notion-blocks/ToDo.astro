@@ -20,7 +20,16 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
 				<div key={index} class="mb-2" id={setId ? b.Id : undefined}>
-					<div class={`flex max-w-full items-start ${getNotionColorToTailwindColor(b.ToDo.Color)}`}>
+					<div
+						class:list={[
+							"flex max-w-full items-start",
+							{
+								[`${getNotionColorToTailwindColor(b.ToDo.Color)} rounded px-1`]:
+									b.ToDo.Color &&
+									!["default", "default_background", "default-background"].includes(b.ToDo.Color),
+							},
+						]}
+					>
 						{/* Flex container for the checkbox and text */}
 						<div class="mt-1 pr-2">
 							{/* Padding for the checkbox */}

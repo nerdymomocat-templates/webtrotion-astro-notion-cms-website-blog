@@ -18,7 +18,14 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 {
 	renderChildren ? (
 		<details
-			class={`toggle my-1 ${getNotionColorToTailwindColor(block.Toggle.Color)}`}
+			class:list={[
+				"toggle my-1",
+				{
+					[`${getNotionColorToTailwindColor(block.Toggle.Color)} rounded px-1`]:
+						block.Toggle.Color &&
+						!["default", "default_background", "default-background"].includes(block.Toggle.Color),
+				},
+			]}
 			id={setId ? block.Id : undefined}
 		>
 			<summary class="flex max-w-full cursor-pointer list-none list-image-none gap-2">

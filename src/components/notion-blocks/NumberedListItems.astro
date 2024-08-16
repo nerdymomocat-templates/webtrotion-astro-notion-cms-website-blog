@@ -26,7 +26,15 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 			block.ListItems.filter((b: interfaces.Block) => b.Type === "numbered_list_item").map(
 				(b: interfaces.Block) => (
 					<li
-						class={getNotionColorToTailwindColor(b.NumberedListItem.Color)}
+						class:list={[
+							{
+								[`${getNotionColorToTailwindColor(b.NumberedListItem.Color)} rounded px-1`]:
+									b.NumberedListItem.Color &&
+									!["default", "default_background", "default-background"].includes(
+										b.NumberedListItem.Color,
+									),
+							},
+						]}
 						id={setId ? b.Id : undefined}
 					>
 						{b.NumberedListItem.RichTexts.map((richText: interfaces.RichText) => (

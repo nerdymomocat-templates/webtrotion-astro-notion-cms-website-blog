@@ -19,7 +19,15 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "bulleted_list_item").map(
 			(b: interfaces.Block) => (
 				<li
-					class={getNotionColorToTailwindColor(b.BulletedListItem.Color)}
+					class:list={[
+						{
+							[`${getNotionColorToTailwindColor(b.BulletedListItem.Color)} rounded px-1`]:
+								b.BulletedListItem.Color &&
+								!["default", "default_background", "default-background"].includes(
+									b.BulletedListItem.Color,
+								),
+						},
+					]}
 					id={setId ? b.Id : undefined}
 				>
 					{b.BulletedListItem.RichTexts.map((richText: interfaces.RichText) => (

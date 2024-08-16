@@ -1,9 +1,5 @@
 // eslint-disable-next-line prettier/prettier
-export const getNotionColorToTailwindColor = (
-	s: string,
-	colorForDefault: boolean = false,
-	isCallout: boolean = false,
-) => {
+export const getNotionColorToTailwindColor = (s: string, isTag: boolean = false) => {
 	// Convert snake_case to kebab-case
 	const kebabCase = s.replaceAll("_", "-");
 
@@ -19,23 +15,39 @@ export const getNotionColorToTailwindColor = (
 		purple: "text-npurple-txt-light dark:text-npurple-txt-dark",
 		pink: "text-npink-txt-light dark:text-npink-txt-dark",
 		red: "text-nred-txt-light dark:text-nred-txt-dark",
-		default: "",
+		default: undefined,
 
 		// Background color classes
-		"gray-background": "px-1 rounded bg-ngray-bg-light dark:bg-ngray-bg-dark",
-		"brown-background": "px-1 rounded bg-nbrown-bg-light dark:bg-nbrown-bg-dark",
-		"orange-background": "px-1 rounded bg-norange-bg-light dark:bg-norange-bg-dark",
-		"yellow-background": "px-1 rounded bg-nyellow-bg-light dark:bg-nyellow-bg-dark",
-		"green-background": "px-1 rounded bg-ngreen-bg-light dark:bg-ngreen-bg-dark",
-		"blue-background": "px-1 rounded bg-nblue-bg-light dark:bg-nblue-bg-dark",
-		"purple-background": "px-1 rounded bg-npurple-bg-light dark:bg-npurple-bg-dark",
-		"pink-background": "px-1 rounded bg-npink-bg-light dark:bg-npink-bg-dark",
-		"red-background": "px-1 rounded bg-nred-bg-light dark:bg-nred-bg-dark",
-		"default-background": colorForDefault
-			? isCallout
-				? "px-1 rounded border border-nlgray-bg-light dark:border-nlgray-bg-dark"
-				: "px-1 rounded bg-nlgray-bg-light dark:bg-nlgray-bg-dark"
-			: "",
+		"gray-background": isTag
+			? "bg-ngray-bg-tag-light dark:bg-ngray-bg-tag-dark"
+			: "bg-ngray-bg-light dark:bg-ngray-bg-dark",
+		"brown-background": isTag
+			? "bg-nbrown-bg-tag-light dark:bg-nbrown-bg-tag-dark"
+			: "bg-nbrown-bg-light dark:bg-nbrown-bg-dark",
+		"orange-background": isTag
+			? "bg-norange-bg-tag-light dark:bg-norange-bg-tag-dark"
+			: "bg-norange-bg-light dark:bg-norange-bg-dark",
+		"yellow-background": isTag
+			? "bg-nyellow-bg-tag-light dark:bg-nyellow-bg-tag-dark"
+			: "bg-nyellow-bg-light dark:bg-nyellow-bg-dark",
+		"green-background": isTag
+			? "bg-ngreen-bg-tag-light dark:bg-ngreen-bg-tag-dark"
+			: "bg-ngreen-bg-light dark:bg-ngreen-bg-dark",
+		"blue-background": isTag
+			? "bg-nblue-bg-tag-light dark:bg-nblue-bg-tag-dark"
+			: "bg-nblue-bg-light dark:bg-nblue-bg-dark",
+		"purple-background": isTag
+			? "bg-npurple-bg-tag-light dark:bg-npurple-bg-tag-dark"
+			: "bg-npurple-bg-light dark:bg-npurple-bg-dark",
+		"pink-background": isTag
+			? "bg-npink-bg-tag-light dark:bg-npink-bg-tag-dark"
+			: "bg-npink-bg-light dark:bg-npink-bg-dark",
+		"red-background": isTag
+			? "bg-nred-bg-tag-light dark:bg-nred-bg-tag-dark"
+			: "bg-nred-bg-light dark:bg-nred-bg-dark",
+		"default-background": isTag
+			? "bg-nlgray-bg-tag-light dark:bg-nlgray-bg-tag-dark"
+			: "border border-nlgray-bg-light dark:border-nlgray-bg-dark",
 	};
 
 	// Return the Tailwind color classes, defaulting to the input if no mapping is found
