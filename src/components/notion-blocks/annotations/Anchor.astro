@@ -11,7 +11,8 @@ export interface Props {
 }
 
 const { richText } = Astro.props;
-const { hreflink, blocklinked, conditionmatch, post } = await getAnchorLinkAndBlock(richText);
+const { hreflink, blocklinked, conditionmatch, post, isBlockLinkedHeading } =
+	await getAnchorLinkAndBlock(richText);
 ---
 
 {
@@ -44,12 +45,23 @@ const { hreflink, blocklinked, conditionmatch, post } = await getAnchorLinkAndBl
 		)
 	) : hreflink ? (
 		conditionmatch === "block_current_page" ? (
-			<a
-				href={hreflink}
-				class="text-link no-underline hover:underline hover:decoration-accent-2/40 hover:underline-offset-2"
-			>
-				<slot />
-			</a>
+			!isBlockLinkedHeading && post && post.Title ? (
+				<NBlocksPopover
+					block={blocklinked}
+					linkedTo={hreflink}
+					popoverSpanText={""}
+					popoverTitle={""}
+				>
+					<slot />
+				</NBlocksPopover>
+			) : (
+				<a
+					href={hreflink}
+					class="text-link no-underline hover:underline hover:decoration-accent-2/40 hover:underline-offset-2"
+				>
+					<slot />
+				</a>
+			)
 		) : (
 			<a
 				href={hreflink}

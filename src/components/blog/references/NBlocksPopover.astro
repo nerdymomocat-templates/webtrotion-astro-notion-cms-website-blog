@@ -1,6 +1,7 @@
 ---
 import type { Block } from "@/lib/interfaces";
 import NotionBlocks from "../../NotionBlocks.astro";
+import { ALL_FOOTNOTES_PAGE_SLUG } from "@/constants";
 interface Props {
 	block: Block;
 	linkedTo: string;
@@ -18,6 +19,14 @@ const {
 	font = "",
 } = Astro.props;
 let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
+let popoverTitleShown = popoverTitle;
+const footnotePattern = "posts/" + ALL_FOOTNOTES_PAGE_SLUG;
+if (
+	popoverTitle &&
+	(popoverTitle.includes(footnotePattern + "/") || popoverTitle.endsWith(footnotePattern))
+) {
+	popoverTitleShown = "";
+}
 ---
 
 <span
@@ -41,9 +50,9 @@ let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
 		<a href={linkedTo}>
 			<div class="space-y-2 p-3">
 				{
-					popoverTitle && (
+					popoverTitleShown && (
 						<h3 class="font-semibold text-accent underline decoration-accent-2/20 decoration-wavy">
-							{popoverTitle}
+							{popoverTitleShown}
 						</h3>
 					)
 				}

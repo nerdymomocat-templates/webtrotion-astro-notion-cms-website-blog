@@ -97,6 +97,7 @@
 	"full-preview-collections": ["Stream"],
 	"hide-underscore-slugs-in-lists": true,
 	"home-page-slug": "",
+	"all-footnotes-page-slug": "_all-footnotes",
 	"og-setup": {
 		"columns": 1,
 		"excerpt": false,

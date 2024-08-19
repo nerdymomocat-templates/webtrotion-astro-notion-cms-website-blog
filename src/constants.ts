@@ -52,6 +52,7 @@ export const HIDE_UNDERSCORE_SLUGS_IN_LISTS =
 	key_value_from_json["hide-underscore-slugs-in-lists"] || false;
 
 export const HOME_PAGE_SLUG = key_value_from_json["home-page-slug"] || "home";
+export const ALL_FOOTNOTES_PAGE_SLUG = key_value_from_json["all-footnotes-page-slug"] || null;
 
 export const OG_SETUP = key_value_from_json["og-setup"] || {
 	columns: 1,
