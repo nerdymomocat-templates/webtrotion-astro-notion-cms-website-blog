@@ -24,19 +24,21 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
   `}
 	id={setId ? block.Id : undefined}
 >
-	<div class="m-0 mr-2 leading-6">
-		{
-			block.Callout.Icon.Type === "emoji" ? (
-				block.Callout.Icon.Emoji
-			) : block.Callout.Icon.Type === "external" ? (
-				<img
-					src={block.Callout.Icon.Url}
-					class={`h-5 w-5 max-w-none ${getIconTailwindFilterStyle(block.Callout.Icon.Url)}`}
-					alt=""
-				/>
-			) : null
-		}
-	</div>
+	{
+		block.Callout && block.Callout.Icon && (
+			<div class="m-0 mr-2 leading-6">
+				{block.Callout.Icon.Type === "emoji" ? (
+					block.Callout.Icon.Emoji
+				) : block.Callout.Icon.Type === "external" ? (
+					<img
+						src={block.Callout.Icon.Url}
+						class={`h-5 w-5 max-w-none ${getIconTailwindFilterStyle(block.Callout.Icon.Url)}`}
+						alt=""
+					/>
+				) : null}
+			</div>
+		)
+	}
 	<div class="m-0 min-w-0 leading-6">
 		{
 			block.Callout.RichTexts.map((richText: interfaces.RichText) => (
