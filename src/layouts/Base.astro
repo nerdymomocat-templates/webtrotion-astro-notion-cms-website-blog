@@ -162,6 +162,17 @@ window.addEventListener('afterprint', function () {
           triggerEl.addEventListener('focus', () => {
               showPopover(triggerEl);
           });
+
+            // Add click event listener for desktop link behavior
+  triggerEl.addEventListener('click', (event) => {
+    const href = triggerEl.dataset.href;
+    if (href && window.matchMedia('(min-width: 640px)').matches) { // Use sm breakpoint
+      event.preventDefault();
+      window.location.href = href;
+    } else {
+      showPopover(triggerEl);
+    }
+  });
       }
 
       const createPopover = (triggerEl) => {
