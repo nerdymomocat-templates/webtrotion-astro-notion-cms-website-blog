@@ -47,7 +47,7 @@ if (groupedReferences) {
 			<div>
 				<span class="font-semibold">Media & Files On This Page</span>
 				{Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
-					<div class="ml-2" key={dmltype}>
+					<div class="ml-2">
 						<div class="inline-block">
 							{REFERENCES && REFERENCES["popovers"] ? (
 								<>
@@ -58,8 +58,8 @@ if (groupedReferences) {
 												block={blockdml.block}
 												linkedTo={blockIdLinks[blockdml.block.Id]}
 												popoverSpanText={`[${index + 1}]`}
-												font={"font-mono"}
-											/>{" "}
+												isRefLinkBack={true}
+											/>
 										</>
 									))}
 								</>
@@ -67,7 +67,7 @@ if (groupedReferences) {
 								<>
 									<span class="italic">{dmltype}</span> {" at "}
 									{blockdmls.map((blockdml, index) => (
-										<a href={blockIdLinks[blockdml.block.Id]} class="font-mono text-link">
+										<a href={blockIdLinks[blockdml.block.Id]} class="font-mono text-link text-xs">
 											{`[${index + 1}]`}
 										</a>
 									))}

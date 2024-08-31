@@ -36,7 +36,7 @@ if (groupedReferences) {
 			<div>
 				<span class="font-semibold">Pages That Mention This Page</span>
 				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
-					<div class="ml-2" key={entryId}>
+					<div class="ml-2">
 						<div class="inline-block">
 							<a
 								href={entryIdLinksEntry[entryId][0]}
@@ -53,14 +53,14 @@ if (groupedReferences) {
 											linkedTo={blockIdLinks[block.Id]}
 											popoverSpanText={`[${index + 1}]`}
 											popoverTitle={entryIdLinksEntry[entryId][1].Title}
-											font={"font-mono"}
+                      isRefLinkBack={true}
 										/>
 									))}
 								</>
 							) : (
 								<>
 									{blocks.map((block, index) => (
-										<a href={blockIdLinks[block.Id]} class="font-mono text-link">
+										<a href={blockIdLinks[block.Id]} class="font-mono text-link text-xs">
 											{`[${index + 1}]`}
 										</a>
 									))}

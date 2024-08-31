@@ -65,7 +65,7 @@ entryIdsToDel.forEach((entryId) => {
 			<div>
 				<span class="font-semibold">Other Pages Mentioned On This Page</span>
 				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
-					<div class="ml-2" key={entryId}>
+					<div class="ml-2">
 						<div class="inline-block">
 							{REFERENCES && REFERENCES["popovers"] ? (
 								<>
@@ -79,11 +79,10 @@ entryIdsToDel.forEach((entryId) => {
 									{" at "}
 									{blocks.map((block, index) => (
 										<NBlocksPopover
-											key={block.Id}
 											block={block}
 											linkedTo={blockIdLinks[block.Id]}
 											popoverSpanText={`[${index + 1}]`}
-											font={"font-mono"}
+                      isRefLinkBack={true}
 										/>
 									))}
 								</>

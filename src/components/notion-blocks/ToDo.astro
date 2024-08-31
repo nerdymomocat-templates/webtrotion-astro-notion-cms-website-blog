@@ -19,7 +19,7 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 	{
 		block.ListItems.filter((b: interfaces.Block) => b.Type === "to_do").map(
 			(b: interfaces.Block, index) => (
-				<div key={index} class="mb-2" id={setId ? b.Id : undefined}>
+				<div class="mb-2" id={setId ? b.Id : undefined}>
 					<div
 						class:list={[
 							"flex max-w-full items-start",

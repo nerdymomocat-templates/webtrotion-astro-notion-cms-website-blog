@@ -116,7 +116,7 @@ if (groupedReferences && urlMap) {
 				</summary>
 				<div class="pl-2">
 					{Object.entries(groupedReferences).map(([hrefLink, blocks]) => (
-						<div key={hrefLink}>
+						<div>
 							<div class="inline-block">
 								<a
 									href={hrefLink}
@@ -134,14 +134,14 @@ if (groupedReferences && urlMap) {
 												block={block}
 												linkedTo={blockIdLinks[block.Id]}
 												popoverSpanText={`[${index + 1}]`}
-												font={"font-mono"}
+                        isRefLinkBack={true}
 											/>
 										))}
 									</>
 								) : (
 									<>
 										{blocks.map((block, index) => (
-											<a href={blockIdLinks[block.Id]} class="font-mono text-link">
+											<a href={blockIdLinks[block.Id]} class="font-mono text-link text-xs">
 												{`[${index + 1}]`}
 											</a>
 										))}
