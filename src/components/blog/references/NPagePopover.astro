@@ -23,7 +23,7 @@ let id = "id" + Math.random().toString(16).slice(2) + "---" + postId;
 		data-popover-target={`popover-description-${id}`}
 		data-popover-placement="bottom-end"
 		class="cursor-pointer"
-    data-href={linkedTo}
+		data-href={linkedTo}
 		id={`popover-click-${id}`}
 	>
 		{popoverSpanText ? popoverSpanText : <slot />}

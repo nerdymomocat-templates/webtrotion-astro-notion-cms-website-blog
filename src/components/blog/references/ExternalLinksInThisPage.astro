@@ -134,14 +134,14 @@ if (groupedReferences && urlMap) {
 												block={block}
 												linkedTo={blockIdLinks[block.Id]}
 												popoverSpanText={`[${index + 1}]`}
-                        isRefLinkBack={true}
+												isRefLinkBack={true}
 											/>
 										))}
 									</>
 								) : (
 									<>
 										{blocks.map((block, index) => (
-											<a href={blockIdLinks[block.Id]} class="font-mono text-link text-xs">
+											<a href={blockIdLinks[block.Id]} class="font-mono text-xs text-link">
 												{`[${index + 1}]`}
 											</a>
 										))}
