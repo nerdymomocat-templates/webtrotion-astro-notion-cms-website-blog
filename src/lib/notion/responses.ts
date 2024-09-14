@@ -101,12 +101,24 @@ interface Link {
 
 interface Mention {
 	type: string;
+	user?: UserObject | undefined;
+	page?: Reference | undefined;
+	database?: Reference | undefined;
+	date?: DateProperty | undefined;
+	link_preview?: LinkPreview | undefined;
+	link_mention?: LinkMention | undefined;
+}
 
-	user?: UserObject;
-	page?: Reference;
-	database?: Reference;
-	date?: DateProperty;
-	link_preview?: LinkPreview;
+interface LinkMention {
+	href: string;
+	title: string;
+	icon_url?: string | undefined;
+	description?: string | undefined;
+	link_author?: string | undefined;
+	thumbnail_url?: string | undefined;
+	height?: number | undefined;
+	iframe_url?: string | undefined;
+	link_provider?: string | undefined;
 }
 
 interface Reference {

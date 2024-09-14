@@ -8,7 +8,7 @@ interface Props {
 	popoverSpanText: string;
 	popoverTitle?: string;
 	linkText?: string;
-  isRefLinkBack?: boolean;
+  isInterlinkedBack?: boolean;
 }
 const {
 	block,
@@ -16,7 +16,7 @@ const {
 	popoverSpanText,
 	popoverTitle = "",
 	linkText = "Read more",
-  isRefLinkBack = false,
+  isInterlinkedBack = false,
 } = Astro.props;
 let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
 let isFootnote = false;
@@ -40,11 +40,11 @@ if (linkedTo && (linkedTo.includes(footnotePattern + "/") || linkedTo.endsWith(f
   >
 ) : (
   <span
-    class={`text-link ${isRefLinkBack ? 'no-underline hover:underline hover:decoration-dashed hover:decoration-accent-2/40 hover:underline-offset-2' : 'underline decoration-dashed decoration-accent-2/40 underline-offset-2'}`}
+    class={`text-link ${isInterlinkedBack ? 'no-underline hover:underline hover:decoration-dashed hover:decoration-accent-2/40 hover:underline-offset-2' : 'underline decoration-dashed decoration-accent-2/40 underline-offset-2'}`}
     ><span
       data-popover-target=`popover-description-${id}`
       data-popover-placement="bottom-end"
-      class={`cursor-pointer ${isRefLinkBack ? 'text-sm font-mono' : ''}`}
+      class={`cursor-pointer ${isInterlinkedBack ? 'text-sm font-mono' : ''}`}
       data-href={linkedTo}
       >{popoverSpanText ? popoverSpanText : <slot />}<span class="sr-only"
         >Show information for the linked content</span

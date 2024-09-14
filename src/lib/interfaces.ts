@@ -300,6 +300,19 @@ export interface Mention {
 	Type: string;
 	Page?: Reference;
 	DateStr?: string;
+	LinkMention?: LinkMention | undefined;
+}
+
+export interface LinkMention {
+	Href: string;
+	Title: string;
+	IconUrl?: string;
+	Description?: string;
+	LinkAuthor?: string;
+	ThumbnailUrl?: string;
+	Height?: number;
+	IframeUrl?: string;
+	LinkProvider?: string;
 }
 
 export interface Reference {

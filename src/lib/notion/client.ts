@@ -1452,6 +1452,22 @@ function _buildRichText(richTextObject: responses.RichTextObject): RichText {
 				: "Invalid Date";
 
 			mention.DateStr = formatted_date;
+		} else if (
+			richTextObject.mention.type === "link_mention" &&
+			richTextObject.mention.link_mention
+		) {
+			const linkMention = richTextObject.mention.link_mention;
+			mention.LinkMention = {
+				Href: linkMention.href,
+				Title: linkMention.title,
+				IconUrl: linkMention.icon_url,
+				Description: linkMention.description,
+				LinkAuthor: linkMention.link_author,
+				ThumbnailUrl: linkMention.thumbnail_url,
+				Height: linkMention.height,
+				IframeUrl: linkMention.iframe_url,
+				LinkProvider: linkMention.link_provider,
+			};
 		}
 
 		richText.Mention = mention;

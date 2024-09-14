@@ -10,6 +10,7 @@ import Code from "./annotations/Code.astro";
 import Anchor from "./annotations/Anchor.astro";
 import MentionPage from "./MentionPage.astro";
 import MentionDate from "./MentionDate.astro";
+import MentionLink from "./MentionLink.astro";
 
 export interface Props {
 	richText: RichText;
@@ -59,6 +60,9 @@ const { richText, blockID } = Astro.props;
 														)}
 														{richText.Mention && richText.Mention.DateStr && (
 															<MentionDate mention_date={richText.Mention.DateStr} />
+														)}
+														{richText.Mention && richText.Mention.LinkMention && (
+															<MentionLink mention={richText.Mention} />
 														)}
 													</Bold>
 												}
