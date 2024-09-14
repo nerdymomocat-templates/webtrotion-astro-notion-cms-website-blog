@@ -156,16 +156,16 @@ const _filterRichTexts = (
 			}
 			return acc;
 		}, [] as RichText[]) || [],
-    external_hrefs:
-    rich_texts.reduce((acc, richText) => {
-      if (
-        (!richText.InternalHref && !richText.Mention && richText.Href) ||
-        (richText.Mention && richText.Mention.LinkMention)
-      ) {
-        acc.push(richText);
-      }
-      return acc;
-    }, [] as RichText[]) || [],
+	external_hrefs:
+		rich_texts.reduce((acc, richText) => {
+			if (
+				(!richText.InternalHref && !richText.Mention && richText.Href) ||
+				(richText.Mention && richText.Mention.LinkMention)
+			) {
+				acc.push(richText);
+			}
+			return acc;
+		}, [] as RichText[]) || [],
 	same_page:
 		rich_texts.reduce((acc, richText) => {
 			if (richText.InternalHref?.PageId === postId) {
