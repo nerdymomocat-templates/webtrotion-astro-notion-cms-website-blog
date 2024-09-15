@@ -78,7 +78,17 @@ window.addEventListener('afterprint', function () {
   } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
 
   document.addEventListener('DOMContentLoaded', () => {
-      const popoverTriggers = document.querySelectorAll('[data-popover-target]');
+      // Determine if it's a mobile device
+  const isSmBreakpoint = window.matchMedia('(max-width: 639px)').matches;
+
+// Create the selector based on the device type
+const selector = isSmBreakpoint
+  ? '[data-popover-target]:not([data-popover-type-lm="true"])'
+  : '[data-popover-target]';
+
+// Select popover triggers based on the device-specific selector
+const popoverTriggers = document.querySelectorAll(selector);
+
       let openPopovers = [];
       let cleanupAutoUpdate = new Map();
       let hoverTimeouts = new Map();
@@ -126,6 +136,10 @@ window.addEventListener('afterprint', function () {
 
       const addPTEventListeners = (triggerEl, popoverEl) =>
       {
+        const isLinkMention = triggerEl.dataset.popoverTypeLm === "true";
+        if (isLinkMention && isSmBreakpoint) {
+    return;
+  }
         if (triggerEl&& popoverEl){
         triggerEl.addEventListener('mouseleave', () => {
               const timeoutId = setTimeout(() => {
@@ -163,16 +177,18 @@ window.addEventListener('afterprint', function () {
               showPopover(triggerEl);
           });
 
-            // Add click event listener for desktop link behavior
-  triggerEl.addEventListener('click', (event) => {
-    const href = triggerEl.dataset.href;
-    if (href && window.matchMedia('(min-width: 640px)').matches) { // Use sm breakpoint
-      event.preventDefault();
-      window.location.href = href;
-    } else {
-      showPopover(triggerEl);
+    // Add click event listener for desktop link behavior (only for non-link-mentions)
+    if (!isLinkMention) {
+      triggerEl.addEventListener('click', (event) => {
+        const href = triggerEl.dataset.href;
+        if (href && !isSmBreakpoint) {  // Use !isSmBreakpoint instead of window.matchMedia
+          event.preventDefault();
+          window.location.href = href;
+        } else {
+          showPopover(triggerEl);
+        }
+      });
     }
-  });
       }
 
       const createPopover = (triggerEl) => {
@@ -184,7 +200,10 @@ window.addEventListener('afterprint', function () {
           triggerEl.parentNode.insertBefore(popoverEl, triggerEl.nextSibling);
           addPTEventListeners(triggerEl, popoverEl);
           // Add event listeners to any new popover triggers within this popover
-    const nestedTriggers = popoverEl.querySelectorAll('[data-popover-target]');
+          const selector = isSmBreakpoint
+    ? '[data-popover-target]:not([data-popover-type-lm="true"])'
+    : '[data-popover-target]';
+    const nestedTriggers = popoverEl.querySelectorAll(selector);
     nestedTriggers.forEach(nestedTrigger => {
       addPTEventListeners(nestedTrigger, null);
     });

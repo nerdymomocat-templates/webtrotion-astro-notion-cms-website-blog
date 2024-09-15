@@ -30,7 +30,6 @@ if (!Href)
 }
 const isEmbeddable = IframeUrl? true: false;
 let id = "id" + Math.random().toString(16).slice(2);
-const heightClass = Height && Height < 380 ? `h-[${Height}px]` : 'h-[380px]';
 const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Href;
 ---
 
@@ -40,6 +39,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			<a
 				data-popover-target=`popover-description-${id}`
       data-popover-placement="bottom-end"
+      data-popover-type-lm = "true"
 				data-href={Href}
 				href={Href}
         target="_blank"
@@ -65,6 +65,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			<a
 				data-popover-target=`popover-description-${id}`
       data-popover-placement="bottom-end"
+      data-popover-type-lm = "true"
 				data-href={Href}
 				href={Href}
         target="_blank"
@@ -97,13 +98,13 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 	>
   {isEmbeddable?
     (
-    <div class={`w-full min-h-[100px] ${heightClass}`}>
+          <div class="w-full min-h-[100px]" style={Height && Height>380?"height:380px":("height:"+Height?.toString()+"px")}>
 
                   <iframe
                     src={IframeUrl}
                     sandbox="allow-scripts allow-popups allow-top-navigation-by-user-activation allow-forms allow-same-origin allow-storage-access-by-user-activation allow-popups-to-escape-sandbox"
                     allowfullscreen=""
-                    class="left-0 top-0 w-full h-full rounded-[1px] pointer-events-auto"
+                    class="w-full h-full rounded-[1px] pointer-events-auto"
                   ></iframe>
 
           </div>
