@@ -1,36 +1,30 @@
 ---
 import * as interfaces from "../../lib/interfaces.ts";
-import { buildHeadingId } from "../../lib/blog-helpers.ts";
+import { buildHeadingId, getCurrentHeadings } from "../../lib/blog-helpers.ts";
 import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
 
 export interface Props {
 	block: interfaces.Block;
-	headings: interfaces.Block[];
 	setId?: boolean;
 }
 
-const { block, headings, setId = true } = Astro.props;
+const { block, setId = true } = Astro.props;
+let current_headings = getCurrentHeadings();
 ---
 
 <div class="table-of-contents" id={setId ? block.Id : undefined}>
 	{
-		headings.map((headingBlock: interfaces.Block) => {
-			const heading = headingBlock.Heading1 || headingBlock.Heading2 || headingBlock.Heading3;
-			const headingText = heading.RichTexts.map(
-				(richText: interfaces.RichText) => richText.PlainText,
-			).join("");
-			const headingId = buildHeadingId(heading);
-
+		current_headings.map((heading) => {
 			let indentClass = "";
-			if (headingBlock.Type === "heading_2") {
+			if (heading.depth === 2) {
 				indentClass = "pl-6";
-			} else if (headingBlock.Type === "heading_3") {
+			} else if (heading.depth === 3) {
 				indentClass = "pl-12";
 			}
 
 			return (
 				<a
-					href={`#${headingId}`}
+					href={`#${heading.slug}`}
 					class:list={[
 						"table-of-contents block leading-7 hover:font-bold",
 						indentClass,
@@ -42,9 +36,9 @@ const { block, headings, setId = true } = Astro.props;
 								),
 						},
 					]}
-					aria-label={`Jump to section: ${headingText}`}
+					aria-label={`Jump to section: ${heading.text}`}
 				>
-					{headingText}
+					{heading.text}
 				</a>
 			);
 		})

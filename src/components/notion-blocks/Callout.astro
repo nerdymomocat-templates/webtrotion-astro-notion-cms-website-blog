@@ -9,12 +9,11 @@ import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
 	block: interfaces.Block;
-	headings: interfaces.Block[];
 	renderChildren?: boolean; // Make this optional
 	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId = true } = Astro.props;
+const { block, renderChildren = true, setId = true } = Astro.props;
 const hasRichTexts = block.Callout && block.Callout.RichTexts && block.Callout.RichTexts.length > 0;
 ---
 
@@ -51,7 +50,6 @@ const hasRichTexts = block.Callout && block.Callout.RichTexts && block.Callout.R
 			block.Callout.Children && renderChildren && (
 				<NotionBlocks
 					blocks={block.Callout.Children}
-					headings={headings}
 					renderChildren={renderChildren}
 					setId={setId}
 				/>

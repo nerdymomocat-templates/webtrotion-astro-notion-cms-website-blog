@@ -7,12 +7,11 @@ import NotionBlocks from "../NotionBlocks.astro";
 export interface Props {
 	block: interfaces.Block;
 	level: number;
-	headings: interfaces.Block[];
 	renderChildren?: boolean; // Make this optional
 	setId?: boolean;
 }
 
-const { block, level, headings, renderChildren = true, setId = true } = Astro.props;
+const { block, level, renderChildren = true, setId = true } = Astro.props;
 
 const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 ---
@@ -44,7 +43,6 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 							<NotionBlocks
 								blocks={b.NumberedListItem.Children}
 								level={level + 1}
-								headings={headings}
 								renderChildren={renderChildren}
 								setId={setId}
 							/>

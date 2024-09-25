@@ -11,7 +11,7 @@ import { getCollectionsWDesc } from "@/utils";
 import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
-import { getNavLink, resetFirstImage } from "@/lib/blog-helpers";
+import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
 import Icon from '@/components/Icon';
 
 export const getStaticPaths = (async ({ paginate }) => {
@@ -84,7 +84,7 @@ const paginationProps = {
 			<ul class="space-y-4 text-start">
 				{
 					resetFirstImage() && page.data.map((post) =>
-						FULL_PREVIEW_COLLECTIONS.includes(collection) ? (
+						FULL_PREVIEW_COLLECTIONS.includes(collection) && resetCurrentHeadings() ? (
 							<>
 								<li>
 									<PostPreviewFull post_full_preview={post} as="h2" withDesc />

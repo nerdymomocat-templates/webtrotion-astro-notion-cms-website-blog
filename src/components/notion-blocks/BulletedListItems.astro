@@ -6,12 +6,11 @@ import NotionBlocks from "../NotionBlocks.astro";
 
 export interface Props {
 	block: interfaces.Block;
-	headings: interfaces.Block[];
 	renderChildren?: boolean; // Make this optional
 	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId = true } = Astro.props;
+const { block, renderChildren = true, setId = true } = Astro.props;
 ---
 
 <ul class="list-outside list-disc space-y-1 pl-6" id={setId ? block.Id : undefined}>
@@ -36,7 +35,6 @@ const { block, headings, renderChildren = true, setId = true } = Astro.props;
 					{b.HasChildren && renderChildren && (
 						<NotionBlocks
 							blocks={b.BulletedListItem.Children}
-							headings={headings}
 							renderChildren={renderChildren}
 							setId={setId}
 						/>

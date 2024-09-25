@@ -28,21 +28,12 @@ import LinkToPage from "./notion-blocks/LinkToPage.astro";
 
 export interface Props {
 	blocks: interfaces.Block[];
-	isRoot?: boolean;
 	level?: number;
-	headings?: interfaces.Block[];
 	renderChildren?: boolean;
 	setId?: boolean;
 }
 
-const {
-	blocks: rawBlocks,
-	isRoot = false,
-	level = 1,
-	headings: rawHeadings = [],
-	renderChildren = true,
-	setId = true,
-} = Astro.props;
+const { blocks: rawBlocks, level = 1, renderChildren = true, setId = true } = Astro.props;
 
 const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 	const isBulletedListItem = block.Type === "bulleted_list_item";
@@ -89,51 +80,6 @@ const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 	return arr;
 }, []);
 
-let headings = rawHeadings;
-if (isRoot) {
-    headings = blocks.reduce((acc: interfaces.Block[], block: interfaces.Block) => {
-        if (["heading_1", "heading_2", "heading_3"].includes(block.Type)) {
-            acc.push(block);
-        }
-
-        if (block.Type === "toggle" && block.Toggle?.Children) {
-            acc.push(...block.Toggle.Children.filter(child =>
-                ["heading_1", "heading_2", "heading_3"].includes(child.Type)
-            ));
-        }
-
-        if (block.Type === "column_list" && block.ColumnList?.Columns) {
-            block.ColumnList.Columns.forEach(column => {
-                if (column.Children) {
-                    acc.push(...column.Children.filter(child =>
-                        ["heading_1", "heading_2", "heading_3"].includes(child.Type)
-                    ));
-                }
-            });
-        }
-
-        if (block.Type === "callout" && block.Callout?.Children) {
-            acc.push(...block.Callout.Children.filter(child =>
-                ["heading_1", "heading_2", "heading_3"].includes(child.Type)
-            ));
-        }
-
-        if ((block.Type === "heading_1" && block.Heading1?.IsToggleable) ||
-            (block.Type === "heading_2" && block.Heading2?.IsToggleable) ||
-            (block.Type === "heading_3" && block.Heading3?.IsToggleable)) {
-            acc.push(block);
-            const children = block.Heading1?.Children || block.Heading2?.Children || block.Heading3?.Children;
-            if (children) {
-                acc.push(...children.filter(child =>
-                    ["heading_1", "heading_2", "heading_3"].includes(child.Type)
-                ));
-            }
-        }
-
-        return acc;
-    }, []);
-}
-
 const bookmarkURLs = blocks
 	.filter((b: interfaces.Block) => ["bookmark", "link_preview", "embed"].includes(b.Type))
 	.map((b: interfaces.Block) => {
@@ -156,43 +102,15 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 	blocks.map((block: interfaces.Block) => {
 		switch (block.Type) {
 			case "paragraph":
-				return (
-					<Paragraph
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <Paragraph block={block} renderChildren={renderChildren} setId={setId} />;
 			case "heading_1":
-				return (
-					<Heading1
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <Heading1 block={block} renderChildren={renderChildren} setId={setId} />;
 			case "heading_2":
-				return (
-					<Heading2
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <Heading2 block={block} renderChildren={renderChildren} setId={setId} />;
 			case "heading_3":
-				return (
-					<Heading3
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <Heading3 block={block} renderChildren={renderChildren} setId={setId} />;
 			case "table_of_contents":
-				return <TableOfContents block={block} headings={headings} setId={setId} />;
+				return <TableOfContents block={block} setId={setId} />;
 			case "image":
 				return <NImage block={block} setId={setId} />;
 			case "video":
@@ -202,20 +120,11 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 			case "code":
 				return <NCode block={block} setId={setId} />;
 			case "quote":
-				return (
-					<Quote block={block} headings={headings} renderChildren={renderChildren} setId={setId} />
-				);
+				return <Quote block={block} renderChildren={renderChildren} setId={setId} />;
 			case "equation":
 				return <Equation block={block} setId={setId} />;
 			case "callout":
-				return (
-					<Callout
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <Callout block={block} renderChildren={renderChildren} setId={setId} />;
 			case "embed":
 				return <Embed block={block} urlMap={bookmarkURLMap} setId={setId} />;
 			case "bookmark":
@@ -226,50 +135,24 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 			case "table":
 				return <Table block={block} setId={setId} />;
 			case "column_list":
-				return (
-					<ColumnList
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <ColumnList block={block} renderChildren={renderChildren} setId={setId} />;
 			case "bulleted_list":
-				return (
-					<BulletedListItems
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <BulletedListItems block={block} renderChildren={renderChildren} setId={setId} />;
 			case "numbered_list":
 				return (
 					<NumberedListItems
 						block={block}
 						level={level}
-						headings={headings}
 						renderChildren={renderChildren}
 						setId={setId}
 					/>
 				);
 			case "to_do_list":
-				return (
-					<ToDo block={block} headings={headings} renderChildren={renderChildren} setId={setId} />
-				);
+				return <ToDo block={block} renderChildren={renderChildren} setId={setId} />;
 			case "synced_block":
-				return (
-					<SyncedBlock
-						block={block}
-						headings={headings}
-						renderChildren={renderChildren}
-						setId={setId}
-					/>
-				);
+				return <SyncedBlock block={block} renderChildren={renderChildren} setId={setId} />;
 			case "toggle":
-				return (
-					<Toggle block={block} headings={headings} renderChildren={renderChildren} setId={setId} />
-				);
+				return <Toggle block={block} renderChildren={renderChildren} setId={setId} />;
 			case "file":
 				return <File block={block} setId={setId} />;
 			case "link_to_page":

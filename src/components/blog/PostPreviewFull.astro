@@ -5,12 +5,17 @@ import type { HTMLTag } from "astro/types";
 import FormattedDate from "../FormattedDate.astro";
 import type { Post } from "src/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, getPostLink } from "@/lib/blog-helpers";
+import {
+	extractTargetBlocks,
+	getNavLink,
+	getPostLink,
+	setCurrentHeadings,
+} from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION } from "@/constants";
 import Icon from "@/components/Icon";
-import { slugify } from "@/utils";
+import { buildHeadings, slugify } from "@/utils";
 
 // type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
 // 	post: CollectionEntry<"post">;
@@ -25,6 +30,9 @@ interface Props {
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
 const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
+let headings = buildHeadings(blocks);
+setCurrentHeadings(headings);
+
 const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio"], blocks).filter(
 	(block) => {
 		if (!block) {
@@ -102,5 +110,5 @@ const postLink = getPostLink(
 }
 
 <section>
-	<NotionBlocks blocks={blocks} isRoot={true} />
+	<NotionBlocks blocks={blocks} />
 </section>

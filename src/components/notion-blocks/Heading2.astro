@@ -7,12 +7,11 @@ import Icon from "@/components/Icon";
 
 export interface Props {
 	block: interfaces.Block;
-	headings: interfaces.Block[];
 	renderChildren?: boolean; // Make this optional
 	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId = true } = Astro.props;
+const { block, renderChildren = true, setId = true } = Astro.props;
 
 const id = buildHeadingId(block.Heading2);
 ---
@@ -53,7 +52,6 @@ const id = buildHeadingId(block.Heading2);
 				{block.Heading2.Children && renderChildren && (
 					<NotionBlocks
 						blocks={block.Heading2.Children}
-						headings={headings}
 						renderChildren={renderChildren}
 						setId={setId}
 					/>

@@ -6,12 +6,11 @@ import NotionBlocks from "../NotionBlocks.astro";
 import Icon from "../Icon.astro";
 export interface Props {
 	block: interfaces.Block;
-	headings: interfaces.Block[];
 	renderChildren?: boolean; // Make this optional
 	setId?: boolean;
 }
 
-const { block, headings, renderChildren = true, setId = true } = Astro.props;
+const { block, renderChildren = true, setId = true } = Astro.props;
 
 const id = buildHeadingId(block.Heading3);
 ---
@@ -51,7 +50,6 @@ const id = buildHeadingId(block.Heading3);
 				{block.Heading3.Children && renderChildren && (
 					<NotionBlocks
 						blocks={block.Heading3.Children}
-						headings={headings}
 						renderChildren={renderChildren}
 						setId={setId}
 					/>

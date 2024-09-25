@@ -2,7 +2,7 @@
 import PageLayout from "../layouts/Base.astro";
 // import PostPreview from "../components/blog/PostPreview.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, resetFirstImage, setTrackCurrentPageId } from "../lib/blog-helpers";
+import { extractTargetBlocks, getNavLink, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
 
@@ -32,6 +32,8 @@ interface Props {
 const { page: slug } = Astro.params;
 const { page } = Astro.props;
 
+resetCurrentHeadings();
+
 let pageFound = true;
 let blocks = null;
 let referencesInPage = null;
@@ -51,6 +53,7 @@ if (pageFound) {
   blocks = result.blocks;
   referencesInPage = result.referencesInPage;
   headings = buildHeadings(blocks);
+  setCurrentHeadings(headings);
 
 	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 		.filter((block) => {
@@ -101,7 +104,7 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 	<div class="screen:max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
 		<article class="break-words" data-pagefind-body>
 			<div class="">
-				<NotionBlocks blocks={blocks} isRoot={true} />
+				<NotionBlocks blocks={blocks}/>
 			</div>
       {headings && !!headings.length && <TOC headings={headings} />}
 		</article>
