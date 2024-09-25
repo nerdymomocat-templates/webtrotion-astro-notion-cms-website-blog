@@ -69,6 +69,49 @@ function cleanHeading(heading: Block): Heading {
 }
 
 export function buildHeadings(blocks: Block[]) {
-	// console.log(blocks);
-	return blocks.filter((block) => HEADING_BLOCKS.includes(block.Type)).map(cleanHeading);
+  const headingBlocks: Block[] = [];
+
+  blocks.forEach((block) => {
+    if (HEADING_BLOCKS.includes(block.Type)) {
+      headingBlocks.push(block);
+    }
+
+    if (
+      block.Type === "toggle" ||
+      block.Type === "column_list" ||
+      block.Type === "callout" ||
+      (block.Type === "heading_1" && block.Heading1?.IsToggleable) ||
+      (block.Type === "heading_2" && block.Heading2?.IsToggleable) ||
+      (block.Type === "heading_3" && block.Heading3?.IsToggleable)
+    ) {
+      const childHeadings = getChildHeadings(block);
+      headingBlocks.push(...childHeadings);
+    }
+  });
+
+  return headingBlocks.map(cleanHeading);
+}
+
+function getChildHeadings(block: Block): Block[] {
+  const childHeadings: Block[] = [];
+
+  if (block.Type === "toggle" && block.Toggle?.Children) {
+    childHeadings.push(...block.Toggle.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+  } else if (block.Type === "column_list" && block.ColumnList?.Columns) {
+    block.ColumnList.Columns.forEach((column) => {
+      if (column.Children) {
+        childHeadings.push(...column.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+      }
+    });
+  } else if (block.Type === "callout" && block.Callout?.Children) {
+    childHeadings.push(...block.Callout.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+  } else if (block.Type === "heading_1" && block.Heading1?.IsToggleable && block.Heading1.Children) {
+    childHeadings.push(...block.Heading1.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+  } else if (block.Type === "heading_2" && block.Heading2?.IsToggleable && block.Heading2.Children) {
+    childHeadings.push(...block.Heading2.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+  } else if (block.Type === "heading_3" && block.Heading3?.IsToggleable && block.Heading3.Children) {
+    childHeadings.push(...block.Heading3.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)));
+  }
+
+  return childHeadings;
 }

@@ -91,9 +91,47 @@ const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 
 let headings = rawHeadings;
 if (isRoot) {
-	headings = blocks.filter((b: interfaces.Block) =>
-		["heading_1", "heading_2", "heading_3"].includes(b.Type),
-	);
+    headings = blocks.reduce((acc: interfaces.Block[], block: interfaces.Block) => {
+        if (["heading_1", "heading_2", "heading_3"].includes(block.Type)) {
+            acc.push(block);
+        }
+
+        if (block.Type === "toggle" && block.Toggle?.Children) {
+            acc.push(...block.Toggle.Children.filter(child =>
+                ["heading_1", "heading_2", "heading_3"].includes(child.Type)
+            ));
+        }
+
+        if (block.Type === "column_list" && block.ColumnList?.Columns) {
+            block.ColumnList.Columns.forEach(column => {
+                if (column.Children) {
+                    acc.push(...column.Children.filter(child =>
+                        ["heading_1", "heading_2", "heading_3"].includes(child.Type)
+                    ));
+                }
+            });
+        }
+
+        if (block.Type === "callout" && block.Callout?.Children) {
+            acc.push(...block.Callout.Children.filter(child =>
+                ["heading_1", "heading_2", "heading_3"].includes(child.Type)
+            ));
+        }
+
+        if ((block.Type === "heading_1" && block.Heading1?.IsToggleable) ||
+            (block.Type === "heading_2" && block.Heading2?.IsToggleable) ||
+            (block.Type === "heading_3" && block.Heading3?.IsToggleable)) {
+            acc.push(block);
+            const children = block.Heading1?.Children || block.Heading2?.Children || block.Heading3?.Children;
+            if (children) {
+                acc.push(...children.filter(child =>
+                    ["heading_1", "heading_2", "heading_3"].includes(child.Type)
+                ));
+            }
+        }
+
+        return acc;
+    }, []);
 }
 
 const bookmarkURLs = blocks

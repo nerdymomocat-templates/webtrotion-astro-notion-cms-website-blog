@@ -41,9 +41,9 @@ export const ENABLE_LIGHTBOX = key_value_from_json["enable-lightbox"] || false;
 export const MENU_PAGES_COLLECTION = key_value_from_json["menu-pages-collection"] || "main";
 
 export const HEADING_BLOCKS = key_value_from_json["heading-blocks"] || [
-	"heading-1",
-	"heading-2",
-	"heading-3",
+	"heading_11",
+	"heading_2",
+	"heading_3",
 ];
 
 export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["full-preview-collections"] || [];
