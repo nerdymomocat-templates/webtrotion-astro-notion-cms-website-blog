@@ -6,20 +6,13 @@ export interface Props {
 }
 
 const { url } = Astro.props;
-
-// const postURL =
-// 	url.hostname === "bsky.app" || url.hostname === "www.bsky.app"
-// 		? new URL(url.pathname, "https://twitter.com")
-// 		: url;
-// const tweetID = postURL.pathname.split("/")[3];
-// const tweetID = postURL.toString();
 const blueskyUrl = url.toString();
 ---
 
 {
 	blueskyUrl && (
 		<div
-			class={`w-full ${FULL_WIDTH_SM ? "screen:max-w-[min(420px,96%)]" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
+			class={`w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
 		>
 			<BlueskyPost id={blueskyUrl} />
 		</div>
