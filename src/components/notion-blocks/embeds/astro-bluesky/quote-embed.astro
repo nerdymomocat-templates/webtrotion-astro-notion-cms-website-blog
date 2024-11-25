@@ -14,7 +14,12 @@ const { embed } = Astro.props;
 {
 	AppBskyEmbedRecord.isViewRecord(embed.record) && AppBskyFeedPost.isRecord(embed.record.value) ? (
 		<div class="bsky-post-container">
-			<a href={atUriToPostUri(embed.record.uri)} class="bsky-post-link">
+			<a
+				href={atUriToPostUri(embed.record.uri)}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="bsky-post-link"
+			>
 				<div class="bsky-user-info">
 					<Avatar user={embed.record.author} size="small" />
 					<p class="bsky-user-text">
@@ -23,7 +28,12 @@ const { embed } = Astro.props;
 					</p>
 				</div>
 			</a>
-			<a href={atUriToPostUri(embed.record.uri)} class="bsky-post-link">
+			<a
+				href={atUriToPostUri(embed.record.uri)}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="bsky-post-link"
+			>
 				<p class="bsky-content">{embed.record.value.text}</p>
 			</a>
 			<Embed

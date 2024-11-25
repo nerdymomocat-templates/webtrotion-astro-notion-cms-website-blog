@@ -27,9 +27,10 @@
 	/* Typography */
 	--bluesky-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
 		Arial, sans-serif;
-	--bluesky-font-size-sm: 0.7rem; /* 12px */
-	--bluesky-font-size-base: 0.75rem; /* 13px */
-	--bluesky-font-size-lg: 0.8125rem; /* 16px */
+	--bluesky-font-size-xs: 0.65rem;
+	--bluesky-font-size-sm: 0.75rem; /* 12px */
+	--bluesky-font-size-base: 0.8125rem; /* 13px */
+	--bluesky-font-size-lg: 1rem; /* 16px */
 
 	--bluesky-font-weight-normal: 400;
 	--bluesky-font-weight-medium: 500;

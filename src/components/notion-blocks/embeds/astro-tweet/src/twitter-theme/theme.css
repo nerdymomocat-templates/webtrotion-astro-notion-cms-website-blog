@@ -19,11 +19,11 @@
 	--tweet-quoted-body-margin: 0.25rem 0 0.75rem 0;
 
 	/* Info */
-	--tweet-info-font-size: 0.6rem;
+	--tweet-info-font-size: 0.65rem;
 	--tweet-info-line-height: 1rem;
 
 	/* Actions like the like, reply and copy buttons */
-	--tweet-actions-font-size: 0.6rem;
+	--tweet-actions-font-size: 0.65rem;
 	--tweet-actions-line-height: 1rem;
 	--tweet-actions-font-weight: 700;
 	--tweet-actions-icon-size: 0.7em;

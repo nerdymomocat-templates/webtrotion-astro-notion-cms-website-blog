@@ -10,7 +10,7 @@ const { images } = Astro.props;
 ---
 
 <div class="bsky-image-grid-container">
-	<div class:list={["image-grid", `image-grid--${images.length}`]}>
+	<div class:list={["bsky-image-grid", `bsky-image-grid--${images.length}`]}>
 		{
 			images.map((image) => (
 				<div class="bsky-image-grid-item">
