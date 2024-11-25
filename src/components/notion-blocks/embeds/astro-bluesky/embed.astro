@@ -1,0 +1,69 @@
+---
+import type { EmbedView } from "./types";
+import {
+	AppBskyEmbedExternal,
+	AppBskyEmbedImages,
+	AppBskyEmbedRecord,
+	AppBskyEmbedRecordWithMedia,
+	AppBskyEmbedVideo,
+	AppBskyGraphDefs,
+} from "@atproto/api";
+import External from "./external.astro";
+import ImageGrid from "./image-grid.astro";
+import VideoThumbnail from "./video-thumbnail.astro";
+import QuoteEmbed from "./quote-embed.astro";
+import StarterPack from "./starter-pack.astro";
+import List from "./list.astro";
+
+interface Props {
+	embed?: EmbedView | undefined | null;
+	postUrl: string;
+	compact?: boolean | undefined;
+}
+
+const { embed, postUrl, compact } = Astro.props;
+---
+
+{
+	embed
+		? (() => {
+				if (AppBskyEmbedRecordWithMedia.isView(embed)) {
+					return (
+						<div class="bsky-record-with-media">
+							<Astro.self embed={embed.media} postUrl={postUrl} compact={compact} />
+							<QuoteEmbed embed={embed.record} />
+						</div>
+					);
+				} else if (AppBskyEmbedExternal.isView(embed)) {
+					return <External embed={embed} compact={compact} />;
+				} else if (AppBskyEmbedImages.isView(embed)) {
+					return (
+						<a href={postUrl}>
+							<ImageGrid images={embed.images} />
+						</a>
+					);
+				} else if (AppBskyEmbedVideo.isView(embed)) {
+					return (
+						<a href={postUrl}>
+							<VideoThumbnail thumbnail={embed.thumbnail} aspectRatio={embed.aspectRatio} />
+						</a>
+					);
+				} else if (AppBskyGraphDefs.isStarterPackViewBasic(embed.record)) {
+					return <StarterPack record={embed.record} />;
+				} else if (AppBskyGraphDefs.isListView(embed.record)) {
+					return <List record={embed.record} />;
+				} else if (AppBskyEmbedRecord.isView(embed)) {
+					return <QuoteEmbed embed={embed} />;
+				} else {
+					return embed?.$type || null;
+				}
+			})()
+		: null
+}
+<style>
+	.bsky-record-with-media {
+		display: flex;
+		flex-direction: column;
+		gap: var(--bluesky-space-sm);
+	}
+</style>

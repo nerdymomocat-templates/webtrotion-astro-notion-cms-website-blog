@@ -29,6 +29,7 @@
 		"data-input-position": "top",
 		"data-reactions-enabled": true
 	},
+	"bluesky-comments": true,
 	"references": {
 		"site-links-in-page": true,
 		"external-links-in-page": true,
@@ -105,7 +106,7 @@
 		"title-font-url": "https://fonts.googleapis.com/css2?family=Kreon:wght@500&display=swap",
 		"footnote-font-url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap"
 	},
-	"full-width-tweet-embeds": false,
+	"full-width-social-embeds": false,
 	"optimize-images": true,
 	"redirects": {}
 }

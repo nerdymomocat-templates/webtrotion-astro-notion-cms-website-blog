@@ -1,0 +1,102 @@
+---
+import { AppBskyActorDefs } from "@atproto/api";
+import Avatar from "./avatar.astro";
+
+interface Props {
+	href: string;
+	image?:
+		| {
+				src: string;
+				alt?: string;
+		  }
+		| undefined;
+	avatarUser: AppBskyActorDefs.ProfileViewBasic;
+	title: string;
+	subtitle: string;
+	description?: string | undefined;
+}
+
+const { href, image, avatarUser, title, subtitle, description } = Astro.props;
+---
+
+<a href={href} target="_blank" rel="noopener noreferrer nofollow" class="bsky-card">
+	{image && <img class="bsky-cover-image" src={image.src} alt={image.alt ?? ""} />}
+	<div class="bsky-content">
+		<div class="bsky-header">
+			<Avatar user={avatarUser} />
+			<div class="bsky-title-group">
+				<p class="bsky-title">{title}</p>
+				<p class="bsky-subtitle">{subtitle}</p>
+			</div>
+		</div>
+		{description && <p class="bsky-description">{description}</p>}
+	</div>
+</a>
+
+<style>
+	.bsky-card {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		border: var(--bluesky-card-border);
+		border-radius: var(--bluesky-radius-md);
+		overflow: hidden;
+		text-decoration: none;
+		color: var(--bluesky-color-text);
+		background: var(--bluesky-color-background);
+		transition: var(--bluesky-card-transition);
+	}
+
+	.bsky-card:hover {
+		background: var(--bluesky-color-background-hover);
+	}
+
+	.bsky-cover-image {
+		aspect-ratio: var(--bluesky-aspect-ratio-thumb);
+		width: 100%;
+		height: auto;
+		object-fit: cover;
+	}
+
+	.bsky-content {
+		padding: var(--bluesky-content-padding);
+	}
+
+	.bsky-header {
+		display: flex;
+		gap: var(--bluesky-card-gap);
+		align-items: center;
+	}
+
+	.bsky-avatar {
+		width: var(--bluesky-avatar-md);
+		height: var(--bluesky-avatar-md);
+	}
+
+	.bsky-avatar {
+		display: flex;
+		flex-direction: column;
+		gap: var(--bluesky-space-2xs);
+	}
+
+	.bsky-title {
+		font-weight: var(--bluesky-font-weight-semibold);
+		line-height: var(--bluesky-line-height-title);
+		margin: 0;
+		color: var(--bluesky-color-text);
+	}
+
+	.bsky-subtitle {
+		font-size: var(--bluesky-font-size-sm);
+		color: var(--bluesky-color-text-secondary);
+		line-height: var(--bluesky-line-height-subtitle);
+		margin: 0;
+	}
+
+	.bsky-description {
+		font-size: var(--bluesky-font-size-sm);
+		color: var(--bluesky-color-text-secondary);
+		line-height: var(--bluesky-line-height-normal);
+		margin: var(--bluesky-space-xs) 0 0 0;
+	}
+</style>

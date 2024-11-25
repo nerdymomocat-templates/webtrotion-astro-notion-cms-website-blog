@@ -93,12 +93,14 @@ export const SOCIALS = key_value_from_json["socials"] || {};
 
 export const GISCUS = key_value_from_json["giscus"] || null;
 
+export const BLUESKY_COMM = key_value_from_json["bluesky-comments"] || false;
+
 export const THEME = key_value_from_json["theme"] || {};
 
 export const GOOGLE_SEARCH_CONSOLE_META_TAG =
 	key_value_from_json["google-search-console-html-tag"] || null;
 
-export const FULL_WIDTH_TWEETS = key_value_from_json["full-width-tweet-embeds"] || false;
+export const FULL_WIDTH_SM = key_value_from_json["full-width-social-embeds"] || false;
 
 const TRANSFORMER_FUNCTIONS_ARR = [
 	transformerNotationFocus(),

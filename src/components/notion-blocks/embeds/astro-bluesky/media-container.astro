@@ -1,0 +1,36 @@
+---
+interface Props {
+	aspectRatio?: { width: number; height: number } | undefined;
+	onClick?: (() => void) | undefined;
+	className?: string | undefined;
+}
+
+const { aspectRatio, onClick, className = "" } = Astro.props;
+---
+
+<div
+	class:list={["bsky-media-container", className]}
+	style={{
+		aspectRatio: aspectRatio ? `${aspectRatio.width}/${aspectRatio.height}` : undefined,
+	}}
+	{...onClick ? { onClick } : {}}
+>
+	<slot />
+</div>
+
+<style>
+	.bsky-media-container {
+		width: 100%;
+		overflow: hidden;
+		border-radius: var(--bluesky-radius-md);
+		position: relative;
+		background-color: var(--bluesky-color-border);
+	}
+
+	/* Ensure direct img children fill container */
+	.bsky-media-container > img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+</style>

@@ -9,6 +9,7 @@ import {
 	isSpotifyURL,
 	isGoogleMapsURL,
 	isEmbeddableURL,
+	isBlueskyAppURL,
 } from "../../../lib/blog-helpers.ts";
 import Caption from "../Caption.astro";
 
@@ -21,6 +22,7 @@ import CodePenEmbed from "./CodePenEmbed.astro";
 import EmbedGeneric from "./EmbedGeneric.astro";
 import SpotifyEmbed from "./SpotifyEmbed.astro";
 import GoogleMapsEmbed from "./GoogleMapsEmbed.astro";
+import BlueskyEmbed from "./BlueskyEmbed.astro";
 
 export interface Props {
 	block: interfaces.Block;
@@ -42,6 +44,8 @@ const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainTe
 		url ? (
 			isTweetURL(url) ? (
 				<TweetEmbed url={url} />
+			) : isBlueskyAppURL(url) ? (
+				<BlueskyEmbed url={url} />
 			) : isTikTokURL(url) ? (
 				<TikTokEmbed url={url} caption={plainTextCaption} />
 			) : isInstagramURL(url) ? (

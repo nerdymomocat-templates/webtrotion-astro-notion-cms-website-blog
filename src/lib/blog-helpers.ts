@@ -509,6 +509,14 @@ export const isTweetURL = (url: URL): boolean => {
 	}
 	return /\/[^/]+\/status\/[\d]+/.test(url.pathname);
 };
+
+export const isBlueskyAppURL = (url: URL): boolean => {
+	if (url.hostname !== "bsky.app" && url.hostname !== "www.bsky.app") {
+		return false;
+	}
+	return /^\/profile\/[^/]+\/post\/\w+$/.test(url.pathname);
+};
+
 export const isTikTokURL = (url: URL): boolean => {
 	if (url.hostname !== "tiktok.com" && url.hostname !== "www.tiktok.com") {
 		return false;

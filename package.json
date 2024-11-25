@@ -17,6 +17,7 @@
 		"@astrojs/partytown": "^2.1.2",
 		"@astrojs/rss": "^4.0.9",
 		"@astrojs/tailwind": "^5.1.2",
+		"@atproto/api": "^0.13.18",
 		"@notionhq/client": "^2.2.13",
 		"astro": "^4.16.14",
 		"astro-robots-txt": "^1.0.0",
