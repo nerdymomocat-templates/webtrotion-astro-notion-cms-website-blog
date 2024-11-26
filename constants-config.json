@@ -9,6 +9,7 @@
 		"googlescholar": "",
 		"semanticscholar": "",
 		"dblp": "",
+		"substack": "",
 		"facebook": "",
 		"twitter": "",
 		"threads": "",
@@ -16,6 +17,8 @@
 		"mastodon": "",
 		"bluesky": "",
 		"calendar": "",
+		"kofi": "",
+		"buy-me-a-coffee": "",
 		"this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog"
 	},
 	"custom-domain": "",
@@ -29,7 +32,14 @@
 		"data-input-position": "top",
 		"data-reactions-enabled": true
 	},
-	"bluesky-comments": true,
+	"bluesky-comments": {
+		"show-comments-from-bluesky": true,
+		"auto-search-for-match": {
+			"turn-on-auto-search": false,
+			"author-value": "",
+			"echo-feed-emoji": "💬"
+		}
+	},
 	"references": {
 		"site-links-in-page": true,
 		"external-links-in-page": true,

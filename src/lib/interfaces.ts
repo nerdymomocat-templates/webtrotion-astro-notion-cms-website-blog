@@ -25,6 +25,7 @@ export interface Post {
 	LastUpdatedDate: string;
 	LastUpdatedTimeStamp: Date;
 	Pinned: boolean;
+  BlueSkyPostLink: string | "";
 }
 
 export interface Block {
