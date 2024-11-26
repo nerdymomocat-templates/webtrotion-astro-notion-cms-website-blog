@@ -1372,7 +1372,10 @@ function _buildPost(pageObject: responses.PageObject): Post {
 			? prop["Last Updated Date"]?.formula.date.start
 			: "",
 		Pinned: prop.Pinned && prop.Pinned.checkbox === true ? true : false,
-    BlueSkyPostLink: prop["Bluesky Post Link"] && prop["Bluesky Post Link"].url? prop["Bluesky Post Link"].url: "",
+		BlueSkyPostLink:
+			prop["Bluesky Post Link"] && prop["Bluesky Post Link"].url
+				? prop["Bluesky Post Link"].url
+				: "",
 	};
 	return post;
 }

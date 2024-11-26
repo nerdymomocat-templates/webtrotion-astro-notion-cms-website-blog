@@ -33,11 +33,11 @@
 		"data-reactions-enabled": true
 	},
 	"bluesky-comments": {
-		"show-comments-from-bluesky": true,
+		"show-comments-from-bluesky": false,
 		"auto-search-for-match": {
 			"turn-on-auto-search": false,
-			"author-value": "",
-			"echo-feed-emoji": "💬"
+			"author": "",
+			"echo-feed-emoji": ""
 		}
 	},
 	"references": {
