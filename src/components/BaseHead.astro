@@ -19,8 +19,11 @@ const siteTitle = `${title} ${titleSeparator} ${siteInfo.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_PAGE_SLUG}.png`), Astro.url).href;
 const faviconLink = getNavLink("/favicon.ico");
-const publicGaTrackingId =   TRACKING && Object.keys(TRACKING).length>0 && TRACKING["google-analytics"] && Object.keys(TRACKING["google-analytics"]).length>0 && TRACKING["google-analytics"]["use-ga"] && TRACKING["google-analytics"]["public-ga-tracking-id"]?TRACKING["google-analytics"]["public-ga-tracking-id"]:null;
-
+const isBuildOrPreviewMode = import.meta.env.MODE === "production"
+const publicGaTrackingId =   isBuildOrPreviewMode && TRACKING && Object.keys(TRACKING).length>0 && TRACKING["google-analytics"] && Object.keys(TRACKING["google-analytics"]).length>0 && TRACKING["google-analytics"]["use-ga"] && TRACKING["google-analytics"]["public-ga-tracking-id"] ? TRACKING["google-analytics"]["public-ga-tracking-id"] : null;
+const setUmami =  isBuildOrPreviewMode && TRACKING && Object.keys(TRACKING).length>0 && TRACKING["umami"] && Object.keys(TRACKING["umami"]).length>0 && TRACKING["umami"]["use-umami"] && TRACKING["umami"]["data-website-id"]
+const umamiDataWebsiteId =  setUmami? TRACKING["umami"]["data-website-id"]:null;
+const umamiSrc = isBuildOrPreviewMode? (setUmami && TRACKING["umami"]["self-hosted"] && TRACKING["umami"]["self-hosted-umami-url"]? TRACKING["umami"]["self-hosted-umami-url"]: "https://cloud.umami.is/script.js"):null;
 ---
 
 
@@ -121,6 +124,11 @@ const publicGaTrackingId =   TRACKING && Object.keys(TRACKING).length>0 && TRACK
     gtag('config', publicGaTrackingId);
   </script>
 )
+}
+{
+  setUmami && (
+  <script type="text/partytown" data-astro-rerun src={umamiSrc} data-website-id={umamiDataWebsiteId} defer></script>
+  )
 }
 <style>
   @view-transition {
