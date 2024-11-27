@@ -50,9 +50,9 @@ const filled_in_giscus =
             (BLUESKY_COMM["auto-search-for-match"] &&
             BLUESKY_COMM["auto-search-for-match"]["turn-on-auto-search"] &&
             BLUESKY_COMM["auto-search-for-match"]["author"]))) && (
-          <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2" data-tab="bluesky"><Icon class="h-6 w-6" name={"bluesky"} aria-label={"Bluesky Comments"} focusable="false" />Bluesky</button>
+          <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="bluesky"><Icon class="h-6 w-6" name={"bluesky"} aria-label={"Bluesky Comments"} focusable="false" />Bluesky</button>
         )}
-        {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gao-2" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
+        {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
       </div>
       <div class="tab-content w-full">
         {(BLUESKY_COMM &&
@@ -658,7 +658,7 @@ const filled_in_giscus =
   <style>
 
     .tab.active {
-      border-bottom: 2px solid rgb(var(--theme-accent));
+      border-bottom: 2px solid rgb(var(--theme-accent)) !important;
     }
     .tab-pane {
       display: none;
