@@ -36,7 +36,6 @@ const hreflink = post ? getPostLink(post.Slug, post.Collection === MENU_PAGES_CO
 							src={post.Icon.Url}
 							class={`inline h-4 w-4 flex-shrink-0 align-sub ${getIconTailwindFilterStyle(post.Icon.Url)}`}
 							alt=""
-							loading="lazy"
 						/>
 					) : (
 						<Icon name={"document"} class="inline h-4 w-4 align-sub" aria-hidden="true" />
