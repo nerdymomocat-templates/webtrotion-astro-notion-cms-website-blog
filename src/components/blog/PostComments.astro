@@ -386,9 +386,6 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
                           )}&url=${encodeURIComponent(postUrl)}&author=${encodeURIComponent(
                               author
                           )}&sort=latest`;
-
-                          console.log("URL is: " + apiUrl);
-
                           const response = await fetch(apiUrl);
 
                           if (!response.ok) {
@@ -397,8 +394,6 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
 
                           // Parse the response JSON
                           const data = await response.json();
-                          console.log("Parsed Response Data:", data);
-
                           if (data?.posts?.length > 0) {
                               // Filter for parent posts only
                               const parentPost = data.posts.find(
@@ -447,7 +442,6 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
                   const apiUrl = `https://public.api.bsky.app/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(
                     atUri,
                   )}`;
-                  console.log(apiUrl);
                   const response = await fetch(apiUrl);
                   if (!response.ok) {
                     throw new Error("Failed to fetch replies");
