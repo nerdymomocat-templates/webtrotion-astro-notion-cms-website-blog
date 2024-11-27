@@ -1472,6 +1472,14 @@ function _buildRichText(richTextObject: responses.RichTextObject): RichText {
 				IframeUrl: linkMention.iframe_url,
 				LinkProvider: linkMention.link_provider,
 			};
+		} else if (
+			richTextObject.mention.type === "custom_emoji" &&
+			richTextObject.mention.custom_emoji
+		) {
+			mention.CustomEmoji = {
+				Name: richTextObject.mention.custom_emoji.name,
+				Url: richTextObject.mention.custom_emoji.url,
+			};
 		}
 
 		richText.Mention = mention;

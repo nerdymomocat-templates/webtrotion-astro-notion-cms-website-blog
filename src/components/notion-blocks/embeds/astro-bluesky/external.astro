@@ -12,7 +12,7 @@ const { compact } = Astro.props;
 ---
 
 <a href={uri} target="_blank" rel="noopener noreferrer nofollow" class="bsky-external-link">
-	{!compact && thumb && <img src={thumb} alt={title} class="bsky-thumbnail" />}
+	{!compact && thumb && <img src={thumb} alt={title} class="bsky-thumbnail" loading="lazy" />}
 	<div class="bsky-content">
 		<p class="bsky-domain">{domain}</p>
 		{

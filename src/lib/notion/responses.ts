@@ -107,6 +107,13 @@ interface Mention {
 	date?: DateProperty | undefined;
 	link_preview?: LinkPreview | undefined;
 	link_mention?: LinkMention | undefined;
+	custom_emoji?: CustomEmoji | undefined;
+}
+
+interface CustomEmoji {
+	id: string;
+	name: string;
+	url: string;
 }
 
 interface LinkMention {

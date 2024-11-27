@@ -26,12 +26,9 @@ const hreflink = post ? getPostLink(post.Slug, post.Collection === MENU_PAGES_CO
 
 {
 	post && (
-		<a
-			href={hreflink}
-			class="webtrotion-page-link inline items-center justify-center p-0.5 font-medium"
-		>
+		<a href={hreflink} class="webtrotion-page-link inline items-center justify-center font-medium">
 			<>
-				<span class="mx-1 inline">
+				<span class="mr-1 inline">
 					{post.Icon && post.Icon.Type === "emoji" ? (
 						post.Icon.Emoji
 					) : post.Icon && post.Icon.Type === "external" ? (
@@ -39,9 +36,10 @@ const hreflink = post ? getPostLink(post.Slug, post.Collection === MENU_PAGES_CO
 							src={post.Icon.Url}
 							class={`inline h-4 w-4 flex-shrink-0 align-sub ${getIconTailwindFilterStyle(post.Icon.Url)}`}
 							alt=""
+							loading="lazy"
 						/>
 					) : (
-						<Icon name={"document"} class="inline h-4 w-4" aria-hidden="true" />
+						<Icon name={"document"} class="inline h-4 w-4 align-sub" aria-hidden="true" />
 					)}
 				</span>
 				<span class="inline w-full">{post.Title}</span>

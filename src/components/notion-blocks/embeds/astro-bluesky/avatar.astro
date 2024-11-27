@@ -20,11 +20,11 @@ const src = user.avatar;
 			target="_blank"
 			rel="noopener noreferrer nofollow"
 		>
-			{src && <img src={src} alt={user.displayName ?? user.handle} />}
+			{src && <img src={src} alt={user.displayName ?? user.handle} loading="lazy" />}
 		</a>
 	) : (
 		<div class:list={["avatar", size]}>
-			{src && <img src={src} alt={user.displayName ?? user.handle} />}
+			{src && <img src={src} alt={user.displayName ?? user.handle} loading="lazy" />}
 		</div>
 	)
 }

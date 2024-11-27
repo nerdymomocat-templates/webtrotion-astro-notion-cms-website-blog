@@ -28,14 +28,15 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 					? block.File.Caption[0].Text.Content
 					: filename}
 				{"  "}
-				<span class="inline-flex max-w-full rounded-lg border border-accent-2/20 hover:border-accent/40">
+				<span class="inline-flex max-w-full rounded-lg border border-accent-2/20 p-1 hover:border-accent/40">
 					<a
 						href={block.File.External ? url.String() : filePath(url)}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
-						<span class="webtrotion-page-link inline-flex max-w-full items-center justify-center rounded-lg p-0.5 text-sm font-medium">
-							Download <Icon name={"download"} class="inline h-4 w-4" aria-hidden="true" />
+						<span class="webtrotion-page-link inline-flex max-w-full items-center justify-center rounded-lg text-sm font-medium">
+							Download{" "}
+							<Icon name={"download"} class="inline h-4 w-4 align-sub" aria-hidden="true" />
 						</span>
 					</a>
 					{/* Conditional Preview for PDFs */}
@@ -45,8 +46,9 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 							class="fileglightbox hidden sm:inline"
 							type="application/pdf"
 						>
-							<span class="ml-2 inline-flex max-w-full items-center justify-center p-0.5 text-sm font-medium underline decoration-accent-2/20 decoration-wavy hover:decoration-accent/40">
-								Preview <Icon name={"preview-pdf"} class="inline h-4 w-4" aria-hidden="true" />
+							<span class="ml-2 inline-flex max-w-full items-center justify-center text-sm font-medium underline decoration-accent-2/20 decoration-wavy hover:decoration-accent/40">
+								Preview{" "}
+								<Icon name={"preview-pdf"} class="inline h-4 w-4 align-sub" aria-hidden="true" />
 							</span>
 						</a>
 					)}

@@ -11,6 +11,7 @@ import Anchor from "./annotations/Anchor.astro";
 import MentionPage from "./MentionPage.astro";
 import MentionDate from "./MentionDate.astro";
 import MentionLink from "./MentionLink.astro";
+import MentionCustomEmoji from "./MentionCustomEmoji.astro";
 
 export interface Props {
 	richText: RichText;
@@ -63,6 +64,9 @@ const { richText, blockID } = Astro.props;
 														)}
 														{richText.Mention && richText.Mention.LinkMention && (
 															<MentionLink mention={richText.Mention} />
+														)}
+														{richText.Mention && richText.Mention.CustomEmoji && (
+															<MentionCustomEmoji mention={richText.Mention} />
 														)}
 													</Bold>
 												}

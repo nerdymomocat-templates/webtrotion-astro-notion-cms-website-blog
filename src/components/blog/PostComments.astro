@@ -540,7 +540,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
 
                     let avatarElement;
                     if (avatarUrl) {
-                      avatarElement = `<img src="${avatarUrl}" alt="${authorHandle}'s avatar" class="avatar" part="avatar"/>`;
+                      avatarElement = `<img loading="lazy" src="${avatarUrl}" alt="${authorHandle}'s avatar" class="avatar" part="avatar"/>`;
                     } else {
                       avatarElement = `<div class="default-avatar" part="avatar"></div>`;
                     }

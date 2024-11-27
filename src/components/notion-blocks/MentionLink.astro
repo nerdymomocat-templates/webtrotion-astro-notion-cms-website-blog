@@ -46,11 +46,11 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
+						<img src={IconUrl} loading="lazy" alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
 					</>
 				):
         <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5" aria-hidden="true" />{" "}
+        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
         </>}
 				{LinkProvider && LinkProvider!==Title && (
 					<>
@@ -72,11 +72,11 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
+						<img src={IconUrl} loading="lazy" alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
 					</>
 				):
         <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5" aria-hidden="true" />{" "}
+        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
         </>}
         {LinkProvider && LinkProvider!==Title && LinkProvider!==LinkAuthor && (
 					<>
@@ -134,11 +134,11 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 <div class="mt-4">
 {IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
+						<img src={IconUrl} loading="lazy" alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub" />{" "}
 					</s>
 				):
         <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5" aria-hidden="true" />{" "}
+        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
         </>}
         {Href && <span class="text-xs font-medium text-link/80">{truncatedHref}</span>}
       </div>

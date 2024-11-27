@@ -20,7 +20,7 @@ const { href, image, avatarUser, title, subtitle, description } = Astro.props;
 ---
 
 <a href={href} target="_blank" rel="noopener noreferrer nofollow" class="bsky-card">
-	{image && <img class="bsky-cover-image" src={image.src} alt={image.alt ?? ""} />}
+	{image && <img class="bsky-cover-image" src={image.src} alt={image.alt ?? ""} loading="lazy" />}
 	<div class="bsky-content">
 		<div class="bsky-header">
 			<Avatar user={avatarUser} />

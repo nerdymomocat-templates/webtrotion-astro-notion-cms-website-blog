@@ -1,0 +1,27 @@
+---
+import { Mention } from "../../lib/interfaces.ts";
+
+export interface Props {
+	mention: Mention;
+}
+
+const { mention } = Astro.props;
+
+if (!mention.CustomEmoji) {
+	return null;
+}
+
+const { Name, Url } = mention.CustomEmoji;
+
+if (!Url) {
+	return null;
+}
+---
+
+<img
+	src={Url}
+	alt={`custom emoji with name ${Name}`}
+	aria-label={`custom emoji with name ${Name}`}
+	class="mb-0.5 inline h-4 w-4 object-contain align-sub text-transparent"
+	loading="lazy"
+/>
