@@ -4,7 +4,7 @@ import type { SiteMeta } from "@/types";
 import "../styles/global.css";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import {ENABLE_LIGHTBOX, PUBLIC_GA_TRACKING_ID, THEME, GOOGLE_SEARCH_CONSOLE_META_TAG } from "@/constants";
+import {ENABLE_LIGHTBOX, TRACKING, THEME, GOOGLE_SEARCH_CONSOLE_META_TAG } from "@/constants";
 import GoogleFontsOptimizer from "@/components/GoogleFontsOptimizer";
 import { HOME_PAGE_SLUG } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
@@ -18,7 +18,8 @@ const titleSeparator = "•";
 const siteTitle = `${title} ${titleSeparator} ${siteInfo.title}`;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const socialImageURL = new URL(getNavLink(ogImage ? ogImage : `/og-image/${HOME_PAGE_SLUG}.png`), Astro.url).href;
-const faviconLink = getNavLink("/favicon.ico")
+const faviconLink = getNavLink("/favicon.ico");
+const publicGaTrackingId =   TRACKING && Object.keys(TRACKING).length>0 && TRACKING["google-analytics"] && Object.keys(TRACKING["google-analytics"]).length>0 && TRACKING["google-analytics"]["use-ga"] && TRACKING["google-analytics"]["public-ga-tracking-id"]?TRACKING["google-analytics"]["public-ga-tracking-id"]:null;
 
 ---
 
@@ -99,7 +100,7 @@ const faviconLink = getNavLink("/favicon.ico")
 
 {/* Webmentions */}
 {
-	siteInfo.webmentions && (
+	siteInfo.webmentions && (Object.keys(siteInfo.webmentions).length > 0) && (
 		<>
 			<link rel="webmention" href={siteInfo.webmentions.link} />
 			{siteInfo.webmentions.pingback && (
@@ -110,14 +111,14 @@ const faviconLink = getNavLink("/favicon.ico")
 }
 <script is:inline src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.3.2/lazysizes.min.js" async=""></script>
 {
-  PUBLIC_GA_TRACKING_ID && (
-  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA_TRACKING_ID}`} defer ></script>
-  <script type="text/partytown" define:vars={{ PUBLIC_GA_TRACKING_ID }} defer>
+  publicGaTrackingId && (
+  <script type="text/partytown" src={`https://www.googletagmanager.com/gtag/js?id=${publicGaTrackingId}`} defer ></script>
+  <script type="text/partytown" define:vars={{ publicGaTrackingId }} defer>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
 
-    gtag('config', PUBLIC_GA_TRACKING_ID);
+    gtag('config', publicGaTrackingId);
   </script>
 )
 }

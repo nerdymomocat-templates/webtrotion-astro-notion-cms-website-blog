@@ -67,7 +67,7 @@ entryIdsToDel.forEach((entryId) => {
 				{Object.entries(groupedReferences).map(([entryId, blocks]) => (
 					<div class="ml-2">
 						<div class="inline-block">
-							{REFERENCES && REFERENCES["popovers"] ? (
+							{REFERENCES && Object.keys(REFERENCES).length > 0 && REFERENCES["popovers"] ? (
 								<>
 									<NPagePopover
 										linkedTo={entryIdLinksEntry[entryId][0]}

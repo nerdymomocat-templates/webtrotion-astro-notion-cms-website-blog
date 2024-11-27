@@ -40,7 +40,7 @@ const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTIO
 </Tag>
 {withDesc && post.Excerpt && <q class="line-clamp-3 block italic">{post.Excerpt}</q>}
 {
-	post.Tags.length > 0 && (
+	post.Tags && post.Tags.length > 0 && (
 		<div class="mt-1">
 			<Icon
 				class="me-1 inline-block h-4 w-4"

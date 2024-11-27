@@ -26,6 +26,7 @@ const filteredMediaReferences = allReferencesInPage
 	: null;
 const rendering =
 	REFERENCES &&
+	Object.keys(REFERENCES).length > 0 &&
 	((REFERENCES["links-to-this-page"] &&
 		allReferencesToPage &&
 		Object.keys(allReferencesToPage).length > 0) ||
@@ -87,27 +88,39 @@ const interlinkedContentStyles = `
 	}
 
 	{
-		REFERENCES && REFERENCES["links-to-this-page"] && allReferencesToPage && (
-			<LinksToThisPage post={post} allReferencesToPage={allReferencesToPage} />
-		)
+		REFERENCES &&
+			Object.keys(REFERENCES).length > 0 &&
+			REFERENCES["links-to-this-page"] &&
+			allReferencesToPage && (
+				<LinksToThisPage post={post} allReferencesToPage={allReferencesToPage} />
+			)
 	}
 	{
-		REFERENCES && REFERENCES["site-links-in-page"] && filteredSitePages && (
-			<InternalLinksInThisPage post={post} filteredReferencesInPage={filteredSitePages} />
-		)
+		REFERENCES &&
+			Object.keys(REFERENCES).length > 0 &&
+			REFERENCES["site-links-in-page"] &&
+			filteredSitePages && (
+				<InternalLinksInThisPage post={post} filteredReferencesInPage={filteredSitePages} />
+			)
 	}
 	{
-		REFERENCES && REFERENCES["media-and-file-links-in-this-page"] && filteredMediaReferences && (
-			<MediaLinksInThisPage post={post} filteredReferencesInPage={filteredMediaReferences} />
-		)
+		REFERENCES &&
+			Object.keys(REFERENCES).length > 0 &&
+			REFERENCES["media-and-file-links-in-this-page"] &&
+			filteredMediaReferences && (
+				<MediaLinksInThisPage post={post} filteredReferencesInPage={filteredMediaReferences} />
+			)
 	}
 	{
-		REFERENCES && REFERENCES["external-links-in-page"] && filteredExternalNonMediaReferences && (
-			<ExternalLinksInThisPage
-				post={post}
-				filteredReferencesInPage={filteredExternalNonMediaReferences}
-			/>
-		)
+		REFERENCES &&
+			Object.keys(REFERENCES).length > 0 &&
+			REFERENCES["external-links-in-page"] &&
+			filteredExternalNonMediaReferences && (
+				<ExternalLinksInThisPage
+					post={post}
+					filteredReferencesInPage={filteredExternalNonMediaReferences}
+				/>
+			)
 	}
 
 	{rendering && <hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />}

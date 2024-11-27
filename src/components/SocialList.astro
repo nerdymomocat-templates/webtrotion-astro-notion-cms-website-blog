@@ -65,7 +65,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 </script>
 
 {
-	socialLinks && (
+	socialLinks && socialLinks.length > 0 && (
 		<>
 			<div class="flex flex-wrap items-center gap-x-4 print:hidden">
 				<p>Find me on</p>

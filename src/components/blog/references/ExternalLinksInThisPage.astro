@@ -67,7 +67,7 @@ const metascraper = createMetascraper([
 	metascraperDescription(),
 ]);
 
-if (groupedReferences && urlMap) {
+if (groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap) {
 	for (const hrefLink of Object.keys(groupedReferences)) {
 		let url: URL;
 		let metadata: Record<string, string>;
@@ -127,7 +127,7 @@ if (groupedReferences && urlMap) {
 										: hrefMetaData[hrefLink].title}
 								</a>
 								{" at "}
-								{REFERENCES && REFERENCES["popovers"] ? (
+								{REFERENCES && Object.keys(REFERENCES).length > 0 && REFERENCES["popovers"] ? (
 									<>
 										{blocks.map((block, index) => (
 											<NBlocksPopover

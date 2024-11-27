@@ -14,21 +14,24 @@ const post_slug =new URL(getPostLink(post.Slug), import.meta.env.SITE).toString(
 const bluesky_url = post.BlueSkyPostLink || "";
 
 const filled_in_giscus =
-	GISCUS &&
+  GISCUS &&
+  Object.keys(GISCUS).length > 0 &&
 	GISCUS["data-repo"] &&
 	GISCUS["data-repo-id"] &&
 	GISCUS["data-category"] &&
 	GISCUS["data-category-id"];
----
 
-{(filled_in_giscus ||
-  (BLUESKY_COMM &&
+const use_bluesky =
+
+BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
    BLUESKY_COMM["show-comments-from-bluesky"] &&
    (bluesky_url ||
     (BLUESKY_COMM["auto-search-for-match"] &&
      BLUESKY_COMM["auto-search-for-match"]["turn-on-auto-search"] &&
-     BLUESKY_COMM["auto-search-for-match"]["author"])))
-) && (
+     BLUESKY_COMM["auto-search-for-match"]["author"]))
+---
+
+{(filled_in_giscus || use_bluesky) && (
   <div id="webtrotion-post-comments">
     <h2
             class="non-toggle-h2 mb-4 mt-8 cursor-pointer text-2xl font-normal"
@@ -44,23 +47,13 @@ const filled_in_giscus =
     </h2>
     <div class="tabs-container flex flex-col items-left w-full my-8 mx-auto">
       <div class="tabs flex gap-4 mb-4">
-        {(BLUESKY_COMM &&
-          BLUESKY_COMM["show-comments-from-bluesky"] &&
-          (bluesky_url ||
-            (BLUESKY_COMM["auto-search-for-match"] &&
-            BLUESKY_COMM["auto-search-for-match"]["turn-on-auto-search"] &&
-            BLUESKY_COMM["auto-search-for-match"]["author"]))) && (
+        {use_bluesky && (
           <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="bluesky"><Icon class="h-6 w-6" name={"bluesky"} aria-label={"Bluesky Comments"} focusable="false" />Bluesky</button>
         )}
         {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
       </div>
       <div class="tab-content w-full">
-        {(BLUESKY_COMM &&
-          BLUESKY_COMM["show-comments-from-bluesky"] &&
-          (bluesky_url ||
-            (BLUESKY_COMM["auto-search-for-match"] &&
-            BLUESKY_COMM["auto-search-for-match"]["turn-on-auto-search"] &&
-            BLUESKY_COMM["auto-search-for-match"]["author"]))) && (
+        {use_bluesky && (
           <div class="tab-pane w-full" id="bluesky-tab" hidden>
             <bluesky-comments
               url={

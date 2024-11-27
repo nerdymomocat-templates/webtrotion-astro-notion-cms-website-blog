@@ -18,6 +18,7 @@ const { hreflink, blocklinked, conditionmatch, post, isBlockLinkedHeading } =
 {
 	hreflink &&
 	REFERENCES &&
+	Object.keys(REFERENCES).length > 0 &&
 	REFERENCES["popovers"] &&
 	conditionmatch &&
 	["block_other_page", "other_page"].includes(conditionmatch) &&

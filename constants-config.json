@@ -1,7 +1,18 @@
 {
 	"database-id": "169b6e632b7448529120599281265ac5",
 	"author": "",
-	"public-ga-tracking-id": "",
+	"tracking": {
+		"google-analytics": {
+			"use-ga": true,
+			"public-ga-tracking-id": ""
+		},
+		"umami": {
+			"use-umami": false,
+			"data-website-id": "",
+			"self-hosted": false,
+			"self-hosted-umami-url": ""
+		}
+	},
 	"google-search-console-html-tag": "",
 	"socials": {
 		"email": "",

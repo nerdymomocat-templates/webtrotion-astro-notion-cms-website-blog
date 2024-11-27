@@ -49,7 +49,7 @@ if (groupedReferences) {
 				{Object.entries(groupedReferences).map(([dmltype, blockdmls]) => (
 					<div class="ml-2">
 						<div class="inline-block">
-							{REFERENCES && REFERENCES["popovers"] ? (
+							{REFERENCES && Object.keys(REFERENCES).length > 0 && REFERENCES["popovers"] ? (
 								<>
 									<span class="italic">{dmltype}</span> {" at "}
 									{blockdmls.map((blockdml, index) => (
