@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet version="3.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="html" version="1.0" encoding="UTF-8" indent="yes"/>
   <xsl:template match="/">
     <html xmlns="http://www.w3.org/1999/xhtml">
@@ -32,6 +32,26 @@
           .header p {
             color: #ccc;
             font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+          }
+          .header .feed-info {
+            font-size: 0.9rem;
+            color: #999;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+          }
+          .header .feed-info p {
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+          }
+          .header a {
+            color: #fff;
+            text-decoration: underline;
+            text-decoration-color: rgba(255,255,255,0.3);
+          }
+          .header a:hover {
+            text-decoration-color: rgba(255,255,255,0.8);
           }
           .container {
             max-width: 800px;
@@ -109,6 +129,14 @@
         <div class="header">
           <h1><xsl:value-of select="/rss/channel/title"/></h1>
           <p><xsl:value-of select="/rss/channel/description"/></p>
+          <div class="feed-info">
+            <p>📫 <strong>Subscribe to this RSS feed</strong> to stay updated with the latest content!</p>
+            <p>🔗 Feed URL: <a><xsl:attribute name="href"><xsl:value-of select="/rss/channel/link"/></xsl:attribute><xsl:value-of select="/rss/channel/link"/></a></p>
+            <p>🕒 Last Updated: <xsl:value-of select="/rss/channel/lastBuildDate"/></p>
+            <xsl:if test="/rss/channel/author">
+              <p>✍️ Author: <xsl:value-of select="/rss/channel/author"/></p>
+            </xsl:if>
+          </div>
         </div>
         <div class="container">
           <xsl:for-each select="/rss/channel/item">

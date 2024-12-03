@@ -33,15 +33,15 @@ const rssContentEnhancer = (): AstroIntegration => {
           try {
             const htmlContent = await fs.readFile(htmlPath, 'utf-8');
 
-            // Extract last updated timestamp from title
-            const lastUpdatedMatch = item.title[0].match(/<!--lastUpdated:(.+?)-->/);
-            const lastUpdated = lastUpdatedMatch ? new Date(lastUpdatedMatch[1]) : null;
+            const lastUpdatedMatch = item.lastUpdatedTimestamp?.[0];
+            if (!lastUpdatedMatch) {
+              continue;
+            }
 
-            // Clean up the title by removing the timestamp
-            item.title = [item.title[0].replace(/<!--lastUpdated:.+?-->/, '').trim()];
+            const lastUpdated = lastUpdatedMatch;
+            const cachePath = path.join(tempDir, `${slug}.html`);
 
             // Check cache
-            const cachePath = path.join(tempDir, `${slug}.html`);
             let shouldUpdate = true;
 
             // Check if cache exists
@@ -79,7 +79,7 @@ const rssContentEnhancer = (): AstroIntegration => {
 
                     // Block text content
                     'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption', 'figure', 'hr',
-                    'li', 'main', 'ol', 'p', 'pre', 'ul',
+                    'li', 'main', 'ol', 'p', 'pre', 'ul', 'details', 'summary',
 
                     // Inline text
                     'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn',
@@ -101,34 +101,14 @@ const rssContentEnhancer = (): AstroIntegration => {
                     'th': ['align', 'valign', 'colspan', 'rowspan'],
                     'span': ['data-popover-target','data-href']
                   },
+                  disallowedTagsMode: 'discard',
                   transformTags: {
-                    img: (tagName, attribs) => {
-                      // Remove Notion icon images
-                      if (attribs.src?.startsWith('https://www.notion.so/icons/')) {
-                        return { tagName: '', attribs: {} };
-                      }
-                      // Remove custom emoji images
-                      if (attribs.alt?.startsWith('custom emoji with name ')) {
-                        return { tagName: '', attribs: {} };
-                      }
-                      if (attribs.src && attribs.src.startsWith('/notion/')) {
-                        return {
-                          tagName,
-                          attribs: {
-                            ...attribs,
-                            src: `${baseUrl}${attribs.src}`
-                          }
-                        };
-                      }
-                      return { tagName, attribs };
+                    'div': (tagName, attribs, innerHTML = '') => {
+                      // Remove empty divs
+                      return innerHTML.trim() ? { tagName, attribs } : { tagName: '', attribs: {} };
                     },
-                    span: (tagName, attribs, innerHTML = '') => {
-                      // Remove empty spans unless they have specific attributes we want to keep
-                      if (!innerHTML.trim() && !attribs['data-popover-target']) {
-                        return { tagName: '', attribs: {} };
-                      }
-
-                      // If it's a popover span
+                    'span': (tagName, attribs, innerHTML = '') => {
+                      // If span has data-popover-target, convert to link
                       if (attribs['data-popover-target']) {
                         const href = attribs['data-href'];
 
@@ -152,12 +132,37 @@ const rssContentEnhancer = (): AstroIntegration => {
                         }
                       }
 
+                      // Remove empty spans unless they have specific attributes we want to keep
+                      if (!innerHTML.trim() && !attribs['data-popover-target']) {
+                        return { tagName: '', attribs: {} };
+                      }
+
                       // Keep non-empty spans
                       return innerHTML.trim() ? { tagName, attribs } : { tagName: '', attribs: {} };
                     },
-                    div: (tagName, attribs, innerHTML = '') => {
-                      // Remove empty divs
-                      return innerHTML.trim() ? { tagName, attribs } : { tagName: '', attribs: {} };
+                    'img': (tagName, attribs) => {
+                      // Remove Notion icon images
+                      if (attribs.src?.startsWith('https://www.notion.so/icons/')) {
+                        return false;
+                      }
+                      // Remove custom emoji images
+                      if (attribs.alt?.startsWith('custom emoji with name ')) {
+                        return false;
+                      }
+                      // Keep other images
+                      if (attribs.src && attribs.src.startsWith('/notion/')) {
+                        return {
+                          tagName,
+                          attribs: {
+                            ...attribs,
+                            src: `${baseUrl}${attribs.src}`
+                          }
+                        };
+                      }
+                      return {
+                        tagName: 'img',
+                        attribs
+                      };
                     }
                   },
                   exclusiveFilter: function(frame) {
