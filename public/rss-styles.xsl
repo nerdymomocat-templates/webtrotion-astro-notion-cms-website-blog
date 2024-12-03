@@ -109,6 +109,38 @@
             margin: 1rem 0;
             color: #666;
           }
+          .categories {
+            margin: 0.5rem 0;
+          }
+          .category {
+            display: inline-block;
+            margin: 0.2rem 0.4rem 0.2rem 0;
+            padding: 0.2rem 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.9rem;
+            background: #f0f0f0;
+            color: #666;
+            text-decoration: none;
+          }
+          .copy-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3rem 0.7rem;
+            margin-left: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+          }
+          .copy-button:hover {
+            background: #f5f5f5;
+          }
+          .copy-button.copied {
+            background: #e6ffe6;
+            border-color: #99cc99;
+          }
           @media (max-width: 600px) {
             .header {
               padding: 1.5rem 1rem;
@@ -131,7 +163,11 @@
           <p><xsl:value-of select="/rss/channel/description"/></p>
           <div class="feed-info">
             <p>📫 <strong>Subscribe to this RSS feed</strong> to stay updated with the latest content!</p>
-            <p>🔗 Feed URL: <a><xsl:attribute name="href"><xsl:value-of select="/rss/channel/link"/></xsl:attribute><xsl:value-of select="/rss/channel/link"/></a></p>
+            <p>🔗 Home Link: <a><xsl:attribute name="href"><xsl:value-of select="/rss/channel/link"/></xsl:attribute><xsl:value-of select="/rss/channel/link"/></a></p>
+            <p>
+              🔗 Feed URL: <span id="feed-url"><xsl:value-of select="/rss/channel/link"/>rss.xml</span>
+              <button class="copy-button" onclick="copyFeedUrl()" id="copy-button">📋 Copy</button>
+            </p>
             <p>🕒 Last Updated: <xsl:value-of select="/rss/channel/lastBuildDate"/></p>
             <xsl:if test="/rss/channel/author">
               <p>✍️ Author: <xsl:value-of select="/rss/channel/author"/></p>
@@ -148,6 +184,15 @@
                   </a>
                 </h2>
                 <time><xsl:value-of select="pubDate"/></time>
+                <xsl:if test="category">
+                  <div class="categories">
+                    <xsl:for-each select="category">
+                      <span class="category">
+                        🏷️ <xsl:value-of select="current()"/>
+                      </span>
+                    </xsl:for-each>
+                  </div>
+                </xsl:if>
               </header>
               <div class="-feed-entry-content">
                 <xsl:choose>
@@ -162,6 +207,20 @@
             </article>
           </xsl:for-each>
         </div>
+        <script>
+          function copyFeedUrl() {
+            const feedUrl = document.getElementById('feed-url').textContent;
+            navigator.clipboard.writeText(feedUrl).then(() => {
+              const button = document.getElementById('copy-button');
+              button.textContent = '✅ Copied!';
+              button.classList.add('copied');
+              setTimeout(() => {
+                button.textContent = '  📋 Copy  ';
+                button.classList.remove('copied');
+              }, 2000);
+            });
+          }
+        </script>
       </body>
     </html>
   </xsl:template>
