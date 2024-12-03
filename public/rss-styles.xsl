@@ -125,6 +125,7 @@
           .copy-button {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             padding: 0.3rem 0.7rem;
             margin-left: 0.5rem;
             border: 1px solid #ccc;
@@ -133,6 +134,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             color: #666;
+            min-width: 5.5rem;
           }
           .copy-button:hover {
             background: #f5f5f5;
@@ -166,7 +168,7 @@
             <p>🔗 Home Link: <a><xsl:attribute name="href"><xsl:value-of select="/rss/channel/link"/></xsl:attribute><xsl:value-of select="/rss/channel/link"/></a></p>
             <p>
               🔗 Feed URL: <span id="feed-url"><xsl:value-of select="/rss/channel/link"/>rss.xml</span>
-              <button class="copy-button" onclick="copyFeedUrl()" id="copy-button">📋 Copy</button>
+              <button class="copy-button" onclick="copyFeedUrl()" id="copy-button">📋\u00A0Copy</button>
             </p>
             <p>🕒 Last Updated: <xsl:value-of select="/rss/channel/lastBuildDate"/></p>
             <xsl:if test="/rss/channel/author">
@@ -212,10 +214,10 @@
             const feedUrl = document.getElementById('feed-url').textContent;
             navigator.clipboard.writeText(feedUrl).then(() => {
               const button = document.getElementById('copy-button');
-              button.textContent = '✅ Copied!';
+              button.textContent = '✅';
               button.classList.add('copied');
               setTimeout(() => {
-                button.textContent = '  📋 Copy  ';
+                button.textContent = '📋';
                 button.classList.remove('copied');
               }, 2000);
             });

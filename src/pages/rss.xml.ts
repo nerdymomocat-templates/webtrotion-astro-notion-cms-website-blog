@@ -28,7 +28,12 @@ export const GET = async () => {
 			pubDate: new Date(post.LastUpdatedDate),
 			customData: `<lastUpdatedTimestamp>${post.LastUpdatedTimeStamp}</lastUpdatedTimestamp>`,
 			link: new URL(getPostLink(post.Slug), import.meta.env.SITE).toString(),
-			categories: post.Tags ? post.Tags.map(tag => tag.name) : [],
+			categories: [
+        ...(post.Collection ? [post.Collection] : []),
+        ...(post.Tags ? post.Tags.map(tag => tag.name) : []),
+      ],
 		})),
 	});
 };
+
+
