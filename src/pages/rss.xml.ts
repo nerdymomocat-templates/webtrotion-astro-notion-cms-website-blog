@@ -3,6 +3,7 @@ import rss from "@astrojs/rss";
 import { getAllPosts, getDatabase } from "@/lib/notion/client";
 import { getPostLink } from "../lib/blog-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+import { getNavLink } from "@/lib/blog-helpers";
 
 export const GET = async () => {
 	const [posts, database] = await Promise.all([getAllPosts(), getDatabase()]);
@@ -13,7 +14,7 @@ export const GET = async () => {
 		: posts;
 
 	return rss({
-    stylesheet: '/rss-styles.xsl',
+    stylesheet: getNavLink("/rss-styles.xsl"),
 		title: database.Title,
 		description: database.Description,
 		site: import.meta.env.SITE,

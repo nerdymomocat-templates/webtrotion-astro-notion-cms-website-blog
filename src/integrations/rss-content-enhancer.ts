@@ -102,7 +102,15 @@ const rssContentEnhancer = (): AstroIntegration => {
                     'span': ['data-popover-target','data-href']
                   },
                   transformTags: {
-                    'img': (tagName, attribs) => {
+                    img: (tagName, attribs) => {
+                      // Remove Notion icon images
+                      if (attribs.src?.startsWith('https://www.notion.so/icons/')) {
+                        return { tagName: '', attribs: {} };
+                      }
+                      // Remove custom emoji images
+                      if (attribs.alt?.startsWith('custom emoji with name ')) {
+                        return { tagName: '', attribs: {} };
+                      }
                       if (attribs.src && attribs.src.startsWith('/notion/')) {
                         return {
                           tagName,
@@ -114,7 +122,7 @@ const rssContentEnhancer = (): AstroIntegration => {
                       }
                       return { tagName, attribs };
                     },
-                    'span': (tagName, attribs, innerHTML = '') => {
+                    span: (tagName, attribs, innerHTML = '') => {
                       // Remove empty spans unless they have specific attributes we want to keep
                       if (!innerHTML.trim() && !attribs['data-popover-target']) {
                         return { tagName: '', attribs: {} };
@@ -147,7 +155,7 @@ const rssContentEnhancer = (): AstroIntegration => {
                       // Keep non-empty spans
                       return innerHTML.trim() ? { tagName, attribs } : { tagName: '', attribs: {} };
                     },
-                    'div': (tagName, attribs, innerHTML = '') => {
+                    div: (tagName, attribs, innerHTML = '') => {
                       // Remove empty divs
                       return innerHTML.trim() ? { tagName, attribs } : { tagName: '', attribs: {} };
                     }
@@ -162,16 +170,22 @@ const rssContentEnhancer = (): AstroIntegration => {
                 // Remove the first h1 (title)
                 const contentWithoutTitle = cleanContent.replace(/<h1[^>]*>.*?<\/h1>/i, '');
 
+                // Wrap the content in article structure
+                const wrappedContent = `
+                  <div class="-feed-entry-content">
+                    ${contentWithoutTitle}
+                  </div>`;
+
                 // Cache the cleaned content
-                await fs.writeFile(cachePath, contentWithoutTitle);
+                await fs.writeFile(cachePath, wrappedContent);
 
                 // Add content tag to RSS item
-                item.content = [contentWithoutTitle];
+                item.content = [wrappedContent];
 
                 // If description is empty, generate from content
                 if (!item.description?.[0]?.trim()) {
                   // Remove HTML tags and get plain text
-                  const plainText = contentWithoutTitle.replace(/<[^>]+>/g, '').trim();
+                  const plainText = wrappedContent.replace(/<[^>]+>/g, '').trim();
                   // Get first 50 characters and add ellipsis
                   item.description = [plainText.slice(0, 50) + (plainText.length > 50 ? '...' : '')];
                 }
@@ -193,9 +207,17 @@ const rssContentEnhancer = (): AstroIntegration => {
         }
 
         // Build and save the updated RSS
-        const builder = new Builder();
+        const builder = new Builder({
+          xmldec: { version: '1.0', encoding: 'UTF-8' },
+          allowSurrogateChars: true
+        });
         const updatedRss = builder.buildObject(rssData);
-        await fs.writeFile(rssPath, updatedRss);
+
+        // Add stylesheet processing instruction
+        const styleSheet = rssContent.match(/<\?xml-stylesheet[^>]+\?>/)?.[0] || '';
+        const finalXml = updatedRss.replace('?>', `?>${styleSheet}`);
+
+        await fs.writeFile(rssPath, finalXml);
       }
     }
   };
