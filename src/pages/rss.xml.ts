@@ -13,11 +13,12 @@ export const GET = async () => {
 		: posts;
 
 	return rss({
+    stylesheet: '/rss-styles.xsl',
 		title: database.Title,
 		description: database.Description,
 		site: import.meta.env.SITE,
 		items: filteredPosts.map((post) => ({
-			title: post.Title,
+			title: `${post.Title} <!--lastUpdated:${post.LastUpdatedTimeStamp}-->`,
 			description: post.Excerpt,
 			pubDate: new Date(post.LastUpdatedDate),
 			link: new URL(getPostLink(post.Slug), import.meta.env.SITE).toString(),
