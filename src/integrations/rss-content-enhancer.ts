@@ -178,83 +178,68 @@ const rssContentEnhancer = (): AstroIntegration => {
                     td: ["align", "valign"],
                     th: ["align", "valign", "colspan", "rowspan"],
                   },
-                  disallowedTagsMode: "completelyDiscard",
+                  disallowedTagsMode: "discard",
+                  nonTextTags: ["style", "script", "textarea", "option", "noscript", "template"],
+                  exclusiveFilter: function(frame) {
+                    return frame.attribs?.class?.includes('toc-container') ||
+                           frame.attribs?.class?.includes('table-of-contents') ||
+                           frame.attribs?.class?.includes('sr-only') ||
+                           (frame.attribs?.["data-popover-target"] && frame.attribs?.["data-href"]?.startsWith("#"));
+                  },
                   transformTags: {
                     aside: (tagName, attribs) => {
-                      // Remove the TOC container aside and all its contents
-                      if (attribs.class?.includes("toc-container")) {
-                        return { tagName: false }; // This will remove the element and all its contents
+                      return { tagName, attribs };
+                    },
+                    details: (tagName, attribs) => ({
+                      tagName: "div",
+                      attribs: {},
+                    }),
+                    summary: (tagName, attribs) => ({
+                      tagName: "div",
+                      attribs: {},
+                    }),
+                    div: (tagName, attribs) => {
+                      return { tagName, attribs };
+                    },
+                    a: (tagName, attribs) => {
+                      // For image lightbox links, return false to remove the anchor
+                      if (attribs.class?.includes("mediaglightbox")) {
+                        return false;
+                      }
+                      // Add base URL to relative URLs
+                      if (attribs.href?.startsWith("/")) {
+                        return {
+                          tagName,
+                          attribs: {
+                            ...attribs,
+                            href: `${baseUrl}${attribs.href}`,
+                          },
+                        };
                       }
                       return { tagName, attribs };
                     },
-                    details: (tagName, attribs, innerHTML = "") => {
-                      // Convert details to div, preserving inner content
-                      return {
-                        tagName: "div",
-                        attribs: {},
-                      };
-                    },
-                    summary: (tagName, attribs, innerHTML = "") => {
-                      // Convert summary to div
-                      return {
-                        tagName: "div",
-                        attribs: {},
-                      };
-                    },
-                    div: (tagName, attribs, innerHTML = "") => {
-                      // Remove table of contents div
-                      if (attribs.class?.includes("table-of-contents")) {
-                        return { tagName: false }; // This will remove the element and all its contents
-                      }
-                      // Remove empty divs
-                      return innerHTML.trim() ? { tagName, attribs } : { tagName: "", attribs: {} };
-                    },
-                    span: (tagName, attribs, innerHTML = "") => {
-                      // If span has data-popover-target, convert to link
+                    span: (tagName, attribs) => {
                       if (attribs["data-popover-target"]) {
                         const href = attribs["data-href"];
-
-                        // Remove spans that link to anchors
-                        if (href?.startsWith("#")) {
-                          return { tagName: "", attribs: {} };
-                        }
-
-                        // Convert to link if it's a post link
                         if (href?.startsWith("/posts/")) {
-                          // Remove sr-only span from content
-                          const cleanContent = innerHTML
-                            .replace(/<span class="sr-only">.*?<\/span>/g, "")
-                            .trim();
-
                           return {
                             tagName: "a",
                             attribs: {
                               href: `${baseUrl}${href}`,
                             },
-                            text: cleanContent || href, // fallback to href if content is empty
                           };
                         }
                       }
-
-                      // Remove empty spans unless they have specific attributes we want to keep
-                      if (!innerHTML.trim() && !attribs["data-popover-target"]) {
-                        return { tagName: "", attribs: {} };
-                      }
-
-                      // Keep non-empty spans
-                      return innerHTML.trim() ? { tagName, attribs } : { tagName: "", attribs: {} };
+                      return { tagName, attribs };
                     },
                     img: (tagName, attribs) => {
-                      // Remove Notion icon images
-                      if (attribs.src?.startsWith("https://www.notion.so/icons/")) {
+                      if (
+                        attribs.src?.startsWith("https://www.notion.so/icons/") ||
+                        attribs.alt?.startsWith("custom emoji with name ")
+                      ) {
                         return false;
                       }
-                      // Remove custom emoji images
-                      if (attribs.alt?.startsWith("custom emoji with name ")) {
-                        return false;
-                      }
-                      // Keep other images
-                      if (attribs.src && attribs.src.startsWith("/notion/")) {
+                      if (attribs.src?.startsWith("/notion/")) {
                         return {
                           tagName,
                           attribs: {
@@ -263,25 +248,36 @@ const rssContentEnhancer = (): AstroIntegration => {
                           },
                         };
                       }
-                      return {
-                        tagName: "img",
-                        attribs,
-                      };
+                      return { tagName, attribs };
                     },
-                  },
-                  exclusiveFilter: function (frame) {
-                    // Remove any remaining empty elements except specific ones
-                    const keepTags = ["br", "hr", "img"];
-                    return (
-                      !keepTags.includes(frame.tag) &&
-                      !frame.text.trim() &&
-                      !Object.keys(frame.attribs).length
-                    );
-                  },
+                  }
                 });
 
+
+                // Function to recursively remove empty elements
+                const removeEmptyElements = (html: string): string => {
+                  const prevHtml = html;
+                  // Remove empty elements with no content or only whitespace
+                  const cleaned = html
+                    .replace(/<div[^>]*>(\s*)<\/div>/g, '')
+                    .replace(/<p[^>]*>(\s*)<\/p>/g, '')
+                    .replace(/<span[^>]*>(\s*)<\/span>/g, '')
+                    .replace(/<section[^>]*>(\s*)<\/section>/g, '');
+                  // If no changes were made, we're done
+                  if (prevHtml === cleaned) {
+                    return cleaned;
+                  }
+
+                  // Otherwise, recursively clean until no more empty elements
+                  return removeEmptyElements(cleaned);
+                };
+
+                // Remove empty elements before removing title
+                const cleanContent_emptyremoved = removeEmptyElements(cleanContent);
+                const contentWithoutTableOfContentsWord = cleanContent_emptyremoved.replace(/<strong>Table of Contents<\/strong>/i, "");
+
                 // Remove the first h1 (title)
-                const contentWithoutTitle = cleanContent.replace(/<h1[^>]*>.*?<\/h1>/i, "");
+                const contentWithoutTitle = contentWithoutTableOfContentsWord.replace(/<h1[^>]*>.*?<\/h1>/i, "");
 
                 // Cache the cleaned content
                 await fs.writeFile(cachePath, contentWithoutTitle);
