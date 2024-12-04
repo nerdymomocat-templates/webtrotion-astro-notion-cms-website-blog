@@ -58,26 +58,28 @@
             margin: 0 auto;
             padding: 2rem 1rem;
           }
-          article {
+          .-feed-entry-wrapper {
             margin-bottom: 2rem;
             overflow: hidden;
+            background: #F9F6EE;
+            border-radius: 4px;
           }
-          article header {
+          .-feed-entry-wrapper header {
             padding: 1.5rem;
             border-bottom: 1px solid #eee;
           }
-          article h2 {
+          .-feed-entry-wrapper h2 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
           }
-          article h2 a {
+          .-feed-entry-wrapper h2 a {
             color: #333;
             text-decoration: none;
           }
-          article h2 a:hover {
+          .-feed-entry-wrapper h2 a:hover {
             color: #0066cc;
           }
-          article time {
+          .-feed-entry-wrapper time {
             color: #666;
             font-size: 0.9rem;
           }
@@ -147,7 +149,7 @@
             .header h1 {
               font-size: 1.5rem;
             }
-            article header {
+            .-feed-entry-wrapper header {
               padding: 1rem;
             }
             .-feed-entry-content {
@@ -175,7 +177,7 @@
         </div>
         <div class="container">
           <xsl:for-each select="/rss/channel/item">
-            <article>
+            <div class="-feed-entry-wrapper">
               <header>
                 <h2>
                   <a href="{link}" target="_blank">
@@ -207,7 +209,7 @@
                   </xsl:otherwise>
                 </xsl:choose>
               </div>
-            </article>
+            </div>
           </xsl:for-each>
         </div>
         <script>
