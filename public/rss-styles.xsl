@@ -168,7 +168,7 @@
             <p>🔗 Home Link: <a><xsl:attribute name="href"><xsl:value-of select="/rss/channel/link"/></xsl:attribute><xsl:value-of select="/rss/channel/link"/></a></p>
             <p>
               🔗 Feed URL: <span id="feed-url"><xsl:value-of select="/rss/channel/link"/>rss.xml</span>
-              <button class="copy-button" onclick="copyFeedUrl()" id="copy-button">📋\u00A0Copy</button>
+              <button class="copy-button" onclick="copyFeedUrl()" id="copy-button">📋</button>
             </p>
             <p>🕒 Last Updated: <xsl:value-of select="/rss/channel/lastBuildDate"/></p>
             <xsl:if test="/rss/channel/author">

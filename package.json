@@ -20,12 +20,12 @@
 		"@atproto/api": "^0.13.18",
 		"@notionhq/client": "^2.2.13",
 		"@types/sanitize-html": "^2.13.0",
-		"@types/xml2js": "^0.4.14",
 		"astro": "4.16.6",
 		"astro-robots-txt": "^1.0.0",
 		"async-retry": "^1.3.3",
 		"axios": "^1.6.0",
 		"exif-be-gone": "^1.3.2",
+		"fast-xml-parser": "^4.5.0",
 		"katex": "^0.16.9",
 		"mermaid": "^10.6.0",
 		"metascraper": "^5.37.1",
@@ -36,8 +36,7 @@
 		"png-to-ico": "^2.1.8",
 		"sanitize-html": "^2.13.1",
 		"satori-html": "^0.3.2",
-		"sharp": "^0.33.0",
-		"xml2js": "^0.6.2"
+		"sharp": "^0.33.0"
 	},
 	"devDependencies": {
 		"@astrojs/check": "0.9.3",
