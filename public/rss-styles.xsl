@@ -20,7 +20,7 @@
             line-height: 1.6;
           }
           .header {
-            background: #000;
+            background: #3d3939;
             color: white;
             padding: 1rem;
             text-align: center;
@@ -63,6 +63,7 @@
             overflow: hidden;
             background: #F9F6EE;
             border-radius: 4px;
+            border: 1px solid #e6e6e6;
           }
           .-feed-entry-wrapper header {
             padding: 1.5rem;

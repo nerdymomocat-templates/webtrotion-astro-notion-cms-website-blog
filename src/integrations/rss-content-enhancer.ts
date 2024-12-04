@@ -178,7 +178,7 @@ const rssContentEnhancer = (): AstroIntegration => {
                     td: ["align", "valign"],
                     th: ["align", "valign", "colspan", "rowspan"],
                   },
-                  disallowedTagsMode: "discard",
+                  disallowedTagsMode: "completelyDiscard",
                   transformTags: {
                     aside: (tagName, attribs) => {
                       // Remove the TOC container aside and all its contents
