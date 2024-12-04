@@ -59,9 +59,6 @@
             padding: 2rem 1rem;
           }
           article {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
             overflow: hidden;
           }
@@ -190,7 +187,11 @@
                   <div class="categories">
                     <xsl:for-each select="category">
                       <span class="category">
-                        🏷️ <xsl:value-of select="current()"/>
+                        <xsl:choose>
+                          <xsl:when test="position() = 1">📚 </xsl:when>
+                          <xsl:otherwise>🏷️ </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:value-of select="current()"/>
                       </span>
                     </xsl:for-each>
                   </div>
