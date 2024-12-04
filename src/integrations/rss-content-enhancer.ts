@@ -216,7 +216,7 @@ const rssContentEnhancer = (): AstroIntegration => {
                     span: (tagName, attribs) => {
                       if (attribs["data-popover-target"]) {
                         const href = attribs["data-href"];
-                        if (href?.startsWith("/posts/")) {
+                        if (href?.startsWith("/")) {
                           return {
                             tagName: "a",
                             attribs: {
@@ -254,10 +254,11 @@ const rssContentEnhancer = (): AstroIntegration => {
                   const prevHtml = html;
                   // Remove empty elements with no content or only whitespace
                   const cleaned = html
-                    .replace(/<div[^>]*>(\s*)<\/div>/g, '')
-                    // .replace(/<p[^>]*>(\s*)<\/p>/g, '')
-                    // .replace(/<span[^>]*>(\s*)<\/span>/g, '')
-                    .replace(/<section[^>]*>(\s*)<\/section>/g, '');
+                    .replace(/<div[^>]*>(\s|\n)*<\/div>/g, '')
+                    // .replace(/<p[^>]*>(\s|\n)*<\/p>/g, '')
+                    // .replace(/<span[^>]*>(\s|\n)*<\/span>/g, '')
+                    .replace(/<section[^>]*>(\s|\n)*<\/section>/g, '')
+                    .replace(/<aside[^>]*>(\s|\n)*<\/aside>/g, '');
                   // If no changes were made, we're done
                   if (prevHtml === cleaned) {
                     return cleaned;
@@ -267,11 +268,27 @@ const rssContentEnhancer = (): AstroIntegration => {
                   return removeEmptyElements(cleaned);
                 };
 
-                // Remove empty elements before removing title
-                const cleanContent_emptyremoved = removeEmptyElements(cleanContent);
+                // Clean up interlinked content section
+                const cleanupInterlinkedContent = (html: string): string => {
+                  // Find the aside section with "Interlinked Content"
+                  const asidePattern = /<aside>[\s\S]*?<h2>\s*Interlinked Content\s*<\/h2>([\s\S]*?)<\/aside>/i;
 
-                // Remove the first h1 (title)
-                // const contentWithoutTitle = cleanContent_emptyremoved.replace(/<h1[^>]*>.*?<\/h1>/i, "");
+                  return html.replace(asidePattern, (match) => {
+                    // Extract links while preserving original text, handle both direct links and spans
+                    let cleaned = match.replace(/<div>(?:\s*<div>)*\s*(?:<span>\s*)?(<a href="[^"]+">.*?<\/a>)[\s\S]*?(?=<div>|<\/aside>)/g,
+                      (_, linkPart) => `<div>${linkPart}</div>`
+                    );
+
+                    // Clean up any remaining empty divs
+                    cleaned = cleaned.replace(/<div>\s*<\/div>/g, '');
+
+                    return cleaned;
+                  });
+                };
+
+                const contentWithCleanedLinks = cleanupInterlinkedContent(cleanContent);
+                // Remove empty elements before removing title
+                const cleanContent_emptyremoved = removeEmptyElements(contentWithCleanedLinks);
 
                 // Cache the cleaned content
                 await fs.writeFile(cachePath, cleanContent_emptyremoved);
