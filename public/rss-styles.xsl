@@ -22,7 +22,7 @@
           .header {
             background: #000;
             color: white;
-            padding: 2rem;
+            padding: 1rem;
             text-align: center;
           }
           .header h1 {
@@ -134,7 +134,7 @@
             cursor: pointer;
             font-size: 0.9rem;
             color: #666;
-            min-width: 5.5rem;
+            min-width: 1rem;
           }
           .copy-button:hover {
             background: #f5f5f5;

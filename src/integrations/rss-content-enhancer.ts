@@ -188,22 +188,16 @@ const rssContentEnhancer = (): AstroIntegration => {
                 // Remove the first h1 (title)
                 const contentWithoutTitle = cleanContent.replace(/<h1[^>]*>.*?<\/h1>/i, '');
 
-                // Wrap the content in article structure
-                const wrappedContent = `
-                  <div class="-feed-entry-content">
-                    ${contentWithoutTitle}
-                  </div>`;
-
                 // Cache the cleaned content
-                await fs.writeFile(cachePath, wrappedContent);
+                await fs.writeFile(cachePath, contentWithoutTitle);
 
                 // Add content tag to RSS item
-                item.content = wrappedContent;
+                item.content = contentWithoutTitle;
 
                 // If description is empty, generate from content
                 if (!item.description?.trim()) {
                   // Remove HTML tags and get plain text
-                  const plainText = wrappedContent.replace(/<[^>]+>/g, '').trim();
+                  const plainText = contentWithoutTitle.replace(/<[^>]+>/g, '').trim();
                   // Get first 50 characters and add ellipsis
                   item.description = plainText.slice(0, 50) + (plainText.length > 50 ? '...' : '');
                 }
