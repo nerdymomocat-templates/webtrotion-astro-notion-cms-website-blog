@@ -13,7 +13,6 @@
 		"build:cached": "npm run cache:fetch && astro build"
 	},
 	"dependencies": {
-		"@astrojs/mdx": "3.1.5",
 		"@astrojs/partytown": "^2.1.2",
 		"@astrojs/rss": "4.0.7",
 		"@astrojs/tailwind": "5.1.0",
