@@ -28,6 +28,7 @@ import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
 import DeleteBuildCache from "./src/integrations/delete-build-cache";
 import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
+import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
@@ -69,6 +70,7 @@ export default defineConfig({
 		PublicNotionCopier(),
 		DeleteBuildCache(),
 		CSSWriter(),
+		rssContentEnhancer(),
 		robotsTxt({
 			sitemapBaseFileName: "sitemap",
 		}),
