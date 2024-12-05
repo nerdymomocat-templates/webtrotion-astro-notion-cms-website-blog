@@ -12,7 +12,7 @@ const { block, setId = true } = Astro.props;
 let current_headings = getCurrentHeadings();
 ---
 
-<div class="table-of-contents" id={setId ? block.Id : undefined}>
+<div class="table-of-contents no-rss" id={setId ? block.Id : undefined}>
 	{
 		current_headings.map((heading) => {
 			let indentClass = "";

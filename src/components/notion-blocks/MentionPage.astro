@@ -34,7 +34,7 @@ const hreflink = post ? getPostLink(post.Slug, post.Collection === MENU_PAGES_CO
 					) : post.Icon && post.Icon.Type === "external" ? (
 						<img
 							src={post.Icon.Url}
-							class={`inline h-4 w-4 flex-shrink-0 align-sub ${getIconTailwindFilterStyle(post.Icon.Url)}`}
+							class={`no-rss inline h-4 w-4 flex-shrink-0 align-sub ${getIconTailwindFilterStyle(post.Icon.Url)}`}
 							alt=""
 						/>
 					) : (

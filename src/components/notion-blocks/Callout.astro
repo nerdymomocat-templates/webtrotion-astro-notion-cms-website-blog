@@ -32,7 +32,7 @@ const hasRichTexts = block.Callout && block.Callout.RichTexts && block.Callout.R
 				) : block.Callout.Icon.Type === "external" ? (
 					<img
 						src={block.Callout.Icon.Url}
-						class={`h-5 w-5 max-w-none ${getIconTailwindFilterStyle(block.Callout.Icon.Url)}`}
+						class={`h-5 w-5 max-w-none no-rss ${getIconTailwindFilterStyle(block.Callout.Icon.Url)}`}
 						alt=""
 					/>
 				) : null}

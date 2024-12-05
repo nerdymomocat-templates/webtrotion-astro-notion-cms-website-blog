@@ -39,6 +39,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 								aria-label={b.ToDo.Checked ? "checkbox-checked" : "checkbox-blank"}
 								focusable="false"
 							/>
+							<span class="rss-only hidden">{b.ToDo.Checked ? "✅" : "⬜"}</span>
 						</div>
 						<div class="min-w-0 flex-1">
 							{/* Container for text, taking up the rest of the space */}

@@ -12,9 +12,12 @@ const blueskyUrl = url.toString();
 {
 	blueskyUrl && (
 		<div
-			class={`w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
+			class={`no-rss w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
 		>
 			<BlueskyPost id={blueskyUrl} />
 		</div>
+    <div class="rss-only hidden">
+      {"Mentions "} <a href={blueskyUrl}>{"bluesky post"}</a>
+    </div>
 	)
 }

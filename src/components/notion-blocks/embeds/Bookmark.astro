@@ -39,7 +39,7 @@ try {
 }
 ---
 
-<div class="bookmark pb-2" id={setId ? block.Id : undefined}>
+<div class="bookmark no-rss pb-2" id={setId ? block.Id : undefined}>
 	{
 		url && notDNSForbidden ? (
 			<div class="flex w-full max-w-full overflow-hidden text-sm">
@@ -114,6 +114,22 @@ try {
 		)
 	}
 	<Caption richTexts={(block.Bookmark || block.LinkPreview || block.Embed).Caption} block={block} />
+</div>
+
+<div class="rss-only hidden">
+	{
+		url &&
+			(metadata.title && !notDNSForbidden ? (
+				<>
+					<span>Bookmark for </span>
+					<a href={url.toString()}>{metadata.title}</a>
+				</>
+			) : (
+				<span>
+					Bookmark for <a href={url.toString()}>{url.toString()}</a>
+				</span>
+			))
+	}
 </div>
 
 <style>
