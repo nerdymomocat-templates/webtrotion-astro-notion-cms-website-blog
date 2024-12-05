@@ -3,83 +3,93 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import sanitizeHtml from "sanitize-html";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import { parseDocument } from 'htmlparser2';
+import { DomUtils } from 'htmlparser2';
 import { LAST_BUILD_TIME } from "../constants";
 
 const rssContentEnhancer = (): AstroIntegration => {
-	return {
-		name: "rss-content-enhancer",
-		hooks: {
-			"astro:build:done": async () => {
-				const distDir = "dist";
-				const tempDir = "./tmp/rss-cache";
-				const rssPath = path.join(distDir, "rss.xml");
+  return {
+    name: "rss-content-enhancer",
+    hooks: {
+      "astro:build:done": async () => {
+        const distDir = "dist";
+        const tempDir = "./tmp/rss-cache";
+        const rssPath = path.join(distDir, "rss.xml");
 
-				// Create temp directory if it doesn't exist
-				await fs.mkdir(tempDir, { recursive: true });
+        // Create temp directory if it doesn't exist
+        await fs.mkdir(tempDir, { recursive: true });
 
-				// Read and parse RSS XML
-				const rssContent = await fs.readFile(rssPath, "utf-8");
+        // Read and parse RSS XML
+        const rssContent = await fs.readFile(rssPath, "utf-8");
 
-				const parserOptions = {
-					ignoreAttributes: false,
-					attributeNamePrefix: "",
-					textNodeName: "#text",
-					arrayMode: false, // Do not wrap elements in arrays
-				};
+        const parserOptions = {
+          ignoreAttributes: false,
+          attributeNamePrefix: "",
+          textNodeName: "#text",
+          arrayMode: false, // Do not wrap elements in arrays
+        };
 
-				const parser = new XMLParser(parserOptions);
-				const rssData = parser.parse(rssContent);
+        const parser = new XMLParser(parserOptions);
+        const rssData = parser.parse(rssContent);
 
-				// Extract base URL from channel link
-				const baseUrl = rssData.rss.channel.link.replace(/\/$/, ""); // Remove trailing slash if present
+        // Extract base URL from channel link
+        const baseUrl = rssData.rss.channel.link.replace(/\/$/, ""); // Remove trailing slash if present
 
-				// Ensure items are in an array
-				const items = Array.isArray(rssData.rss.channel.item)
-					? rssData.rss.channel.item
-					: [rssData.rss.channel.item];
+        // Ensure items are in an array
+        const items = Array.isArray(rssData.rss.channel.item)
+          ? rssData.rss.channel.item
+          : [rssData.rss.channel.item];
 
-				// Process each item
-				for (const item of items) {
-					const encodedSlug = item.link.split("/").pop();
-					const slug = decodeURIComponent(encodedSlug);
-					const htmlPath = path.join(distDir, "posts", slug, "index.html");
+        // Process each item
+        for (const item of items) {
+          const encodedSlug = item.link.split("/").pop();
+          const slug = decodeURIComponent(encodedSlug);
+          const htmlPath = path.join(distDir, "posts", slug, "index.html");
 
-					try {
-						const htmlContent = await fs.readFile(htmlPath, "utf-8");
+          try {
+            const htmlContent = await fs.readFile(htmlPath, "utf-8");
 
-						const lastUpdated = item.lastUpdatedTimestamp;
-						if (!lastUpdated) {
-							continue;
-						}
+            const lastUpdated = item.lastUpdatedTimestamp;
+            if (!lastUpdated) {
+              continue;
+            }
 
-						const cachePath = path.join(tempDir, `${slug}.html`);
+            const cachePath = path.join(tempDir, `${slug}.html`);
 
-						// Check cache
-						let shouldUpdate = true;
+            // Check cache
+            let shouldUpdate = true;
 
-						// Check if cache exists
-						try {
-							await fs.access(cachePath);
+            // Check if cache exists
+            try {
+              await fs.access(cachePath);
 
-							// If cache exists and LAST_BUILD_TIME exists, use it to determine if we need to update
-							if (LAST_BUILD_TIME) {
-								const lastBuildTime = new Date(LAST_BUILD_TIME);
-								shouldUpdate = new Date(lastUpdated) > lastBuildTime;
-							}
-						} catch {
-							// Cache doesn't exist, need to sanitize
-							shouldUpdate = true;
-						}
+              // If cache exists and LAST_BUILD_TIME exists, use it to determine if we need to update
+              if (LAST_BUILD_TIME) {
+                const lastBuildTime = new Date(LAST_BUILD_TIME);
+                shouldUpdate = new Date(lastUpdated) > lastBuildTime;
+              }
+            } catch {
+              // Cache doesn't exist, need to sanitize
+              shouldUpdate = true;
+            }
 
-						if (shouldUpdate) {
-							// Extract main content (assuming it's in <main> tag)
-							const mainMatch = htmlContent.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-							if (mainMatch) {
-								const mainContent = mainMatch[1];
+            if (shouldUpdate) {
+              // Parse the HTML content
+              const document = parseDocument(htmlContent);
 
-								// Sanitize HTML and fix image paths
-								const cleanContent = sanitizeHtml(mainContent, {
-									allowedTags: [
+              // Find the <main> element
+              const mainElement = DomUtils.findOne(
+                (elem) => elem.type === 'tag' && elem.name === 'main',
+                document.children,
+                true
+              );
+
+              if (mainElement) {
+                const mainContent = DomUtils.getInnerHTML(mainElement);
+
+                // Sanitize HTML and fix image paths
+                const cleanContent = sanitizeHtml(mainContent, {
+                  allowedTags: [
 										// Document sections
 										"address",
 										"article",
@@ -163,35 +173,35 @@ const rssContentEnhancer = (): AstroIntegration => {
 										// Media
 										"img",
 										// 'iframe'
-									],
-									allowedAttributes: {
+                  ],
+                  allowedAttributes: {
 										a: ["href", "title"],
 										img: ["src", "alt", "title"],
 										td: ["align", "valign"],
 										th: ["align", "valign", "colspan", "rowspan", "scope"],
 										// iframe: ['src'],
 										pre: ["data-language"],
-									},
-									disallowedTagsMode: "discard",
-									nonTextTags: ["style", "script", "textarea", "option", "noscript", "template"],
-									exclusiveFilter: function (frame) {
-										return (
-											frame.attribs?.class?.includes("toc-container") ||
-											frame.attribs?.class?.includes("table-of-contents") ||
-											frame.attribs?.class?.includes("sr-only") ||
-											(frame.attribs?.["data-popover-target"] &&
-												frame.attribs?.["data-href"]?.startsWith("#")) ||
-											frame.attribs?.id === "autogenerated-post-comments" ||
-											frame.attribs?.id === "autogenerated-media-links" ||
-											frame.attribs?.id === "autogenerated-external-links" ||
-											(frame.tag === "strong" &&
-												frame.text.trim().toLowerCase() === "table of contents") ||
-											frame.tag === "h1" ||
-											(frame.tag === "span" && !frame.text.trim()) ||
-											(frame.tag === "p" && !frame.text.trim())
-										);
-									},
-									transformTags: {
+                  },
+                  disallowedTagsMode: "discard",
+                  nonTextTags: ["style", "script", "textarea", "option", "noscript", "template"],
+                  exclusiveFilter: function (frame) {
+                    return (
+                      frame.attribs?.class?.includes("toc-container") ||
+                      frame.attribs?.class?.includes("table-of-contents") ||
+                      frame.attribs?.class?.includes("sr-only") ||
+                      (frame.attribs?.["data-popover-target"] &&
+                        frame.attribs?.["data-href"]?.startsWith("#")) ||
+                      frame.attribs?.id === "autogenerated-post-comments" ||
+                      frame.attribs?.id === "autogenerated-media-links" ||
+                      frame.attribs?.id === "autogenerated-external-links" ||
+                      (frame.tag === "strong" &&
+                        frame.text.trim().toLowerCase() === "table of contents") ||
+                      frame.tag === "h1" ||
+                      (frame.tag === "span" && !frame.text.trim()) ||
+                      (frame.tag === "p" && !frame.text.trim())
+                    );
+                  },
+                  transformTags: {
 										details: (tagName, attribs) => ({
 											tagName: "div",
 											attribs: attribs,
@@ -250,137 +260,224 @@ const rssContentEnhancer = (): AstroIntegration => {
 											}
 											return { tagName, attribs };
 										},
-									},
-								});
+                  },
+                });
 
-								// Function to recursively remove empty elements
-								const removeEmptyElements = (html: string): string => {
-									const prevHtml = html;
-									// Remove empty elements with no content or only whitespace
-									const cleaned = html
-										.replace(/<div[^>]*>(\s|\n)*<\/div>/g, "")
-										// .replace(/<p[^>]*>(\s|\n)*<\/p>/g, '')
-										// .replace(/<span[^>]*>(\s|\n)*<\/span>/g, '')
-										.replace(/<section[^>]*>(\s|\n)*<\/section>/g, "")
-										.replace(/<aside[^>]*>(\s|\n)*<\/aside>/g, "");
-									// If no changes were made, we're done
-									if (prevHtml === cleaned) {
-										return cleaned;
-									}
+                // Parse the cleaned content
+                const cleanContentDom = parseDocument(cleanContent);
 
-									// Otherwise, recursively clean until no more empty elements
-									return removeEmptyElements(cleaned);
-								};
+                const root = { type: 'root', children: cleanContentDom.children };
 
-								// Clean up interlinked content section
-								const cleanupInterlinkedContent = (html: string): string => {
-									// Find the aside section with "Interlinked Content"
-									const asidePattern =
-										/<aside>[\s\S]*?<h2>\s*Interlinked Content\s*<\/h2>([\s\S]*?)<\/aside>/i;
 
-									return html.replace(asidePattern, (match) => {
-										// Extract links while preserving original text, handle both direct links and spans
-										let cleaned = match.replace(
-											/<div>(?:\s*<div>)*\s*(?:<span>\s*)?(<a href="[^"]+">.*?<\/a>)[\s\S]*?(?=<div>|<\/aside>)/g,
-											(_, linkPart) => `<div>${linkPart}</div>`,
-										);
+                // Perform cleanup on interlinked content
+                cleanupInterlinkedContentDom(root);
 
-										// Clean up any remaining empty divs
-										cleaned = cleaned.replace(/<div>\s*<\/div>/g, "");
+                // Remove empty elements
+                removeEmptyElementsFromDom(root);
+                // Serialize back to HTML
+                let cleanContentFinal = DomUtils.getInnerHTML(cleanContentDom);
+                cleanContentFinal = cleanContentFinal.replace(/^\s*<div>\s*<article[^>]*>/i, '');
+                cleanContentFinal = cleanContentFinal.replace(/<\/article>\s*<\/div>\s*<div><\/div>\s*$/i, '');
 
-										return cleaned;
-									});
-								};
+                // Cache the cleaned content
+                await fs.writeFile(cachePath, cleanContentFinal);
 
-								const contentWithCleanedLinks = cleanupInterlinkedContent(cleanContent);
-								// Remove empty elements before removing title
-								const cleanContent_emptyremoved = removeEmptyElements(contentWithCleanedLinks);
+                // Add content tag to RSS item
+                item.content = cleanContentFinal;
 
-								// Cache the cleaned content
-								await fs.writeFile(cachePath, cleanContent_emptyremoved);
+                // If description is empty, generate from content
+                if (!item.description?.trim()) {
+                  const plainText = DomUtils.textContent(cleanContentDom).trim();
+                  item.description =
+                    plainText.slice(0, 150) + (plainText.length > 150 ? "..." : "");
+                }
+              }
+            } else {
+              // Use cached version
+              const cachedContent = await fs.readFile(cachePath, "utf-8");
+              item.content = cachedContent;
 
-								// Add content tag to RSS item
-								item.content = cleanContent_emptyremoved;
+              // If description is empty, generate from cached content
+              if (!item.description?.trim()) {
+                const cleanContentDom = parseDocument(cachedContent);
+                const plainText = DomUtils.textContent(cleanContentDom).trim();
+                item.description =
+                  plainText.slice(0, 150) + (plainText.length > 150 ? "..." : "");
+              }
+            }
+          } catch (error) {
+            console.error(`Error processing ${slug}:`, error);
+          }
+        }
 
-								// If description is empty, generate from content
-								if (!item.description?.trim()) {
-									// Remove HTML tags and get plain text
-									const plainText = cleanContent_emptyremoved.replace(/<[^>]+>/g, "").trim();
-									// Get first 50 characters and add ellipsis
-									item.description =
-										plainText.slice(0, 150) + (plainText.length > 150 ? "..." : "");
-								}
-							}
-						} else {
-							// Use cached version
-							const cachedContent = await fs.readFile(cachePath, "utf-8");
-							item.content = cachedContent;
+        // Update the items back to the channel
+        // Build the RSS object
+        const rssObject = {
+          rss: {
+            "@version": "2.0",
+            channel: {
+              title: rssData.rss.channel.title,
+              description: rssData.rss.channel.description,
+              link: rssData.rss.channel.link,
+              lastBuildDate: rssData.rss.channel.lastBuildDate,
+              ...(rssData.rss.channel.author && { author: rssData.rss.channel.author }),
+              item: items.map((item) => ({
+                title: item.title,
+                link: item.link,
+                guid: {
+                  "@isPermaLink": "true",
+                  "#": item.link,
+                },
+                description: item.description,
+                pubDate: item.pubDate,
+                lastUpdatedTimestamp: item.lastUpdatedTimestamp,
+                ...(item.category && {
+                  category: Array.isArray(item.category) ? item.category : [item.category],
+                }),
+                ...(item.content && { content: item.content }),
+              })),
+            },
+          },
+        };
 
-							// If description is empty, generate from cached content
-							if (!item.description?.trim()) {
-								const plainText = cachedContent.replace(/<[^>]+>/g, "").trim();
-								item.description =
-									plainText.slice(0, 50) + (plainText.length > 50 ? "&hellip;" : "");
-							}
-						}
-					} catch (error) {
-						console.error(`Error processing ${slug}:`, error);
-					}
-				}
+        // Build and save the updated RSS
+        const builderOptions = {
+          ignoreAttributes: false,
+          format: true,
+          suppressEmptyNode: true,
+          suppressBooleanAttributes: false,
+          attributeNamePrefix: "@",
+          parseTagValue: false,
+          textNodeName: "#",
+        };
 
-				// Update the items back to the channel
-				// Build the RSS object
-				const rssObject = {
-					rss: {
-						"@version": "2.0",
-						channel: {
-							title: rssData.rss.channel.title,
-							description: rssData.rss.channel.description,
-							link: rssData.rss.channel.link,
-							lastBuildDate: rssData.rss.channel.lastBuildDate,
-							...(rssData.rss.channel.author && { author: rssData.rss.channel.author }),
-							item: items.map((item) => ({
-								title: item.title,
-								link: item.link,
-								guid: {
-									"@isPermaLink": "true",
-									"#": item.link,
-								},
-								description: item.description,
-								pubDate: item.pubDate,
-								lastUpdatedTimestamp: item.lastUpdatedTimestamp,
-								...(item.category && {
-									category: Array.isArray(item.category) ? item.category : [item.category],
-								}),
-								...(item.content && { content: item.content }),
-							})),
-						},
-					},
-				};
+        const builder = new XMLBuilder(builderOptions);
+        const updatedRss = builder.build(rssObject);
 
-				// Build and save the updated RSS
-				const builderOptions = {
-					ignoreAttributes: false,
-					format: true,
-					suppressEmptyNode: true,
-					suppressBooleanAttributes: false,
-					attributeNamePrefix: "@",
-					parseTagValue: false,
-					textNodeName: "#",
-				};
+        // Add XML declaration and stylesheet
+        const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        const styleSheet = '<?xml-stylesheet href="/rss-styles.xsl" type="text/xsl"?>\n';
+        const finalXml = xmlDeclaration + styleSheet + updatedRss;
 
-				const builder = new XMLBuilder(builderOptions);
-				const updatedRss = builder.build(rssObject);
-
-				// Add XML declaration and stylesheet
-				const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
-				const styleSheet = '<?xml-stylesheet href="/rss-styles.xsl" type="text/xsl"?>\n';
-				const finalXml = xmlDeclaration + styleSheet + updatedRss;
-
-				await fs.writeFile(rssPath, finalXml);
-			},
-		},
-	};
+        await fs.writeFile(rssPath, finalXml);
+      },
+    },
+  };
 };
 
 export default rssContentEnhancer;
+
+// Helper functions
+
+
+function removeEmptyElementsFromDom(node) {
+  // Remove empty text nodes
+  if (node.type === 'text') {
+    if (node.data.trim() === '') {
+      return false; // Remove this node
+    }
+    return true; // Keep non-empty text nodes
+  }
+
+  // Process child nodes first
+  if (node.children && node.children.length > 0) {
+    node.children = node.children.filter(removeEmptyElementsFromDom);
+  }
+
+  // Now check if the current node is empty
+  if (node.type === 'tag') {
+    const emptyTags = ['div', 'section', 'aside', 'span', 'p', 'main'];
+    const isEmptyTag = emptyTags.includes(node.name);
+
+    // Check if the node has any attributes
+    const hasAttributes = node.attribs && Object.keys(node.attribs).length > 0;
+
+    // Check if the node has any remaining children
+    const hasChildren = node.children && node.children.length > 0;
+
+    // Get the trimmed text content
+    const textContent = DomUtils.textContent(node).trim();
+
+    if (isEmptyTag && !hasAttributes && !hasChildren && textContent === '') {
+      return false; // Remove this node
+    }
+  }
+
+  // Remove comment nodes
+  if (node.type === 'comment') {
+    return false; // Remove comment nodes
+  }
+
+  return true; // Keep the node
+}
+
+function cleanupInterlinkedContentDom(node) {
+  if (node.type === 'tag' && node.name === 'aside') {
+    // Process the 'Pages That Mention This Page' section
+    const sections = DomUtils.findAll(
+      (elem) =>
+        elem.type === 'tag' &&
+        elem.name === 'div' &&
+        DomUtils.findOne(
+          (child) =>
+            child.type === 'tag' &&
+            child.name === 'span' &&
+            (DomUtils.textContent(child).trim() === 'Pages That Mention This Page' ||
+             DomUtils.textContent(child).trim() === 'Other Pages Mentioned On This Page'),
+          elem.children
+        ),
+      node.children
+    );
+
+    sections.forEach((section) => {
+      // Find all child divs within the section
+      const childDivs = DomUtils.findAll(
+        (child) => child.type === 'tag' && child.name === 'div',
+        section.children,
+        false
+      );
+
+      childDivs.forEach((div) => {
+        // Find the first <a> element
+        const link = DomUtils.findOne(
+          (elem) => elem.type === 'tag' && elem.name === 'a',
+          div.children,
+          true
+        );
+
+        if (link) {
+          // Replace the div's children with just the link
+          div.children = [link];
+        } else {
+          // If no link is found, remove the div
+          const index = section.children.indexOf(div);
+          if (index !== -1) {
+            section.children.splice(index, 1);
+          }
+        }
+      });
+
+      // Remove any remaining text nodes or empty divs
+      section.children = section.children.filter((child) => {
+        if (child.type === 'tag' && child.name === 'div') {
+          return child.children.length > 0;
+        }
+        return true;
+      });
+    });
+
+    // Remove unnecessary <br /> and <hr /> tags
+    node.children = node.children.filter(
+      (child) =>
+        !(
+          (child.type === 'tag' && child.name === 'br') ||
+          (child.type === 'tag' && child.name === 'hr')
+        )
+    );
+  }
+
+  // Recurse into child nodes
+  if (node.children) {
+    node.children.forEach(cleanupInterlinkedContentDom);
+  }
+}
