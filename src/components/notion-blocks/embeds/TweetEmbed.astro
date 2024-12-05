@@ -17,13 +17,15 @@ const tweetID = postURL.pathname.split("/")[3];
 
 {
 	tweetID && (
-		<div
-			class={`no-rss w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
-		>
-			<AstroTweet id={tweetID} />
-		</div>
-    <div class="rss-only hidden">
-      {"Mentions "} <a href={`https://twitter.com/user/status/${tweetID}`}>{"tweet"}</a>
-    </div>
+		<>
+			<div
+				class={`no-rss w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
+			>
+				<AstroTweet id={tweetID} />
+			</div>
+			<div class="rss-only hidden">
+				{"Mentions "} <a href={`https://twitter.com/user/status/${tweetID}`}>{"tweet"}</a>
+			</div>
+		</>
 	)
 }

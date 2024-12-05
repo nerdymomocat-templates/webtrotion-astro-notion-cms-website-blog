@@ -175,7 +175,7 @@ const rssContentEnhancer = (): AstroIntegration => {
 										// 'iframe'
 									],
 									allowedAttributes: {
-										a: ["href", "title"],
+										a: ["href", "title", "target"],
 										img: ["src", "alt", "title"],
 										td: ["align", "valign"],
 										th: ["align", "valign", "colspan", "rowspan", "scope"],
@@ -235,10 +235,10 @@ const rssContentEnhancer = (): AstroIntegration => {
 											return { tagName, attribs };
 										},
 										img: (tagName, attribs) => {
-                      if (attribs.class?.includes("no-rss")) {
-                        return false;
-                      }
-											if (attribs.src?.startsWith("/notion/")) {
+											if (attribs.class?.includes("no-rss")) {
+												return false;
+											}
+											if (attribs.src?.startsWith("/")) {
 												return {
 													tagName,
 													attribs: {
@@ -269,6 +269,17 @@ const rssContentEnhancer = (): AstroIntegration => {
 									/<\/article>\s*<\/div>\s*<div><\/div>\s*$/i,
 									"",
 								);
+
+								// Add a note inside the first <div> tag
+								const note = `
+                    <p>
+                        <em>Note:</em> This RSS feed strips out SVGs and embeds. You might want to read the post on the webpage
+                        <a href="${item.link}" target="_blank">here</a>.
+                    </p>
+                    <hr>
+                `;
+
+								cleanContentFinal = cleanContentFinal.replace(/^\s*<div>/, `<div>${note}`);
 
 								// Cache the cleaned content
 								await fs.writeFile(cachePath, cleanContentFinal);
