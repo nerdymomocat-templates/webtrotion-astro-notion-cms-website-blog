@@ -119,7 +119,7 @@ try {
 <div class="rss-only hidden">
 	{
 		url &&
-			(metadata.title && !notDNSForbidden ? (
+			(metadata && metadata.title && !notDNSForbidden ? (
 				<>
 					<span>Bookmark for </span>
 					<a href={url.toString()}>{metadata.title}</a>
