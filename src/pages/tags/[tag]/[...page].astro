@@ -7,7 +7,7 @@ import Pagination from "@/components/Paginator";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post } from "@/lib/notion/interfaces";
 import { getTagsNameWDesc, slugify } from "@/utils";
-import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import Icon from "@/components/Icon";
@@ -40,7 +40,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 				description: tagsNameWDesc[tag.name] ? tagsNameWDesc[tag.name] : "",
 				color: tag.color,
 			},
-			pageSize: 10,
+			pageSize: NUMBER_OF_POSTS_PER_PAGE,
 		});
 	});
 }) satisfies GetStaticPaths;

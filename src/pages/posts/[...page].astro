@@ -7,7 +7,7 @@ import Pagination from "@/components/Paginator";
 import { getAllPosts, getAllTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import Icon from "@/components/Icon";
 import { slugify } from "@/utils";
@@ -21,7 +21,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 		: posts;
 	const uniqueTags = await getAllTags();
 
-	return paginate(filteredPosts, { props: { uniqueTags }, pageSize: 10 });
+	return paginate(filteredPosts, { props: { uniqueTags }, pageSize: NUMBER_OF_POSTS_PER_PAGE });
 }) satisfies GetStaticPaths;
 
 interface Props {

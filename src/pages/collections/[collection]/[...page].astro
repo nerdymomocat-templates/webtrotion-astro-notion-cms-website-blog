@@ -10,7 +10,7 @@ import type { Post, SelectProperty } from "@/lib/interfaces";
 import { getCollectionsWDesc } from "@/utils";
 import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
 import Icon from '@/components/Icon';
 
@@ -40,7 +40,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 		return paginate(collectionPosts, {
 			params: { collection: slugify(collection.name) },
       props: { collection: collection.name, description: collection.description, uniqueTags },
-			pageSize: 10,
+			pageSize: NUMBER_OF_POSTS_PER_PAGE,
 		});
 	});
 }) satisfies GetStaticPaths;
