@@ -1,14 +1,14 @@
 ---
+import { ALL_FOOTNOTES_PAGE_SLUG } from "@/constants";
 import type { Block } from "@/lib/interfaces";
 import NotionBlocks from "../../NotionBlocks.astro";
-import { ALL_FOOTNOTES_PAGE_SLUG } from "@/constants";
 interface Props {
 	block: Block;
 	linkedTo: string;
 	popoverSpanText: string;
 	popoverTitle?: string;
 	linkText?: string;
-  isInterlinkedBack?: boolean;
+	isInterlinkedBack?: boolean;
 }
 const {
 	block,
@@ -16,7 +16,7 @@ const {
 	popoverSpanText,
 	popoverTitle = "",
 	linkText = "Read more",
-  isInterlinkedBack = false,
+	isInterlinkedBack = false,
 } = Astro.props;
 let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
 let isFootnote = false;

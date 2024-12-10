@@ -72,9 +72,9 @@
 	--bluesky-card-transition: background-color 0.2s ease;
 
 	/* Media */
-	--bluesky-aspect-ratio-thumb: 1.91/1;
-	--bluesky-aspect-ratio-square: 1/1;
-	--bluesky-aspect-ratio-video: 16/9;
+	--bluesky-aspect-ratio-thumb: 1.91 / 1;
+	--bluesky-aspect-ratio-square: 1 / 1;
+	--bluesky-aspect-ratio-video: 16 / 9;
 
 	/* Icons */
 	--bluesky-icon-size-sm: 1rem;

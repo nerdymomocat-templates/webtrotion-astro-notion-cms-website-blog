@@ -1,17 +1,17 @@
-import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
+import fs from "node:fs";
+import path from "path";
+import { HOME_PAGE_SLUG, MENU_PAGES_COLLECTION, REQUEST_TIMEOUT_MS } from "../constants";
+import { slugify } from "../utils/slugify";
 import type {
 	Block,
+	Column,
 	Heading1,
 	Heading2,
 	Heading3,
-	RichText,
-	Column,
-	ReferencesInPage,
 	Post,
+	ReferencesInPage,
+	RichText,
 } from "./interfaces";
-import { slugify } from "../utils/slugify";
-import path from "path";
-import fs from "node:fs";
 import { getBlock, getPostByPageId } from "./notion/client";
 
 const BASE_PATH = import.meta.env.BASE_URL;

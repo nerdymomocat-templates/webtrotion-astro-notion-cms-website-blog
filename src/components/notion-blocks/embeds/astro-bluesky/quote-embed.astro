@@ -1,8 +1,8 @@
 ---
 import { AppBskyEmbedRecord, AppBskyFeedPost } from "@atproto/api";
+import Avatar from "./avatar.astro";
 import Embed from "./embed.astro";
 import { atUriToPostUri, viewRecordToEmbed } from "./utils";
-import Avatar from "./avatar.astro";
 
 interface Props {
 	embed: AppBskyEmbedRecord.View;

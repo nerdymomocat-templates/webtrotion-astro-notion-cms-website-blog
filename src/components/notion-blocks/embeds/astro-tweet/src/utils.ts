@@ -1,16 +1,16 @@
 import type {
-	TweetBase,
-	Tweet,
-	QuotedTweet,
-	MediaDetails,
 	HashtagEntity,
-	SymbolEntity,
 	Indices,
-	UserMentionEntity,
-	UrlEntity,
-	MediaEntity,
 	MediaAnimatedGif,
+	MediaDetails,
+	MediaEntity,
 	MediaVideo,
+	QuotedTweet,
+	SymbolEntity,
+	Tweet,
+	TweetBase,
+	UrlEntity,
+	UserMentionEntity,
 } from "./api/index.js";
 
 export type TweetCoreProps = {

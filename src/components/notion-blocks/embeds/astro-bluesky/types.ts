@@ -1,11 +1,11 @@
 import {
-	AppBskyFeedPost,
-	AppBskyFeedDefs,
-	AppBskyEmbedRecord,
 	AppBskyEmbedExternal,
 	AppBskyEmbedImages,
+	AppBskyEmbedRecord,
 	AppBskyEmbedRecordWithMedia,
 	AppBskyEmbedVideo,
+	AppBskyFeedDefs,
+	AppBskyFeedPost,
 } from "@atproto/api";
 
 export interface Post extends AppBskyFeedDefs.PostView {

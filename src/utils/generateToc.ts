@@ -1,9 +1,9 @@
-import type { MarkdownHeading } from "astro";
 //ADDED
 import { HEADING_BLOCKS } from "@/constants";
 import type { Block } from "@/lib/interfaces";
 import type { Heading } from "@/types";
 import { slugify } from "@/utils/slugify";
+import type { MarkdownHeading } from "astro";
 
 export interface TocItem extends MarkdownHeading {
 	subheadings: Array<TocItem>;

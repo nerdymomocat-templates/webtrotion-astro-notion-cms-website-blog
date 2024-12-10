@@ -1,28 +1,28 @@
 ---
-import * as interfaces from "../../../lib/interfaces.ts";
 import {
-	isTweetURL,
-	isTikTokURL,
+	isBlueskyAppURL,
+	isCodePenURL,
+	isEmbeddableURL,
+	isGoogleMapsURL,
 	isInstagramURL,
 	isPinterestURL,
-	isCodePenURL,
 	isSpotifyURL,
-	isGoogleMapsURL,
-	isEmbeddableURL,
-	isBlueskyAppURL,
+	isTikTokURL,
+	isTweetURL,
 } from "../../../lib/blog-helpers.ts";
+import * as interfaces from "../../../lib/interfaces.ts";
 import Caption from "../Caption.astro";
 
+import BlueskyEmbed from "./BlueskyEmbed.astro";
 import Bookmark from "./Bookmark.astro";
-import TweetEmbed from "./TweetEmbed.astro";
-import TikTokEmbed from "./TikTokEmbed.astro";
-import InstagramEmbed from "./InstagramEmbed.astro";
-import PinterestEmbed from "./PinterestEmbed.astro";
 import CodePenEmbed from "./CodePenEmbed.astro";
 import EmbedGeneric from "./EmbedGeneric.astro";
-import SpotifyEmbed from "./SpotifyEmbed.astro";
 import GoogleMapsEmbed from "./GoogleMapsEmbed.astro";
-import BlueskyEmbed from "./BlueskyEmbed.astro";
+import InstagramEmbed from "./InstagramEmbed.astro";
+import PinterestEmbed from "./PinterestEmbed.astro";
+import SpotifyEmbed from "./SpotifyEmbed.astro";
+import TikTokEmbed from "./TikTokEmbed.astro";
+import TweetEmbed from "./TweetEmbed.astro";
 
 export interface Props {
 	block: interfaces.Block;

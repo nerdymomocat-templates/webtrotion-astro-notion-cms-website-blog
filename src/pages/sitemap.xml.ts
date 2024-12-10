@@ -1,9 +1,9 @@
-// import { siteConfig } from "@/site-config";
-import { getAllPosts, getAllPages } from "@/lib/notion/client";
-import { getPostLink } from "../lib/blog-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+// import { siteConfig } from "@/site-config";
+import { getAllPages, getAllPosts } from "@/lib/notion/client";
 import { getCollections } from "@/utils";
 import { slugify } from "@/utils";
+import { getPostLink } from "../lib/blog-helpers";
 
 export const GET = async () => {
 	const [posts, pages] = await Promise.all([getAllPosts(), getAllPages()]);

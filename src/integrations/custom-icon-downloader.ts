@@ -1,6 +1,6 @@
 import type { AstroIntegration } from "astro";
 import type { FileObject } from "../lib/interfaces";
-import { getDatabase, downloadFile } from "../lib/notion/client";
+import { downloadFile, getDatabase } from "../lib/notion/client";
 
 export default (): AstroIntegration => ({
 	name: "custom-icon-downloader",

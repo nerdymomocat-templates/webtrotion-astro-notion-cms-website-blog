@@ -1,9 +1,9 @@
 ---
+import { Code } from "astro:components";
+import Icon from "@/components/Icon";
+import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
 import * as interfaces from "../../lib/interfaces";
 import Caption from "./Caption.astro";
-import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
-import Icon from "@/components/Icon";
-import { Code } from "astro:components";
 
 export interface Props {
 	block: interfaces.Block;

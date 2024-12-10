@@ -1,9 +1,9 @@
 ---
-import Search from "../Search.astro";
-import { getMenu } from "@/utils";
-import { siteInfo } from "@/site.config";
-import { filePath, getNavLink } from "@/lib/blog-helpers";
 import Icon from "@/components/Icon";
+import { filePath, getNavLink } from "@/lib/blog-helpers";
+import { siteInfo } from "@/site.config";
+import { getMenu } from "@/utils";
+import Search from "../Search.astro";
 import ThemeIcon from "../ThemeIcon.astro";
 
 const menuLinks = await getMenu();

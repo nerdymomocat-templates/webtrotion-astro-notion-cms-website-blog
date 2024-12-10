@@ -1,5 +1,4 @@
 ---
-import type { EmbedView } from "./types";
 import {
 	AppBskyEmbedExternal,
 	AppBskyEmbedImages,
@@ -10,10 +9,11 @@ import {
 } from "@atproto/api";
 import External from "./external.astro";
 import ImageGrid from "./image-grid.astro";
-import VideoThumbnail from "./video-thumbnail.astro";
+import List from "./list.astro";
 import QuoteEmbed from "./quote-embed.astro";
 import StarterPack from "./starter-pack.astro";
-import List from "./list.astro";
+import type { EmbedView } from "./types";
+import VideoThumbnail from "./video-thumbnail.astro";
 
 interface Props {
 	embed?: EmbedView | undefined | null;

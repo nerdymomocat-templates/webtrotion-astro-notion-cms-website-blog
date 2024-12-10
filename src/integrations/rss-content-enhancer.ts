@@ -1,10 +1,10 @@
-import type { AstroIntegration } from "astro";
-import * as fs from "fs/promises";
 import * as path from "path";
-import sanitizeHtml from "sanitize-html";
-import { XMLParser, XMLBuilder } from "fast-xml-parser";
+import type { AstroIntegration } from "astro";
+import { XMLBuilder, XMLParser } from "fast-xml-parser";
+import * as fs from "fs/promises";
 import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
+import sanitizeHtml from "sanitize-html";
 import { LAST_BUILD_TIME } from "../constants";
 
 const rssContentEnhancer = (): AstroIntegration => {

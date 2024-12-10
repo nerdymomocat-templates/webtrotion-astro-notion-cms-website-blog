@@ -1,12 +1,12 @@
 ---
-import { type EnrichedTweet, type EnrichedQuotedTweet, getMediaUrl } from "../utils.js";
+import { getFirstImage } from "@/lib/blog-helpers";
 import { type MediaDetails } from "../api/index";
-import type { TwitterComponents } from "./types.js";
+import { type EnrichedQuotedTweet, type EnrichedTweet, getMediaUrl } from "../utils.js";
 // import { TweetMediaVideo } from "./TweetMediaVideo.astro";
 import MediaImg from "./MediaImg.astro";
-import styles from "./tweet-media.module.css";
 import TweetMediaVideo from "./TweetMediaVideo.astro";
-import { getFirstImage } from "@/lib/blog-helpers";
+import styles from "./tweet-media.module.css";
+import type { TwitterComponents } from "./types.js";
 
 const getSkeletonStyle = (media: MediaDetails, itemCount: number) => {
 	let paddingBottom = 56.25; // default of 16x9

@@ -8,8 +8,8 @@ import {
 	setCurrentHeadings,
 	setTrackCurrentPageId,
 } from "@/lib/blog-helpers";
-import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
+import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { buildHeadings } from "@/utils";
 
 export async function getStaticPaths() {

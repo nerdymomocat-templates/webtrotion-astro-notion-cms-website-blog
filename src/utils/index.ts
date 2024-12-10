@@ -1,10 +1,10 @@
-//NOTE ADDED
-import { getAllPages, getDatabase } from "@/lib/notion/client";
+import { HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "@/constants";
+import { getNavLink } from "@/lib/blog-helpers";
 // import { siteConfig } from "@/site-config";
 import type { Block, BlockTypes } from "@/lib/interfaces";
-import { MENU_PAGES_COLLECTION, HOME_PAGE_SLUG } from "@/constants";
+//NOTE ADDED
+import { getAllPages, getDatabase } from "@/lib/notion/client";
 import { slugify } from "@/utils/slugify";
-import { getNavLink } from "@/lib/blog-helpers";
 // import { siteInfo } from "./site.config";
 
 export { getFormattedDate, getFormattedDateWithTime, areDifferentDates } from "./date";

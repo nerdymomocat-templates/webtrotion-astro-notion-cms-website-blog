@@ -1,13 +1,13 @@
 ---
+import Icon from "@/components/Icon.astro";
+import { REFERENCES } from "@/constants";
+import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
 import type { Block, Post, ReferencesInPage } from "@/lib/interfaces";
 import createMetascraper from "metascraper";
 import metascraperDescription from "metascraper-description";
 import metascraperImage from "metascraper-image";
 import metascraperTitle from "metascraper-title";
 import NBlocksPopover from "./NBlocksPopover.astro";
-import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
-import { REFERENCES } from "@/constants";
-import Icon from "@/components/Icon.astro";
 
 interface Props {
 	post: Post;

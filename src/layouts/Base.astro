@@ -1,16 +1,16 @@
 ---
-import type { SiteMeta } from "@/types";
 import BaseHead from "@/components/BaseHead";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import SkipLink from "@/components/SkipLink";
-import { siteInfo } from "@/siteInfo";
+import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
 import { ENABLE_LIGHTBOX, REFERENCES } from "@/constants";
+import { siteInfo } from "@/siteInfo";
+import type { SiteMeta } from "@/types";
 interface Props {
-meta: SiteMeta;
+	meta: SiteMeta;
 }
 const {
-meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
+	meta: { title = siteInfo.title, description = siteInfo.description, ogImage, articleDate },
 } = Astro.props;
 ---
 <html lang={siteInfo.lang}>

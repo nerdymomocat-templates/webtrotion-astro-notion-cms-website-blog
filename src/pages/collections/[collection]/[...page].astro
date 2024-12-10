@@ -1,25 +1,29 @@
 ---
+import Icon from "@/components/Icon";
+import {
+	FULL_PREVIEW_COLLECTIONS,
+	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	NUMBER_OF_POSTS_PER_PAGE,
+} from "@/constants";
+import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
+import type { Post, SelectProperty } from "@/lib/interfaces";
+import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
+import { getCollectionsWDesc } from "@/utils";
+import { slugify } from "@/utils";
 //FIXME: try moving all of this to content and not here
 import type { GetStaticPaths, Page } from "astro";
-import PageLayout from "src/layouts/Base.astro";
+import Pagination from "src/components/Paginator.astro";
 import PostPreview from "src/components/blog/PostPreview.astro";
 import PostPreviewFull from "src/components/blog/PostPreviewFull.astro";
-import Pagination from "src/components/Paginator.astro";
-import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
-import type { Post, SelectProperty } from "@/lib/interfaces";
-import { getCollectionsWDesc } from "@/utils";
-import {slugify} from '@/utils';
-import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
-import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import PageLayout from "src/layouts/Base.astro";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	let posts = await getAllPosts();
-  // Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
-  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-    posts = posts.filter((post) => !post.Slug.startsWith("_"));
-}
+	// Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
+	if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+		posts = posts.filter((post) => !post.Slug.startsWith("_"));
+	}
 
 	const collections = await getCollectionsWDesc();
 
@@ -27,19 +31,19 @@ export const getStaticPaths = (async ({ paginate }) => {
 		// Initially filter posts based on the collection
 		let collectionPosts = posts.filter((post) => post.Collection === collection.name);
 
-    // Sort posts to have pinned ones on top while maintaining the original order within each category
-    collectionPosts.sort((a, b) => {
-        if (a.Pinned === b.Pinned) {
-            return 0; // maintain original order if both are pinned or both are not pinned
-        }
-        return a.Pinned ? -1 : 1; // pinned posts come first
-    });
+		// Sort posts to have pinned ones on top while maintaining the original order within each category
+		collectionPosts.sort((a, b) => {
+			if (a.Pinned === b.Pinned) {
+				return 0; // maintain original order if both are pinned or both are not pinned
+			}
+			return a.Pinned ? -1 : 1; // pinned posts come first
+		});
 
 		const uniqueTags = getUniqueTags(collectionPosts);
 
 		return paginate(collectionPosts, {
 			params: { collection: slugify(collection.name) },
-      props: { collection: collection.name, description: collection.description, uniqueTags },
+			props: { collection: collection.name, description: collection.description, uniqueTags },
 			pageSize: NUMBER_OF_POSTS_PER_PAGE,
 		});
 	});
@@ -48,7 +52,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 interface Props {
 	page: Page<Post>;
 	collection: string;
-  description: string;
+	description: string;
 	uniqueTags: SelectProperty[];
 }
 

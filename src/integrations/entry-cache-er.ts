@@ -1,13 +1,13 @@
-import type { AstroIntegration } from "astro";
-import {
-	downloadFile,
-	getAllEntries,
-	generateFilePath,
-	getPostContentByPostId,
-	createReferencesToThisEntry,
-} from "../lib/notion/client";
-import { LAST_BUILD_TIME } from "../constants";
 import fs from "node:fs";
+import type { AstroIntegration } from "astro";
+import { LAST_BUILD_TIME } from "../constants";
+import {
+	createReferencesToThisEntry,
+	downloadFile,
+	generateFilePath,
+	getAllEntries,
+	getPostContentByPostId,
+} from "../lib/notion/client";
 
 export default (): AstroIntegration => ({
 	name: "entry-cache-er",

@@ -1,29 +1,29 @@
+import { buildTimeFilePath } from "@/lib/blog-helpers";
+// import { siteConfig } from "@/site-config";
+import { getFormattedDate } from "@/utils";
+// import { html } from "satori-html";
+import { Resvg } from "@resvg/resvg-js";
 import type { APIContext, GetStaticPaths } from "astro";
 // import { getEntryBySlug } from "astro:content";
 import satori, { type SatoriOptions } from "satori";
-// import { html } from "satori-html";
-import { Resvg } from "@resvg/resvg-js";
-// import { siteConfig } from "@/site-config";
-import { getFormattedDate } from "@/utils";
-import { buildTimeFilePath } from "@/lib/blog-helpers";
 
 //ADDITION
-import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
+import { getAllEntries, getPostBySlug } from "@/lib/notion/client";
 import { getCollections } from "@/utils";
 
+import {
+	HOME_PAGE_SLUG,
+	LAST_BUILD_TIME,
+	MENU_PAGES_COLLECTION,
+	OG_SETUP,
+	THEME,
+} from "@/constants";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import {
-	OG_SETUP,
-	LAST_BUILD_TIME,
-	HOME_PAGE_SLUG,
-	THEME,
-	MENU_PAGES_COLLECTION,
-} from "@/constants";
 
 import fs from "fs";
-import sharp from "sharp";
 import path from "path";
+import sharp from "sharp";
 
 const rgbToHex = (rgb: string): string =>
 	"#" +

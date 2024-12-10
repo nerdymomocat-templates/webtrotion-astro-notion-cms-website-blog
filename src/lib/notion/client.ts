@@ -1,70 +1,70 @@
 import fs from "node:fs";
+import path from "path";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+import { APIResponseError, Client } from "@notionhq/client";
+import retry from "async-retry";
 import axios from "axios";
 import type { AxiosResponse } from "axios";
-import sharp from "sharp";
-import retry from "async-retry";
 import ExifTransformer from "exif-be-gone";
 import pngToIco from "png-to-ico";
-import path from "path";
+import sharp from "sharp";
 import {
-	NOTION_API_SECRET,
 	DATABASE_ID,
-	NUMBER_OF_POSTS_PER_PAGE,
-	REQUEST_TIMEOUT_MS,
-	MENU_PAGES_COLLECTION,
-	OPTIMIZE_IMAGES,
-	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	LAST_BUILD_TIME,
+	MENU_PAGES_COLLECTION,
+	NOTION_API_SECRET,
+	NUMBER_OF_POSTS_PER_PAGE,
+	OPTIMIZE_IMAGES,
+	REQUEST_TIMEOUT_MS,
 } from "../../constants";
-import type * as responses from "./responses";
-import type * as requestParams from "./request-params";
-import type {
-	Database,
-	Post,
-	Block,
-	Paragraph,
-	Heading1,
-	Heading2,
-	Heading3,
-	BulletedListItem,
-	NumberedListItem,
-	ToDo,
-	NImage,
-	Code,
-	Quote,
-	Equation,
-	Callout,
-	Embed,
-	Video,
-	File,
-	Bookmark,
-	LinkPreview,
-	SyncedBlock,
-	SyncedFrom,
-	Table,
-	TableRow,
-	TableCell,
-	Toggle,
-	ColumnList,
-	Column,
-	TableOfContents,
-	RichText,
-	Text,
-	Annotation,
-	SelectProperty,
-	Emoji,
-	FileObject,
-	LinkToPage,
-	Mention,
-	Reference,
-	NAudio,
-	ReferencesInPage,
-} from "../interfaces";
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
 import { extractReferencesInPage } from "../blog-helpers";
+import type {
+	Annotation,
+	Block,
+	Bookmark,
+	BulletedListItem,
+	Callout,
+	Code,
+	Column,
+	ColumnList,
+	Database,
+	Embed,
+	Emoji,
+	Equation,
+	File,
+	FileObject,
+	Heading1,
+	Heading2,
+	Heading3,
+	LinkPreview,
+	LinkToPage,
+	Mention,
+	NAudio,
+	NImage,
+	NumberedListItem,
+	Paragraph,
+	Post,
+	Quote,
+	Reference,
+	ReferencesInPage,
+	RichText,
+	SelectProperty,
+	SyncedBlock,
+	SyncedFrom,
+	Table,
+	TableCell,
+	TableOfContents,
+	TableRow,
+	Text,
+	ToDo,
+	Toggle,
+	Video,
+} from "../interfaces";
+import type * as requestParams from "./request-params";
+import type * as responses from "./responses";
 
 const client = new Client({
 	auth: NOTION_API_SECRET,
@@ -778,12 +778,8 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
 						return null;
 					}
 					url = new URL(
-						(
-							updatedBlock.NImage ||
-							updatedBlock.File ||
-							updatedBlock.Video ||
-							updatedBlock.NAudio
-						).File.Url,
+						(updatedBlock.NImage || updatedBlock.File || updatedBlock.Video || updatedBlock.NAudio)
+							.File.Url,
 					);
 				}
 

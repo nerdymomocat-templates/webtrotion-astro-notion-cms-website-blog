@@ -1,11 +1,11 @@
 ---
-import * as interfaces from "../../../lib/interfaces.ts";
-import { isYouTubeURL, parseYouTubeVideoIdTitle } from "../../../lib/blog-helpers.ts";
-import Caption from "../Caption.astro";
-import { filePath } from "../../../lib/blog-helpers";
-import EmbedGeneric from "./EmbedGeneric.astro";
 import Icon from "@/components/Icon";
 import { ENABLE_LIGHTBOX } from "@/constants";
+import { filePath } from "../../../lib/blog-helpers";
+import { isYouTubeURL, parseYouTubeVideoIdTitle } from "../../../lib/blog-helpers.ts";
+import * as interfaces from "../../../lib/interfaces.ts";
+import Caption from "../Caption.astro";
+import EmbedGeneric from "./EmbedGeneric.astro";
 import YouTube from "./YouTube.astro";
 
 export interface Props {

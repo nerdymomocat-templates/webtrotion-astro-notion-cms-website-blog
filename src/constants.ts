@@ -5,11 +5,11 @@ import fs from "fs";
 import path from "path";
 
 import {
-	transformerNotationFocus,
 	transformerNotationDiff,
+	transformerNotationErrorLevel,
+	transformerNotationFocus,
 	transformerNotationHighlight,
 	transformerNotationWordHighlight,
-	transformerNotationErrorLevel,
 } from "@shikijs/transformers";
 
 export const NOTION_API_SECRET =

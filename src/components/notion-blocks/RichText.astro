@@ -1,17 +1,17 @@
 ---
 import katex from "katex";
 import { RichText } from "../../lib/interfaces.ts";
+import MentionCustomEmoji from "./MentionCustomEmoji.astro";
+import MentionDate from "./MentionDate.astro";
+import MentionLink from "./MentionLink.astro";
+import MentionPage from "./MentionPage.astro";
+import Anchor from "./annotations/Anchor.astro";
 import Bold from "./annotations/Bold.astro";
+import Code from "./annotations/Code.astro";
+import Color from "./annotations/Color.astro";
 import Italic from "./annotations/Italic.astro";
 import Strikethrough from "./annotations/Strikethrough.astro";
 import Underline from "./annotations/Underline.astro";
-import Color from "./annotations/Color.astro";
-import Code from "./annotations/Code.astro";
-import Anchor from "./annotations/Anchor.astro";
-import MentionPage from "./MentionPage.astro";
-import MentionDate from "./MentionDate.astro";
-import MentionLink from "./MentionLink.astro";
-import MentionCustomEmoji from "./MentionCustomEmoji.astro";
 
 export interface Props {
 	richText: RichText;

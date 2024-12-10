@@ -28,7 +28,7 @@ async function downloadFontCSS(url: string): Promise<string> {
 					}
 					return res.text();
 				})
-				.then((t) => t.replace(/  +/g, "").replace(/\t+/g, "").replace(/\n+/g, ""));
+				.then((t) => t.replace(/ {2,}/g, "").replace(/\t+/g, "").replace(/\n+/g, ""));
 		}),
 	);
 	const contents = await fontDownloads;

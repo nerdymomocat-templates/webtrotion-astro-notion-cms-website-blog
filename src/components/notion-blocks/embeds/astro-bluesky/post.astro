@@ -1,10 +1,10 @@
 ---
-import { atUriToPostUri, renderPostAsHtml, resolvePost } from "./utils.js";
 import Embed from "./embed.astro";
 import type { Post } from "./types";
+import { atUriToPostUri, renderPostAsHtml, resolvePost } from "./utils.js";
 import "./styles.css";
-import Avatar from "./avatar.astro";
 import type { AppBskyFeedDefs } from "@atproto/api";
+import Avatar from "./avatar.astro";
 
 type Props = {
 	id?: string;

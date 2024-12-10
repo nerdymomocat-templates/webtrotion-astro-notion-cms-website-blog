@@ -1,16 +1,16 @@
 ---
 import type { Tweet } from "../api/index.js";
-import type { TwitterComponents } from "./types.js";
+import { enrichTweet } from "../utils.js";
+import TweetActions from "./TweetActions.astro";
+import TweetBody from "./TweetBody.astro";
 import TweetContainer from "./TweetContainer.astro";
 import TweetHeader from "./TweetHeader.astro";
 import TweetInReplyTo from "./TweetInReplyTo.astro";
-import TweetBody from "./TweetBody.astro";
-import TweetMedia from "./TweetMedia.astro";
 import TweetInfo from "./TweetInfo.astro";
-import TweetActions from "./TweetActions.astro";
+import TweetMedia from "./TweetMedia.astro";
 // import TweetReplies from "./TweetReplies.astro";
 import QuotedTweet from "./quoted-tweet/QuotedTweet.astro";
-import { enrichTweet } from "../utils.js";
+import type { TwitterComponents } from "./types.js";
 
 type Props = {
 	tweet: Tweet;

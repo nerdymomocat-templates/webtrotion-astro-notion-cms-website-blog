@@ -1,6 +1,6 @@
 ---
-import { Mention } from "../../lib/interfaces.ts";
 import Icon from "@/components/Icon";
+import { Mention } from "../../lib/interfaces.ts";
 
 export interface Props {
 	mention: Mention;
@@ -24,13 +24,12 @@ const {
 	LinkProvider,
 } = mention.LinkMention;
 
-if (!Href)
-{
-  return null;
+if (!Href) {
+	return null;
 }
-const isEmbeddable = IframeUrl? true: false;
+const isEmbeddable = IframeUrl ? true : false;
 let id = "id" + Math.random().toString(16).slice(2);
-const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Href;
+const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + "..." : Href;
 ---
 
 {

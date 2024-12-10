@@ -1,9 +1,9 @@
-import rss from "@astrojs/rss";
+import { AUTHOR, HIDE_UNDERSCORE_SLUGS_IN_LISTS } from "@/constants";
+import { getNavLink } from "@/lib/blog-helpers";
 // import { siteConfig } from "@/site-config";
 import { getAllPosts, getDatabase } from "@/lib/notion/client";
+import rss from "@astrojs/rss";
 import { getPostLink } from "../lib/blog-helpers";
-import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, AUTHOR } from "@/constants";
-import { getNavLink } from "@/lib/blog-helpers";
 
 export const GET = async () => {
 	const [posts, database] = await Promise.all([getAllPosts(), getDatabase()]);

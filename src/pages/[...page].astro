@@ -1,20 +1,36 @@
 ---
-import PageLayout from "../layouts/Base.astro";
 // import PostPreview from "../components/blog/PostPreview.astro";
-import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "../lib/blog-helpers";
+import {
+	getAllPages,
+	getAllPosts,
+	getPostContentByPostId,
+	processFileBlocks,
+} from "@/lib/notion/client";
 import NotionBlocks from "../components/NotionBlocks.astro";
+import PageLayout from "../layouts/Base.astro";
+import {
+	extractTargetBlocks,
+	getNavLink,
+	resetCurrentHeadings,
+	resetFirstImage,
+	setCurrentHeadings,
+	setTrackCurrentPageId,
+} from "../lib/blog-helpers";
 import type { Post } from "../lib/interfaces";
 
+import Icon from "@/components/Icon.astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import TOC from "@/components/blog/TOC";
+import {
+	FULL_PREVIEW_COLLECTIONS,
+	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	HOME_PAGE_SLUG,
+	RECENT_POSTS_ON_HOME_PAGE,
+} from "@/constants";
 // import { siteConfig } from "@/site-config";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE } from "@/constants";
-import PostPreview from "@/components/blog/PostPreview.astro";
-import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
-import TOC from "@/components/blog/TOC";
-
 
 export async function getStaticPaths() {
 	const pages = await getAllPages();
@@ -50,44 +66,44 @@ if (!page) {
 // ]);
 if (pageFound) {
 	const result = await getPostContentByPostId(page);
-  blocks = result.blocks;
-  referencesInPage = result.referencesInPage;
-  headings = buildHeadings(blocks);
-  setCurrentHeadings(headings);
+	blocks = result.blocks;
+	referencesInPage = result.referencesInPage;
+	headings = buildHeadings(blocks);
+	setCurrentHeadings(headings);
 
-	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
-		.filter((block) => {
-			if (!block) {
-				return false;
-			}
-			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-			return (
-				imageOrVideoOrAudioOrFile &&
-				imageOrVideoOrAudioOrFile.File &&
-				imageOrVideoOrAudioOrFile.File.Url
-			);
-		});
+	const fileAtacchedBlocks = extractTargetBlocks(
+		["image", "video", "file", "audio"],
+		blocks,
+	).filter((block) => {
+		if (!block) {
+			return false;
+		}
+		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+		return (
+			imageOrVideoOrAudioOrFile &&
+			imageOrVideoOrAudioOrFile.File &&
+			imageOrVideoOrAudioOrFile.File.Url
+		);
+	});
 
 	const processedFile = await processFileBlocks(fileAtacchedBlocks);
 }
 
 let recent_posts = null;
-if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
-{
-  recent_posts = await getAllPosts();
-  recent_posts = recent_posts.filter((post) => !FULL_PREVIEW_COLLECTIONS.includes(post.Collection));
-  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-    recent_posts = recent_posts.filter((post) => !post.Slug.startsWith("_"));
-		}
-    recent_posts = recent_posts.slice(0, 5); // Slice to get only the first five posts
-    if (recent_posts && headings)
-    {
-      headings.push({
+if (pageFound && page.Slug == HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE) {
+	recent_posts = await getAllPosts();
+	recent_posts = recent_posts.filter((post) => !FULL_PREVIEW_COLLECTIONS.includes(post.Collection));
+	if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+		recent_posts = recent_posts.filter((post) => !post.Slug.startsWith("_"));
+	}
+	recent_posts = recent_posts.slice(0, 5); // Slice to get only the first five posts
+	if (recent_posts && headings) {
+		headings.push({
 			text: "Recent Posts",
 			slug: "auto-recent-posts",
 			depth: 1,
-	  })
-    }
+		});
+	}
 }
 ---
 
