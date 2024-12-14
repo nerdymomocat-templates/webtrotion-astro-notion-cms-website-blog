@@ -322,10 +322,6 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 	}, {});
 };
 
-export const getStaticFilePath = (pathsup: string): string => {
-	return path.join(BASE_PATH, pathsup);
-};
-
 export const getNavLink = (nav: string) => {
 	if (!nav && BASE_PATH) {
 		return path.join(BASE_PATH, "") + "/";
@@ -452,37 +448,6 @@ export const getPostLink = (slug: string, isRoot: boolean = false) => {
 			: path.join(BASE_PATH, `/${slug}`)
 		: path.join(BASE_PATH, `/posts/${slug}`);
 	return linkedPath;
-};
-
-export const getTagLink = (tag: string) => {
-	return path.join(BASE_PATH, `/posts/tag/${encodeURIComponent(tag)}`);
-};
-
-export const getPageLink = (page: number, tag: string) => {
-	if (page === 1) {
-		return tag ? getTagLink(tag) : path.join(BASE_PATH, "/");
-	}
-	return tag
-		? path.join(BASE_PATH, `/posts/tag/${encodeURIComponent(tag)}/page/${page.toString()}`)
-		: path.join(BASE_PATH, `/posts/page/${page.toString()}`);
-};
-
-export const getDateStr = (date: string) => {
-	const dt = new Date(date);
-
-	if (date.indexOf("T") !== -1) {
-		// Consider timezone
-		const elements = date.split("T")[1].split(/([+-])/);
-		if (elements.length > 1) {
-			const diff = parseInt(`${elements[1]}${elements[2]}`, 10);
-			dt.setHours(dt.getHours() + diff);
-		}
-	}
-
-	const y = dt.getFullYear();
-	const m = ("00" + (dt.getMonth() + 1)).slice(-2);
-	const d = ("00" + dt.getDate()).slice(-2);
-	return y + "-" + m + "-" + d;
 };
 
 export const buildHeadingId = (heading: Heading1 | Heading2 | Heading3) => {

@@ -207,31 +207,6 @@ export async function getAllPages(): Promise<Post[]> {
 	return allEntries.filter((post) => MENU_PAGES_COLLECTION === post.Collection);
 }
 
-export async function getPosts(pageSize = 10): Promise<Post[]> {
-	const allPosts = await getAllPosts();
-	return allPosts.slice(0, pageSize);
-}
-
-export async function getRankedPosts(pageSize = 10): Promise<Post[]> {
-	const allPosts = await getAllPosts();
-	return allPosts
-		.filter((post) => !!post.Rank)
-		.sort((a, b) => {
-			if (a.Rank > b.Rank) {
-				return -1;
-			} else if (a.Rank === b.Rank) {
-				return 0;
-			}
-			return 1;
-		})
-		.slice(0, pageSize);
-}
-
-export async function getPageBySlug(slug: string): Promise<Post | null> {
-	const allPosts = await getAllPages();
-	return allPosts.find((post) => post.Slug === slug) || null;
-}
-
 export async function getPostBySlug(slug: string): Promise<Post | null> {
 	const allPosts = await getAllEntries();
 	return allPosts.find((post) => post.Slug === slug) || null;
@@ -240,61 +215,6 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 export async function getPostByPageId(pageId: string): Promise<Post | null> {
 	const allPosts = await getAllEntries();
 	return allPosts.find((post) => post.PageId === pageId) || null;
-}
-
-export async function getPostsByTag(tagName: string, pageSize = 10): Promise<Post[]> {
-	if (!tagName) return [];
-
-	const allPosts = await getAllPosts();
-	return allPosts
-		.filter((post) => post.Tags.find((tag) => tag.name === tagName))
-		.slice(0, pageSize);
-}
-
-// page starts from 1 not 0
-export async function getPostsByPage(page: number): Promise<Post[]> {
-	if (page < 1) {
-		return [];
-	}
-
-	const allPosts = await getAllPosts();
-
-	const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE;
-	const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE;
-
-	return allPosts.slice(startIndex, endIndex);
-}
-
-// page starts from 1 not 0
-export async function getPostsByTagAndPage(tagName: string, page: number): Promise<Post[]> {
-	if (page < 1) {
-		return [];
-	}
-
-	const allPosts = await getAllPosts();
-	const posts = allPosts.filter((post) => post.Tags.find((tag) => tag.name === tagName));
-
-	const startIndex = (page - 1) * NUMBER_OF_POSTS_PER_PAGE;
-	const endIndex = startIndex + NUMBER_OF_POSTS_PER_PAGE;
-
-	return posts.slice(startIndex, endIndex);
-}
-
-export async function getNumberOfPages(): Promise<number> {
-	const allPosts = await getAllPosts();
-	return (
-		Math.floor(allPosts.length / NUMBER_OF_POSTS_PER_PAGE) +
-		(allPosts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
-	);
-}
-
-export async function getNumberOfPagesByTag(tagName: string): Promise<number> {
-	const allPosts = await getAllPosts();
-	const posts = allPosts.filter((post) => post.Tags.find((tag) => tag.name === tagName));
-	return (
-		Math.floor(posts.length / NUMBER_OF_POSTS_PER_PAGE) +
-		(posts.length % NUMBER_OF_POSTS_PER_PAGE > 0 ? 1 : 0)
-	);
 }
 
 export async function getPostContentByPostId(

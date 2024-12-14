@@ -54,18 +54,6 @@ export const getNotionColorToTailwindColor = (s: string, isTag: boolean = false)
 	return colorMap[kebabCase];
 };
 
-export const getIconCssFilter = (iconUrl: string): string | null | undefined => {
-	// Regular expression to match the pattern:
-	// (1) Any characters after the last underscore
-	// (2) Ending with ".svg"
-	const regex = /_([^.]+)\.svg$/;
-	const match = iconUrl.match(regex);
-
-	// If a match is found, return the captured group, which is the color part.
-	// Otherwise, return null if no match is found.
-	return match ? match[1] : null;
-};
-
 export const getIconTailwindFilterStyle = (url: string): string => {
 	// if (!url.startsWith('https://www.notion.so/icons/')) {
 	//       return '';
@@ -107,10 +95,6 @@ export const getIconTailwindFilterStyle = (url: string): string => {
 		//VERY TEMP FIX -- only light gray and gray icons will cause z index issue now because i was returning defaults of saturate-100, hue rotate 0 and brightness-100 before anyway.
 	}
 	return "";
-};
-
-export const isNotionIconURL = (url: string): boolean => {
-	return !url.startsWith("https://www.notion.so/icons/");
 };
 
 export const getTextToAstroIcon = (text: string) => {
