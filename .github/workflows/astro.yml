@@ -100,7 +100,7 @@ jobs:
       - name: Clear Previous `tmp` and `public` Cache (if needed)
         run: |
           gh extension install actions/gh-actions-cache
-          for key in $(gh actions-cache list -B ${{ github.repository_id }} | grep blogtrotion | awk '{print $1}'); do
+          for key in $(gh actions-cache list -B ${{ github.repository_id }} | grep -E '(web|blog)trotion' | awk '{print $1}'); do
             gh actions-cache delete $key -B ${{ github.repository_id }} --confirm
           done
         env:
