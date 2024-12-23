@@ -1,6 +1,10 @@
-name: No Cache Deploy to GitHub Pages Manually
+name: Deploy to GitHub Pages
 
 on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 */8 * * *"
   workflow_dispatch:
 
 permissions:
@@ -30,6 +34,16 @@ jobs:
         with:
           node-version: 21
 
+      - name: Clear Previous Node Modules Cache (if needed)
+        run: |
+          gh extension install actions/gh-actions-cache
+          cacheKeys=$(gh actions-cache list -B ${{ github.repository_id }} | grep modules | awk '{print $1}')
+          for key in $cacheKeys; do
+            gh actions-cache delete $key -B ${{ github.repository_id }} --confirm
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies
         run: npm ci --ignore-scripts
         working-directory: ${{ env.BUILD_PATH }}
@@ -57,24 +71,33 @@ jobs:
           npx --no-install pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
 
-      - name: Save new tmp cache
+      - name: Clear Previous `tmp` and `public` Cache (if needed)
+        run: |
+          gh extension install actions/gh-actions-cache
+          for key in $(gh actions-cache list -B ${{ github.repository_id }} | grep blogtrotion | awk '{print $1}'); do
+            gh actions-cache delete $key -B ${{ github.repository_id }} --confirm
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save New `tmp` Cache
         id: cache-tmp-save
         uses: actions/cache/save@v4
         with:
           path: ./tmp
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
+          key: tmp-webtrotion-${{ github.repository_id }}
 
-      - name: Save new public cache
+      - name: Save New `public` Cache
         id: cache-public-save
         uses: actions/cache/save@v4
         with:
           path: ./public
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
+          key: public-webtrotion-${{ github.repository_id }}
 
-      # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+            # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
 
       - name: Save node cache manually
-        id: npm-cache
+        id: npm-cache-save
         uses: actions/cache/save@v4
         with:
           path: ./node_modules

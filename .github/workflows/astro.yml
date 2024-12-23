@@ -35,16 +35,26 @@ jobs:
           node-version: 21
 
       # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
-
-      - name: Cache node manually
-        id: npm-cache
-        uses: actions/cache@v4
+      - name: Restore Node Modules Cache
+        id: npm-cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: ./node_modules
           key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
 
+      - name: Clear Previous Node Modules Cache (if needed)
+        if: steps.npm-cache-restore.outputs.cache-hit != 'true'
+        run: |
+          gh extension install actions/gh-actions-cache
+          cacheKeys=$(gh actions-cache list -B ${{ github.repository_id }} | grep modules | awk '{print $1}')
+          for key in $cacheKeys; do
+            gh actions-cache delete $key -B ${{ github.repository_id }} --confirm
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
+        if: steps.npm-cache-restore.outputs.cache-hit != 'true'
         run: npm ci --ignore-scripts
         working-directory: ${{ env.BUILD_PATH }}
 
@@ -52,23 +62,21 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Restore cached tmp
-        if: steps.npm-cache.outputs.cache-hit == 'true'
+      - name: Restore Cached `tmp`
+        if: steps.npm-cache-restore.outputs.cache-hit == 'true'
         id: cache-tmp-restore
         uses: actions/cache/restore@v4
         with:
           path: ./tmp
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-
+          key: tmp-webtrotion-${{ github.repository_id }}
 
-      - name: Restore cached public
-        if: steps.npm-cache.outputs.cache-hit == 'true'
+      - name: Restore Cached `public`
+        if: steps.npm-cache-restore.outputs.cache-hit == 'true'
         id: cache-public-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
           path: ./public
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-
+          key: public-webtrotion-${{ github.repository_id }}
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
@@ -89,19 +97,36 @@ jobs:
           npx --no-install pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
 
-      - name: Save new tmp cache
+      - name: Clear Previous `tmp` and `public` Cache (if needed)
+        run: |
+          gh extension install actions/gh-actions-cache
+          for key in $(gh actions-cache list -B ${{ github.repository_id }} | grep blogtrotion | awk '{print $1}'); do
+            gh actions-cache delete $key -B ${{ github.repository_id }} --confirm
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Save node cache manually
+        if: steps.npm-cache-restore.outputs.cache-hit != 'true'
+        id: npm-cache-save
+        uses: actions/cache/save@v4
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
+
+      - name: Save New `tmp` Cache
         id: cache-tmp-save
         uses: actions/cache/save@v4
         with:
           path: ./tmp
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-tmp-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
+          key: tmp-webtrotion-${{ github.repository_id }}
 
-      - name: Save new public cache
+      - name: Save New `public` Cache
         id: cache-public-save
         uses: actions/cache/save@v4
         with:
           path: ./public
-          key: ${{ runner.os }}-${{steps.pages.outputs.origin}}-${{steps.pages.outputs.base_path}}-public-blogtrotion-${{ github.run_id }}-${{ github.run_attempt }}
+          key: public-webtrotion-${{ github.repository_id }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
