@@ -15,6 +15,7 @@ concurrency:
 env:
   BUILD_PATH: "."
   NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+  DELETE_CACHES_GH_TOKEN: ${{ secrets.DELETE_CACHES_GH_TOKEN }}
 
 jobs:
   build:
@@ -31,10 +32,11 @@ jobs:
           node-version: 21
 
       - name: Clear Previous Node Modules Cache (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
           gh cache list --key modules- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
       - name: Install dependencies
         run: npm ci --ignore-scripts
@@ -46,7 +48,7 @@ jobs:
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
-          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          NOTION_API_SECRET: ${{ env.NOTION_API_SECRET }}
           GITHUB_PAGES: true
           SITE: ${{ steps.pages.outputs.origin }}
           BASE: ${{ steps.pages.outputs.base_path }}
@@ -64,26 +66,13 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Clear Previous `tmp` and `public` Cache (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
           gh cache list --json key --jq '.[].key' | grep -E '(tmp|public)-(web|blog)trotion' | xargs -I {} gh cache delete {}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.GITHUB_TOKEN }}
 
-      - name: Save New `tmp` Cache
-        id: cache-tmp-save
-        uses: actions/cache/save@v4
-        with:
-          path: ./tmp
-          key: tmp-webtrotion-${{ github.repository_id }}
-
-      - name: Save New `public` Cache
-        id: cache-public-save
-        uses: actions/cache/save@v4
-        with:
-          path: ./public
-          key: public-webtrotion-${{ github.repository_id }}
-
-            # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
+      # Idea from https://www.voorhoede.nl/en/blog/super-fast-npm-install-on-github-actions/
 
       - name: Save node cache manually
         id: npm-cache-save
@@ -91,6 +80,20 @@ jobs:
         with:
           path: ./node_modules
           key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
+
+      - name: Save New `tmp` Cache
+        id: cache-tmp-save
+        uses: actions/cache/save@v4
+        with:
+          path: ./tmp
+          key: tmp-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save New `public` Cache
+        id: cache-public-save
+        uses: actions/cache/save@v4
+        with:
+          path: ./public
+          key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

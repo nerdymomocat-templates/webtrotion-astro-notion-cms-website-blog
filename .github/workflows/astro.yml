@@ -19,6 +19,7 @@ concurrency:
 env:
   BUILD_PATH: "."
   NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+  DELETE_CACHES_GH_TOKEN: ${{ secrets.DELETE_CACHES_GH_TOKEN }}
 
 jobs:
   build:
@@ -43,11 +44,11 @@ jobs:
           key: modules-${{ hashFiles(format('{0}/package-lock.json', env.BUILD_PATH)) }}
 
       - name: Clear Previous Node Modules Cache (if needed)
-        if: steps.npm-cache-restore.outputs.cache-hit != 'true'
+        if: steps.npm-cache-restore.outputs.cache-hit != 'true' && env.DELETE_CACHES_GH_TOKEN != ''
         run: |
           gh cache list --key modules- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
       - name: Install dependencies
         if: steps.npm-cache-restore.outputs.cache-hit != 'true'
@@ -64,7 +65,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ./tmp
-          key: tmp-webtrotion-${{ github.repository_id }}
+          key: tmp-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: tmp-webtrotion-${{ github.repository_id }}-
 
       - name: Restore Cached `public`
         if: steps.npm-cache-restore.outputs.cache-hit == 'true'
@@ -72,11 +74,12 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ./public
-          key: public-webtrotion-${{ github.repository_id }}
+          key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: public-webtrotion-${{ github.repository_id }}-
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
-          NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+          NOTION_API_SECRET: ${{ env.NOTION_API_SECRET }}
           GITHUB_PAGES: true
           SITE: ${{ steps.pages.outputs.origin }}
           BASE: ${{ steps.pages.outputs.base_path }}
@@ -94,10 +97,11 @@ jobs:
         working-directory: ${{ env.BUILD_PATH }}
 
       - name: Clear Previous `tmp` and `public` Cache (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
           gh cache list --json key --jq '.[].key' | grep -E '(tmp|public)-(web|blog)trotion' | xargs -I {} gh cache delete {}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
       - name: Save node cache manually
         if: steps.npm-cache-restore.outputs.cache-hit != 'true'
@@ -112,14 +116,14 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: ./tmp
-          key: tmp-webtrotion-${{ github.repository_id }}
+          key: tmp-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save New `public` Cache
         id: cache-public-save
         uses: actions/cache/save@v4
         with:
           path: ./public
-          key: public-webtrotion-${{ github.repository_id }}
+          key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
