@@ -45,11 +45,7 @@ jobs:
       - name: Clear Previous Node Modules Cache (if needed)
         if: steps.npm-cache-restore.outputs.cache-hit != 'true'
         run: |
-          gh extension install actions/gh-actions-cache
-          cacheKeys=$(gh actions-cache list -R ${{ github.repository }} | grep modules | awk '{print $1}')
-          for key in $cacheKeys; do
-            gh actions-cache delete $key -R ${{ github.repository }} --confirm
-          done
+          gh cache list --key modules- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -99,12 +95,7 @@ jobs:
 
       - name: Clear Previous `tmp` and `public` Cache (if needed)
         run: |
-          gh extension install actions/gh-actions-cache
-          gh actions-cache list -R ${{ github.repository }}
-          gh actions-cache list -R ${{ github.repository }} | grep -E '(web|blog)trotion'
-          for key in $(gh actions-cache list -R ${{ github.repository }} | grep -E '(web|blog)trotion' | awk '{print $1}'); do
-            gh actions-cache delete $key -R ${{ github.repository }} --confirm
-          done
+          gh cache list --json key --jq '.[].key' | grep -E '(tmp|public)-(web|blog)trotion' | xargs -I {} gh cache delete {}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
