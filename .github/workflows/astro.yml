@@ -99,7 +99,7 @@ jobs:
       - name: Clear Previous `tmp` and `public` Cache (if needed)
         if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
-          gh cache list --json key --jq '.[].key' | grep -E '(tmp|public)-(web|blog)trotion' | xargs -I {} gh cache delete {}
+          gh cache list --json key --jq '.[].key' | grep -E '.*(tmp|public).*(web|blog)trotion' | xargs -I {} gh cache delete {}
         env:
           GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
