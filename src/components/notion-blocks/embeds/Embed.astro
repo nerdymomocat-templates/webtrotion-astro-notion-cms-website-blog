@@ -10,6 +10,7 @@ import {
 	isGoogleMapsURL,
 	isEmbeddableURL,
 	isBlueskyAppURL,
+	isNotionEmbedURL,
 } from "../../../lib/blog-helpers.ts";
 import Caption from "../Caption.astro";
 
@@ -23,6 +24,7 @@ import EmbedGeneric from "./EmbedGeneric.astro";
 import SpotifyEmbed from "./SpotifyEmbed.astro";
 import GoogleMapsEmbed from "./GoogleMapsEmbed.astro";
 import BlueskyEmbed from "./BlueskyEmbed.astro";
+import NotionEmbed from "./NotionEmbed.astro";
 
 export interface Props {
 	block: interfaces.Block;
@@ -58,6 +60,8 @@ const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainTe
 				<SpotifyEmbed url={url} caption={plainTextCaption} />
 			) : isGoogleMapsURL(url) ? (
 				<GoogleMapsEmbed url={url} caption={plainTextCaption} />
+			) : isNotionEmbedURL(url) ? (
+				<NotionEmbed url={url} caption={plainTextCaption} />
 			) : (await isEmbeddableURL(url)) ? (
 				<EmbedGeneric url={url} caption={plainTextCaption} />
 			) : (
