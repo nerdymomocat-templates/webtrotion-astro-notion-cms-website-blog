@@ -554,41 +554,20 @@ export const isAmazonURL = (url: URL): boolean => {
 };
 
 export const isNotionEmbedURL = (url: URL): boolean => {
-	// Extract hostname and check the pattern
-	const hostname = url.hostname; // e.g., "subdomain.notion.site"
-	const hostnameParts = hostname.split(".");
+    // Ensure the pathname starts with "/ebd/"
+    const pathname = url.pathname;
+    if (!pathname.startsWith("/ebd/")) {
+        return false;
+    }
 
-	// Expecting hostname like "{subdomain}.notion.site"
-	if (hostnameParts.length !== 3) {
-		return false;
-	}
+    // Regular expression to match the expected pattern after "/ebd/"
+    const notionEmbedPattern = /^\/ebd\/.*[a-zA-Z0-9]{32}(\/|\?|$)/;
+    if (!notionEmbedPattern.test(pathname)) {
+        return false;
+    }
 
-	const [subdomain, domain, tld] = hostnameParts;
-
-	// Check that the domain is 'notion.site'
-	if (domain !== "notion" || tld !== "site") {
-		return false;
-	}
-
-	// Ensure subdomain is one word without dots
-	if (!subdomain || subdomain.includes(".")) {
-		return false;
-	}
-
-	// Check that the path starts with '/ebd/'
-	const pathname = url.pathname;
-	if (!pathname.startsWith("/ebd/")) {
-		return false;
-	}
-
-	// Check if 'pvs=73' is present in query parameters
-	const searchParams = new URLSearchParams(url.search);
-	if (searchParams.get("pvs") !== "73") {
-		return false;
-	}
-
-	// All checks passed
-	return true;
+    // All checks passed
+    return true;
 };
 
 export const isYouTubeURL = (url: URL): boolean => {
