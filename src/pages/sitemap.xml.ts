@@ -19,23 +19,23 @@ export const GET = async () => {
 	const collections = await getCollections();
 
 	// Generate sitemap entries for posts and pages
-  const generateEntries = (entries, isPage) =>
-    entries
-        .map((entry) => {
-            const url = new URL(getPostLink(entry.Slug, isPage), import.meta.env.SITE).toString();
-            return `<url><loc>${url}</loc></url>`;
-        })
-        .join("");
+	const generateEntries = (entries, isPage) =>
+		entries
+			.map((entry) => {
+				const url = new URL(getPostLink(entry.Slug, isPage), import.meta.env.SITE).toString();
+				return `<url><loc>${url}</loc></url>`;
+			})
+			.join("");
 
-  const generateCollectionEntries = (collectionNames) =>
-    collectionNames
-        .map((collectionName) => {
-            const slugifiedName = slugify(collectionName);
-            const path = getPostLink(`collections/${slugifiedName}`, true);
-            const url = new URL(path, import.meta.env.SITE).toString();
-            return `<url><loc>${url}</loc></url>`;
-        })
-        .join("");
+	const generateCollectionEntries = (collectionNames) =>
+		collectionNames
+			.map((collectionName) => {
+				const slugifiedName = slugify(collectionName);
+				const path = getPostLink(`collections/${slugifiedName}`, true);
+				const url = new URL(path, import.meta.env.SITE).toString();
+				return `<url><loc>${url}</loc></url>`;
+			})
+			.join("");
 
 	const postEntries = generateEntries(filteredPosts, false);
 	const pageEntries = generateEntries(filteredPages, true);
