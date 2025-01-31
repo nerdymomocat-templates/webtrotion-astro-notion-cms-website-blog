@@ -23,7 +23,7 @@ const id = buildHeadingId(block.Heading1);
 				<div>
 					<Icon
 						name={"toggle-triangle"}
-						class="rotate-svg mt-1 h-6 w-6 flex-shrink-0 transition-all duration-300"
+						class="rotate-svg mt-1 h-6 w-6 shrink-0 transition-all duration-300"
 						aria-label="Toggle open/close"
 						stroke="currentColor"
 						stroke-linecap="round"
@@ -94,7 +94,7 @@ const id = buildHeadingId(block.Heading1);
 	h2.hasId.toggle-h2::before {
 		margin-left: -2.5rem;
 	}
-	details[open] > summary > div > .flex-shrink-0.rotate-svg {
+	details[open] > summary > div > .shrink-0.rotate-svg {
 		transform: rotate(90deg);
 	}
 	summary::-webkit-details-marker {

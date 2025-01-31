@@ -20,7 +20,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 				<li
 					class:list={[
 						{
-							[`${getNotionColorToTailwindColor(b.BulletedListItem.Color)} rounded px-1`]:
+							[`${getNotionColorToTailwindColor(b.BulletedListItem.Color)} rounded-sm px-1`]:
 								b.BulletedListItem.Color &&
 								!["default", "default_background", "default-background"].includes(
 									b.BulletedListItem.Color,

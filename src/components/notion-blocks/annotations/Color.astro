@@ -12,7 +12,7 @@ const { richText } = Astro.props;
 {
 	richText.Annotation.Color &&
 	!["default", "default_background", "default-background"].includes(richText.Annotation.Color) ? (
-		<span class={`${getNotionColorToTailwindColor(richText.Annotation.Color)} rounded px-1`}>
+		<span class={`${getNotionColorToTailwindColor(richText.Annotation.Color)} rounded-sm px-1`}>
 			<slot />
 		</span>
 	) : (

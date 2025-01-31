@@ -126,14 +126,14 @@ const toc = generateToc(headings);
 		const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
 
 		const highlightTocItem = (tocLink, tocVisual) => {
-			tocLinks.forEach((l) => l.classList.remove("!text-quote"));
+			tocLinks.forEach((l) => l.classList.remove("text-quote!"));
 			visuals.forEach((v) => {
 				v.classList.remove("bg-accent");
 				v.classList.add("bg-accent/25");
 			});
 
 			if (tocLink) {
-				tocLink.classList.add("!text-quote");
+				tocLink.classList.add("text-quote!");
 			}
 			if (tocVisual) {
 				tocVisual.classList.remove("bg-accent/25");

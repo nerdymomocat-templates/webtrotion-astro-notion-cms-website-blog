@@ -20,7 +20,7 @@ const Tag = hasChildren && renderChildren ? "div" : "p";
 	class:list={[
 		"my-1 min-h-7",
 		{
-			[`${getNotionColorToTailwindColor(block.Paragraph.Color)} rounded px-1`]:
+			[`${getNotionColorToTailwindColor(block.Paragraph.Color)} rounded-sm px-1`]:
 				block.Paragraph.Color &&
 				!["default", "default_background", "default-background"].includes(block.Paragraph.Color),
 		},

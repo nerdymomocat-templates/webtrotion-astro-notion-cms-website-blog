@@ -15,9 +15,9 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 
 <blockquote
 	class:list={[
-		"nquote my-4 border-s-4 border-gray-600 !px-2 dark:border-gray-300",
+		"nquote my-4 border-s-4 border-gray-600 px-2! dark:border-gray-300",
 		{
-			[`rounded ${getNotionColorToTailwindColor(block.Quote.Color)}`]:
+			[`rounded-sm ${getNotionColorToTailwindColor(block.Quote.Color)}`]:
 				block.Quote.Color &&
 				!["default", "default_background", "default-background"].includes(block.Quote.Color),
 		},

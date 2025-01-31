@@ -203,7 +203,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 					</button>
 				</div>
 				{language === "mermaid" ? (
-					<pre class="mermaid max-w-full rounded p-4 font-mono">{code}</pre>
+					<pre class="mermaid max-w-full rounded-sm p-4 font-mono">{code}</pre>
 				) : (
 					<Code
 						code={code}
