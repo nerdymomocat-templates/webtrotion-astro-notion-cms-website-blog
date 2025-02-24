@@ -60,11 +60,6 @@ export default defineConfig({
 		? modifyRedirectPaths(key_value_from_json["redirects"], process.env.BASE || BASE_PATH)
 		: {},
 	integrations: [
-		// mdx({}),
-		// tailwind({
-		// 	applyBaseStyles: false,
-		// }),
-		// astroImageTools,
 		buildTimestampRecorder(),
 		CustomIconDownloader(),
 		EntryCacheEr(),
