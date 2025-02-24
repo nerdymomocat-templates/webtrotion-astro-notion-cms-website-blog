@@ -80,7 +80,7 @@ const paginationProps = {
 	<h1 class="title mb-6">{collection}</h1>
   {description && <q class="block italic mb-6 -mt-3">{description}</q>}
 	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
-		<section aria-label="Blog post list" class="screen:col-span-3 print:col-span-full">
+		<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
 			<ul class="space-y-4 text-start">
 				{
 					resetFirstImage() && page.data.map((post) =>
@@ -89,7 +89,7 @@ const paginationProps = {
 								<li>
 									<PostPreviewFull post_full_preview={post} as="h2" withDesc />
 								</li>
-								<hr class="divider w-70 mx-auto my-4 h-0.5 rounded-sm border-0 bg-accent/20" />
+								<hr class="divider w-full mx-auto my-4 h-0.5 rounded-sm border-0 bg-accent/20" />
 							</>
 						) : (
 							<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">

@@ -152,7 +152,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 		<div class="renderedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
 			<iframe
 				srcdoc={code.replace(SHORTCODES["html-render"], "")}
-				class="screen:h-[340px] w-full max-w-full rounded-lg border-none"
+				class="h-[340px] w-full max-w-full rounded-lg border-none print:h-full"
 				loading="lazy"
 				title={plainTextCaption}
 			/>
@@ -168,7 +168,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			id={setId ? block.Id : undefined}
 		>
 			<div
-				class={`${language === "mermaid" ? "overflow-x-scroll" : "screen:max-h-[340px] overflow-scroll"} min-w-0`}
+				class={`${language === "mermaid" ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll print:h-full"} min-w-0`}
 			>
 				<div class="flex max-w-full">
 					<button
