@@ -278,21 +278,6 @@ ${createCssVariables("dark")}
   pre.has-highlighted .line.highlighted.warning::before {
     @apply content-['!'];
   }
-
-  *,
-  ::before,
-  ::after {
-    --tw-pan-x: ;
-    --tw-pan-y: ;
-    --tw-pinch-zoom: ;
-    touch-action: var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom);
-  }
-
-  *,
-  ::before,
-  ::after {
-    scroll-snap-type: none;
-  }
 }
 
 @layer components {

@@ -342,7 +342,6 @@ const popoverTriggers = document.querySelectorAll(selector);
           align-items: center;
           padding: 4px;
           margin-bottom: 10px;
-          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .datatable-top-left {
           display: flex;
@@ -357,21 +356,29 @@ const popoverTriggers = document.querySelectorAll(selector);
         }
         .datatable-sorter {
           background-color: transparent !important;
+          position: relative;
+          padding-right: 1rem; /* Reserve enough space for the sort icons */
         }
         .datatable-sorter::after {
           border-bottom-color:var(--color-accent) !important;
+          top: -2px !important;
         }
 
         .datatable-sorter::before {
           border-top-color:var(--color-accent) !important;
         }
-        .datatable-sorter::after, .datatable-sorter::before {
-          right: -1px;
+
+        .datatable-table>tbody>tr>td, .datatable-table>tbody>tr>th, .datatable-table>tfoot>tr>td, .datatable-table>tfoot>tr>th, .datatable-table>thead>tr>td, .datatable-table>thead>tr>th {
+          padding: calc(var(--spacing) * 2);
         }
 
         html.dark :not(.datatable-ascending):not(.datatable-descending) > .datatable-sorter::after,
         html.dark :not(.datatable-ascending):not(.datatable-descending) > .datatable-sorter::before {
           opacity: 0.3 !important;
+        }
+
+        .datatable-wrapper .datatable-container {
+          border: none !important;
         }
 
         @media (max-width: 640px) {
