@@ -159,7 +159,7 @@ ${createCssVariables("dark")}
   html {
     @apply scroll-smooth;
     font-size: 14px;
-    @media screen(sm) {
+    @variant sm {
       font-size: 16px;
     }
   }
