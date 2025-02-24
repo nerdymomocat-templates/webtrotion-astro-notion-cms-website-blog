@@ -355,6 +355,25 @@ const popoverTriggers = document.querySelectorAll(selector);
           transition: all 0.3s ease;
           white-space: nowrap;
         }
+        .datatable-sorter {
+          background-color: transparent !important;
+        }
+        .datatable-sorter::after {
+          border-bottom-color:var(--color-accent) !important;
+        }
+
+        .datatable-sorter::before {
+          border-top-color:var(--color-accent) !important;
+        }
+        .datatable-sorter::after, .datatable-sorter::before {
+          right: -1px;
+        }
+
+        html.dark :not(.datatable-ascending):not(.datatable-descending) > .datatable-sorter::after,
+        html.dark :not(.datatable-ascending):not(.datatable-descending) > .datatable-sorter::before {
+          opacity: 0.3 !important;
+        }
+
         @media (max-width: 640px) {
           .datatable-top {
             flex-wrap: nowrap;
