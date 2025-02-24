@@ -39,7 +39,7 @@ const articleDate = new Date(post.Date).toISOString();
 			<div id="blog-hero"><BlogHero post={post} /></div>
 			<div class="mt-8">
 				<slot />
-				<hr class="divider bg-accent/30 mx-auto my-4 h-0.5 w-full rounded-sm border-0" />
+				<hr class="divider bg-accent/30 mx-auto my-4 h-0.5 w-full rounded-sm border-none" />
 				{REFERENCES && <ReferencesSection post={post} />}
 			</div>
 		</article>

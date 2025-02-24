@@ -50,7 +50,7 @@ function getColumnType(cellContent: string) {
 		<thead>
 			{
 				block.Table?.HasColumnHeader && (
-					<tr class="border-b">
+					<tr class="border-b border-gray-200/90 dark:border-gray-700/90">
 						{block.Table.Rows[0]?.Cells.map((cell: interfaces.TableCell, i: number) => {
 							if (isDataTable) {
 								const cellContent = cell.RichTexts.map((richText) => richText.PlainText).join(" ");
