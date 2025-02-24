@@ -5,6 +5,25 @@ const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
 import path from "path";
 
+// Helper function that normalizes a color string to hex format
+function normalizeColor(value: string): string {
+  // If it's already a hex color (3 or 6 digits), return it directly.
+  if (/^#([0-9A-F]{3}){1,2}$/i.test(value)) {
+    return value;
+  }
+  // Otherwise assume it's a space-separated RGB string
+  const parts = value.trim().split(/\s+/).map(Number);
+  if (parts.length >= 3) {
+    const toHex = (num: number): string => {
+      const hex = num.toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    };
+    return `#${toHex(parts[0])}${toHex(parts[1])}${toHex(parts[2])}`;
+  }
+  // If the format is unexpected, return the original value as a fallback
+  return value;
+}
+
 export default (): AstroIntegration => ({
   name: "theme-constants-to-css",
   hooks: {
@@ -116,32 +135,34 @@ export default (): AstroIntegration => ({
         let cssContent = "";
         for (const key in theme_config.colors) {
           let color = theme_config.colors[key][theme];
+          let cssValue;
+          // If no color is defined, use defaults in hex format
           if (!color) {
-            if (key.includes("bg")) {
-              color = theme === "light" ? "255 255 255" : "0 0 0";
-            } else {
-              color = theme === "light" ? "0 0 0" : "255 255 255";
-            }
+            cssValue = key.includes("bg")
+              ? theme === "light" ? "#ffffff" : "#000000"
+              : theme === "light" ? "#000000" : "#ffffff";
+          } else {
+            // Normalize the provided color value to hex
+            cssValue = normalizeColor(color);
           }
-          cssContent += `    --theme-${key}: ${color};\n`;
+          cssContent += `    --theme-${key}: ${cssValue};\n`;
         }
         return cssContent;
       };
 
-      let cssContent = `
-@import "tailwindcss";
+      let cssContent = `@import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: ${fontSans};
   --font-serif: ${fontSerif};
   --font-mono: ${fontMono};
-  --color-bgColor: rgb(var(--theme-bg));
-  --color-textColor: rgb(var(--theme-text));
-  --color-link: rgb(var(--theme-link));
-  --color-accent: rgb(var(--theme-accent));
-  --color-accent-2: rgb(var(--theme-accent-2));
-  --color-quote: rgb(var(--theme-quote));
+  --color-bgColor: var(--theme-bg);
+  --color-textColor: var(--theme-text);
+  --color-link: var(--theme-link);
+  --color-accent: var(--theme-accent);
+  --color-accent-2: var(--theme-accent-2);
+  --color-quote: var(--theme-quote);
 ${colorDefinitions}
 }
 
@@ -286,8 +307,7 @@ ${createCssVariables("dark")}
 
 @utility transition-height {
   transition-property: height;
-}
-`;
+}`;
 
       const cssOutputPath = "src/styles/global.css";
       const dir = path.dirname(cssOutputPath);
