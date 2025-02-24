@@ -20,7 +20,7 @@ const { post, as: Tag = "div", withDesc = false } = Astro.props;
 const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
 ---
 
-<FormattedDate date={new Date(post.Date)} class="min-w-[120px] text-xs text-accent/90" />
+<FormattedDate date={new Date(post.Date)} class="text-accent/90 min-w-[120px] text-xs" />
 <Tag>
 	{
 		post.Pinned && (

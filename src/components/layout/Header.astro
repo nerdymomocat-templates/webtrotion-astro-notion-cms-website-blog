@@ -24,7 +24,7 @@ const rss_path = getNavLink("/rss.xml");
 
 <header
 	id="main-header"
-	class="print group relative mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%] screen:mb-16"
+	class="print group screen:mb-16 relative mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%]"
 >
 	<div class="flex sm:flex-col">
 		<a
@@ -35,7 +35,7 @@ const rss_path = getNavLink("/rss.xml");
 			{
 				siteInfo.logo && siteInfo.logo.Type === "emoji" ? (
 					<>
-						<span class="sm:h-15 sm:w-15 me-3 h-10 w-10 sm:absolute sm:start-[-4.5rem] sm:me-0">
+						<span class="me-3 h-10 w-10 sm:absolute sm:start-[-4.5rem] sm:me-0 sm:h-15 sm:w-15">
 							{siteInfo.logo.Emoji}
 						</span>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
@@ -43,7 +43,7 @@ const rss_path = getNavLink("/rss.xml");
 				) : siteInfo.logo && siteInfo.logo.Type === "external" ? (
 					<>
 						<img
-							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
+							class="me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0 sm:h-15 sm:w-15"
 							loading="eager"
 							src={siteInfo.logo.Url}
 							alt="Site header image"
@@ -55,7 +55,7 @@ const rss_path = getNavLink("/rss.xml");
 						<img
 							loading="eager"
 							src={customIconURL}
-							class="sm:h-15 sm:w-15 me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0"
+							class="me-3 h-10 w-10 object-contain sm:absolute sm:start-[-4.5rem] sm:me-0 sm:h-15 sm:w-15"
 							alt="Site header image"
 						/>
 						<span class="text-xl font-bold sm:text-2xl">{siteInfo.title}</span>
@@ -67,14 +67,14 @@ const rss_path = getNavLink("/rss.xml");
 		</a>
 		<nav
 			id="navigation-menu"
-			class="md absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md bg-bgColor/90 py-2 text-base text-accent shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden"
+			class="md bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end rounded-md py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden"
 			aria-label="Main menu"
 		>
 			{
 				menuLinks.map((link) => (
 					<a
 						href={link.path}
-						class="w-full px-4 py-4 text-right underline-offset-4 sm:w-auto sm:py-0 sm:text-left sm:hover:underline sm:hover:decoration-accent-2/40 sm:hover:decoration-wavy"
+						class="sm:hover:decoration-accent-2/40 w-full px-4 py-4 text-right underline-offset-4 sm:w-auto sm:py-0 sm:text-left sm:hover:underline sm:hover:decoration-wavy"
 						aria-current={url.pathname === link.path ? "page" : false}
 						data-astro-prefetch
 					>
@@ -85,9 +85,9 @@ const rss_path = getNavLink("/rss.xml");
 		</nav>
 	</div>
 	<div class="flex flex-row print:hidden">
-		<div class="h-10 w-10 items-center justify-center rounded-md p-1.5 hover:text-accent">
+		<div class="hover:text-accent h-10 w-10 items-center justify-center rounded-md p-1.5">
 			<a href={rss_path}
-				><Icon name={"rss"} class="h-7 w-7 hover:text-accent" aria-label="Open RSS Link" /></a
+				><Icon name={"rss"} class="hover:text-accent h-7 w-7" aria-label="Open RSS Link" /></a
 			>
 		</div>
 		<Search />
@@ -110,7 +110,7 @@ const rss_path = getNavLink("/rss.xml");
 
 				<Icon
 					name={"close"}
-					class="absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 text-accent opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
+					class="text-accent absolute start-1/2 top-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all group-aria-expanded:scale-100 group-aria-expanded:opacity-100"
 					aria-hidden="true"
 					focusable="false"
 				/>

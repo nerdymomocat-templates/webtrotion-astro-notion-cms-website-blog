@@ -15,7 +15,7 @@ const meta = {
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6 text-accent-2">Tags</h1>
+	<h1 class="title text-accent-2 mb-6">Tags</h1>
 	<ul class="space-y-4">
 		{
 			allTags.map((tag) => (
@@ -41,7 +41,7 @@ const meta = {
 						<span class="inline-block">
 							:{" "}
 							<a
-								class="site-page-link inline-block text-link"
+								class="site-page-link text-link inline-block"
 								href={getNavLink("/tags/" + slugify(tag.name) + "/")}
 								title={`View posts with the tag: ${tag.name}`}
 								aria-label={`View posts with the tag: ${tag.name}`}

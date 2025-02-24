@@ -120,7 +120,7 @@ if (groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap) {
 							<div class="inline-block">
 								<a
 									href={hrefLink}
-									class="text-link no-underline hover:underline hover:decoration-accent-2 hover:underline-offset-4"
+									class="text-link hover:decoration-accent-2 no-underline hover:underline hover:underline-offset-4"
 								>
 									{hrefMetaData[hrefLink].title.length > 35
 										? `${hrefMetaData[hrefLink].title.slice(0, 35)}…`
@@ -141,7 +141,7 @@ if (groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap) {
 								) : (
 									<>
 										{blocks.map((block, index) => (
-											<a href={blockIdLinks[block.Id]} class="font-mono text-xs text-link">
+											<a href={blockIdLinks[block.Id]} class="text-link font-mono text-xs">
 												{`[${index + 1}]`}
 											</a>
 										))}

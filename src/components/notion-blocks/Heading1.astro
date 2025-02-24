@@ -18,7 +18,7 @@ const id = buildHeadingId(block.Heading1);
 
 {
 	block.Heading1.IsToggleable ? (
-		<details class="toggle mb-0 mt-8">
+		<details class="toggle mt-8 mb-0">
 			<summary class="flex cursor-pointer list-none gap-2">
 				<div>
 					<Icon
@@ -33,7 +33,7 @@ const id = buildHeadingId(block.Heading1);
 				</div>
 				<span class="inline">
 					<h2
-						class={`toggle-h2 mb-1 mt-8 inline cursor-pointer text-2xl font-semibold ${setId ? "hasId" : "noId"}`}
+						class={`toggle-h2 mt-8 mb-1 inline cursor-pointer text-2xl font-semibold ${setId ? "hasId" : "noId"}`}
 						id={setId ? id : undefined}
 						onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
@@ -59,7 +59,7 @@ const id = buildHeadingId(block.Heading1);
 		</details>
 	) : (
 		<h2
-			class={`mb-1 mt-8 cursor-pointer text-2xl font-semibold ${setId ? "hasId" : "noId"}`}
+			class={`mt-8 mb-1 cursor-pointer text-2xl font-semibold ${setId ? "hasId" : "noId"}`}
 			id={setId ? id : undefined}
 			onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
