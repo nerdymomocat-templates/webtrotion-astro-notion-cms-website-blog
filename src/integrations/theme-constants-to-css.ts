@@ -159,6 +159,7 @@ ${createCssVariables("dark")}
   html {
     @apply scroll-smooth;
     font-size: 14px;
+
     @variant sm {
       font-size: 16px;
     }
@@ -171,6 +172,7 @@ ${createCssVariables("dark")}
   * {
     @apply scroll-mt-10
   }
+
   pre {
     @apply rounded-md p-4 font-mono;
   }
@@ -255,12 +257,28 @@ ${createCssVariables("dark")}
   pre.has-highlighted .line.highlighted.warning::before {
     @apply content-['!'];
   }
+
+  *,
+  ::before,
+  ::after {
+    --tw-pan-x: ;
+    --tw-pan-y: ;
+    --tw-pinch-zoom: ;
+    touch-action: var(--tw-pan-x) var(--tw-pan-y) var(--tw-pinch-zoom);
+  }
+
+  *,
+  ::before,
+  ::after {
+    scroll-snap-type: none;
+  }
 }
 
 @layer components {
   .site-page-link {
     @apply underline decoration-wavy decoration-from-font decoration-accent-2/20 hover:decoration-accent-2/40 underline-offset-2 hover:underline;
   }
+
   .title {
     @apply text-3xl font-bold text-accent-2;
   }
