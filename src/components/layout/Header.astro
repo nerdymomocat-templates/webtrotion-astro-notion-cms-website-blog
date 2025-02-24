@@ -85,7 +85,7 @@ const rss_path = getNavLink("/rss.xml");
 		</nav>
 	</div>
 	<div class="flex flex-row print:hidden">
-		<div class="hover:text-accent h-10 w-10 items-center justify-center rounded-md p-1.5">
+		<div class="hover:text-accent h-10 w-10 items-center justify-center rounded-md p-1.5 hover:ring-2 hover:ring-accent-400 cursor-pointer">
 			<a href={rss_path}
 				><Icon name={"rss"} class="hover:text-accent h-7 w-7" aria-label="Open RSS Link" /></a
 			>
@@ -95,7 +95,7 @@ const rss_path = getNavLink("/rss.xml");
 		<mobile-button>
 			<button
 				id="toggle-navigation-menu"
-				class="group relative ms-4 h-7 w-7 py-4 sm:invisible sm:hidden"
+				class="group relative ms-4 h-7 w-7 py-4 cursor-pointer sm:invisible sm:hidden"
 				type="button"
 				aria-label="Open main menu"
 				aria-expanded="false"
