@@ -282,14 +282,14 @@ const popoverTriggers = document.querySelectorAll(selector);
     if (dataTables.length > 0) {
       // Load simple-datatables script
       const script = document.createElement('script');
-      script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/umd/simple-datatables.min.js';
+      script.src = 'https://cdn.jsdelivr.net/npm/simple-datatables@latest';
       script.onload = initDataTables;
       document.head.appendChild(script);
 
       // Load simple-datatables CSS
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = 'https://cdn.jsdelivr.net/npm/simple-datatables@9.0.4/dist/style.min.css';
+      link.href = 'https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.min.css';
       document.head.appendChild(link);
 
       // Add custom styles
