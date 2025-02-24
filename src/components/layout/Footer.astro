@@ -6,19 +6,19 @@ const menuLinks = await getMenu();
 ---
 
 <footer
-	class="mt-auto flex w-full flex-col items-center justify-center gap-y-2 pb-4 pt-20 text-center align-top text-xs text-accent-2 sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%]"
+	class="text-accent-2 mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%]"
 	id="main-footer"
 >
 	<nav
 		aria-label="More on this site"
-		class="flex flex-wrap gap-x-2 rounded border-b-2 border-t-2 sm:gap-x-0 sm:divide-x sm:divide-gray-500 sm:border-none print:hidden"
+		class="flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-0 sm:divide-x sm:divide-gray-300 sm:border-none dark:border-gray-700 dark:sm:divide-gray-700 print:hidden"
 	>
 		{
 			menuLinks.map((link, index) => (
 				<>
 					<a
 						href={link.path}
-						class="px-4 py-2 underline-offset-4 sm:px-2 sm:py-0 sm:hover:text-accent-2 sm:hover:underline"
+						class="sm:hover:text-accent-2 px-4 py-2 underline-offset-4 sm:px-2 sm:py-0 sm:hover:underline"
 					>
 						{link.title}
 					</a>

@@ -13,15 +13,15 @@ const toc = generateToc(headings);
 ---
 
 <aside
-	class="toc-container no-rss group fixed bottom-40 right-4 top-auto z-10 block sm:bottom-auto sm:top-40 print:hidden"
+	class="toc-container no-rss group fixed top-auto right-4 bottom-40 z-10 block sm:top-40 sm:bottom-auto print:hidden"
 >
 	<div
-		class="visual-container absolute right-0 top-6 hidden w-8 flex-col items-end space-y-2 overflow-hidden bg-bgColor p-2 transition-opacity duration-500 sm:flex"
+		class="visual-container bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-500 sm:flex"
 	>
 		{toc.map((heading) => <TOCHeading heading={heading} visualOnly={true} />)}
 	</div>
 	<div
-		class="toc-content invisible absolute bottom-0 right-1 max-h-[55vh] w-60 translate-x-4 overflow-y-auto rounded-xl border border-accent/10 bg-bgColor p-2 opacity-0 shadow-xl shadow-accent/5 transition-all duration-200 sm:bottom-auto sm:top-0 sm:max-h-[68vh] sm:group-hover:visible sm:group-hover:translate-x-0 sm:group-hover:opacity-100"
+		class="toc-content border-accent/10 bg-bgColor shadow-accent/5 invisible absolute right-1 bottom-0 max-h-[55vh] w-60 translate-x-4 overflow-y-auto rounded-xl border p-2 opacity-0 shadow-xl transition-all duration-200 sm:top-0 sm:bottom-auto sm:max-h-[68vh] sm:group-hover:visible sm:group-hover:translate-x-0 sm:group-hover:opacity-100"
 	>
 		<ul class="mt-2 text-sm">
 			{toc.map((heading) => <TOCHeading heading={heading} />)}
@@ -31,7 +31,7 @@ const toc = generateToc(headings);
 
 <button
 	id="show-bottom-toc"
-	class="fixed bottom-8 end-4 z-30 flex h-10 w-10 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 dark:bg-zinc-700 sm:hidden print:hidden"
+	class="fixed end-4 bottom-8 z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl transition-all duration-300 hover:border-zinc-400 sm:hidden dark:bg-zinc-700 print:hidden"
 	aria-label="Toggle table of contents"
 >
 	<Icon
@@ -126,14 +126,14 @@ const toc = generateToc(headings);
 		const tocLinks = document.querySelectorAll('[id^="-tocid--"]');
 
 		const highlightTocItem = (tocLink, tocVisual) => {
-			tocLinks.forEach((l) => l.classList.remove("!text-quote"));
+			tocLinks.forEach((l) => l.classList.remove("text-quote!"));
 			visuals.forEach((v) => {
 				v.classList.remove("bg-accent");
 				v.classList.add("bg-accent/25");
 			});
 
 			if (tocLink) {
-				tocLink.classList.add("!text-quote");
+				tocLink.classList.add("text-quote!");
 			}
 			if (tocVisual) {
 				tocVisual.classList.remove("bg-accent/25");

@@ -18,12 +18,12 @@ const id = buildHeadingId(block.Heading2);
 
 {
 	block.Heading2.IsToggleable ? (
-		<details class="toggle mb-1 mt-6">
+		<details class="toggle mt-6 mb-1">
 			<summary class="flex max-w-full cursor-pointer list-none gap-2">
 				<div>
 					<Icon
 						name={"toggle-triangle"}
-						class="rotate-svg mt-[3px] h-6 w-6 flex-shrink-0 transition-all duration-300"
+						class="rotate-svg mt-[3px] h-6 w-6 shrink-0 transition-all duration-300"
 						aria-label="Toggle open/close"
 						stroke="currentColor"
 						stroke-linecap="round"
@@ -33,7 +33,7 @@ const id = buildHeadingId(block.Heading2);
 				</div>
 				<span class="inline">
 					<h3
-						class={`toggle-h3 mb-1 mt-6 inline cursor-pointer text-xl font-semibold ${setId ? "hasId" : "noId"}`}
+						class={`toggle-h3 mt-6 mb-1 inline cursor-pointer text-xl font-semibold ${setId ? "hasId" : "noId"}`}
 						id={setId ? id : undefined}
 						onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
@@ -60,7 +60,7 @@ const id = buildHeadingId(block.Heading2);
 		</details>
 	) : (
 		<h3
-			class={`mb-1 mt-6 cursor-pointer text-xl font-semibold ${setId ? "hasId" : "noId"}`}
+			class={`mt-6 mb-1 cursor-pointer text-xl font-semibold ${setId ? "hasId" : "noId"}`}
 			id={setId ? id : undefined}
 			onclick="
         var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`;
@@ -95,7 +95,7 @@ const id = buildHeadingId(block.Heading2);
 	h3.hasId.toggle-h3::before {
 		margin-left: -2.5rem;
 	}
-	details[open] > summary > div > .flex-shrink-0.rotate-svg {
+	details[open] > summary > div > .shrink-0.rotate-svg {
 		transform: rotate(90deg);
 	}
 	summary::-webkit-details-marker {

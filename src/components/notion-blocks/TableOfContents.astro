@@ -29,7 +29,7 @@ let current_headings = getCurrentHeadings();
 						"table-of-contents block leading-7 hover:font-bold",
 						indentClass,
 						{
-							[`${getNotionColorToTailwindColor(block.TableOfContents.Color)} rounded px-1`]:
+							[`${getNotionColorToTailwindColor(block.TableOfContents.Color)} rounded-sm px-1`]:
 								block.TableOfContents.Color &&
 								!["default", "default_background", "default-background"].includes(
 									block.TableOfContents.Color,

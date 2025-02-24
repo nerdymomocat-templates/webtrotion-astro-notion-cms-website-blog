@@ -14,7 +14,7 @@ const { prevUrl, nextUrl } = Astro.props;
 		<nav class="mt-8 flex items-center gap-x-4">
 			{prevUrl && (
 				<a
-					class="me-auto py-2 text-link no-underline hover:underline hover:underline-offset-4"
+					class="text-link me-auto py-2 no-underline hover:underline hover:underline-offset-4"
 					href={prevUrl.url}
 					data-astro-prefetch
 				>
@@ -24,7 +24,7 @@ const { prevUrl, nextUrl } = Astro.props;
 			)}
 			{nextUrl && (
 				<a
-					class="ms-auto py-2 text-link no-underline hover:underline hover:underline-offset-4"
+					class="text-link ms-auto py-2 no-underline hover:underline hover:underline-offset-4"
 					href={nextUrl.url}
 					data-astro-prefetch
 				>

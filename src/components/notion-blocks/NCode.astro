@@ -152,7 +152,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 		<div class="renderedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
 			<iframe
 				srcdoc={code.replace(SHORTCODES["html-render"], "")}
-				class="w-full max-w-full rounded-lg border-none screen:h-[340px]"
+				class="h-[340px] w-full max-w-full rounded-lg border-none print:max-h-full"
 				loading="lazy"
 				title={plainTextCaption}
 			/>
@@ -168,11 +168,11 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			id={setId ? block.Id : undefined}
 		>
 			<div
-				class={`${language === "mermaid" ? "overflow-x-scroll" : "overflow-scroll screen:max-h-[340px]"} min-w-0`}
+				class={`${language === "mermaid" ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll print:max-h-full"} min-w-0`}
 			>
 				<div class="flex max-w-full">
 					<button
-						class="copy absolute right-0 top-0 z-10 cursor-pointer border-0 p-2 text-gray-500 sm:opacity-100 md:opacity-0 md:transition-opacity md:duration-200 md:group-hover:opacity-100 print:hidden"
+						class="copy absolute top-0 right-0 z-10 cursor-pointer border-none p-2 text-gray-500 sm:opacity-100 md:opacity-0 md:transition-opacity md:duration-200 md:group-hover:opacity-100 print:hidden"
 						data-code={modifiedCode}
 						aria-label="copy code"
 						onclick="
@@ -203,7 +203,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 					</button>
 				</div>
 				{language === "mermaid" ? (
-					<pre class="mermaid max-w-full rounded p-4 font-mono">{code}</pre>
+					<pre class="mermaid max-w-full rounded-sm p-4 font-mono">{code}</pre>
 				) : (
 					<Code
 						code={code}

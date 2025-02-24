@@ -20,7 +20,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 			class:list={[
 				"toggle my-1",
 				{
-					[`${getNotionColorToTailwindColor(block.Toggle.Color)} rounded px-1`]:
+					[`${getNotionColorToTailwindColor(block.Toggle.Color)} rounded-sm px-1`]:
 						block.Toggle.Color &&
 						!["default", "default_background", "default-background"].includes(block.Toggle.Color),
 				},
@@ -31,7 +31,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 				<div>
 					<Icon
 						name={"toggle-triangle"}
-						class="rotate-svg h-6 w-6 flex-shrink-0 transition-all duration-300"
+						class="rotate-svg h-6 w-6 shrink-0 transition-all duration-300"
 						aria-label="Toggle open/close"
 						stroke="currentColor"
 						stroke-linecap="round"
@@ -60,7 +60,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 			<div>
 				<Icon
 					name={"toggle-triangle"}
-					class="h-6 w-6 flex-shrink-0"
+					class="h-6 w-6 shrink-0"
 					aria-label="Toggle open/close"
 					stroke="currentColor"
 					stroke-linecap="round"
@@ -83,7 +83,7 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 		display: inline;
 	}
 	/* This targets only the direct child SVG of the opened details */
-	details[open] > summary > div > .flex-shrink-0.rotate-svg {
+	details[open] > summary > div > .shrink-0.rotate-svg {
 		transform: rotateZ(90deg);
 	}
 	summary::-webkit-details-marker {

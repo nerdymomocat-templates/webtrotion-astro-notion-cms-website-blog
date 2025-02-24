@@ -36,18 +36,18 @@ let id = "id" + Math.random().toString(16).slice(2) + "---" + postId;
 		data-popover
 		id={`popover-description-${id}`}
 		role="tooltip"
-		class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg border border-gray-200 bg-white text-sm text-gray-500 opacity-0 shadow-sm transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+		class="popoverEl invisible absolute z-40 hidden inline-block w-72 rounded-lg border border-gray-200 bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
 	>
 		<a href={linkedTo}>
 			<div class="space-y-2 p-3">
-				<h3 class="font-semibold text-accent underline decoration-accent-2/20 decoration-wavy">
+				<h3 class="text-accent decoration-accent-2/20 font-semibold underline decoration-wavy">
 					{popoverTitle}
 				</h3>
 				{excerpt && <p>{excerpt}</p>}
 				<a
 					href={linkedTo}
 					data-popover-link
-					class="flex max-w-full items-center font-medium text-link/90 hover:underline"
+					class="text-link/90 flex max-w-full items-center font-medium hover:underline"
 				>
 					{linkText}
 					<svg

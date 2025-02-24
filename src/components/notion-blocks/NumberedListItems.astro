@@ -27,7 +27,7 @@ const listTypes = ["lower-roman", "decimal", "lower-alpha"];
 					<li
 						class:list={[
 							{
-								[`${getNotionColorToTailwindColor(b.NumberedListItem.Color)} rounded px-1`]:
+								[`${getNotionColorToTailwindColor(b.NumberedListItem.Color)} rounded-sm px-1`]:
 									b.NumberedListItem.Color &&
 									!["default", "default_background", "default-background"].includes(
 										b.NumberedListItem.Color,

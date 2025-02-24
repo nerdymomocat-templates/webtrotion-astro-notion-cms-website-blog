@@ -47,10 +47,10 @@ try {
 					href={url.toString()}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="flex w-full min-w-0 max-w-full grow select-none items-stretch overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800"
+					class="flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden rounded-sm border border-gray-200 no-underline select-none dark:border-gray-800"
 				>
-					<div class="flex-bookmark-text overflow-hidden p-3 text-left text-textColor/90">
-						<div class="mb-0.5 h-6 overflow-hidden truncate whitespace-nowrap leading-5">
+					<div class="flex-bookmark-text text-textColor/90 overflow-hidden p-3 text-left">
+						<div class="mb-0.5 h-6 truncate overflow-hidden leading-5 whitespace-nowrap">
 							{metadata && metadata.title}
 						</div>
 						<div class="h-8 overflow-hidden text-xs leading-4 opacity-80">
@@ -66,7 +66,7 @@ try {
 									decoding="async"
 								/>
 							</div>
-							<div class="overflow-hidden truncate whitespace-nowrap text-xs leading-4">
+							<div class="truncate overflow-hidden text-xs leading-4 whitespace-nowrap">
 								{url.toString()}
 							</div>
 						</div>
@@ -75,7 +75,7 @@ try {
 					{metadata && metadata.image && (
 						<div class="flex-bookmark-image relative hidden sm:block">
 							<img
-								class="!absolute h-full w-full object-contain object-right"
+								class="absolute! h-full w-full object-contain object-right"
 								loading="lazy"
 								src={metadata.image}
 								alt="title"
@@ -91,9 +91,9 @@ try {
 					href={url.toString()}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="flex w-full min-w-0 max-w-full grow select-none items-stretch overflow-hidden rounded border border-gray-200 no-underline dark:border-gray-800"
+					class="flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden rounded-sm border border-gray-200 no-underline select-none dark:border-gray-800"
 				>
-					<div class="flex-bookmark-text overflow-hidden p-3 text-left text-textColor/90">
+					<div class="flex-bookmark-text text-textColor/90 overflow-hidden p-3 text-left">
 						<div class="flex max-w-full items-baseline">
 							<div class="mr-1.5 h-4 w-4 min-w-4">
 								<img
@@ -104,7 +104,7 @@ try {
 									decoding="async"
 								/>
 							</div>
-							<div class="overflow-hidden truncate whitespace-nowrap text-xs leading-4">
+							<div class="truncate overflow-hidden text-xs leading-4 whitespace-nowrap">
 								{url.toString()}
 							</div>
 						</div>

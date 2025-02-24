@@ -74,7 +74,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 						<li class="flex">
 							{friendlyName === "Email" ? (
 								<a
-									class="email-link inline-block p-1 sm:hover:text-link"
+									class="email-link sm:hover:text-link inline-block p-1"
 									href="#"
 									data-email={link}
 									rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
@@ -84,7 +84,7 @@ const socialLinks = mapSocialLinks(SOCIALS);
 								</a>
 							) : (
 								<a
-									class="inline-block p-1 sm:hover:text-link"
+									class="sm:hover:text-link inline-block p-1"
 									href={link}
 									target="_blank"
 									rel={`noopener noreferrer ${isWebmention ? "me authn" : ""}`}
@@ -99,11 +99,11 @@ const socialLinks = mapSocialLinks(SOCIALS);
 			</div>
 			<div
 				id="toast"
-				class="fixed bottom-8 left-1/2 -translate-x-1/2 transform rounded bg-gray-800 px-4 py-2 text-center text-white opacity-0 transition-opacity duration-300"
+				class="fixed bottom-8 left-1/2 -translate-x-1/2 transform rounded-sm bg-gray-800 px-4 py-2 text-center text-white opacity-0 transition-opacity duration-300"
 			>
 				Email copied to clipboard
 			</div>
-			<div class="w-full screen:hidden">
+			<div class="hidden print:block print:w-full">
 				<hr class="mb-4" />
 				<p class="text-left font-bold">Find me on:</p>
 				<ul>

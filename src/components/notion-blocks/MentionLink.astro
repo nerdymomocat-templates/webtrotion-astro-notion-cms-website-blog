@@ -46,7 +46,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub no-rss" />{" "}
+						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
 					</>
 				):
         <>
@@ -72,7 +72,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub no-rss" />{" "}
+						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
 					</>
 				):
         <>
@@ -99,7 +99,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 		data-popover
 		id=`popover-description-${id}`
 		role="tooltip"
-		class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg bg-white text-sm text-gray-500 opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-800 dark:text-gray-400"
+		class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:bg-gray-800 dark:text-gray-400"
 	>
   {isEmbeddable?
     (
@@ -134,7 +134,7 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 <div class="mt-4">
 {IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 flex-shrink-0 align-sub no-rss" />{" "}
+						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
 					</s>
 				):
         <>

@@ -43,7 +43,7 @@ const hasRichTexts = block.Callout && block.Callout.RichTexts && block.Callout.R
 			</div>
 		)
 	}
-	<div class={`m-0 min-w-0 leading-6 ${!hasRichTexts ? "first:[&>*]:mt-0" : ""}`}>
+	<div class={`m-0 min-w-0 leading-6 ${!hasRichTexts ? "*:first:mt-0" : ""}`}>
 		{
 			hasRichTexts &&
 				block.Callout.RichTexts.map((richText: interfaces.RichText) => (

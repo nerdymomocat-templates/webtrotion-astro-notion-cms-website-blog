@@ -8,11 +8,11 @@ const { order = 0 } = Astro.props;
 	<button
 		type="button"
 		id="themeToggle"
-		class="group relative h-10 w-10 rounded-md p-2 ring-zinc-400 transition-all hover:text-accent"
+		class="group hover:text-accent hover:ring-accent-400 relative h-10 w-10 cursor-pointer rounded-md p-2 transition-all hover:ring-2"
 		aria-label="Toggle Dark Mode"
 	>
 		<Icon
-			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all dark:scale-100 dark:opacity-100"
+			class="absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all dark:scale-100 dark:opacity-100"
 			name={"theme-light"}
 			aria-label="Set Light Theme"
 			id="sun-svg"
@@ -22,7 +22,7 @@ const { order = 0 } = Astro.props;
 			stroke-linecap="round"
 		/>
 		<Icon
-			class="absolute left-1/2 top-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all dark:scale-0 dark:opacity-0"
+			class="absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-100 opacity-100 transition-all dark:scale-0 dark:opacity-0"
 			name={"theme-dark"}
 			aria-label="Set Dark Theme"
 			id="moon-svg"

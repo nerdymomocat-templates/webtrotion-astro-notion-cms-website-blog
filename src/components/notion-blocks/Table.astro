@@ -50,7 +50,7 @@ function getColumnType(cellContent: string) {
 		<thead>
 			{
 				block.Table?.HasColumnHeader && (
-					<tr class="border-b">
+					<tr class="border-b border-gray-200/90 dark:border-gray-700/90">
 						{block.Table.Rows[0]?.Cells.map((cell: interfaces.TableCell, i: number) => {
 							if (isDataTable) {
 								const cellContent = cell.RichTexts.map((richText) => richText.PlainText).join(" ");
@@ -58,7 +58,7 @@ function getColumnType(cellContent: string) {
 								return (
 									<th
 										scope="col"
-										class="bg-ngray-table-header-bg-light p-2 text-xs font-bold uppercase text-textColor/90 dark:bg-ngray-table-header-bg-dark/[.03]"
+										class="bg-ngray-table-header-bg-light text-textColor/90 dark:bg-ngray-table-header-bg-dark/[.03] p-2 text-xs font-bold uppercase"
 										data-type={columnType}
 									>
 										{cell.RichTexts.map((richText: interfaces.RichText) => (
@@ -70,7 +70,7 @@ function getColumnType(cellContent: string) {
 								return (
 									<th
 										scope="col"
-										class="bg-ngray-table-header-bg-light p-2 text-xs font-semibold uppercase text-textColor/90 dark:bg-ngray-table-header-bg-dark/[.03]"
+										class="bg-ngray-table-header-bg-light text-textColor/90 dark:bg-ngray-table-header-bg-dark/[.03] p-2 text-xs font-semibold uppercase"
 									>
 										{cell.RichTexts.map((richText: interfaces.RichText) => (
 											<RichText richText={richText} blockID={block.Id} />
@@ -96,7 +96,7 @@ function getColumnType(cellContent: string) {
 									return (
 										<th
 											scope="row"
-											class="whitespace-nowrap bg-ngray-table-header-bg-light p-2 font-semibold text-textColor dark:bg-ngray-table-header-bg-dark/[.03]"
+											class="bg-ngray-table-header-bg-light text-textColor dark:bg-ngray-table-header-bg-dark/[.03] p-2 font-semibold whitespace-nowrap"
 										>
 											{cell.RichTexts.map((richText: interfaces.RichText) => (
 												<RichText richText={richText} blockID={block.Id} />

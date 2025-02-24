@@ -80,7 +80,7 @@ const paginationProps = {
 	<h1 class="title mb-6">{collection}</h1>
   {description && <q class="block italic mb-6 -mt-3">{description}</q>}
 	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
-		<section aria-label="Blog post list" class="screen:col-span-3 print:col-span-full">
+		<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
 			<ul class="space-y-4 text-start">
 				{
 					resetFirstImage() && page.data.map((post) =>
@@ -89,7 +89,7 @@ const paginationProps = {
 								<li>
 									<PostPreviewFull post_full_preview={post} as="h2" withDesc />
 								</li>
-								<hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/20" />
+								<hr class="divider w-full mx-auto my-4 h-0.5 rounded-sm border-none bg-accent/20" />
 							</>
 						) : (
 							<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
@@ -141,7 +141,7 @@ const paginationProps = {
   FULL_PREVIEW_COLLECTIONS.includes(collection) && (
   <button
 	id="to-top-btn"
-	class="z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
+	class="cursor-pointer z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
 	aria-label="Back to Top"
 	data-show="false"
 	>

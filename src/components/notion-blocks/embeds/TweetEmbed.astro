@@ -19,7 +19,7 @@ const tweetID = postURL.pathname.split("/")[3];
 	tweetID && (
 		<>
 			<div
-				class={`no-rss w-full ${FULL_WIDTH_SM ? "" : "screen:max-w-[min(420px,96%)]"} mx-auto overflow-scroll`}
+				class={`no-rss ${FULL_WIDTH_SM ? "max-w-full" : "max-w-[min(420px,96%)] print:max-w-full"} mx-auto overflow-scroll`}
 			>
 				<AstroTweet id={tweetID} />
 			</div>

@@ -34,18 +34,18 @@ const articleDate = new Date(post.Date).toISOString();
 <BaseLayout
 	meta={{ title: post.Title, description: post.Excerpt, articleDate, ogImage: socialImage }}
 >
-	<div class="sm:mr-20 screen:max-w-[708px] print:mr-auto print:max-w-full">
+	<div class="max-w-[708px] sm:mr-20 print:mr-auto print:max-w-full">
 		<article class="break-words" data-pagefind-body>
 			<div id="blog-hero"><BlogHero post={post} /></div>
 			<div class="mt-8">
 				<slot />
-				<hr class="divider w-70 mx-auto my-4 h-0.5 rounded border-0 bg-accent/30" />
+				<hr class="divider bg-accent/30 mx-auto my-4 h-0.5 w-full rounded-sm border-none" />
 				{REFERENCES && <ReferencesSection post={post} />}
 			</div>
 		</article>
 		{!!headings.length && <TOC headings={headings} />}
 	</div>
-	<div class="sm:mr-20 screen:max-w-[708px] print:hidden">
+	<div class="max-w-[708px] sm:mr-20 print:hidden">
 		<aside class="" data-pagefind-ignore="all">
 			<WebMentions />
 
@@ -54,7 +54,7 @@ const articleDate = new Date(post.Date).toISOString();
 	</div>
 	<button
 		id="to-top-btn"
-		class={"z-30 fixed print:hidden bottom-20 sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"}
+		class="fixed end-4 bottom-20 z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 dark:bg-zinc-700 print:hidden"
 		aria-label="Back to Top"
 		data-show="false"
 	>

@@ -67,7 +67,7 @@ if (postFound) {
 {
 	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
 		<PostLayout post={post} headings={headings}>
-			<div class="post-body screen:max-w-[708px] print:w-full">
+			<div class="post-body max-w-[708px] print:max-w-full">
 				<NotionBlocks blocks={blocks} />
 			</div>
 		</PostLayout>

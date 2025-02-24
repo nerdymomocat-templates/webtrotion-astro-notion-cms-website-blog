@@ -24,17 +24,17 @@ const comments = mentions.filter(
 {
 	!!comments.length && (
 		<div class="no-rss">
-			<p class="mb-0 text-accent-2">
+			<p class="text-accent-2 mb-0">
 				<strong>{comments.length}</strong> Mention{comments.length > 1 ? "s" : ""}
 			</p>
-			<ul class="mt-0 divide-y divide-textColor/20 ps-0" role="list">
+			<ul class="divide-textColor/20 mt-0 divide-y ps-0" role="list">
 				{comments.map((mention) => (
 					<li class="my-0 flex items-start gap-x-5 py-5">
 						{mention.author?.photo && mention.author.photo !== "" ? (
 							mention.author.url && mention.author.url !== "" ? (
 								<a
 									href={mention.author.url}
-									class="shrink-0 overflow-hidden rounded-full outline-none ring-2 ring-textColor hover:ring-4 hover:ring-link focus-visible:ring-4 focus-visible:ring-link"
+									class="ring-textColor hover:ring-link focus-visible:ring-link shrink-0 overflow-hidden rounded-full ring-2 outline-hidden hover:ring-4 focus-visible:ring-4"
 									target="_blank"
 									rel="noopener noreferrer"
 									title={mention.author.name}
@@ -59,7 +59,7 @@ const comments = mentions.filter(
 						) : null}
 						<div class="flex-auto">
 							<div class="flex items-center justify-between gap-x-2">
-								<p class="my-0 line-clamp-1 font-semibold text-accent-2">{mention.author?.name}</p>
+								<p class="text-accent-2 my-0 line-clamp-1 font-semibold">{mention.author?.name}</p>
 								<a
 									href={mention.url}
 									class="hover:text-link"
@@ -70,7 +70,7 @@ const comments = mentions.filter(
 									<Icon class="h-5 w-5" name="open-in-new" aria-hidden="true" focusable="false" />
 								</a>
 							</div>
-							<p class="mb-0 mt-1 break-words [word-break:break-word]">{mention.content?.text}</p>
+							<p class="mt-1 mb-0 break-words [word-break:break-word]">{mention.content?.text}</p>
 						</div>
 					</li>
 				))}

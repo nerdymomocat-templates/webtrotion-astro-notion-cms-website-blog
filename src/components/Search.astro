@@ -9,16 +9,16 @@ import Icon from "@/components/Icon";
 	<button
 		data-open-modal
 		disabled
-		class="flex h-10 w-10 items-center justify-center rounded-md ring-zinc-400 transition-all hover:text-accent"
+		class="hover:text-accent hover:ring-accent-400 flex h-10 w-10 cursor-pointer items-center justify-center rounded-md transition-all hover:ring-2"
 		aria-label="Open search"
 	>
 		<Icon class="h-7 w-7" name={"search"} />
 	</button>
 	<dialog
 		aria-label="search"
-		class="h-full max-h-full w-full max-w-full border border-zinc-400 bg-bgColor shadow backdrop:backdrop-blur sm:mx-auto sm:mb-auto sm:mt-16 sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-lg"
+		class="bg-bgColor/80 h-full max-h-full w-full max-w-full border border-zinc-400 shadow-sm backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-lg"
 	>
-		<div class="dialog-frame flex flex-col gap-4 bg-opacity-80 p-6 pt-12 sm:pt-6">
+		<div class="dialog-frame flex flex-col gap-4 p-6 pt-12 sm:pt-6">
 			<button
 				data-close-modal
 				class="ms-auto cursor-pointer rounded-md bg-zinc-200 p-2 font-semibold dark:bg-zinc-700"
@@ -182,7 +182,7 @@ import Icon from "@/components/Icon";
 		overflow: hidden;
 	}
 	#webtrotion__search .pagefind-ui__search-clear:focus {
-		outline: 1px solid theme("colors.accent-2");
+		outline: 1px solid var(--color-accent-2);
 	}
 	#webtrotion__search .pagefind-ui__search-clear::before {
 		content: "";
@@ -190,7 +190,7 @@ import Icon from "@/components/Icon";
 			center / 60% no-repeat;
 		mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E")
 			center / 60% no-repeat;
-		background-color: theme("colors.accent");
+		background-color: var(--color-accent);
 		display: block;
 		width: 100%;
 		height: 100%;
@@ -214,8 +214,8 @@ import Icon from "@/components/Icon";
 		background-image: linear-gradient(
 			transparent,
 			transparent 5px,
-			theme("colors.textColor") 5px,
-			theme("colors.textColor")
+			var(--color-textColor) 5px,
+			var(--color-textColor)
 		);
 	}
 
@@ -224,13 +224,13 @@ import Icon from "@/components/Icon";
 		background-image: linear-gradient(
 			transparent,
 			transparent 4px,
-			theme("colors.link") 4px,
-			theme("colors.link")
+			var(--color-link) 4px,
+			var(--color-link)
 		);
 	}
 
 	#webtrotion__search mark {
-		color: theme("colors.quote");
+		color: var(--color-quote);
 		background-color: transparent;
 		font-weight: 600;
 	}
@@ -238,10 +238,10 @@ import Icon from "@/components/Icon";
 
 <style>
 	#webtrotion__search {
-		--pagefind-ui-primary: theme("colors.accent");
-		--pagefind-ui-text: theme("colors.textColor");
-		--pagefind-ui-background: theme("colors.bgColor");
-		--pagefind-ui-border: theme("colors.zinc.400");
+		--pagefind-ui-primary: var(--color-accent);
+		--pagefind-ui-text: var(--color-textColor);
+		--pagefind-ui-background: var(--color-bgColor);
+		--pagefind-ui-border: var(--color-zinc-400);
 		--pagefind-ui-border-width: 1px;
 	}
 </style>

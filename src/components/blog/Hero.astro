@@ -30,7 +30,7 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 	</p>
 	{
 		post.Date && post.LastUpdatedDate && areDifferentDates(post.Date, post.LastUpdatedDate) && (
-			<span class="rounded-lg bg-quote/10 p-1 text-quote">
+			<span class="bg-quote/10 text-quote rounded-lg p-1">
 				{"Last Updated:"}
 				<FormattedDate
 					class="ms-1"
@@ -68,4 +68,4 @@ const dateTimeOptions: Intl.DateTimeFormatOptions = {
 		</div>
 	)
 }
-<hr class="divider w-70 mx-auto my-4 h-1 rounded border-0 bg-accent/30" />
+<hr class="divider bg-accent/30 mx-auto my-4 h-1 w-full rounded-sm border-none" />
