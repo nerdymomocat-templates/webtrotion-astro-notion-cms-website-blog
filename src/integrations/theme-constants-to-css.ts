@@ -130,6 +130,7 @@ export default (): AstroIntegration => ({
 
       let cssContent = `
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: ${fontSans};
