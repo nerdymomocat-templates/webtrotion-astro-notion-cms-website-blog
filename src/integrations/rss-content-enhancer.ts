@@ -6,7 +6,7 @@ import { XMLParser, XMLBuilder } from "fast-xml-parser";
 import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
 import { LAST_BUILD_TIME } from "../constants";
-
+import { getNavLink } from "../lib/blog-helpers"
 const rssContentEnhancer = (): AstroIntegration => {
   return {
     name: "rss-content-enhancer",
@@ -358,7 +358,7 @@ const rssContentEnhancer = (): AstroIntegration => {
 
         // Add XML declaration and stylesheet
         const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
-        const styleSheet = '<?xml-stylesheet href="/rss-styles.xsl" type="text/xsl"?>\n';
+        const styleSheet = `<?xml-stylesheet href="${getNavLink("/rss-styles.xsl")}" type="text/xsl"?>\n`;
         const finalXml = xmlDeclaration + styleSheet + updatedRss;
 
         await fs.writeFile(rssPath, finalXml);
