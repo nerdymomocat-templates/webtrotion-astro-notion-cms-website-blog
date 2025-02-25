@@ -96,8 +96,8 @@ function loadBuildcache<T>(filename: string): T | null {
 }
 
 const numberOfRetry = 2;
-const minTimeout= 1000, // waits 1 second before the first retry
-const factor= 2, // doubles the wait time with each retry
+const minTimeout= 1000; // waits 1 second before the first retry
+const factor= 2; // doubles the wait time with each retry
 
 type QueryFilters = requestParams.CompoundFilterObject;
 
