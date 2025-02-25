@@ -96,8 +96,8 @@ function loadBuildcache<T>(filename: string): T | null {
 }
 
 const numberOfRetry = 2;
-const minTimeout= 1000; // waits 1 second before the first retry
-const factor= 2; // doubles the wait time with each retry
+const minTimeout = 1000; // waits 1 second before the first retry
+const factor = 2; // doubles the wait time with each retry
 
 type QueryFilters = requestParams.CompoundFilterObject;
 
@@ -175,8 +175,8 @@ export async function getAllEntries(): Promise<Post[]> {
 			},
 			{
 				retries: numberOfRetry,
-        minTimeout: minTimeout,
-        factor: factor,
+				minTimeout: minTimeout,
+				factor: factor,
 			},
 		);
 
@@ -372,8 +372,8 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 			},
 			{
 				retries: numberOfRetry,
-        minTimeout: minTimeout,
-        factor: factor,
+				minTimeout: minTimeout,
+				factor: factor,
 			},
 		);
 
@@ -466,8 +466,8 @@ export async function getBlock(blockId: string): Promise<Block | null> {
 			},
 			{
 				retries: numberOfRetry,
-        minTimeout: minTimeout,
-        factor: factor,
+				minTimeout: minTimeout,
+				factor: factor,
 			},
 		);
 
@@ -753,8 +753,8 @@ export async function getDatabase(): Promise<Database> {
 		},
 		{
 			retries: numberOfRetry,
-      minTimeout: minTimeout,
-      factor: factor,
+			minTimeout: minTimeout,
+			factor: factor,
 		},
 	);
 
@@ -1129,8 +1129,8 @@ async function _getTableRows(blockId: string): Promise<TableRow[]> {
 			},
 			{
 				retries: numberOfRetry,
-        minTimeout: minTimeout,
-        factor: factor,
+				minTimeout: minTimeout,
+				factor: factor,
 			},
 		);
 
@@ -1193,8 +1193,8 @@ async function _getColumns(blockId: string): Promise<Column[]> {
 			},
 			{
 				retries: numberOfRetry,
-        minTimeout: minTimeout,
-        factor: factor,
+				minTimeout: minTimeout,
+				factor: factor,
 			},
 		);
 
