@@ -30,10 +30,7 @@ export const BASE_PATH =
 	process.env.BASE || process.env.BASE_PATH || key_value_from_json["base-path"] || ""; // <- Set sub directory path if you want. e.g. /docs/
 
 export const NUMBER_OF_POSTS_PER_PAGE = key_value_from_json["number-of-posts-per-page"] || 10;
-export const REQUEST_TIMEOUT_MS = parseInt(
-	key_value_from_json["request-timeout-ms"] || "10000",
-	10,
-);
+
 export const ENABLE_LIGHTBOX = key_value_from_json["enable-lightbox"] || false;
 
 /**

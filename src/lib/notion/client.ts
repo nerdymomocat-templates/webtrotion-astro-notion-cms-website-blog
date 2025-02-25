@@ -9,8 +9,6 @@ import path from "path";
 import {
 	NOTION_API_SECRET,
 	DATABASE_ID,
-	NUMBER_OF_POSTS_PER_PAGE,
-	REQUEST_TIMEOUT_MS,
 	MENU_PAGES_COLLECTION,
 	OPTIMIZE_IMAGES,
 	LAST_BUILD_TIME,
@@ -595,7 +593,7 @@ export async function downloadFile(
 		res = await axios({
 			method: "get",
 			url: url.toString(),
-			timeout: REQUEST_TIMEOUT_MS,
+			timeout: 2000,
 			responseType: "stream",
 		});
 	} catch (err) {

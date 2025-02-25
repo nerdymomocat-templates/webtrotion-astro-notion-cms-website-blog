@@ -1,4 +1,4 @@
-import { REQUEST_TIMEOUT_MS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
+import { HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
 import type {
 	Block,
 	Heading1,
@@ -298,7 +298,7 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 			const controller = new AbortController();
 			const timeout = setTimeout(() => {
 				controller.abort();
-			}, REQUEST_TIMEOUT_MS);
+			}, 2000);
 
 			return fetch(url.toString(), { signal: controller.signal })
 				.then((res) => {
