@@ -85,15 +85,15 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
                   <style>
                   :host {
                     --bluesky-font-size: 0.875rem;
-                    --bluesky-text-color: rgb(var(--theme-text)/1);
-                    --bluesky-handle-color: rgb(var(--theme-text)/0.5);
+                    --bluesky-text-color: var(--color-text);
+                    --bluesky-handle-color: color-mix(in srgb, var(--color-text) 50%, transparent);
                     --bluesky-footer-text-color: rgb(111, 134, 159);
-                    --bluesky-bg-color: rgb(var(--theme-bg)/1);
+                    --bluesky-bg-color: var(--color-bg);
                     --bluesky-spacing-xs: 0.3125rem;
                     --bluesky-spacing-sm: 0.5rem;
                     --bluesky-spacing-md: 0.625rem;
                     --bluesky-avatar-size: 14px;
-                    --bluesky-avatar-bg: rgb(var(--theme-text)/0.1);
+                    --bluesky-avatar-bg: color-mix(in srgb, var(--color-text) 10%, transparent);
 
                     /* Comments Structure */
                     --bluesky-reply-border-width: 0.125rem;
@@ -101,7 +101,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
                     /* Footer */
                     --bluesky-footer-font-size: 0.75rem;
                     --bluesky-icon-size: 1rem;
-                    --bluesky-border-color: rgb(var(--theme-quote)/0.2);
+                    --bluesky-border-color: color-mix(in srgb, var(--color-quote) 20%, transparent);
 
                   }
 
@@ -198,13 +198,13 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
 
                   .start-message-here-link {
                     font-weight: 500;
-                    color: rgb(var(--theme-link)/1);
+                    color: var(--color-link);
                   }
 
                   .start-message-reply-line{
                     border-radius: 0.5rem;
                     padding: 0.25rem;
-                    background-color: rgb(var(--theme-quote) / 0.1);
+                    background-color: color-mix(in srgb, var(--color-quote) 10%, transparent);;
                   }
 
                   .timestamp-link,
@@ -680,7 +680,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
   <style>
 
     .tab.active {
-      border-bottom: 2px solid rgb(var(--theme-accent)) !important;
+      border-bottom: 2px solid var(--color-accent) !important;
     }
     .tab-pane {
       display: none;

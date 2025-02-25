@@ -77,7 +77,7 @@ const id = buildHeadingId(block.Heading3);
 	h4.hasId::before {
 		content: "#";
 		position: absolute;
-		color: rgb(var(--theme-accent));
+		color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 		margin-left: -1.5rem;
 		display: inline-block;
 		opacity: 0; /* Start with invisible content */
