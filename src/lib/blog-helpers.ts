@@ -323,6 +323,8 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 };
 
 export const getNavLink = (nav: string) => {
+  if (nav=="/rss-styles.xsl")
+    {console.log("Base path is: ", BASE_PATH);}
 	if (!nav && BASE_PATH) {
 		return path.join(BASE_PATH, "") + "/";
 	}
