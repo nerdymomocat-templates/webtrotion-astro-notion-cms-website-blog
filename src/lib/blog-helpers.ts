@@ -298,7 +298,7 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 			const controller = new AbortController();
 			const timeout = setTimeout(() => {
 				controller.abort();
-			}, 2000);
+			}, 10000);
 
 			return fetch(url.toString(), { signal: controller.signal })
 				.then((res) => {

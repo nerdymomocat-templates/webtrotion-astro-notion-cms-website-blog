@@ -593,7 +593,7 @@ export async function downloadFile(
 		res = await axios({
 			method: "get",
 			url: url.toString(),
-			timeout: 2000,
+			timeout: 10000,
 			responseType: "stream",
 		});
 	} catch (err) {
