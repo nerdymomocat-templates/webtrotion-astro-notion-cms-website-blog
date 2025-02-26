@@ -169,6 +169,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 		>
 			<div
 				class={`${language === "mermaid" ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll print:max-h-full"} min-w-0`}
+				{...(language !== "mermaid" && { "data-pagefind-ignore": "all" })}
 			>
 				<div class="flex max-w-full">
 					<button

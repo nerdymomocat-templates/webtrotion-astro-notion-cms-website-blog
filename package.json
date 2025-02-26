@@ -46,7 +46,7 @@
 		"@types/eslint": "^9.6.1",
 		"@types/katex": "^0.16.7",
 		"@types/metascraper": "^5.14.3",
-    "@types/sanitize-html": "^2.13.0",
+		"@types/sanitize-html": "^2.13.0",
 		"@types/metascraper-description": "^5.14.5",
 		"@types/metascraper-image": "^5.14.5",
 		"@typescript-eslint/eslint-plugin": "^8.18.0",
