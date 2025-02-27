@@ -38,6 +38,24 @@ try {
 } catch (err) {
 	console.log(err);
 }
+
+// Helper function to transform known URLs to their embeddable versions.
+function transformEmbedUrl(url: URL): URL {
+	// Check if the URL is a GitHub Gist URL.
+	if (url.hostname === "gist.github.com") {
+		// If it doesn't already have the embeddable extension, add ".pibb?scroll=true"
+		if (!url.pathname.endsWith(".pibb")) {
+			return new URL(url.toString() + ".pibb"); //height is automatically cropped to be fixed, so we do not need to set ?scroll=true
+		}
+	}
+	return url;
+}
+
+// Apply transformation for known embeddable URLs (currently only gist)
+if (url) {
+	url = transformEmbedUrl(url);
+}
+
 const plainTextCaption = block.Embed?.Caption.map((richText) => richText.PlainText).join(" ");
 ---
 
