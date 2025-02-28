@@ -12,6 +12,8 @@ import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/no
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
 import { LAST_BUILD_TIME } from "@/constants";
+import fs from "fs/promises";
+import path from "path";
 
 export async function getStaticPaths() {
 	const posts = await getAllPosts();
@@ -38,6 +40,27 @@ if (!post) {
 	postFound = false;
 }
 
+let postLastUpdatedBeforeLastBuild = false;
+if (postFound) {
+	postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
+		? post?.LastUpdatedTimeStamp
+			? post.LastUpdatedTimeStamp < LAST_BUILD_TIME
+			: false
+		: false;
+}
+
+let cachedHtml = "";
+// If the page was updated before the last build, try to read the cached HTML.
+if (postFound && postLastUpdatedBeforeLastBuild) {
+	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${post.Slug}.html`);
+	try {
+		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
+	} catch (e) {
+		// File doesn't exist; fallback to NotionBlocks.
+		cachedHtml = "";
+	}
+}
+
 if (postFound) {
 	const result = await getPostContentByPostId(post);
 	blocks = result.blocks;
@@ -45,12 +68,6 @@ if (postFound) {
 
 	headings = buildHeadings(blocks);
 	setCurrentHeadings(headings);
-
-	const postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
-		? post?.LastUpdatedTimeStamp
-			? post?.LastUpdatedTimeStamp < LAST_BUILD_TIME
-			: false
-		: false;
 
 	if (!postLastUpdatedBeforeLastBuild) {
 		const fileAtacchedBlocks = extractTargetBlocks(
@@ -76,9 +93,16 @@ if (postFound) {
 {
 	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
 		<PostLayout post={post} headings={headings}>
-			<div class="post-body max-w-[708px] print:max-w-full" data-post-pageid={post.PageId}>
+			{postLastUpdatedBeforeLastBuild && cachedHtml?(
+			<div
+				class="post-body max-w-[708px] print:max-w-full"
+				set:html={cachedHtml} data-html-type="cached"
+			></div>
+			) :(
+			<div class="post-body max-w-[708px] print:max-w-full" data-html-type="new">
 				<NotionBlocks blocks={blocks} />
 			</div>
+			)}
 		</PostLayout>
 	)
 }

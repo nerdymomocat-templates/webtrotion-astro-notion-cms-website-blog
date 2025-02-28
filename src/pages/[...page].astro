@@ -14,6 +14,8 @@ import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
 import TOC from "@/components/blog/TOC";
+import fs from "fs/promises";
+import path from "path";
 
 
 export async function getStaticPaths() {
@@ -43,6 +45,27 @@ if (!page) {
 	console.log("Page not found");
 	pageFound = false;
 }
+
+let pageLastUpdatedBeforeLastBuild = false;
+if (pageFound) {
+	pageLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
+		? page?.LastUpdatedTimeStamp
+			? page.LastUpdatedTimeStamp < LAST_BUILD_TIME
+			: false
+		: false;
+}
+
+let cachedHtml = "";
+// If the page was updated before the last build, try to read the cached HTML.
+if (pageFound && pageLastUpdatedBeforeLastBuild) {
+	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${page.Slug}.html`);
+	try {
+		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
+	} catch (e) {
+		// File doesn't exist; fallback to NotionBlocks.
+		cachedHtml = "";
+	}
+}
 //NOTE: later if i want posts on my home page which i very well might!
 // const [blocks, rankedPosts] = await Promise.all([
 // 	getAllBlocksByBlockId(page.PageId),
@@ -54,12 +77,6 @@ if (pageFound) {
   referencesInPage = result.referencesInPage;
   headings = buildHeadings(blocks);
   setCurrentHeadings(headings);
-
-  const pageLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
-		? page?.LastUpdatedTimeStamp
-			? page?.LastUpdatedTimeStamp < LAST_BUILD_TIME
-			: false
-		: false;
 
 	if (!pageLastUpdatedBeforeLastBuild) {
 
@@ -112,9 +129,10 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 >
 	<div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
 		<article class="break-words" data-pagefind-body>
-			<div class="post-body" data-post-pageid={page.PageId}>
+      {pageLastUpdatedBeforeLastBuild && cachedHtml? (<div class="post-body" data-html-type="cached" set:html={cachedHtml}></div>):
+			(<div class="post-body" data-html-type="new">
 				<NotionBlocks blocks={blocks}/>
-			</div>
+			</div>)}
       {headings && !!headings.length && <TOC headings={headings} />}
 		</article>
 	</div>

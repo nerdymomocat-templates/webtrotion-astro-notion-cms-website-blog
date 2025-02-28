@@ -75,9 +75,9 @@ export default defineConfig({
 	integrations: [
 		buildTimestampRecorder(),
 		EntryCacheEr(),
-    CustomIconDownloader(),
-    CSSWriter(),
-    partytown({
+		CustomIconDownloader(),
+		CSSWriter(),
+		partytown({
 			// Adds dataLayer.push as a forwarding-event.
 			config: {
 				forward: ["dataLayer.push"],
@@ -86,10 +86,10 @@ export default defineConfig({
 		robotsTxt({
 			sitemapBaseFileName: "sitemap",
 		}),
-    rssContentEnhancer(),
-    blocksHtmlCacher(),
-    PublicNotionCopier(),
-    DeleteBuildCache(),
+		rssContentEnhancer(),
+		blocksHtmlCacher(),
+		PublicNotionCopier(),
+		DeleteBuildCache(),
 	],
 	image: {
 		domains: ["webmention.io"],

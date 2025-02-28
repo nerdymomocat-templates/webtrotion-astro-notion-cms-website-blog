@@ -14,6 +14,8 @@ import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION, LAST_BUILD_TIME } from "@/constants";
 import Icon from "@/components/Icon";
 import { buildHeadings, slugify } from "@/utils";
+import fs from "fs/promises";
+import path from "path";
 
 interface Props {
 	post_full_preview: Post;
@@ -26,11 +28,25 @@ const { blocks, referencesInPage } = await getPostContentByPostId(post_full_prev
 let headings = buildHeadings(blocks);
 setCurrentHeadings(headings);
 
-const postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
+let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
 	? post_full_preview?.LastUpdatedTimeStamp
-		? post_full_preview?.LastUpdatedTimeStamp < LAST_BUILD_TIME
+		? post_full_preview.LastUpdatedTimeStamp < LAST_BUILD_TIME
 		: false
 	: false;
+
+let cachedHtml = "";
+// If the page was updated before the last build, try to read the cached HTML.
+if (postLastUpdatedBeforeLastBuild) {
+	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${post_full_preview.Slug}.html`);
+	try {
+		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
+	} catch (e) {
+		// File doesn't exist; fallback to NotionBlocks.
+		cachedHtml = "";
+	}
+}
+
+// console.log(cachedHtml);
 
 if (!postLastUpdatedBeforeLastBuild) {
 	const fileAtacchedBlocks = extractTargetBlocks(
@@ -111,6 +127,11 @@ const postLink = getPostLink(
 	)
 }
 
-<section class="post-body" data-post-pageid={post_full_preview.PageId}>
+{postLastUpdatedBeforeLastBuild && cachedHtml ?(<section
+	class="post-body"data-html-type="cached"
+	set:html={cachedHtml}
+></section>):(<section class="post-body" data-html-type="new">
 	<NotionBlocks blocks={blocks} />
 </section>
+)
+}
