@@ -16,6 +16,7 @@ import Icon from "@/components/Icon";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
 import path from "path";
+import superjson from "superjson";
 
 interface Props {
 	post_full_preview: Post;
@@ -25,8 +26,12 @@ interface Props {
 
 const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
 const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
-let headings = buildHeadings(blocks);
-setCurrentHeadings(headings);
+
+// --- Headings Cache Handling ---
+let headings = null;
+const headingsCacheDir = "./tmp/blocks-headings-cache";
+await fs.mkdir(headingsCacheDir, { recursive: true });
+const headingsCacheFile = path.join(headingsCacheDir, `${post_full_preview.Slug}.json`);
 
 let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
 	? post_full_preview?.LastUpdatedTimeStamp
@@ -34,28 +39,47 @@ let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
 		: false
 	: false;
 
-let cachedHtml = "";
-// If the page was updated before the last build, try to read the cached HTML.
+let cachedHeadings = null;
 if (postLastUpdatedBeforeLastBuild) {
-	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${post_full_preview.Slug}.html`);
 	try {
-		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
+		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
+		cachedHeadings = superjson.parse(headingsData);
 	} catch (e) {
-		// File doesn't exist; fallback to NotionBlocks.
-		cachedHtml = "";
+		// No cached headings available.
+		cachedHeadings = null;
 	}
 }
 
-// console.log(cachedHtml);
+if (cachedHeadings) {
+	headings = cachedHeadings;
+} else {
+	headings = buildHeadings(blocks);
+	setCurrentHeadings(headings);
+	try {
+		await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
+	} catch (e) {
+		console.error("Error saving headings cache:", e);
+	}
+}
+
+// --- HTML Cache Handling ---
+let cachedHtml = "";
+if (postLastUpdatedBeforeLastBuild) {
+	const htmlCacheFile = path.join("./tmp/blocks-html-cache", `${post_full_preview.Slug}.html`);
+	try {
+		cachedHtml = await fs.readFile(htmlCacheFile, "utf-8");
+	} catch (e) {
+		// Cache file doesn't exist; fallback to fresh rendering.
+		cachedHtml = "";
+	}
+}
 
 if (!postLastUpdatedBeforeLastBuild) {
 	const fileAtacchedBlocks = extractTargetBlocks(
 		["image", "video", "file", "audio"],
 		blocks,
 	).filter((block) => {
-		if (!block) {
-			return false;
-		}
+		if (!block) return false;
 		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
 		return (
 			imageOrVideoOrAudioOrFile &&
@@ -63,8 +87,7 @@ if (!postLastUpdatedBeforeLastBuild) {
 			imageOrVideoOrAudioOrFile.File.Url
 		);
 	});
-
-	const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	await processFileBlocks(fileAtacchedBlocks);
 }
 
 const postLink = getPostLink(
@@ -100,6 +123,7 @@ const postLink = getPostLink(
 		<q class="line-clamp-3 block italic">{post_full_preview.Excerpt}</q>
 	)
 }
+
 {
 	post_full_preview.Tags && post_full_preview.Tags.length > 0 && (
 		<div class="mt-1 gap-2">
@@ -127,11 +151,12 @@ const postLink = getPostLink(
 	)
 }
 
-{postLastUpdatedBeforeLastBuild && cachedHtml ?(<section
-	class="post-body"data-html-type="cached"
-	set:html={cachedHtml}
-></section>):(<section class="post-body" data-html-type="new">
-	<NotionBlocks blocks={blocks} />
-</section>
-)
+{
+	postLastUpdatedBeforeLastBuild && cachedHtml ? (
+		<section class="post-body" data-html-type="cached" set:html={cachedHtml} />
+	) : (
+		<section class="post-body" data-html-type="new">
+			<NotionBlocks blocks={blocks} />
+		</section>
+	)
 }

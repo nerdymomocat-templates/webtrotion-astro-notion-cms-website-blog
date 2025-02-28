@@ -1,14 +1,11 @@
 ---
 import PageLayout from "../layouts/Base.astro";
-// import PostPreview from "../components/blog/PostPreview.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "../lib/blog-helpers";
 import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
-
-// import { siteConfig } from "@/site-config";
-// import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
+
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
@@ -16,13 +13,13 @@ import { buildHeadings } from "@/utils";
 import TOC from "@/components/blog/TOC";
 import fs from "fs/promises";
 import path from "path";
-
+import superjson from "superjson";
 
 export async function getStaticPaths() {
 	const pages = await getAllPages();
 
 	return pages.map((page) => ({
-		params: { page: page.Slug === siteInfo.homePageSlug ? undefined : `/${page.Slug}` },
+		params: { page: page.Slug === HOME_PAGE_SLUG ? undefined : `/${page.Slug}` },
 		props: { page },
 	}));
 }
@@ -46,6 +43,7 @@ if (!page) {
 	pageFound = false;
 }
 
+// Determine if the page was last updated before the last build
 let pageLastUpdatedBeforeLastBuild = false;
 if (pageFound) {
 	pageLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
@@ -55,6 +53,7 @@ if (pageFound) {
 		: false;
 }
 
+// --- HTML Cache ---
 let cachedHtml = "";
 // If the page was updated before the last build, try to read the cached HTML.
 if (pageFound && pageLastUpdatedBeforeLastBuild) {
@@ -66,136 +65,151 @@ if (pageFound && pageLastUpdatedBeforeLastBuild) {
 		cachedHtml = "";
 	}
 }
-//NOTE: later if i want posts on my home page which i very well might!
-// const [blocks, rankedPosts] = await Promise.all([
-// 	getAllBlocksByBlockId(page.PageId),
-// 	getRankedPosts(),
-// ]);
-if (pageFound) {
-	const result = await getPostContentByPostId(page);
-  blocks = result.blocks;
-  referencesInPage = result.referencesInPage;
-  headings = buildHeadings(blocks);
-  setCurrentHeadings(headings);
 
-	if (!pageLastUpdatedBeforeLastBuild) {
+// --- Headings Cache ---
+let cachedHeadings = null;
+const headingsCacheDir = "./tmp/blocks-headings";
+await fs.mkdir(headingsCacheDir, { recursive: true });
+const headingsCacheFile = path.join(headingsCacheDir, `${page.Slug}.json`);
 
-	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
-		.filter((block) => {
-			if (!block) {
-				return false;
-			}
-			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-			return (
-				imageOrVideoOrAudioOrFile &&
-				imageOrVideoOrAudioOrFile.File &&
-				imageOrVideoOrAudioOrFile.File.Url
-			);
-		});
-
-	const processedFile = await processFileBlocks(fileAtacchedBlocks);
-  }
+if (pageFound && pageLastUpdatedBeforeLastBuild) {
+	try {
+		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
+		cachedHeadings = superjson.parse(headingsData);
+	} catch (e) {
+		cachedHeadings = null;
+	}
 }
 
-let recent_posts = null;
-if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
-{
-  recent_posts = await getAllPosts();
-  recent_posts = recent_posts.filter((post) => !FULL_PREVIEW_COLLECTIONS.includes(post.Collection));
-  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-    recent_posts = recent_posts.filter((post) => !post.Slug.startsWith("_"));
+if (pageFound) {
+	const result = await getPostContentByPostId(page);
+	blocks = result.blocks;
+	referencesInPage = result.referencesInPage;
+
+	// Use cached headings if available, otherwise build and cache them.
+	if (pageLastUpdatedBeforeLastBuild && cachedHeadings) {
+		headings = cachedHeadings;
+	} else {
+		headings = buildHeadings(blocks);
+		setCurrentHeadings(headings);
+		try {
+			await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
+		} catch (e) {
+			console.error("Error saving headings cache:", e);
 		}
-    recent_posts = recent_posts.slice(0, 5); // Slice to get only the first five posts
-    if (recent_posts && headings)
-    {
-      headings.push({
-			text: "Recent Posts",
-			slug: "auto-recent-posts",
-			depth: 1,
-	  })
-    }
+	}
+
+	// Process file-attached blocks only if not using cache.
+	if (!pageLastUpdatedBeforeLastBuild) {
+
+		const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
+			.filter((block) => {
+				if (!block) {
+					return false;
+				}
+				const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+				return (
+					imageOrVideoOrAudioOrFile &&
+					imageOrVideoOrAudioOrFile.File &&
+					imageOrVideoOrAudioOrFile.File.Url
+				);
+			});
+
+		await processFileBlocks(fileAtacchedBlocks);
+		}
+	}
+
+let recent_posts = null;
+if (pageFound && page.Slug === HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE) {
+	recent_posts = await getAllPosts();
+	recent_posts = recent_posts.filter((post) => !FULL_PREVIEW_COLLECTIONS.includes(post.Collection));
+	if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+		recent_posts = recent_posts.filter((post) => !post.Slug.startsWith("_"));
+		}
+	recent_posts = recent_posts.slice(0, 5); // Slice to get only the first five posts
+	if (recent_posts && headings)
+	{
+		headings.push({
+		text: "Recent Posts",
+		slug: "auto-recent-posts",
+		depth: 1,
+	})
+	}
 }
 ---
 
 {pageFound && resetFirstImage() && setTrackCurrentPageId(page.PageId) && (
-  <>
+		<PageLayout
+			meta={{
+				title: page.Title || siteInfo.title,
+				description: page.Excerpt || siteInfo.description,
+				ogImage: `/og-image/${page.Slug}.png`,
+			}}
+		>
+			<div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
+				<article class="break-words" data-pagefind-body>
+					{pageLastUpdatedBeforeLastBuild && cachedHtml ? (
+						<div class="post-body" data-html-type="cached" set:html={cachedHtml}></div>
+					) : (
+						<div class="post-body" data-html-type="new">
+							<NotionBlocks blocks={blocks} />
+						</div>
+					)}
+					{headings && !!headings.length && <TOC headings={headings} />}
+				</article>
+			</div>
+			{RECENT_POSTS_ON_HOME_PAGE && recent_posts && (
+				<div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
+					<a href="#auto-recent-posts" id="auto-recent-posts" class="inline" onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);">
+						<h2 class="mb-4 mt-8 text-2xl font-normal hasId">
+							<strong class="font-semibold">Recent Posts</strong>
+						</h2>
+					</a>
+					<section aria-label="Recent posts list">
+						<ul class="space-y-4 text-start">
+							{recent_posts.map((post) => (
+								<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
+									<PostPreview post={post} as="h3" withDesc />
+								</li>
+							))}
+						</ul>
+						<span class="mt-4 block sm:text-end">
+							<a
+								class="sm:hover:text-accent"
+								href={getNavLink("/posts/")}
+								aria-label="View all posts"
+							>
+								View all →
+							</a>
+						</span>
+					</section>
+				</div>
+			)}
+		</PageLayout>
 
-<PageLayout
-	meta={{
-		title: page.Title || siteInfo.title,
-		description: page.Excerpt || siteInfo.description,
-		ogImage: `/og-image/${page.Slug}.png`,
-	}}
->
-	<div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
-		<article class="break-words" data-pagefind-body>
-      {pageLastUpdatedBeforeLastBuild && cachedHtml? (<div class="post-body" data-html-type="cached" set:html={cachedHtml}></div>):
-			(<div class="post-body" data-html-type="new">
-				<NotionBlocks blocks={blocks}/>
-			</div>)}
-      {headings && !!headings.length && <TOC headings={headings} />}
-		</article>
-	</div>
-{RECENT_POSTS_ON_HOME_PAGE && recent_posts && (
-  <div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
-    <a href="#auto-recent-posts" id="auto-recent-posts" class="inline" onclick="var fullUrl = `${window.location.origin}${window.location.pathname}#${id}`; navigator.clipboard.writeText(fullUrl);">
-            <h2 class="mb-4 mt-8 text-2xl font-normal hasId"><strong class="font-semibold">Recent Posts</strong></h2></a>
+		<button
+			id="to-top-btn"
+			class="cursor-pointer z-30 fixed print:hidden bottom-20 sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
+			aria-label="Back to Top"
+			data-show="false"
+		>
+			<Icon name={"to-top"} class="h-6 w-6" aria-label="Go Back to Top" stroke-linecap="round" />
+		</button>
 
-		<section aria-label="Recent posts list">
-
-			<ul class="space-y-4 text-start">
-				{
-					recent_posts.map((post) =>
-							<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
-								<PostPreview post={post} as="h3" withDesc />
-							</li>
-						,
-					)
+		<script>
+			document.addEventListener("DOMContentLoaded", function () {
+				const scrollBtn = document.getElementById("to-top-btn");
+				const targetHeader = document.getElementById("main-header");
+				function callback(entries) {
+					entries.forEach((entry) => {
+						scrollBtn.dataset.show = (!entry.isIntersecting).toString();
+					});
 				}
-			</ul>
-      <span class="mt-4 block sm:text-end">
-						<a
-							class="sm:hover:text-accent"
-							href={getNavLink("/posts/")}
-							aria-label="View all posts"
-						>
-							View all →
-						</a>
-					</span>
-		</section>
-  </div>
-
-        )}
-      </PageLayout>
-
-  <button
-		id="to-top-btn"
-		class="cursor-pointer z-30 fixed print:hidden bottom-20 sm:bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
-		aria-label="Back to Top"
-		data-show="false"
-	>
-		<Icon name={"to-top"} class="h-6 w-6" aria-label="Go Back to Top" stroke-linecap="round" />
-	</button>
-</>
-
-<script>
-
-	document.addEventListener("DOMContentLoaded", function () {
-	const scrollBtn = document.getElementById("to-top-btn");
-	const targetHeader = document.getElementById("main-header");
-
-	function callback(entries) {
-		entries.forEach((entry) => {
-			// only show the scroll to top button when the heading is out of view
-			scrollBtn.dataset.show = (!entry.isIntersecting).toString();
-		});
-	}
-
-	scrollBtn.addEventListener("click", () => {
-		document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
-	});
-
-	const observer = new IntersectionObserver(callback);
-	observer.observe(targetHeader);});
-</script>
+				scrollBtn.addEventListener("click", () => {
+					document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+				});
+				const observer = new IntersectionObserver(callback);
+				observer.observe(targetHeader);
+			});
+		</script>
 )}

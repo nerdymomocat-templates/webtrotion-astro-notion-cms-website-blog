@@ -14,6 +14,7 @@ import { buildHeadings } from "@/utils";
 import { LAST_BUILD_TIME } from "@/constants";
 import fs from "fs/promises";
 import path from "path";
+import superjson from "superjson";
 
 export async function getStaticPaths() {
 	const posts = await getAllPosts();
@@ -23,6 +24,7 @@ export async function getStaticPaths() {
 		props: { post },
 	}));
 }
+
 interface Props {
 	post: Post;
 }
@@ -56,8 +58,22 @@ if (postFound && postLastUpdatedBeforeLastBuild) {
 	try {
 		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
 	} catch (e) {
-		// File doesn't exist; fallback to NotionBlocks.
+		// File doesn't exist; fallback to rendering NotionBlocks.
 		cachedHtml = "";
+	}
+}
+
+let cachedHeadings = null;
+const headingsCacheDir = "./tmp/blocks-headings-cache";
+await fs.mkdir(headingsCacheDir, { recursive: true });
+if (postFound && postLastUpdatedBeforeLastBuild) {
+	const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
+	try {
+		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
+		cachedHeadings = superjson.parse(headingsData);
+	} catch (e) {
+		// Cache file doesn't exist.
+		cachedHeadings = null;
 	}
 }
 
@@ -66,17 +82,27 @@ if (postFound) {
 	blocks = result.blocks;
 	referencesInPage = result.referencesInPage;
 
-	headings = buildHeadings(blocks);
-	setCurrentHeadings(headings);
+	// If we didn't load cached headings, build them from blocks.
+	if (postLastUpdatedBeforeLastBuild && cachedHeadings) {
+		headings = cachedHeadings;
+	} else {
+		headings = buildHeadings(blocks);
+		setCurrentHeadings(headings);
+		// Save the headings to cache for future builds.
+		const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
+		try {
+			await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
+		} catch (e) {
+			console.error("Error saving headings cache:", e);
+		}
+	}
 
 	if (!postLastUpdatedBeforeLastBuild) {
 		const fileAtacchedBlocks = extractTargetBlocks(
 			["image", "video", "file", "audio"],
 			blocks,
 		).filter((block) => {
-			if (!block) {
-				return false;
-			}
+			if (!block) return false;
 			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
 			return (
 				imageOrVideoOrAudioOrFile &&
@@ -85,7 +111,7 @@ if (postFound) {
 			);
 		});
 
-		const processedFile = await processFileBlocks(fileAtacchedBlocks);
+		await processFileBlocks(fileAtacchedBlocks);
 	}
 }
 ---
@@ -93,15 +119,16 @@ if (postFound) {
 {
 	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
 		<PostLayout post={post} headings={headings}>
-			{postLastUpdatedBeforeLastBuild && cachedHtml?(
-			<div
-				class="post-body max-w-[708px] print:max-w-full"
-				set:html={cachedHtml} data-html-type="cached"
-			></div>
-			) :(
-			<div class="post-body max-w-[708px] print:max-w-full" data-html-type="new">
-				<NotionBlocks blocks={blocks} />
-			</div>
+			{postLastUpdatedBeforeLastBuild && cachedHtml ? (
+				<div
+					class="post-body max-w-[708px] print:max-w-full"
+					data-html-type="cached"
+					set:html={cachedHtml}
+				/>
+			) : (
+				<div class="post-body max-w-[708px] print:max-w-full" data-html-type="new">
+					<NotionBlocks blocks={blocks} />
+				</div>
 			)}
 		</PostLayout>
 	)
