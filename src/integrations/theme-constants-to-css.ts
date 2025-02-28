@@ -295,11 +295,6 @@ ${createCssVariables("dark")}
 }`;
 
       const cssOutputPath = "src/styles/global.css";
-      const dir = path.dirname(cssOutputPath);
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-
       fs.writeFileSync(cssOutputPath, cssContent);
     },
   },

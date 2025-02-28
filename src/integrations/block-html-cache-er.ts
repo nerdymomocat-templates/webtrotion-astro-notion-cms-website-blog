@@ -14,7 +14,6 @@ const blocksHtmlCacher = (): AstroIntegration => {
 			"astro:build:done": async () => {
 				const distDir = "dist";
 				const tmpCacheDir = "./tmp/blocks-html-cache";
-				await fs.mkdir(tmpCacheDir, { recursive: true });
 
 				console.log("starting block-html-cache");
 				// Retrieve posts and pages and combine into one list.

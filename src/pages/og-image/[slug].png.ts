@@ -1078,10 +1078,6 @@ export async function GET({ params: { slug } }: APIContext) {
 			: false;
 	}
 
-	if (!fs.existsSync(BASE_DIR)) {
-		fs.mkdirSync(BASE_DIR, { recursive: true });
-	}
-
 	const imagePath = path.join(BASE_DIR, `${slug}.png`);
 
 	if (fs.existsSync(imagePath) && postLastUpdatedBeforeLastBuild) {

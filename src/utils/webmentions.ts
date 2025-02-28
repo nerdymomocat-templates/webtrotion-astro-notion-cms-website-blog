@@ -63,11 +63,6 @@ export function filterWebmentions(webmentions: WebmentionsChildren[]) {
 function writeToCache(data: WebmentionsCache) {
 	const fileContent = JSON.stringify(data, null, 2);
 
-	// create cache folder if it doesn't exist already
-	if (!fs.existsSync(CACHE_DIR)) {
-		fs.mkdirSync(CACHE_DIR);
-	}
-
 	// write data to cache json file
 	fs.writeFile(filePath, fileContent, (err) => {
 		if (err) throw err;

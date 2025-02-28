@@ -30,7 +30,6 @@ const { blocks, referencesInPage } = await getPostContentByPostId(post_full_prev
 // --- Headings Cache Handling ---
 let headings = null;
 const headingsCacheDir = "./tmp/blocks-headings-cache";
-await fs.mkdir(headingsCacheDir, { recursive: true });
 const headingsCacheFile = path.join(headingsCacheDir, `${post_full_preview.Slug}.json`);
 
 let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME

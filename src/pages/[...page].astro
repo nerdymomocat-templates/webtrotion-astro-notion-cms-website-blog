@@ -68,8 +68,7 @@ if (pageFound && pageLastUpdatedBeforeLastBuild) {
 
 // --- Headings Cache ---
 let cachedHeadings = null;
-const headingsCacheDir = "./tmp/blocks-headings";
-await fs.mkdir(headingsCacheDir, { recursive: true });
+const headingsCacheDir = "./tmp/blocks-json-cache/headings";
 const headingsCacheFile = path.join(headingsCacheDir, `${page.Slug}.json`);
 
 if (pageFound && pageLastUpdatedBeforeLastBuild) {

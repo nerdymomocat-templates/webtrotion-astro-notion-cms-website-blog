@@ -16,9 +16,6 @@ const rssContentEnhancer = (): AstroIntegration => {
 				const tempDir = "./tmp/rss-cache";
 				const rssPath = path.join(distDir, "rss.xml");
 
-				// Create temp directory if it doesn't exist
-				await fs.mkdir(tempDir, { recursive: true });
-
 				// Read and parse RSS XML
 				const rssContent = await fs.readFile(rssPath, "utf-8");
 

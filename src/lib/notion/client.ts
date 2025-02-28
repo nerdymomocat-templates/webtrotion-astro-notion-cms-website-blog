@@ -13,6 +13,7 @@ import {
 	OPTIMIZE_IMAGES,
 	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+  BUILD_FOLDER_PATHS,
 } from "../../constants";
 import type * as responses from "./responses";
 import type * as requestParams from "./request-params";
@@ -73,13 +74,9 @@ let allEntriesCache: Post[] | null = null;
 let dbCache: Database | null = null;
 let blockIdPostIdMap: { [key: string]: string } | null = null;
 
-const BUILDCACHE_DIR = "./buildcache";
-
+const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 // Generic function to save data to buildcache
 function saveBuildcache<T>(filename: string, data: T): void {
-	if (!fs.existsSync(BUILDCACHE_DIR)) {
-		fs.mkdirSync(BUILDCACHE_DIR, { recursive: true });
-	}
 	const filePath = path.join(BUILDCACHE_DIR, filename);
 	fs.writeFileSync(filePath, superjson.stringify(data), "utf8");
 }
@@ -225,15 +222,14 @@ export async function getPostContentByPostId(
 ): Promise<{ blocks: Block[]; referencesInPage: ReferencesInPage[] | null }> {
 	const tmpDir = "./tmp/blocks-json-cache";
 	const cacheFilePath = path.join(tmpDir, `${post.PageId}.json`);
-	const cacheReferencesInPageFilePath = path.join(tmpDir, `${post.PageId}_ReferencesInPage.json`);
+	const cacheReferencesInPageFilePath = path.join(
+		tmpDir,
+		"/references-in-page",
+		`${post.PageId}.json`,
+	);
 	const isPostUpdatedAfterLastBuild = LAST_BUILD_TIME
 		? post.LastUpdatedTimeStamp > LAST_BUILD_TIME
 		: true;
-
-	// Ensure the tmp directory exists
-	if (!fs.existsSync(tmpDir)) {
-		fs.mkdirSync(tmpDir, { recursive: true });
-	}
 
 	let blocks: Block[];
 	let referencesInPage: ReferencesInPage[] | null;
@@ -336,7 +332,7 @@ export function createReferencesToThisEntry(
 
 	// Write each entry's references to a file
 	Object.entries(entryReferencesMap).forEach(([entryId, references]) => {
-		const filePath = path.join("./tmp/blocks-json-cache", `${entryId}_ReferencesToPage.json`);
+		const filePath = path.join("./tmp/blocks-json-cache/references-to-page", `${entryId}.json`);
 		fs.writeFileSync(filePath, superjson.stringify(references), "utf-8");
 	});
 }
@@ -550,9 +546,6 @@ export async function getAllTagsWithCounts(): Promise<
 
 export function generateFilePath(url: URL, convertoWebp: boolean = false) {
 	const BASE_DIR = "./public/notion/";
-	if (!fs.existsSync(BASE_DIR)) {
-		fs.mkdirSync(BASE_DIR);
-	}
 
 	const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
 	if (!fs.existsSync(dir)) {

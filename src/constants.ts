@@ -109,3 +109,16 @@ const TRANSFORMER_FUNCTIONS_ARR = [
 ];
 
 export { TRANSFORMER_FUNCTIONS_ARR };
+
+export const BUILD_FOLDER_PATHS = {
+  buildcache: "./buildcache",
+  tmp: "./tmp",
+  styles: path.join("src", "styles"),
+  headings: path.join("./tmp", "blocks-json-cache", "headings"),
+  referencesInPage: path.join("./tmp", "blocks-json-cache", "references-in-page"),
+  referencesToPage: path.join("./tmp", "blocks-json-cache", "references-to-page"),
+  ogImages: path.join("./tmp", "og-images"),
+  rssCache: path.join("./tmp", "rss-cache"),
+  blocksHtmlCache: path.join("./tmp", "blocks-html-cache"),
+  notion: path.join("./public", "notion")
+};
