@@ -1,9 +1,9 @@
 ---
-import * as interfaces from "../../lib/interfaces.ts";
-import { getNotionColorToTailwindColor } from "../../lib/style-helpers.ts";
-import RichText from "./RichText.astro";
-import NotionBlocks from "../NotionBlocks.astro";
-import Icon from "../Icon.astro";
+import * as interfaces from "@/lib/interfaces.ts";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers.ts";
+import RichText from "@/components/notion-blocks/RichText.astro";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+import Icon from "@/components/Icon.astro";
 
 export interface Props {
 	block: interfaces.Block;

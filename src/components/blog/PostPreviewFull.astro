@@ -1,7 +1,7 @@
 ---
 import type { HTMLTag } from "astro/types";
-import FormattedDate from "../FormattedDate.astro";
-import type { Post } from "src/lib/interfaces";
+import FormattedDate from "@/components/FormattedDate.astro";
+import type { Post } from "@/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import {
 	extractTargetBlocks,
@@ -9,10 +9,10 @@ import {
 	getPostLink,
 	setCurrentHeadings,
 } from "@/lib/blog-helpers";
-import NotionBlocks from "src/components/NotionBlocks.astro";
+import NotionBlocks from "@/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
-import Icon from "@/components/Icon";
+import Icon from "@/components/Icon.astro";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
 import path from "path";

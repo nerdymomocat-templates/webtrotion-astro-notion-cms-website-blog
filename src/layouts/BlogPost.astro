@@ -1,12 +1,12 @@
 ---
 import BaseLayout from "./Base.astro";
-import BlogHero from "@/components/blog/Hero";
-import TOC from "@/components/blog/TOC";
-import WebMentions from "@/components/blog/webmentions/index";
+import BlogHero from "@/components/blog/Hero.astro";
+import TOC from "@/components/blog/TOC.astro";
+import WebMentions from "@/components/blog/webmentions/index.astro";
 
-import type { Post } from "src/lib/interfaces";
+import type { Post } from "@/lib/interfaces";
 import type { Heading } from "@/types";
-import PostComments from "@/components/blog/PostComments";
+import PostComments from "@/components/blog/PostComments.astro";
 import { REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import Icon from "@/components/Icon.astro";

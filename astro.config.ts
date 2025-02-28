@@ -27,12 +27,12 @@ const getSite = function () {
 import CustomIconDownloader from "./src/integrations/custom-icon-downloader";
 import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
-import blocksHtmlCacher from "./src/integrations/block-html-cache-er.ts";
+import blocksHtmlCacher from "./src/integrations/block-html-cache-er";
 import DeleteBuildCache from "./src/integrations/delete-build-cache";
-import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
+import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder";
 import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
-import createFoldersIfMissing from "./src/integrations/create-folders-if-missing.ts";
+import createFoldersIfMissing from "./src/integrations/create-folders-if-missing";
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";

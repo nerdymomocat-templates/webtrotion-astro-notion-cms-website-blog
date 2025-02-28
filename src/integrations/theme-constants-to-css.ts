@@ -3,7 +3,6 @@ import type { AstroIntegration } from "astro";
 import config from "../../constants-config.json";
 const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
-import path from "path";
 
 // Helper function that normalizes a color string to hex format
 function normalizeColor(value: string): string {

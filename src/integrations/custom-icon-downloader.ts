@@ -1,5 +1,5 @@
 import type { AstroIntegration } from "astro";
-import type { FileObject } from "../lib/interfaces";
+import type { FileObject } from "@/lib/interfaces";
 import { getDatabase, downloadFile } from "../lib/notion/client";
 
 export default (): AstroIntegration => ({

@@ -1,9 +1,9 @@
 ---
 import { REFERENCES } from "@/constants";
-import InternalLinksInThisPage from "./SiteLinksInThisPage.astro";
-import LinksToThisPage from "./LinksToThisPage.astro";
-import ExternalLinksInThisPage from "./ExternalLinksInThisPage.astro";
-import MediaLinksInThisPage from "./MediaLinksInThisPage.astro";
+import InternalLinksInThisPage from "@/components/blog/references/SiteLinksInThisPage.astro";
+import LinksToThisPage from "@/components/blog/references/LinksToThisPage.astro";
+import ExternalLinksInThisPage from "@/components/blog/references/ExternalLinksInThisPage.astro";
+import MediaLinksInThisPage from "@/components/blog/references/MediaLinksInThisPage.astro";
 import type { Post } from "@/lib/interfaces";
 import { getReferencesInPage, getReferencesToPage } from "@/lib/blog-helpers";
 

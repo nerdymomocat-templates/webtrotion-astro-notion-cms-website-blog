@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import type { AstroIntegration } from "astro";
-import { BUILD_FOLDER_PATHS } from "@/constants";
+import { BUILD_FOLDER_PATHS } from "../constants";
 
 export default (): AstroIntegration => ({
 	name: "delete-build-cache",

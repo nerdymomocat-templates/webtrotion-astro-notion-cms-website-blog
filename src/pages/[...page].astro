@@ -1,16 +1,16 @@
 ---
-import PageLayout from "../layouts/Base.astro";
+import PageLayout from "@/layouts/Base.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "../lib/blog-helpers";
-import NotionBlocks from "../components/NotionBlocks.astro";
-import type { Post } from "../lib/interfaces";
+import { extractTargetBlocks, getNavLink, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "@/lib/blog-helpers";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+import type { Post } from "@/lib/interfaces";
 import { siteInfo } from "@/siteInfo";
 
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
-import TOC from "@/components/blog/TOC";
+import TOC from "@/components/blog/TOC.astro";
 import fs from "fs/promises";
 import path from "path";
 import superjson from "superjson";

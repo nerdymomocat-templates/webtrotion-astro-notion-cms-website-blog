@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { AstroIntegration } from "astro";
-import { BUILD_FOLDER_PATHS } from "@/constants";
+import { BUILD_FOLDER_PATHS } from "../constants";
 
 const copyFiles = (src: string, dest: string) => {
 	const entries = fs.readdirSync(src, { withFileTypes: true });

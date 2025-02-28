@@ -15,8 +15,8 @@ import {
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
 	BUILD_FOLDER_PATHS,
 } from "../../constants";
-import type * as responses from "./responses";
-import type * as requestParams from "./request-params";
+import type * as responses from "@/lib/notion/responses";
+import type * as requestParams from "@/lib/notion/request-params";
 import type {
 	Database,
 	Post,
@@ -58,12 +58,12 @@ import type {
 	Reference,
 	NAudio,
 	ReferencesInPage,
-} from "../interfaces";
+} from "@/lib/interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
-import { extractReferencesInPage } from "../blog-helpers";
+import { extractReferencesInPage } from "../../lib/blog-helpers";
 import superjson from "superjson";
 
 const client = new Client({
@@ -545,20 +545,30 @@ export async function getAllTagsWithCounts(): Promise<
 
 export function generateFilePath(url: URL, convertoWebp: boolean = false) {
 	const BASE_DIR = BUILD_FOLDER_PATHS["publicNotion"];
+	// Get the directory name from the second last segment of the path
+	const segments = url.pathname.split("/");
+	const dirName = segments.slice(-2)[0];
+	const dir = path.join(BASE_DIR, dirName);
 
-	const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir);
 	}
-	const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
-	let filepath = `${dir}/${filename}`;
+
+	// Get the file name and decode it
+	const filename = decodeURIComponent(segments.slice(-1)[0]);
+	let filepath = path.join(dir, filename);
 
 	if (convertoWebp && isConvImageType(filename)) {
-		filepath = `${dir}/${filename.substring(0, filename.lastIndexOf("."))}.webp`;
+		// Remove original extension and append .webp
+		const extIndex = filename.lastIndexOf(".");
+		if (extIndex !== -1) {
+			const nameWithoutExt = filename.substring(0, extIndex);
+			filepath = path.join(dir, `${nameWithoutExt}.webp`);
+		}
 	}
+
 	return filepath;
 }
-
 export function isConvImageType(filepath: string) {
 	if (
 		filepath.includes(".png") ||

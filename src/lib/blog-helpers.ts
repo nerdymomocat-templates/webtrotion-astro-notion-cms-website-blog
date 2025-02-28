@@ -8,11 +8,11 @@ import type {
 	Column,
 	ReferencesInPage,
 	Post,
-} from "./interfaces";
+} from "@/lib/interfaces";
 import { slugify } from "../utils/slugify";
 import path from "path";
 import fs from "node:fs";
-import { getBlock, getPostByPageId } from "./notion/client";
+import { getBlock, getPostByPageId } from "../lib/notion/client";
 import superjson from "superjson";
 
 const BASE_PATH = import.meta.env.BASE_URL;

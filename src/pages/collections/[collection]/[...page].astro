@@ -1,10 +1,10 @@
 ---
 //FIXME: try moving all of this to content and not here
 import type { GetStaticPaths, Page } from "astro";
-import PageLayout from "src/layouts/Base.astro";
-import PostPreview from "src/components/blog/PostPreview.astro";
-import PostPreviewFull from "src/components/blog/PostPreviewFull.astro";
-import Pagination from "src/components/Paginator.astro";
+import PageLayout from "@/layouts/Base.astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import PostPreviewFull from "@/components/blog/PostPreviewFull.astro";
+import Pagination from "@/components/Paginator.astro";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "@/lib/interfaces";
 import { getCollectionsWDesc } from "@/utils";
@@ -12,7 +12,7 @@ import {slugify} from '@/utils';
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import Icon from '@/components/Icon.astro';
 
 export const getStaticPaths = (async ({ paginate }) => {
 	let posts = await getAllPosts();
