@@ -11,7 +11,7 @@ import {
 import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
-import { LAST_BUILD_TIME } from "@/constants";
+import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME } from "@/constants";
 import fs from "fs/promises";
 import path from "path";
 import superjson from "superjson";
@@ -54,7 +54,7 @@ if (postFound) {
 let cachedHtml = "";
 // If the page was updated before the last build, try to read the cached HTML.
 if (postFound && postLastUpdatedBeforeLastBuild) {
-	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${post.Slug}.html`);
+	const cacheFilePath = path.join(BUILD_FOLDER_PATHS["blocksHtmlCache"], `${post.Slug}.html`);
 	try {
 		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
 	} catch (e) {
@@ -64,7 +64,7 @@ if (postFound && postLastUpdatedBeforeLastBuild) {
 }
 
 let cachedHeadings = null;
-const headingsCacheDir = "./tmp/blocks-json-cache/headings";
+const headingsCacheDir = BUILD_FOLDER_PATHS["headings"];
 if (postFound && postLastUpdatedBeforeLastBuild) {
 	const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
 	try {

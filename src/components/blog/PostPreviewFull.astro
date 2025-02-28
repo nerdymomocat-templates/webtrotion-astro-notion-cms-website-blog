@@ -11,7 +11,7 @@ import {
 } from "@/lib/blog-helpers";
 import NotionBlocks from "src/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { MENU_PAGES_COLLECTION, LAST_BUILD_TIME } from "@/constants";
+import { MENU_PAGES_COLLECTION, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
 import Icon from "@/components/Icon";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
@@ -29,7 +29,7 @@ const { blocks, referencesInPage } = await getPostContentByPostId(post_full_prev
 
 // --- Headings Cache Handling ---
 let headings = null;
-const headingsCacheDir = "./tmp/blocks-headings-cache";
+const headingsCacheDir = BUILD_FOLDER_PATHS["headings"];
 const headingsCacheFile = path.join(headingsCacheDir, `${post_full_preview.Slug}.json`);
 
 let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
@@ -64,7 +64,10 @@ if (cachedHeadings) {
 // --- HTML Cache Handling ---
 let cachedHtml = "";
 if (postLastUpdatedBeforeLastBuild) {
-	const htmlCacheFile = path.join("./tmp/blocks-html-cache", `${post_full_preview.Slug}.html`);
+	const htmlCacheFile = path.join(
+		BUILD_FOLDER_PATHS["blocksHtmlCache"],
+		`${post_full_preview.Slug}.html`,
+	);
 	try {
 		cachedHtml = await fs.readFile(htmlCacheFile, "utf-8");
 	} catch (e) {

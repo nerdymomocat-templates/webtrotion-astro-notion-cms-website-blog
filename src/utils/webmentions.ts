@@ -1,9 +1,10 @@
 import * as fs from "node:fs";
 import type { WebmentionsFeed, WebmentionsCache, WebmentionsChildren } from "@/types";
+import { BUILD_FOLDER_PATHS } from "@/constants";
 
 const DOMAIN = import.meta.env.SITE;
 const API_TOKEN = import.meta.env.WEBMENTION_API_KEY;
-const CACHE_DIR = "./tmp";
+const CACHE_DIR = BUILD_FOLDER_PATHS["tmp"];
 const filePath = `${CACHE_DIR}/webmentions.json`;
 const validWebmentionTypes = ["like-of", "mention-of", "in-reply-to"];
 

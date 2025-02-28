@@ -5,7 +5,7 @@ import sanitizeHtml from "sanitize-html";
 import { XMLParser, XMLBuilder } from "fast-xml-parser";
 import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
-import { LAST_BUILD_TIME, BASE_PATH } from "../constants";
+import { LAST_BUILD_TIME, BASE_PATH, BUILD_FOLDER_PATHS } from "../constants";
 
 const rssContentEnhancer = (): AstroIntegration => {
 	return {
@@ -13,7 +13,7 @@ const rssContentEnhancer = (): AstroIntegration => {
 		hooks: {
 			"astro:build:done": async () => {
 				const distDir = "dist";
-				const tempDir = "./tmp/rss-cache";
+				const tempDir = BUILD_FOLDER_PATHS["rssCache"];
 				const rssPath = path.join(distDir, "rss.xml");
 
 				// Read and parse RSS XML

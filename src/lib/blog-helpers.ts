@@ -1,4 +1,4 @@
-import { HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
+import { BUILD_FOLDER_PATHS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
 import type {
 	Block,
 	Heading1,
@@ -71,12 +71,12 @@ export function getReferencesInPage(entryId: string) {
 	// Load and aggregate data if referencesInPageCache is null
 	if (referencesInPageCache === null) {
 		referencesInPageCache = Object.fromEntries(
-			fs.readdirSync("./tmp/blocks-json-cache/references-in-page").map((file) => {
+			fs.readdirSync(BUILD_FOLDER_PATHS["referencesInPage"]).map((file) => {
 				const pageId = file.replace(".json", "");
 				return [
 					pageId,
 					superjson.parse(
-						fs.readFileSync(path.join("./tmp/blocks-json-cache/references-in-page", file), "utf-8"),
+						fs.readFileSync(path.join(BUILD_FOLDER_PATHS["referencesInPage"], file), "utf-8"),
 					),
 				];
 			}),
@@ -93,12 +93,12 @@ export function getReferencesToPage(entryId: string) {
 		referencesToPageCache = {};
 
 		referencesToPageCache = Object.fromEntries(
-			fs.readdirSync("./tmp/blocks-json-cache/references-to-page").map((file) => {
+			fs.readdirSync(BUILD_FOLDER_PATHS["referencesToPage"]).map((file) => {
 				const pageId = file.replace(".json", "");
 				return [
 					pageId,
 					superjson.parse(
-						fs.readFileSync(path.join("./tmp/blocks-json-cache/references-to-page", file), "utf-8"),
+						fs.readFileSync(path.join(BUILD_FOLDER_PATHS["referencesToPage"], file), "utf-8"),
 					),
 				];
 			}),

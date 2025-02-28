@@ -19,6 +19,7 @@ import {
 	HOME_PAGE_SLUG,
 	THEME,
 	MENU_PAGES_COLLECTION,
+	BUILD_FOLDER_PATHS,
 } from "@/constants";
 
 import fs from "fs";
@@ -1059,7 +1060,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string, au
 };
 
 export async function GET({ params: { slug } }: APIContext) {
-	const BASE_DIR = "./tmp/og-images/";
+	const BASE_DIR = BUILD_FOLDER_PATHS["ogImages"];
 	let keyStr = slug;
 	let type = "postpage";
 	if (keyStr?.includes("---")) {

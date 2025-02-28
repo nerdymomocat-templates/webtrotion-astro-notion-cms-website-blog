@@ -6,7 +6,7 @@ import NotionBlocks from "../components/NotionBlocks.astro";
 import type { Post } from "../lib/interfaces";
 import { siteInfo } from "@/siteInfo";
 
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME } from "@/constants";
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
@@ -57,7 +57,7 @@ if (pageFound) {
 let cachedHtml = "";
 // If the page was updated before the last build, try to read the cached HTML.
 if (pageFound && pageLastUpdatedBeforeLastBuild) {
-	const cacheFilePath = path.join("./tmp/blocks-html-cache", `${page.Slug}.html`);
+	const cacheFilePath = path.join(BUILD_FOLDER_PATHS["blocksHtmlCache"], `${page.Slug}.html`);
 	try {
 		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
 	} catch (e) {
@@ -68,7 +68,7 @@ if (pageFound && pageLastUpdatedBeforeLastBuild) {
 
 // --- Headings Cache ---
 let cachedHeadings = null;
-const headingsCacheDir = "./tmp/blocks-json-cache/headings";
+const headingsCacheDir = BUILD_FOLDER_PATHS["headings"];
 const headingsCacheFile = path.join(headingsCacheDir, `${page.Slug}.json`);
 
 if (pageFound && pageLastUpdatedBeforeLastBuild) {

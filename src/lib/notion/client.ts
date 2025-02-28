@@ -13,7 +13,7 @@ import {
 	OPTIMIZE_IMAGES,
 	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
-  BUILD_FOLDER_PATHS,
+	BUILD_FOLDER_PATHS,
 } from "../../constants";
 import type * as responses from "./responses";
 import type * as requestParams from "./request-params";
@@ -220,11 +220,10 @@ export async function getPostByPageId(pageId: string): Promise<Post | null> {
 export async function getPostContentByPostId(
 	post: Post,
 ): Promise<{ blocks: Block[]; referencesInPage: ReferencesInPage[] | null }> {
-	const tmpDir = "./tmp/blocks-json-cache";
+	const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
 	const cacheFilePath = path.join(tmpDir, `${post.PageId}.json`);
 	const cacheReferencesInPageFilePath = path.join(
-		tmpDir,
-		"/references-in-page",
+		BUILD_FOLDER_PATHS["referencesInPage"],
 		`${post.PageId}.json`,
 	);
 	const isPostUpdatedAfterLastBuild = LAST_BUILD_TIME
@@ -332,7 +331,7 @@ export function createReferencesToThisEntry(
 
 	// Write each entry's references to a file
 	Object.entries(entryReferencesMap).forEach(([entryId, references]) => {
-		const filePath = path.join("./tmp/blocks-json-cache/references-to-page", `${entryId}.json`);
+		const filePath = path.join(BUILD_FOLDER_PATHS["referencesToPage"], `${entryId}.json`);
 		fs.writeFileSync(filePath, superjson.stringify(references), "utf-8");
 	});
 }
@@ -421,7 +420,7 @@ export async function getBlock(blockId: string): Promise<Block | null> {
 
 	if (postId) {
 		// If we have a mapping, look for the block in the cached post JSON
-		const tmpDir = "./tmp/blocks-json-cache";
+		const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
 		const cacheFilePath = path.join(tmpDir, `${postId}.json`);
 
 		if (fs.existsSync(cacheFilePath)) {
@@ -545,7 +544,7 @@ export async function getAllTagsWithCounts(): Promise<
 }
 
 export function generateFilePath(url: URL, convertoWebp: boolean = false) {
-	const BASE_DIR = "./public/notion/";
+	const BASE_DIR = BUILD_FOLDER_PATHS["publicNotion"];
 
 	const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
 	if (!fs.existsSync(dir)) {
@@ -606,9 +605,9 @@ export async function downloadFile(
 	const isImage = res.headers["content-type"]?.startsWith("image/");
 
 	const processFavicon = async (sourcePath: string) => {
-		const favicon16Path = "./public/favicon16.png";
-		const favicon32Path = "./public/favicon32.png";
-		const faviconIcoPath = "./public/favicon.ico";
+		const favicon16Path = path.join(BUILD_FOLDER_PATHS["public"], "favicon16.png");
+		const favicon32Path = path.join(BUILD_FOLDER_PATHS["public"], "favicon32.png");
+		const faviconIcoPath = path.join(BUILD_FOLDER_PATHS["public"], "favicon.ico");
 
 		try {
 			// Save the original image as favicon16.png (16x16)

@@ -5,7 +5,7 @@ import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
 import { render } from "dom-serializer";
 import { getAllPosts, getAllPages } from "../lib/notion/client";
-import { LAST_BUILD_TIME, HOME_PAGE_SLUG } from "../constants";
+import { LAST_BUILD_TIME, HOME_PAGE_SLUG, BUILD_FOLDER_PATHS } from "../constants";
 
 const blocksHtmlCacher = (): AstroIntegration => {
 	return {
@@ -13,7 +13,7 @@ const blocksHtmlCacher = (): AstroIntegration => {
 		hooks: {
 			"astro:build:done": async () => {
 				const distDir = "dist";
-				const tmpCacheDir = "./tmp/blocks-html-cache";
+				const tmpCacheDir = BUILD_FOLDER_PATHS["blocksHtmlCache"];
 
 				console.log("starting block-html-cache");
 				// Retrieve posts and pages and combine into one list.
