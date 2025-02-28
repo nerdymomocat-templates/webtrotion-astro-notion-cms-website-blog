@@ -64,7 +64,7 @@ if (postFound && postLastUpdatedBeforeLastBuild) {
 }
 
 let cachedHeadings = null;
-const headingsCacheDir = BUILD_FOLDER_PATHS["headings"];
+const headingsCacheDir = BUILD_FOLDER_PATHS["headingsCache"];
 if (postFound && postLastUpdatedBeforeLastBuild) {
 	const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
 	try {

@@ -17,7 +17,7 @@ export const BUILD_FOLDER_PATHS = {
 	tmp: "./tmp",
 	styles: path.join("src", "styles"),
 	blocksJson: path.join("./tmp", "blocks-json-cache"),
-	headings: path.join("./tmp", "blocks-json-cache", "headings"),
+	headingsCache: path.join("./tmp", "blocks-json-cache", "headings"),
 	referencesInPage: path.join("./tmp", "blocks-json-cache", "references-in-page"),
 	referencesToPage: path.join("./tmp", "blocks-json-cache", "references-to-page"),
 	ogImages: path.join("./tmp", "og-images"),
