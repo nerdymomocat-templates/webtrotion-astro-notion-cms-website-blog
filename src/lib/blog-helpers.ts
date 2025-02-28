@@ -13,6 +13,7 @@ import { slugify } from "../utils/slugify";
 import path from "path";
 import fs from "node:fs";
 import { getBlock, getPostByPageId } from "./notion/client";
+import superjson from "superjson";
 
 const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
@@ -71,14 +72,16 @@ export function getReferencesInPage(entryId: string) {
 	if (referencesInPageCache === null) {
 		referencesInPageCache = {};
 
-		// Assuming you have a way to list all relevant JSON files in ./tmp/
-		const files = fs.readdirSync("./tmp").filter((file) => file.endsWith("_ReferencesInPage.json"));
+		// Assuming you have a way to list all relevant JSON files in ./tmp/blocks-json-cache
+		const files = fs
+			.readdirSync("./tmp/blocks-json-cache")
+			.filter((file) => file.endsWith("_ReferencesInPage.json"));
 
 		for (const file of files) {
-			const filePath = path.join("./tmp", file);
+			const filePath = path.join("./tmp/blocks-json-cache", file);
 			const fileContent = fs.readFileSync(filePath, "utf-8");
 			const pageId = file.replace("_ReferencesInPage.json", "");
-			referencesInPageCache[pageId] = JSON.parse(fileContent);
+			referencesInPageCache[pageId] = superjson.parse(fileContent);
 		}
 	}
 
@@ -91,14 +94,16 @@ export function getReferencesToPage(entryId: string) {
 	if (referencesToPageCache === null) {
 		referencesToPageCache = {};
 
-		// Assuming you have a way to list all relevant JSON files in ./tmp/
-		const files = fs.readdirSync("./tmp").filter((file) => file.endsWith("_ReferencesToPage.json"));
+		// Assuming you have a way to list all relevant JSON files in ./tmp/blocks-json-cache
+		const files = fs
+			.readdirSync("./tmp/blocks-json-cache")
+			.filter((file) => file.endsWith("_ReferencesToPage.json"));
 
 		for (const file of files) {
-			const filePath = path.join("./tmp", file);
+			const filePath = path.join("./tmp/blocks-json-cache", file);
 			const fileContent = fs.readFileSync(filePath, "utf-8");
 			const pageId = file.replace("_ReferencesToPage.json", "");
-			referencesToPageCache[pageId] = JSON.parse(fileContent);
+			referencesToPageCache[pageId] = superjson.parse(fileContent);
 		}
 	}
 

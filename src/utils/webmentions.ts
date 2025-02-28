@@ -3,7 +3,7 @@ import type { WebmentionsFeed, WebmentionsCache, WebmentionsChildren } from "@/t
 
 const DOMAIN = import.meta.env.SITE;
 const API_TOKEN = import.meta.env.WEBMENTION_API_KEY;
-const CACHE_DIR = ".data";
+const CACHE_DIR = "./tmp";
 const filePath = `${CACHE_DIR}/webmentions.json`;
 const validWebmentionTypes = ["like-of", "mention-of", "in-reply-to"];
 

@@ -11,6 +11,7 @@ import {
 import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
+import { LAST_BUILD_TIME } from "@/constants";
 
 export async function getStaticPaths() {
 	const posts = await getAllPosts();
@@ -45,29 +46,37 @@ if (postFound) {
 	headings = buildHeadings(blocks);
 	setCurrentHeadings(headings);
 
-	const fileAtacchedBlocks = extractTargetBlocks(
-		["image", "video", "file", "audio"],
-		blocks,
-	).filter((block) => {
-		if (!block) {
-			return false;
-		}
-		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-		return (
-			imageOrVideoOrAudioOrFile &&
-			imageOrVideoOrAudioOrFile.File &&
-			imageOrVideoOrAudioOrFile.File.Url
-		);
-	});
+	const postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
+		? post?.LastUpdatedTimeStamp
+			? post?.LastUpdatedTimeStamp < LAST_BUILD_TIME
+			: false
+		: false;
 
-	const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	if (!postLastUpdatedBeforeLastBuild) {
+		const fileAtacchedBlocks = extractTargetBlocks(
+			["image", "video", "file", "audio"],
+			blocks,
+		).filter((block) => {
+			if (!block) {
+				return false;
+			}
+			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+			return (
+				imageOrVideoOrAudioOrFile &&
+				imageOrVideoOrAudioOrFile.File &&
+				imageOrVideoOrAudioOrFile.File.Url
+			);
+		});
+
+		const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	}
 }
 ---
 
 {
 	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
 		<PostLayout post={post} headings={headings}>
-			<div class="post-body max-w-[708px] print:max-w-full">
+			<div class="post-body max-w-[708px] print:max-w-full" data-post-pageid={post.PageId}>
 				<NotionBlocks blocks={blocks} />
 			</div>
 		</PostLayout>

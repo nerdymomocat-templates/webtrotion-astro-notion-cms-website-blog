@@ -9,7 +9,7 @@ import type { Post } from "../lib/interfaces";
 // import { siteConfig } from "@/site-config";
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE } from "@/constants";
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
@@ -55,6 +55,14 @@ if (pageFound) {
   headings = buildHeadings(blocks);
   setCurrentHeadings(headings);
 
+  const pageLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
+		? page?.LastUpdatedTimeStamp
+			? page?.LastUpdatedTimeStamp < LAST_BUILD_TIME
+			: false
+		: false;
+
+	if (!pageLastUpdatedBeforeLastBuild) {
+
 	const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
 		.filter((block) => {
 			if (!block) {
@@ -69,6 +77,7 @@ if (pageFound) {
 		});
 
 	const processedFile = await processFileBlocks(fileAtacchedBlocks);
+  }
 }
 
 let recent_posts = null;
@@ -103,7 +112,7 @@ if (pageFound && page.Slug==HOME_PAGE_SLUG && RECENT_POSTS_ON_HOME_PAGE)
 >
 	<div class="max-w-[708px] sm:mr-20 print:max-w-full print:mr-auto">
 		<article class="break-words" data-pagefind-body>
-			<div class="">
+			<div class="post-body" data-post-pageid={page.PageId}>
 				<NotionBlocks blocks={blocks}/>
 			</div>
       {headings && !!headings.length && <TOC headings={headings} />}
