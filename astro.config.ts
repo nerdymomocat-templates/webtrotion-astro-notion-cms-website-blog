@@ -27,6 +27,7 @@ const getSite = function () {
 import CustomIconDownloader from "./src/integrations/custom-icon-downloader";
 import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
+import blocksHtmlCacher from "./src/integrations/block-html-cache-er.ts";
 import DeleteBuildCache from "./src/integrations/delete-build-cache";
 import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
 import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
@@ -73,21 +74,22 @@ export default defineConfig({
 		: {},
 	integrations: [
 		buildTimestampRecorder(),
-		CustomIconDownloader(),
 		EntryCacheEr(),
-		PublicNotionCopier(),
-		DeleteBuildCache(),
-		CSSWriter(),
-		rssContentEnhancer(),
-		robotsTxt({
-			sitemapBaseFileName: "sitemap",
-		}),
-		partytown({
+    CustomIconDownloader(),
+    CSSWriter(),
+    partytown({
 			// Adds dataLayer.push as a forwarding-event.
 			config: {
 				forward: ["dataLayer.push"],
 			},
 		}),
+		robotsTxt({
+			sitemapBaseFileName: "sitemap",
+		}),
+    rssContentEnhancer(),
+    blocksHtmlCacher(),
+    PublicNotionCopier(),
+    DeleteBuildCache(),
 	],
 	image: {
 		domains: ["webmention.io"],
