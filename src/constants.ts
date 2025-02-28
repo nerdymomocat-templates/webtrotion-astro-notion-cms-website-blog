@@ -23,6 +23,7 @@ export const BUILD_FOLDER_PATHS = {
 	ogImages: path.join("./tmp", "og-images"),
 	rssCache: path.join("./tmp", "rss-cache"),
 	blocksHtmlCache: path.join("./tmp", "blocks-html-cache"),
+	referencesHtmlCache: path.join("./tmp", "blocks-html-cache", "references"),
 	public: path.join("./public"),
 	publicNotion: path.join("./public", "notion/"),
 };

@@ -13,10 +13,10 @@ const blocksHtmlCacher = (): AstroIntegration => {
 		hooks: {
 			"astro:build:done": async () => {
 				const distDir = "dist";
-				const tmpCacheDir = BUILD_FOLDER_PATHS["blocksHtmlCache"];
+				const tmpBlocksCacheDir = BUILD_FOLDER_PATHS["blocksHtmlCache"];
+				const tmpReferencesCacheDir = BUILD_FOLDER_PATHS["referencesHtmlCache"];
 
-				console.log("starting block-html-cache");
-				// Retrieve posts and pages and combine into one list.
+				console.log("Starting blocks-html-cache and references-html-cache");
 				const posts = await getAllPosts();
 				const pages = await getAllPages();
 				const allEntries = [...posts, ...pages];
@@ -36,50 +36,88 @@ const blocksHtmlCacher = (): AstroIntegration => {
 								: path.join(distDir, slug, "index.html");
 					}
 
-					const cacheFilePath = path.join(tmpCacheDir, `${slug}.html`);
-
-					// Determine if the entry was updated before the last build.
-					// (Assuming entry.LastUpdatedTimeStamp and LAST_BUILD_TIME are Date objects.)
+					const blocksCacheFilePath = path.join(tmpBlocksCacheDir, `${slug}.html`);
+					const staticReferencesCacheFilePath = path.join(
+						tmpReferencesCacheDir,
+						`${slug}-static.html`,
+					);
 					const postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
 						? entry.LastUpdatedTimeStamp < LAST_BUILD_TIME
 						: false;
 
-					// Check if the cache file exists. If it exists and the post was last updated before the last build, skip processing.
+					// Skip blocks caching if not updated and cache exists
+					let blocksNeedsUpdate = true;
 					try {
-						await fs.access(cacheFilePath);
+						await fs.access(blocksCacheFilePath);
 						if (postLastUpdatedBeforeLastBuild) {
-							console.log(`Skipping ${slug} (no update and cache exists)`);
-							continue; // No need to update this cache.
+							console.log(`Skipping blocks for ${slug} (no update and cache exists)`);
+							blocksNeedsUpdate = false;
 						}
 					} catch {
-						// Cache file doesn't exist; we'll write it.
+						// Cache file doesn't exist; we'll write it
+					}
+
+					// Skip references caching if not updated and caches exist
+					let staticReferencesNeedsUpdate = true;
+					try {
+						await fs.access(staticReferencesCacheFilePath);
+						if (postLastUpdatedBeforeLastBuild) {
+							console.log(`Skipping static references for ${slug} (no update and cache exists)`);
+							staticReferencesNeedsUpdate = false;
+						}
+					} catch {
+						// Cache file doesn't exist; we'll write it
+					}
+
+					if (!blocksNeedsUpdate && !staticReferencesNeedsUpdate) {
+						continue;
 					}
 
 					try {
-						// Proceed to read and extract HTML only if we need to write.
 						const htmlContent = await fs.readFile(filePath, "utf-8");
 						const document = parseDocument(htmlContent);
 
-						// Find the first <div> element with class "post-body"
-						const divPostBody = DomUtils.findOne(
-							(elem) =>
-								elem.type === "tag" &&
-								elem.name === "div" &&
-								!!elem.attribs?.class &&
-								elem.attribs.class.split(" ").includes("post-body"),
-							document.children,
-							true,
-						);
-
-						if (!divPostBody) {
-							console.warn(`No <div class="post-body"> found for ${slug}`);
-							continue;
+						// Extract blocks HTML
+						if (blocksNeedsUpdate) {
+							const divPostBody = DomUtils.findOne(
+								(elem) =>
+									elem.type === "tag" &&
+									elem.name === "div" &&
+									!!elem.attribs?.class &&
+									elem.attribs.class.split(" ").includes("post-body"),
+								document.children,
+								true,
+							);
+							if (divPostBody) {
+								const extractedHtml = render(divPostBody.children);
+								await fs.writeFile(blocksCacheFilePath, extractedHtml, "utf-8");
+								console.log(`Cached blocks for ${slug} to ${blocksCacheFilePath}`);
+							} else {
+								console.warn(`No <div class="post-body"> found for ${slug}`);
+							}
 						}
 
-						// Use dom-serializer's render() to extract inner HTML
-						const extractedHtml = render(divPostBody.children);
-						await fs.writeFile(cacheFilePath, extractedHtml, "utf-8");
-						console.log(`Cached ${slug} to ${cacheFilePath}`);
+						// Extract static references HTML
+						if (staticReferencesNeedsUpdate) {
+							const divStaticReferences = DomUtils.findOne(
+								(elem) =>
+									elem.type === "tag" &&
+									elem.name === "div" &&
+									!!elem.attribs?.class &&
+									elem.attribs.class.split(" ").includes("static-references"),
+								document.children,
+								true,
+							);
+							if (divStaticReferences) {
+								const staticHtml = render(divStaticReferences.children);
+								await fs.writeFile(staticReferencesCacheFilePath, staticHtml, "utf-8");
+								console.log(
+									`Cached static references for ${slug} to ${staticReferencesCacheFilePath}`,
+								);
+							} else {
+								console.warn(`No <div class="static-references"> found for ${slug}`);
+							}
+						}
 					} catch (error) {
 						console.error(`Error processing ${slug}:`, error);
 					}
