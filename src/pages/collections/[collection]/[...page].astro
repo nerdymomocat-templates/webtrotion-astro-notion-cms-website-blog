@@ -16,9 +16,9 @@ import Icon from '@/components/Icon';
 
 export const getStaticPaths = (async ({ paginate }) => {
 	let posts = await getAllPosts();
-  // Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
-  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-    posts = posts.filter((post) => !post.Slug.startsWith("_"));
+	// Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
+	if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+		posts = posts.filter((post) => !post.Slug.startsWith("_"));
 }
 
 	const collections = await getCollectionsWDesc();
@@ -27,19 +27,19 @@ export const getStaticPaths = (async ({ paginate }) => {
 		// Initially filter posts based on the collection
 		let collectionPosts = posts.filter((post) => post.Collection === collection.name);
 
-    // Sort posts to have pinned ones on top while maintaining the original order within each category
-    collectionPosts.sort((a, b) => {
-        if (a.Pinned === b.Pinned) {
-            return 0; // maintain original order if both are pinned or both are not pinned
-        }
-        return a.Pinned ? -1 : 1; // pinned posts come first
-    });
+		// Sort posts to have pinned ones on top while maintaining the original order within each category
+		collectionPosts.sort((a, b) => {
+				if (a.Pinned === b.Pinned) {
+						return 0; // maintain original order if both are pinned or both are not pinned
+				}
+				return a.Pinned ? -1 : 1; // pinned posts come first
+		});
 
 		const uniqueTags = getUniqueTags(collectionPosts);
 
 		return paginate(collectionPosts, {
 			params: { collection: slugify(collection.name) },
-      props: { collection: collection.name, description: collection.description, uniqueTags },
+			props: { collection: collection.name, description: collection.description, uniqueTags },
 			pageSize: NUMBER_OF_POSTS_PER_PAGE,
 		});
 	});
@@ -48,7 +48,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 interface Props {
 	page: Page<Post>;
 	collection: string;
-  description: string;
+	description: string;
 	uniqueTags: SelectProperty[];
 }
 
@@ -78,7 +78,7 @@ const paginationProps = {
 
 <PageLayout meta={meta}>
 	<h1 class="title mb-6">{collection}</h1>
-  {description && <q class="block italic mb-6 -mt-3">{description}</q>}
+	{description && <q class="block italic mb-6 -mt-3">{description}</q>}
 	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
 		<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
 			<ul class="space-y-4 text-start">
@@ -105,7 +105,7 @@ const paginationProps = {
 			!!uniqueTags.length && (
 				<aside class="col-span-3 sm:col-span-1 print:hidden">
 					<h2 class="mb-4 flex items-center text-lg font-semibold text-accent-2">
-            <Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
+						<Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
 						Tags
 					</h2>
 					<ul class="flex flex-wrap gap-2">
@@ -138,39 +138,38 @@ const paginationProps = {
 	</div>
 </PageLayout>
 {
-  FULL_PREVIEW_COLLECTIONS.includes(collection) && (
-  <button
-	id="to-top-btn"
-	class="cursor-pointer z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
-	aria-label="Back to Top"
-	data-show="false"
-	>
-  <Icon
-					name={"to-top"}
-					class="h-6 w-6"
-					aria-label="Go Back to Top"
-          stroke-linecap="round"
-				/>
-</button>
-<script>
+	FULL_PREVIEW_COLLECTIONS.includes(collection) && (
+			<button
+			id="to-top-btn"
+			class="cursor-pointer z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
+			aria-label="Back to Top"
+			data-show="false"
+			>
+			<Icon
+							name={"to-top"}
+							class="h-6 w-6"
+							aria-label="Go Back to Top"
+							stroke-linecap="round"
+						/>
+		</button>
+		<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		const scrollBtn = document.getElementById("to-top-btn");
+		const targetHeader = document.getElementById("main-header");
 
-document.addEventListener("DOMContentLoaded", function () {
-const scrollBtn = document.getElementById("to-top-btn");
-const targetHeader = document.getElementById("main-header");
+		function callback(entries) {
+			entries.forEach((entry) => {
+				// only show the scroll to top button when the heading is out of view
+				scrollBtn.dataset.show = (!entry.isIntersecting).toString();
+			});
+		}
 
-function callback(entries) {
-  entries.forEach((entry) => {
-    // only show the scroll to top button when the heading is out of view
-    scrollBtn.dataset.show = (!entry.isIntersecting).toString();
-  });
-}
+		scrollBtn.addEventListener("click", () => {
+			document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+		});
 
-scrollBtn.addEventListener("click", () => {
-  document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-const observer = new IntersectionObserver(callback);
-observer.observe(targetHeader);});
-</script>
-  )
+		const observer = new IntersectionObserver(callback);
+		observer.observe(targetHeader);});
+		</script>
+	)
 }
