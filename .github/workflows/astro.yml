@@ -93,13 +93,10 @@ jobs:
       - name: Process constants-config if cache not hit
         if: steps.restore-constants-config.outputs.cache-hit != 'true'
         run: |
-          echo "Cached old_constants-config.json is different than current constants-config. Removing blocks-html-cache, rss-cache, og-images and public/notion..."
+          echo "Cached old_constants-config.json is different than current constants-confi; trimming tmp (except .gitkeep) and deleting public/notion..."
           # Insert any additional processing or cleanup commands as needed.
-          rm -rf tmp/blocks-html-cache
-          rm -rf tmp/rss-cache
-          rm -rf tmp/og-images
+          find tmp -mindepth 1 -not -name '.gitkeep' -exec rm -rf {} +
           rm -rf public/notion
-
       - name: Trim public and tmp files based on cache changes
         env:
           CACHE_HIT: ${{ steps.npm-cache-restore.outputs.cache-hit }}
