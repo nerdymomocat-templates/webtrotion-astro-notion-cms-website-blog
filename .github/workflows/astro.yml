@@ -78,7 +78,7 @@ jobs:
           restore-keys: public-webtrotion-${{ github.repository_id }}-
 
       - name: Remove blocks-html-cache and rss-cache if exists on push event
-        if: github.event_name == 'push' && steps.cache-tmp-restore.outputs.cache-hit == 'true'
+        if: github.event_name == 'push'
         run: |
           for folder in blocks-html-cache rss-cache; do
             if [ -d "./tmp/$folder" ]; then
