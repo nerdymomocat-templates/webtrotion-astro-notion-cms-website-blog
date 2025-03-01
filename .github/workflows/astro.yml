@@ -84,9 +84,9 @@ jobs:
           restore-keys: public-webtrotion-${{ github.repository_id }}-
 
       - name: Trim public and tmp files based on cache changes
-        if: steps.restore-package-json.outputs.cache-hit == 'true'
+        env:
+          CACHE_HIT: ${{ steps.npm-cache-restore.outputs.cache-hit }}
         run: |
-
           if [ -f ./old_package.json ]; then
             # If lastBuildTimestamp has changed, delete everything in tmp except .gitkeep and remove public/notion
             OLD_LAST_BUILD_STORE=$(jq -r '.cacheVersion.lastBuildTimestampStore' ./old_package.json)
@@ -142,7 +142,14 @@ jobs:
               rm -rf public/notion
             fi
           else
-            echo "old_package.json not found, skipping trimming."
+            echo "old_package.json not found."
+            if [ "$CACHE_HIT" != "true" ]; then
+              echo "No cache hit for package-lock.json detected; trimming tmp and deleting public/notion..."
+              find tmp -mindepth 1 -not -name '.gitkeep' -exec rm -rf {} +
+              rm -rf public/notion
+            else
+              echo "Cache hit for package-lock.json detected; skipping trimming."
+            fi
           fi
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
