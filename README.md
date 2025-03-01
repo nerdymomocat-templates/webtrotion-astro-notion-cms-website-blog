@@ -46,9 +46,11 @@ Check out the [Demo with Template](https://nerdymomocat-templates.github.io/webt
 
 # Preview
 
-| Light Mode                             | Dark Mode                             |
-| -------------------------------------- | ------------------------------------- |
-| <img width="400" alt="Light Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/0bc56b36-88a1-4875-9266-e186becb380d"> | <img width="400" alt="Dark Mode Preview" src="https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog/assets/125716950/52edd08a-1459-4aa5-ac22-77b8b6dea161"> |a
+|Device        | Light Mode                             | Dark Mode                             |
+|--------------| -------------------------------------- | ------------------------------------- |
+|Desktop       | ![Light Mode Desktop](https://github.com/user-attachments/assets/7c7b2633-b656-4cd6-977f-c57f799350c8)|![Dark Mode Desktop](https://github.com/user-attachments/assets/9dbdba46-4f87-4496-8e86-053e3a0171a0)|
+|Mobile       |![Light Mode Mobile](https://github.com/user-attachments/assets/b6324270-eb43-48f2-a407-65db92d98d4e)|![Dark Mode Mobile](https://github.com/user-attachments/assets/4bb660f4-27c0-46f0-875e-6c43889ed94f)|
+
 
 # License
 
