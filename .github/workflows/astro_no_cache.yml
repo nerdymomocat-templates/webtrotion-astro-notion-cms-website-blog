@@ -72,10 +72,10 @@ jobs:
         env:
           GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
-      - name: Clear Previous `package-json-cache` (if needed)
+      - name: Clear Previous `old-package-json-cache` (if needed)
         if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
-          gh cache list --json key --jq '.[].key' | grep -E 'package-json-cache-' | xargs -I {} gh cache delete {}
+          gh cache list --json key --jq '.[].key' | grep -E 'old-package-json-cache-' | xargs -I {} gh cache delete {}
         env:
           GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
@@ -102,11 +102,14 @@ jobs:
           path: ./public
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - name: Save package.json Cache
+      - name: Copy package.json to old_package.json
+        run: cp ./package.json ./old_package.json
+
+      - name: Save old_package.json Cache
         uses: actions/cache/save@v4
         with:
-          path: package.json
-          key: package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ./old_package.json
+          key: old-package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
