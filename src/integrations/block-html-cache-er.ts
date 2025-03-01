@@ -17,7 +17,7 @@ const blocksHtmlCacher = (): AstroIntegration => {
 				const tmpBlocksCacheDir = BUILD_FOLDER_PATHS["blocksHtmlCache"];
 				const tmpReferencesCacheDir = BUILD_FOLDER_PATHS["referencesHtmlCache"];
 
-				console.log("Starting blocks-html-cache and references-html-cache");
+				// console.log("Starting blocks-html-cache and references-html-cache");
 				const posts = await getAllPosts();
 				const pages = await getAllPages();
 				const allEntries = [...posts, ...pages];
@@ -79,12 +79,12 @@ const blocksHtmlCacher = (): AstroIntegration => {
 					if (shouldUseCache) {
 						try {
 							await fs.access(blocksCacheFilePath);
-							console.log(`Skipping blocks for ${slug} (no update and cache exists)`);
+							// console.log(`Skipping blocks for ${slug} (no update and cache exists)`);
 							blocksNeedsUpdate = false;
 						} catch {}
 						try {
 							await fs.access(staticReferencesCacheFilePath);
-							console.log(`Skipping static references for ${slug} (no update and cache exists)`);
+							// console.log(`Skipping static references for ${slug} (no update and cache exists)`);
 							staticReferencesNeedsUpdate = false;
 						} catch {}
 					}
@@ -109,7 +109,7 @@ const blocksHtmlCacher = (): AstroIntegration => {
 							if (divPostBody) {
 								const extractedHtml = render(divPostBody.children);
 								await fs.writeFile(blocksCacheFilePath, extractedHtml, "utf-8");
-								console.log(`Cached blocks for ${slug} to ${blocksCacheFilePath}`);
+								// console.log(`Cached blocks for ${slug} to ${blocksCacheFilePath}`);
 							} else {
 								console.warn(`No <div class="post-body"> found for ${slug}`);
 							}
@@ -129,9 +129,9 @@ const blocksHtmlCacher = (): AstroIntegration => {
 							if (divStaticReferences) {
 								const staticHtml = render(divStaticReferences.children);
 								await fs.writeFile(staticReferencesCacheFilePath, staticHtml, "utf-8");
-								console.log(
-									`Cached static references for ${slug} to ${staticReferencesCacheFilePath}`,
-								);
+								// console.log(
+								// 	`Cached static references for ${slug} to ${staticReferencesCacheFilePath}`,
+								// );
 							} else {
 								console.warn(`No <div class="static-references"> found for ${slug}`);
 							}
