@@ -196,7 +196,7 @@ jobs:
           GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
       - name: Clear Previous constants config Cache (if needed)
-        if: env.DELETE_CACHES_GH_TOKEN != ''
+        if: steps.npm-cache-restore.outputs.cache-hit != 'true' && env.DELETE_CACHES_GH_TOKEN != ''
         run: |
           gh cache list --key constants-config- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
         env:
@@ -234,6 +234,7 @@ jobs:
           key: old-package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Save Cached constants-config
+        if: steps.restore-constants-config.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
           path: ./constants-config.json
