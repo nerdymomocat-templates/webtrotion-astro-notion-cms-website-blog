@@ -54,13 +54,14 @@ if (cachedHeadings) {
 	headings = cachedHeadings;
 } else {
 	headings = buildHeadings(blocks);
-	setCurrentHeadings(headings);
 	try {
 		await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
 	} catch (e) {
 		console.error("Error saving headings cache:", e);
 	}
 }
+
+setCurrentHeadings(headings);
 
 // --- HTML Cache Handling ---
 let cachedHtml = "";

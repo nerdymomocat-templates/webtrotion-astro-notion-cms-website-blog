@@ -119,7 +119,6 @@ if (postFound) {
 		headings = cachedHeadings;
 	} else {
 		headings = buildHeadings(blocks);
-		setCurrentHeadings(headings);
 		const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
 		try {
 			await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
@@ -127,6 +126,7 @@ if (postFound) {
 			console.error("Error saving headings cache:", e);
 		}
 	}
+	setCurrentHeadings(headings);
 
 	// Process file blocks only if cache isn't used
 	if (!postLastUpdatedBeforeLastBuild) {

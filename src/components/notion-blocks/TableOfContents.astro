@@ -12,35 +12,37 @@ const { block, setId = true } = Astro.props;
 let current_headings = getCurrentHeadings();
 ---
 
-<div class="table-of-contents no-rss" id={setId ? block.Id : undefined}>
-	{
-		current_headings.map((heading) => {
-			let indentClass = "";
-			if (heading.depth === 2) {
-				indentClass = "pl-6";
-			} else if (heading.depth === 3) {
-				indentClass = "pl-12";
-			}
+{
+	current_headings && (
+		<div class="table-of-contents no-rss" id={setId ? block.Id : undefined}>
+			{current_headings.map((heading) => {
+				let indentClass = "";
+				if (heading.depth === 2) {
+					indentClass = "pl-6";
+				} else if (heading.depth === 3) {
+					indentClass = "pl-12";
+				}
 
-			return (
-				<a
-					href={`#${heading.slug}`}
-					class:list={[
-						"table-of-contents block leading-7 hover:font-bold",
-						indentClass,
-						{
-							[`${getNotionColorToTailwindColor(block.TableOfContents.Color)} rounded-sm px-1`]:
-								block.TableOfContents.Color &&
-								!["default", "default_background", "default-background"].includes(
-									block.TableOfContents.Color,
-								),
-						},
-					]}
-					aria-label={`Jump to section: ${heading.text}`}
-				>
-					{heading.text}
-				</a>
-			);
-		})
-	}
-</div>
+				return (
+					<a
+						href={`#${heading.slug}`}
+						class:list={[
+							"table-of-contents block leading-7 hover:font-bold",
+							indentClass,
+							{
+								[`${getNotionColorToTailwindColor(block.TableOfContents.Color)} rounded-sm px-1`]:
+									block.TableOfContents.Color &&
+									!["default", "default_background", "default-background"].includes(
+										block.TableOfContents.Color,
+									),
+							},
+						]}
+						aria-label={`Jump to section: ${heading.text}`}
+					>
+						{heading.text}
+					</a>
+				);
+			})}
+		</div>
+	)
+}

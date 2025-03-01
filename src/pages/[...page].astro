@@ -17,7 +17,7 @@ import superjson from "superjson";
 export async function getStaticPaths() {
 		const pages = await getAllPages();
 		const allPosts = await getAllPosts();
-		const allItems = [...pages, ...allPosts];
+    const allItems = [...pages, ...allPosts];
 		const allItemsMap = Object.fromEntries(allItems.map(item => [item.PageId, item]));
 
 		return pages.map((page) => {
@@ -118,13 +118,13 @@ if (pageFound) {
 				headings = cachedHeadings;
 		} else {
 				headings = buildHeadings(blocks);
-				setCurrentHeadings(headings);
 				try {
 						await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
 				} catch (e) {
 						console.error("Error saving headings cache:", e);
 				}
 		}
+    setCurrentHeadings(headings);
 
 		if (!pageLastUpdatedBeforeLastBuild) {
 				const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
