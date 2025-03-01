@@ -93,7 +93,7 @@ jobs:
       - name: Process constants-config if cache not hit
         if: steps.restore-constants-config.outputs.cache-hit != 'true'
         run: |
-          echo "Cached old_constants-config.json is different than current constants-config."
+          echo "Cached old_constants-config.json is different than current constants-config. Removing blocks-html-cache, rss-cache, og-images and public/notion..."
           # Insert any additional processing or cleanup commands as needed.
           rm -rf tmp/blocks-html-cache
           rm -rf tmp/rss-cache
@@ -122,7 +122,7 @@ jobs:
             echo "Old tmpJSONCache: $OLD_TMPJSON"
             echo "New tmpJSONCache: $NEW_TMPJSON"
             if [ "$OLD_TMPJSON" != "$NEW_TMPJSON" ]; then
-              echo "tmpJSONCache changed, trimming caches..."
+              echo "tmpJSONCache changed, trimming blocks-html-cache, blocks-json-cache, rss-cache..."
               rm -rf tmp/blocks-html-cache
               rm -rf tmp/blocks-json-cache
               rm -rf tmp/rss-cache
