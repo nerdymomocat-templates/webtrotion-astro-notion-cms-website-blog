@@ -15,9 +15,6 @@ interface Props {
 }
 
 const { post, shouldUseCache } = Astro.props;
-
-console.log("DEL:shouldusecache value for in references section for",post.Title,"is", shouldUseCache);
-
 // Load references data
 const allReferencesToPage = getReferencesToPage(post.PageId);
 const allReferencesInPage = getReferencesInPage(post.PageId);
