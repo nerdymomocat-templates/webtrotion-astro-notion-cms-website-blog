@@ -2,19 +2,26 @@
 	"name": "webtrotion-astro-notion-cms-website-blog",
 	"version": "1.3",
 	"private": false,
-  "scripts": {
-    "predev": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
-    "dev": "astro dev",
-    "prebuild-local": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
-    "build-local": "astro build",
-    "start": "astro dev",
-    "build": "rm -rf buildcache && astro build",
-    "postbuild": "pagefind --site dist",
-    "preview": "astro preview",
-    "format": "prettier -w --cache .",
-    "check": "astro check",
-    "build:cached": "npm run cache:fetch && astro build"
-  },
+	"cacheVersion": {
+		"tmpJSONCache": "v1",
+		"tmpHTMLCache": "vA",
+		"tmpOGImagesCache": "v1",
+		"publicNotion": "v1",
+		"lastBuildTimestampStore": "vA"
+	},
+	"scripts": {
+		"predev": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
+		"dev": "astro dev",
+		"prebuild-local": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
+		"build-local": "astro build",
+		"start": "astro dev",
+		"build": "rm -rf buildcache && astro build",
+		"postbuild": "pagefind --site dist",
+		"preview": "astro preview",
+		"format": "prettier -w --cache .",
+		"check": "astro check",
+		"build:cached": "npm run cache:fetch && astro build"
+	},
 	"dependencies": {
 		"@astrojs/partytown": "^2.1.3",
 		"@astrojs/rss": "^4.0.11",

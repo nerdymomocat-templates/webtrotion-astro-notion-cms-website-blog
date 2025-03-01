@@ -59,8 +59,15 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
+      - name: Restore Cached package.json
+        id: restore-package-json
+        uses: actions/cache/restore@v4
+        with:
+          path: ./old_package.json
+          key: package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: package-json-cache-${{ github.repository_id }}-
+
       - name: Restore Cached `tmp`
-        if: steps.npm-cache-restore.outputs.cache-hit == 'true'
         id: cache-tmp-restore
         uses: actions/cache/restore@v4
         with:
@@ -69,25 +76,74 @@ jobs:
           restore-keys: tmp-webtrotion-${{ github.repository_id }}-
 
       - name: Restore Cached `public`
-        if: steps.npm-cache-restore.outputs.cache-hit == 'true'
         id: cache-public-restore
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ./public
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: public-webtrotion-${{ github.repository_id }}-
 
-      - name: Remove blocks-html-cache and rss-cache if exists on push event
-        if: github.event_name == 'push'
+      - name: Trim public and tmp files based on cache changes
+        if: steps.restore-package-json.outputs.cache-hit == 'true'
         run: |
-          for folder in blocks-html-cache rss-cache; do
-            if [ -d "./tmp/$folder" ]; then
-              echo "Deleting $folder folder"
-              rm -rf "./tmp/$folder"
-            else
-              echo "No $folder folder to delete"
+
+          if [ -f ./old_package.json ]; then
+            # If lastBuildTimestamp has changed, delete everything in tmp except .gitkeep and remove public/notion
+            OLD_LAST_BUILD_STORE=$(jq -r '.cacheVersion.lastBuildTimestampStore' ./old_package.json)
+            NEW_LAST_BUILD_STORE=$(jq -r '.cacheVersion.lastBuildTimestampStore' ./package.json)
+            echo "Old lastBuildTimestampStore: $OLD_LAST_BUILD_STORE"
+            echo "New lastBuildTimestampStore: $NEW_LAST_BUILD_STORE"
+            if [ "$OLD_LAST_BUILD_STORE" != "$NEW_LAST_BUILD_STORE" ]; then
+              echo "lastBuildTimestampStore changed, trimming tmp (except .gitkeep) and deleting public/notion..."
+              find tmp -mindepth 1 -not -name '.gitkeep' -exec rm -rf {} +
+              rm -rf public/notion
             fi
-          done
+
+            # Check tmpJSONCache (original logic)
+            OLD_TMPJSON=$(jq -r '.cacheVersion.tmpJSONCache' ./old_package.json)
+            NEW_TMPJSON=$(jq -r '.cacheVersion.tmpJSONCache' ./package.json)
+            echo "Old tmpJSONCache: $OLD_TMPJSON"
+            echo "New tmpJSONCache: $NEW_TMPJSON"
+            if [ "$OLD_TMPJSON" != "$NEW_TMPJSON" ]; then
+              echo "tmpJSONCache changed, trimming caches..."
+              rm -rf tmp/blocks-html-cache
+              rm -rf tmp/blocks-json-cache
+              rm -rf tmp/rss-cache
+            fi
+
+            # If tmpHTMLCache has changed, delete tmp/blocks-html-cache and tmp/rss-cache
+            OLD_TMPHTML=$(jq -r '.cacheVersion.tmpHTMLCache' ./old_package.json)
+            NEW_TMPHTML=$(jq -r '.cacheVersion.tmpHTMLCache' ./package.json)
+            echo "Old tmpHTMLCache: $OLD_TMPHTML"
+            echo "New tmpHTMLCache: $NEW_TMPHTML"
+            if [ "$OLD_TMPHTML" != "$NEW_TMPHTML" ]; then
+              echo "tmpHTMLCache changed, deleting tmp/blocks-html-cache and tmp/rss-cache..."
+              rm -rf tmp/blocks-html-cache
+              rm -rf tmp/rss-cache
+            fi
+
+            # If tmpOGImagesCache has changed, delete tmp/og-images
+            OLD_TMPOG=$(jq -r '.cacheVersion.tmpOGImagesCache' ./old_package.json)
+            NEW_TMPOG=$(jq -r '.cacheVersion.tmpOGImagesCache' ./package.json)
+            echo "Old tmpOGImagesCache: $OLD_TMPOG"
+            echo "New tmpOGImagesCache: $NEW_TMPOG"
+            if [ "$OLD_TMPOG" != "$NEW_TMPOG" ]; then
+              echo "tmpOGImagesCache changed, deleting tmp/og-images..."
+              rm -rf tmp/og-images
+            fi
+
+            # If publicNotion has changed, delete public/notion
+            OLD_PUBLIC_NOTION=$(jq -r '.cacheVersion.publicNotion' ./old_package.json)
+            NEW_PUBLIC_NOTION=$(jq -r '.cacheVersion.publicNotion' ./package.json)
+            echo "Old publicNotion: $OLD_PUBLIC_NOTION"
+            echo "New publicNotion: $NEW_PUBLIC_NOTION"
+            if [ "$OLD_PUBLIC_NOTION" != "$NEW_PUBLIC_NOTION" ]; then
+              echo "publicNotion changed, deleting public/notion..."
+              rm -rf public/notion
+            fi
+          else
+            echo "old_package.json not found, skipping trimming."
+          fi
 
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
@@ -101,10 +157,6 @@ jobs:
           echo "SITE = $SITE"
           echo "BASE = $BASE"
           npx --no-install astro build
-          # or if you prefer yarn, use: yarn build
-          # --site and --base flags can be included if needed for Astro
-          # --site steps.pages.outputs.origin" \
-          # --base steps.pages.outputs.base_path"
           npx --no-install pagefind --site dist
         working-directory: ${{ env.BUILD_PATH }}
 
@@ -136,6 +188,12 @@ jobs:
         with:
           path: ./public
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save package.json Cache
+        uses: actions/cache/save@v4
+        with:
+          path: package.json
+          key: package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
