@@ -11,7 +11,7 @@ import {
 } from "@/lib/blog-helpers";
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { MENU_PAGES_COLLECTION, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
+import { MENU_PAGES_COLLECTION, BUILD_FOLDER_PATHS } from "@/constants";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
@@ -20,11 +20,19 @@ import superjson from "superjson";
 
 interface Props {
 	post_full_preview: Post;
+	shouldUseCache: boolean;
+	postLastUpdatedBeforeLastBuild: boolean;
 	as?: HTMLTag;
 	withDesc?: boolean;
 }
 
-const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
+const {
+	post_full_preview,
+	shouldUseCache,
+	postLastUpdatedBeforeLastBuild,
+	as: Tag = "div",
+	withDesc = false,
+} = Astro.props;
 const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
 
 // --- Headings Cache Handling ---
@@ -32,19 +40,12 @@ let headings = null;
 const headingsCacheDir = BUILD_FOLDER_PATHS["headingsCache"];
 const headingsCacheFile = path.join(headingsCacheDir, `${post_full_preview.Slug}.json`);
 
-let postLastUpdatedBeforeLastBuild = LAST_BUILD_TIME
-	? post_full_preview?.LastUpdatedTimeStamp
-		? post_full_preview.LastUpdatedTimeStamp < LAST_BUILD_TIME
-		: false
-	: false;
-
 let cachedHeadings = null;
 if (postLastUpdatedBeforeLastBuild) {
 	try {
 		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
 		cachedHeadings = superjson.parse(headingsData);
 	} catch (e) {
-		// No cached headings available.
 		cachedHeadings = null;
 	}
 }
@@ -63,7 +64,7 @@ if (cachedHeadings) {
 
 // --- HTML Cache Handling ---
 let cachedHtml = "";
-if (postLastUpdatedBeforeLastBuild) {
+if (shouldUseCache) {
 	const htmlCacheFile = path.join(
 		BUILD_FOLDER_PATHS["blocksHtmlCache"],
 		`${post_full_preview.Slug}.html`,
@@ -154,7 +155,7 @@ const postLink = getPostLink(
 }
 
 {
-	postLastUpdatedBeforeLastBuild && cachedHtml ? (
+	shouldUseCache && cachedHtml ? (
 		<section class="post-body" data-html-type="cached" set:html={cachedHtml} />
 	) : (
 		<section class="post-body" data-html-type="new">
