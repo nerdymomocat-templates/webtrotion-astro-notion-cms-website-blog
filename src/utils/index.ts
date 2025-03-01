@@ -4,11 +4,11 @@ import type { Block, BlockTypes } from "@/lib/interfaces";
 import { MENU_PAGES_COLLECTION, HOME_PAGE_SLUG } from "@/constants";
 import { slugify } from "@/utils/slugify";
 import { getNavLink } from "@/lib/blog-helpers";
-export { getFormattedDate, getFormattedDateWithTime, areDifferentDates } from "./date";
-export { generateToc, buildHeadings } from "./generateToc";
-export type { TocItem } from "./generateToc";
-export { getWebmentionsForUrl } from "./webmentions";
-export { slugify } from "./slugify";
+export { getFormattedDate, getFormattedDateWithTime, areDifferentDates } from "@/utils/date";
+export { generateToc, buildHeadings } from "@/utils/generateToc";
+export type { TocItem } from "@/utils/generateToc";
+export { getWebmentionsForUrl } from "@/utils/webmentions";
+export { slugify } from "@/utils/slugify";
 
 export async function getCollections() {
 	const { propertiesRaw } = await getDatabase();

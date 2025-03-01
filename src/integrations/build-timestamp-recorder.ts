@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
 import type { AstroIntegration } from "astro";
+import { BUILD_FOLDER_PATHS } from "../constants";
 
-const TEMP_FILE_PATH = path.join("./tmp", "build_start_timestamp_temp.txt");
-const FINAL_FILE_PATH = path.join("./tmp", "build_start_timestamp.txt");
+const TEMP_FILE_PATH = path.join(BUILD_FOLDER_PATHS["tmp"], "build_start_timestamp_temp.txt");
+const FINAL_FILE_PATH = path.join(BUILD_FOLDER_PATHS["tmp"], "build_start_timestamp.txt");
 
 export default (): AstroIntegration => ({
 	name: "build-timestamp-recorder",

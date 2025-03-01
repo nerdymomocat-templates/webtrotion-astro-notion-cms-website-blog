@@ -27,10 +27,12 @@ const getSite = function () {
 import CustomIconDownloader from "./src/integrations/custom-icon-downloader";
 import EntryCacheEr from "./src/integrations/entry-cache-er";
 import PublicNotionCopier from "./src/integrations/public-notion-copier";
+import blocksHtmlCacher from "./src/integrations/block-html-cache-er";
 import DeleteBuildCache from "./src/integrations/delete-build-cache";
-import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder.ts";
+import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder";
 import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
+import createFoldersIfMissing from "./src/integrations/create-folders-if-missing";
 import robotsTxt from "astro-robots-txt";
 import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
@@ -72,22 +74,24 @@ export default defineConfig({
 		? modifyRedirectPaths(key_value_from_json["redirects"], process.env.BASE || BASE_PATH)
 		: {},
 	integrations: [
+		createFoldersIfMissing(),
 		buildTimestampRecorder(),
-		CustomIconDownloader(),
 		EntryCacheEr(),
-		PublicNotionCopier(),
-		DeleteBuildCache(),
+		CustomIconDownloader(),
 		CSSWriter(),
-		rssContentEnhancer(),
-		robotsTxt({
-			sitemapBaseFileName: "sitemap",
-		}),
 		partytown({
 			// Adds dataLayer.push as a forwarding-event.
 			config: {
 				forward: ["dataLayer.push"],
 			},
 		}),
+		robotsTxt({
+			sitemapBaseFileName: "sitemap",
+		}),
+		rssContentEnhancer(),
+		blocksHtmlCacher(),
+		PublicNotionCopier(),
+		DeleteBuildCache(),
 	],
 	image: {
 		domains: ["webmention.io"],

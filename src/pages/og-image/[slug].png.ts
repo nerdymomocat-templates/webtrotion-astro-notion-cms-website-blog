@@ -19,6 +19,7 @@ import {
 	HOME_PAGE_SLUG,
 	THEME,
 	MENU_PAGES_COLLECTION,
+	BUILD_FOLDER_PATHS,
 } from "@/constants";
 
 import fs from "fs";
@@ -1059,7 +1060,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string, au
 };
 
 export async function GET({ params: { slug } }: APIContext) {
-	const BASE_DIR = "./tmp/og-images/";
+	const BASE_DIR = BUILD_FOLDER_PATHS["ogImages"];
 	let keyStr = slug;
 	let type = "postpage";
 	if (keyStr?.includes("---")) {
@@ -1078,14 +1079,10 @@ export async function GET({ params: { slug } }: APIContext) {
 			: false;
 	}
 
-	if (!fs.existsSync(BASE_DIR)) {
-		fs.mkdirSync(BASE_DIR, { recursive: true });
-	}
-
 	const imagePath = path.join(BASE_DIR, `${slug}.png`);
 
 	if (fs.existsSync(imagePath) && postLastUpdatedBeforeLastBuild) {
-		// console.log("reading existing image for og slug", slug);
+		console.log("\nreading existing image for og slug", slug);
 		// Read the existing image and send it in the response
 		const existingImage = fs.readFileSync(imagePath);
 		return new Response(existingImage, {

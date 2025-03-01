@@ -5,14 +5,17 @@
 		"verbatimModuleSyntax": true,
 		"lib": ["DOM"],
 		"paths": {
+			"@/styles": ["src/styles/global.css"],
 			"@/*": ["src/*"],
 			"@/assets/*": ["src/assets/*"],
-			"@/components/*": ["src/components/*.astro"],
-			"@/layouts/*": ["src/layouts/*.astro"],
+			"@/components/*": ["src/components/*"],
+			"@/layouts/*": ["src/layouts/*"],
 			"@/utils": ["src/utils/index.ts"],
+			"@/utils/*": ["src/utils/*.ts"],
 			"@/stores/*": ["src/stores/*"],
 			"@/types": ["src/types.ts"],
 			"@/lib/notion/*": ["src/lib/notion/*"],
+			"@/lib/*": ["src/lib/*"],
 			"@/siteInfo": ["src/site.config.ts"]
 		}
 	},

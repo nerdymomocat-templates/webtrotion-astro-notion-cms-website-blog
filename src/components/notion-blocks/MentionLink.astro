@@ -1,6 +1,6 @@
 ---
-import { Mention } from "../../lib/interfaces.ts";
-import Icon from "@/components/Icon";
+import type { Mention } from "@/lib/interfaces.ts";
+import Icon from "@/components/Icon.astro";
 
 export interface Props {
 	mention: Mention;
@@ -24,35 +24,43 @@ const {
 	LinkProvider,
 } = mention.LinkMention;
 
-if (!Href)
-{
-  return null;
+if (!Href) {
+	return null;
 }
-const isEmbeddable = IframeUrl? true: false;
+const isEmbeddable = IframeUrl ? true : false;
 let id = "id" + Math.random().toString(16).slice(2);
-const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Href;
+const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + "..." : Href;
 ---
 
 {
 	isEmbeddable ? (
-<>
+		<>
 			<a
-				data-popover-target=`popover-description-${id}`
-      data-popover-placement="bottom-end"
-      data-popover-type-lm = "true"
+				data-popover-target={`popover-description-${id}`}
+				data-popover-placement="bottom-end"
+				data-popover-type-lm="true"
 				data-href={Href}
 				href={Href}
-        target="_blank"
+				target="_blank"
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
+						<img
+							src={IconUrl}
+							alt=""
+							class="no-rss mb-0.5 inline h-4 w-4 shrink-0 align-sub"
+						/>{" "}
 					</>
-				):
-        <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
-        </>}
-				{LinkProvider && LinkProvider!==Title && (
+				) : (
+					<>
+						<Icon
+							name={"external-link-mention"}
+							class="mb-0.5 inline h-4 w-4 align-sub"
+							aria-hidden="true"
+						/>{" "}
+					</>
+				)}
+				{LinkProvider && LinkProvider !== Title && (
 					<>
 						<span class="text-link/80">{LinkProvider}</span>{" "}
 					</>
@@ -63,27 +71,36 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 	) : (
 		<>
 			<a
-				data-popover-target=`popover-description-${id}`
-      data-popover-placement="bottom-end"
-      data-popover-type-lm = "true"
+				data-popover-target={`popover-description-${id}`}
+				data-popover-placement="bottom-end"
+				data-popover-type-lm="true"
 				data-href={Href}
 				href={Href}
-        target="_blank"
+				target="_blank"
 			>
 				{IconUrl ? (
 					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
+						<img
+							src={IconUrl}
+							alt=""
+							class="no-rss mb-0.5 inline h-4 w-4 shrink-0 align-sub"
+						/>{" "}
 					</>
-				):
-        <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
-        </>}
-        {LinkProvider && LinkProvider!==Title && LinkProvider!==LinkAuthor && (
+				) : (
+					<>
+						<Icon
+							name={"external-link-mention"}
+							class="mb-0.5 inline h-4 w-4 align-sub"
+							aria-hidden="true"
+						/>{" "}
+					</>
+				)}
+				{LinkProvider && LinkProvider !== Title && LinkProvider !== LinkAuthor && (
 					<>
 						<span class="text-link/70">{LinkProvider}</span>{" "}
 					</>
 				)}
-				{LinkAuthor && LinkAuthor!==Title && (
+				{LinkAuthor && LinkAuthor !== Title && (
 					<>
 						<span class="text-link/80">{LinkAuthor}</span>{" "}
 					</>
@@ -94,54 +111,62 @@ const truncatedHref = Href && Href.length > 30 ? Href.slice(0, 30) + '...' : Hre
 	)
 }
 
-<template id=`template-popover-description-${id}`>
+<template id={`template-popover-description-${id}`}>
 	<div
 		data-popover
-		id=`popover-description-${id}`
+		id={`popover-description-${id}`}
 		role="tooltip"
-		class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:bg-gray-800 dark:text-gray-400"
+		class="popoverEl invisible absolute z-40 hidden inline-block w-72 rounded-lg bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:bg-gray-800 dark:text-gray-400"
 	>
-  {isEmbeddable?
-    (
-          <div class="w-full min-h-[100px]" style={Height && Height>380?"height:380px":("height:"+Height?.toString()+"px")}>
-
-                  <iframe
-                    src={IframeUrl}
-                    sandbox="allow-scripts allow-popups allow-top-navigation-by-user-activation allow-forms allow-same-origin allow-storage-access-by-user-activation allow-popups-to-escape-sandbox"
-                    allowfullscreen=""
-                    class="w-full h-full rounded-[1px] pointer-events-auto"
-                  ></iframe>
-
-          </div>
-      ):(
-  <a href={Href}>
-    {
-	ThumbnailUrl && (
-
-					<img
-						class="imagemedia block mx-auto min-w-0 max-w-full rounded-t-md"
-						src={ThumbnailUrl}
-						loading="lazy"
-						alt={Title}
+		{
+			isEmbeddable ? (
+				<div
+					class="min-h-[100px] w-full"
+					style={Height && Height > 380 ? "height:380px" : "height:" + Height?.toString() + "px"}
+				>
+					<iframe
+						src={IframeUrl}
+						sandbox="allow-scripts allow-popups allow-top-navigation-by-user-activation allow-forms allow-same-origin allow-storage-access-by-user-activation allow-popups-to-escape-sandbox"
+						allowfullscreen=""
+						class="pointer-events-auto h-full w-full rounded-[1px]"
 					/>
-
-	)
-
-}
-<div class="mx-4 my-2 gap-2">
-  {Title && <div class="text-sm line-clamp-2">{Title}</div>}
-  {Description && <div class="text-xs line-clamp-3">{Description}</div>}
-<div class="mt-4">
-{IconUrl ? (
-					<>
-						<img src={IconUrl} alt="" class="inline h-4 w-4 mb-0.5 shrink-0 align-sub no-rss" />{" "}
-					</s>
-				):
-        <>
-        <Icon name={"external-link-mention"} class="inline h-4 w-4 mb-0.5 align-sub" aria-hidden="true" />{" "}
-        </>}
-        {Href && <span class="text-xs text-link/80">{truncatedHref}</span>}
-      </div>
-      </div>
-  </a>)}
-</template>
+				</div>
+			) : (
+				<a href={Href}>
+					{ThumbnailUrl && (
+						<img
+							class="imagemedia mx-auto block max-w-full min-w-0 rounded-t-md"
+							src={ThumbnailUrl}
+							loading="lazy"
+							alt={Title}
+						/>
+					)}
+					<div class="mx-4 my-2 gap-2">
+						{Title && <div class="line-clamp-2 text-sm">{Title}</div>}
+						{Description && <div class="line-clamp-3 text-xs">{Description}</div>}
+						<div class="mt-4">
+							{IconUrl ? (
+								<>
+									<img
+										src={IconUrl}
+										alt=""
+										class="no-rss mb-0.5 inline h-4 w-4 shrink-0 align-sub"
+									/>{" "}
+								</>
+							) : (
+								<>
+									<Icon
+										name={"external-link-mention"}
+										class="mb-0.5 inline h-4 w-4 align-sub"
+										aria-hidden="true"
+									/>{" "}
+								</>
+							)}
+							{Href && <span class="text-link/80 text-xs">{truncatedHref}</span>}
+						</div>
+					</div>
+				</a>
+			)
+		}
+	</div></template
+>

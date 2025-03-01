@@ -13,9 +13,10 @@ import {
 	OPTIMIZE_IMAGES,
 	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
+	BUILD_FOLDER_PATHS,
 } from "../../constants";
-import type * as responses from "./responses";
-import type * as requestParams from "./request-params";
+import type * as responses from "@/lib/notion/responses";
+import type * as requestParams from "@/lib/notion/request-params";
 import type {
 	Database,
 	Post,
@@ -57,12 +58,13 @@ import type {
 	Reference,
 	NAudio,
 	ReferencesInPage,
-} from "../interfaces";
+} from "@/lib/interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
-import { extractReferencesInPage } from "../blog-helpers";
+import { extractReferencesInPage } from "../../lib/blog-helpers";
+import superjson from "superjson";
 
 const client = new Client({
 	auth: NOTION_API_SECRET,
@@ -72,15 +74,11 @@ let allEntriesCache: Post[] | null = null;
 let dbCache: Database | null = null;
 let blockIdPostIdMap: { [key: string]: string } | null = null;
 
-const BUILDCACHE_DIR = "./buildcache";
-
+const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 // Generic function to save data to buildcache
 function saveBuildcache<T>(filename: string, data: T): void {
-	if (!fs.existsSync(BUILDCACHE_DIR)) {
-		fs.mkdirSync(BUILDCACHE_DIR, { recursive: true });
-	}
 	const filePath = path.join(BUILDCACHE_DIR, filename);
-	fs.writeFileSync(filePath, JSON.stringify(data), "utf8");
+	fs.writeFileSync(filePath, superjson.stringify(data), "utf8");
 }
 
 // Generic function to load data from buildcache
@@ -88,7 +86,7 @@ function loadBuildcache<T>(filename: string): T | null {
 	const filePath = path.join(BUILDCACHE_DIR, filename);
 	if (fs.existsSync(filePath)) {
 		const data = fs.readFileSync(filePath, "utf8");
-		return JSON.parse(data) as T;
+		return superjson.parse(data) as T;
 	}
 	return null;
 }
@@ -222,32 +220,30 @@ export async function getPostByPageId(pageId: string): Promise<Post | null> {
 export async function getPostContentByPostId(
 	post: Post,
 ): Promise<{ blocks: Block[]; referencesInPage: ReferencesInPage[] | null }> {
-	const tmpDir = "./tmp";
+	const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
 	const cacheFilePath = path.join(tmpDir, `${post.PageId}.json`);
-	const cacheReferencesInPageFilePath = path.join(tmpDir, `${post.PageId}_ReferencesInPage.json`);
+	const cacheReferencesInPageFilePath = path.join(
+		BUILD_FOLDER_PATHS["referencesInPage"],
+		`${post.PageId}.json`,
+	);
 	const isPostUpdatedAfterLastBuild = LAST_BUILD_TIME
 		? post.LastUpdatedTimeStamp > LAST_BUILD_TIME
 		: true;
-
-	// Ensure the tmp directory exists
-	if (!fs.existsSync(tmpDir)) {
-		fs.mkdirSync(tmpDir, { recursive: true });
-	}
 
 	let blocks: Block[];
 	let referencesInPage: ReferencesInPage[] | null;
 
 	if (!isPostUpdatedAfterLastBuild && fs.existsSync(cacheFilePath)) {
 		// If the post was not updated after the last build and cache file exists, return the cached data
-		console.log("Hit cache for", post.Slug);
-		blocks = JSON.parse(fs.readFileSync(cacheFilePath, "utf-8"));
+		console.log("\nHit cache for", post.Slug);
+		blocks = superjson.parse(fs.readFileSync(cacheFilePath, "utf-8"));
 		if (fs.existsSync(cacheReferencesInPageFilePath)) {
-			referencesInPage = JSON.parse(fs.readFileSync(cacheReferencesInPageFilePath, "utf-8"));
+			referencesInPage = superjson.parse(fs.readFileSync(cacheReferencesInPageFilePath, "utf-8"));
 		} else {
 			referencesInPage = extractReferencesInPage(post.PageId, blocks);
 			fs.writeFileSync(
 				cacheReferencesInPageFilePath,
-				JSON.stringify(referencesInPage, null, 2),
+				superjson.stringify(referencesInPage),
 				"utf-8",
 			);
 		}
@@ -255,13 +251,9 @@ export async function getPostContentByPostId(
 		// If the post was updated after the last build or cache does not exist, fetch new data
 		blocks = await getAllBlocksByBlockId(post.PageId);
 		// Write the new data to the cache file
-		fs.writeFileSync(cacheFilePath, JSON.stringify(blocks, null, 2), "utf-8");
+		fs.writeFileSync(cacheFilePath, superjson.stringify(blocks), "utf-8");
 		referencesInPage = extractReferencesInPage(post.PageId, blocks);
-		fs.writeFileSync(
-			cacheReferencesInPageFilePath,
-			JSON.stringify(referencesInPage, null, 2),
-			"utf-8",
-		);
+		fs.writeFileSync(cacheReferencesInPageFilePath, superjson.stringify(referencesInPage), "utf-8");
 	}
 
 	// Update the blockIdPostIdMap
@@ -339,8 +331,8 @@ export function createReferencesToThisEntry(
 
 	// Write each entry's references to a file
 	Object.entries(entryReferencesMap).forEach(([entryId, references]) => {
-		const filePath = path.join("./tmp", `${entryId}_ReferencesToPage.json`);
-		fs.writeFileSync(filePath, JSON.stringify(references, null, 2), "utf-8");
+		const filePath = path.join(BUILD_FOLDER_PATHS["referencesToPage"], `${entryId}.json`);
+		fs.writeFileSync(filePath, superjson.stringify(references), "utf-8");
 	});
 }
 
@@ -428,11 +420,11 @@ export async function getBlock(blockId: string): Promise<Block | null> {
 
 	if (postId) {
 		// If we have a mapping, look for the block in the cached post JSON
-		const tmpDir = "./tmp";
+		const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
 		const cacheFilePath = path.join(tmpDir, `${postId}.json`);
 
 		if (fs.existsSync(cacheFilePath)) {
-			const cachedBlocks: Block[] = JSON.parse(fs.readFileSync(cacheFilePath, "utf-8"));
+			const cachedBlocks: Block[] = superjson.parse(fs.readFileSync(cacheFilePath, "utf-8"));
 			const block = cachedBlocks.find((b) => b.Id === formatUUID(blockId));
 
 			if (block) {
@@ -552,24 +544,31 @@ export async function getAllTagsWithCounts(): Promise<
 }
 
 export function generateFilePath(url: URL, convertoWebp: boolean = false) {
-	const BASE_DIR = "./public/notion/";
-	if (!fs.existsSync(BASE_DIR)) {
-		fs.mkdirSync(BASE_DIR);
-	}
+	const BASE_DIR = BUILD_FOLDER_PATHS["publicNotion"];
+	// Get the directory name from the second last segment of the path
+	const segments = url.pathname.split("/");
+	const dirName = segments.slice(-2)[0];
+	const dir = path.join(BASE_DIR, dirName);
 
-	const dir = BASE_DIR + url.pathname.split("/").slice(-2)[0];
 	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir);
 	}
-	const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
-	let filepath = `${dir}/${filename}`;
+
+	// Get the file name and decode it
+	const filename = decodeURIComponent(segments.slice(-1)[0]);
+	let filepath = path.join(dir, filename);
 
 	if (convertoWebp && isConvImageType(filename)) {
-		filepath = `${dir}/${filename.substring(0, filename.lastIndexOf("."))}.webp`;
+		// Remove original extension and append .webp
+		const extIndex = filename.lastIndexOf(".");
+		if (extIndex !== -1) {
+			const nameWithoutExt = filename.substring(0, extIndex);
+			filepath = path.join(dir, `${nameWithoutExt}.webp`);
+		}
 	}
+
 	return filepath;
 }
-
 export function isConvImageType(filepath: string) {
 	if (
 		filepath.includes(".png") ||
@@ -616,9 +615,9 @@ export async function downloadFile(
 	const isImage = res.headers["content-type"]?.startsWith("image/");
 
 	const processFavicon = async (sourcePath: string) => {
-		const favicon16Path = "./public/favicon16.png";
-		const favicon32Path = "./public/favicon32.png";
-		const faviconIcoPath = "./public/favicon.ico";
+		const favicon16Path = path.join(BUILD_FOLDER_PATHS["public"], "favicon16.png");
+		const favicon32Path = path.join(BUILD_FOLDER_PATHS["public"], "favicon32.png");
+		const faviconIcoPath = path.join(BUILD_FOLDER_PATHS["public"], "favicon.ico");
 
 		try {
 			// Save the original image as favicon16.png (16x16)

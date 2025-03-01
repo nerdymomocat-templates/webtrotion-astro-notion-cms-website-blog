@@ -1,9 +1,7 @@
 ---
-// import type { CollectionEntry } from "astro:content";
-// import type { HTMLTag, Polymorphic } from "astro/types";
 import type { HTMLTag } from "astro/types";
-import FormattedDate from "../FormattedDate.astro";
-import type { Post } from "src/lib/interfaces";
+import FormattedDate from "@/components/FormattedDate.astro";
+import type { Post } from "@/lib/interfaces";
 import { getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import {
 	extractTargetBlocks,
@@ -11,43 +9,89 @@ import {
 	getPostLink,
 	setCurrentHeadings,
 } from "@/lib/blog-helpers";
-import NotionBlocks from "src/components/NotionBlocks.astro";
+import NotionBlocks from "@/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { MENU_PAGES_COLLECTION } from "@/constants";
-import Icon from "@/components/Icon";
+import { MENU_PAGES_COLLECTION, BUILD_FOLDER_PATHS } from "@/constants";
+import Icon from "@/components/Icon.astro";
 import { buildHeadings, slugify } from "@/utils";
-
-// type Props<Tag extends HTMLTag> = Polymorphic<{ as: Tag }> & {
-// 	post: CollectionEntry<"post">;
-// 	withDesc?: boolean;
-// };
+import fs from "fs/promises";
+import path from "path";
+import superjson from "superjson";
 
 interface Props {
 	post_full_preview: Post;
+	shouldUseCache: boolean;
+	postLastUpdatedBeforeLastBuild: boolean;
 	as?: HTMLTag;
 	withDesc?: boolean;
 }
 
-const { post_full_preview, as: Tag = "div", withDesc = false } = Astro.props;
+const {
+	post_full_preview,
+	shouldUseCache,
+	postLastUpdatedBeforeLastBuild,
+	as: Tag = "div",
+	withDesc = false,
+} = Astro.props;
 const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
-let headings = buildHeadings(blocks);
-setCurrentHeadings(headings);
 
-const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio"], blocks).filter(
-	(block) => {
-		if (!block) {
-			return false;
-		}
+// --- Headings Cache Handling ---
+let headings = null;
+const headingsCacheDir = BUILD_FOLDER_PATHS["headingsCache"];
+const headingsCacheFile = path.join(headingsCacheDir, `${post_full_preview.Slug}.json`);
+
+let cachedHeadings = null;
+if (postLastUpdatedBeforeLastBuild) {
+	try {
+		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
+		cachedHeadings = superjson.parse(headingsData);
+	} catch (e) {
+		cachedHeadings = null;
+	}
+}
+
+if (cachedHeadings) {
+	headings = cachedHeadings;
+} else {
+	headings = buildHeadings(blocks);
+	setCurrentHeadings(headings);
+	try {
+		await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
+	} catch (e) {
+		console.error("Error saving headings cache:", e);
+	}
+}
+
+// --- HTML Cache Handling ---
+let cachedHtml = "";
+if (shouldUseCache) {
+	const htmlCacheFile = path.join(
+		BUILD_FOLDER_PATHS["blocksHtmlCache"],
+		`${post_full_preview.Slug}.html`,
+	);
+	try {
+		cachedHtml = await fs.readFile(htmlCacheFile, "utf-8");
+	} catch (e) {
+		// Cache file doesn't exist; fallback to fresh rendering.
+		cachedHtml = "";
+	}
+}
+
+if (!postLastUpdatedBeforeLastBuild) {
+	const fileAtacchedBlocks = extractTargetBlocks(
+		["image", "video", "file", "audio"],
+		blocks,
+	).filter((block) => {
+		if (!block) return false;
 		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
 		return (
 			imageOrVideoOrAudioOrFile &&
 			imageOrVideoOrAudioOrFile.File &&
 			imageOrVideoOrAudioOrFile.File.Url
 		);
-	},
-);
-
-const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	});
+	await processFileBlocks(fileAtacchedBlocks);
+}
 
 const postLink = getPostLink(
 	post_full_preview.Slug,
@@ -82,6 +126,7 @@ const postLink = getPostLink(
 		<q class="line-clamp-3 block italic">{post_full_preview.Excerpt}</q>
 	)
 }
+
 {
 	post_full_preview.Tags && post_full_preview.Tags.length > 0 && (
 		<div class="mt-1 gap-2">
@@ -109,6 +154,12 @@ const postLink = getPostLink(
 	)
 }
 
-<section>
-	<NotionBlocks blocks={blocks} />
-</section>
+{
+	shouldUseCache && cachedHtml ? (
+		<section class="post-body" data-html-type="cached" set:html={cachedHtml} />
+	) : (
+		<section class="post-body" data-html-type="new">
+			<NotionBlocks blocks={blocks} />
+		</section>
+	)
+}

@@ -1,17 +1,17 @@
 ---
 import katex from "katex";
-import { RichText } from "../../lib/interfaces.ts";
-import Bold from "./annotations/Bold.astro";
-import Italic from "./annotations/Italic.astro";
-import Strikethrough from "./annotations/Strikethrough.astro";
-import Underline from "./annotations/Underline.astro";
-import Color from "./annotations/Color.astro";
-import Code from "./annotations/Code.astro";
-import Anchor from "./annotations/Anchor.astro";
-import MentionPage from "./MentionPage.astro";
-import MentionDate from "./MentionDate.astro";
-import MentionLink from "./MentionLink.astro";
-import MentionCustomEmoji from "./MentionCustomEmoji.astro";
+import type { RichText } from "@/lib/interfaces.ts";
+import Bold from "@/components/notion-blocks/annotations/Bold.astro";
+import Italic from "@/components/notion-blocks/annotations/Italic.astro";
+import Strikethrough from "@/components/notion-blocks/annotations/Strikethrough.astro";
+import Underline from "@/components/notion-blocks/annotations/Underline.astro";
+import Color from "@/components/notion-blocks/annotations/Color.astro";
+import Code from "@/components/notion-blocks/annotations/Code.astro";
+import Anchor from "@/components/notion-blocks/annotations/Anchor.astro";
+import MentionPage from "@/components/notion-blocks/MentionPage.astro";
+import MentionDate from "@/components/notion-blocks/MentionDate.astro";
+import MentionLink from "@/components/notion-blocks/MentionLink.astro";
+import MentionCustomEmoji from "@/components/notion-blocks/MentionCustomEmoji.astro";
 
 export interface Props {
 	richText: RichText;

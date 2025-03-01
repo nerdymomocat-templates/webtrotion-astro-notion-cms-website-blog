@@ -77,6 +77,18 @@ jobs:
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: public-webtrotion-${{ github.repository_id }}-
 
+      - name: Remove blocks-html-cache and rss-cache if exists on push event
+        if: github.event_name == 'push' && steps.cache-tmp-restore.outputs.cache-hit == 'true'
+        run: |
+          for folder in blocks-html-cache rss-cache; do
+            if [ -d "./tmp/$folder" ]; then
+              echo "Deleting $folder folder"
+              rm -rf "./tmp/$folder"
+            else
+              echo "No $folder folder to delete"
+            fi
+          done
+
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
           NOTION_API_SECRET: ${{ env.NOTION_API_SECRET }}

@@ -1,9 +1,10 @@
 import * as fs from "node:fs";
 import type { WebmentionsFeed, WebmentionsCache, WebmentionsChildren } from "@/types";
+import { BUILD_FOLDER_PATHS } from "@/constants";
 
 const DOMAIN = import.meta.env.SITE;
 const API_TOKEN = import.meta.env.WEBMENTION_API_KEY;
-const CACHE_DIR = ".data";
+const CACHE_DIR = BUILD_FOLDER_PATHS["tmp"];
 const filePath = `${CACHE_DIR}/webmentions.json`;
 const validWebmentionTypes = ["like-of", "mention-of", "in-reply-to"];
 
@@ -62,11 +63,6 @@ export function filterWebmentions(webmentions: WebmentionsChildren[]) {
 // save combined webmentions in cache file
 function writeToCache(data: WebmentionsCache) {
 	const fileContent = JSON.stringify(data, null, 2);
-
-	// create cache folder if it doesn't exist already
-	if (!fs.existsSync(CACHE_DIR)) {
-		fs.mkdirSync(CACHE_DIR);
-	}
 
 	// write data to cache json file
 	fs.writeFile(filePath, fileContent, (err) => {

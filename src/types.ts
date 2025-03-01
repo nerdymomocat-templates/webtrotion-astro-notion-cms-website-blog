@@ -1,4 +1,4 @@
-import type { FileObject, Emoji } from "./lib/interfaces";
+import type { FileObject, Emoji } from "@/lib/interfaces";
 
 export type SocialLink = {
 	name: string;

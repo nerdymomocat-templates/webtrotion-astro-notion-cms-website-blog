@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import type { AstroIntegration } from "astro";
+import { BUILD_FOLDER_PATHS } from "../constants";
 
 const copyFiles = (src: string, dest: string) => {
 	const entries = fs.readdirSync(src, { withFileTypes: true });
@@ -33,7 +34,7 @@ export default (): AstroIntegration => ({
 				fs.mkdirSync(outDir, { recursive: true });
 			}
 
-			copyFiles("public/notion", outDir);
+			copyFiles(BUILD_FOLDER_PATHS["publicNotion"], outDir);
 			console.log("Finished copying notion files to root!");
 		},
 	},

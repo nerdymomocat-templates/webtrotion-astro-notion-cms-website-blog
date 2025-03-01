@@ -1,176 +1,205 @@
 ---
-//FIXME: try moving all of this to content and not here
 import type { GetStaticPaths, Page } from "astro";
-import PageLayout from "src/layouts/Base.astro";
-import PostPreview from "src/components/blog/PostPreview.astro";
-import PostPreviewFull from "src/components/blog/PostPreviewFull.astro";
-import Pagination from "src/components/Paginator.astro";
+import PageLayout from "@/layouts/Base.astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import PostPreviewFull from "@/components/blog/PostPreviewFull.astro";
+import Pagination from "@/components/Paginator.astro";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "@/lib/interfaces";
-import { getCollectionsWDesc } from "@/utils";
-import {slugify} from '@/utils';
+import { getCollectionsWDesc, slugify } from "@/utils";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
-import { getNavLink, resetCurrentHeadings, resetFirstImage } from "@/lib/blog-helpers";
-import Icon from '@/components/Icon';
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE, LAST_BUILD_TIME } from "@/constants";
+import { getNavLink, resetCurrentHeadings, resetFirstImage, getReferencesInPage } from "@/lib/blog-helpers";
+import Icon from '@/components/Icon.astro';
 
 export const getStaticPaths = (async ({ paginate }) => {
-	let posts = await getAllPosts();
-  // Further filter posts if HIDE_UNDERSCORE_SLUGS_IN_LISTS is true
-  if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
-    posts = posts.filter((post) => !post.Slug.startsWith("_"));
-}
+		let posts = await getAllPosts();
+		if (HIDE_UNDERSCORE_SLUGS_IN_LISTS) {
+				posts = posts.filter((post) => !post.Slug.startsWith("_"));
+		}
 
-	const collections = await getCollectionsWDesc();
+		const collections = await getCollectionsWDesc();
 
-	return collections.flatMap((collection) => {
-		// Initially filter posts based on the collection
-		let collectionPosts = posts.filter((post) => post.Collection === collection.name);
+		return collections.flatMap((collection) => {
+				let collectionPosts = posts.filter((post) => post.Collection === collection.name);
+				collectionPosts.sort((a, b) => (a.Pinned === b.Pinned ? 0 : a.Pinned ? -1 : 1));
+				const uniqueTags = getUniqueTags(collectionPosts);
 
-    // Sort posts to have pinned ones on top while maintaining the original order within each category
-    collectionPosts.sort((a, b) => {
-        if (a.Pinned === b.Pinned) {
-            return 0; // maintain original order if both are pinned or both are not pinned
-        }
-        return a.Pinned ? -1 : 1; // pinned posts come first
-    });
-
-		const uniqueTags = getUniqueTags(collectionPosts);
-
-		return paginate(collectionPosts, {
-			params: { collection: slugify(collection.name) },
-      props: { collection: collection.name, description: collection.description, uniqueTags },
-			pageSize: NUMBER_OF_POSTS_PER_PAGE,
+				return paginate(collectionPosts, {
+						params: { collection: slugify(collection.name) },
+						props: { collection: collection.name, description: collection.description, uniqueTags },
+						pageSize: NUMBER_OF_POSTS_PER_PAGE,
+				});
 		});
-	});
 }) satisfies GetStaticPaths;
 
 interface Props {
-	page: Page<Post>;
-	collection: string;
-  description: string;
-	uniqueTags: SelectProperty[];
+		page: Page<Post>;
+		collection: string;
+		description: string;
+		uniqueTags: SelectProperty[];
 }
 
 const { page, collection, description, uniqueTags } = Astro.props as Props;
 
+// Compute caching info for each post in page.data
+const allPosts = await getAllPosts();
+const allPostsMap: Record<string, Post> = Object.fromEntries(allPosts.map(p => [p.PageId, p]));
+
+const postsWithCacheInfo = page.data.map(post => {
+		const referencesInPage = getReferencesInPage(post.PageId);
+		const linkedPageIdsSet = new Set<string>();
+
+		if (referencesInPage) {
+				referencesInPage.forEach(ref => {
+						if (ref.link_to_pageid) {
+								linkedPageIdsSet.add(ref.link_to_pageid);
+						}
+						if (ref.other_pages) {
+								ref.other_pages.forEach(richText => {
+										if (richText.InternalHref?.PageId) {
+												linkedPageIdsSet.add(richText.InternalHref.PageId);
+										} else if (richText.Mention?.Page?.PageId) {
+												linkedPageIdsSet.add(richText.Mention.Page.PageId);
+										}
+								});
+						}
+				});
+		}
+
+		const linkedPageIds = Array.from(linkedPageIdsSet);
+
+		const postLastUpdatedBeforeLastBuild =
+				LAST_BUILD_TIME && post?.LastUpdatedTimeStamp && post.LastUpdatedTimeStamp < LAST_BUILD_TIME;
+
+		const linkedPostsUpdated =
+				!LAST_BUILD_TIME ||
+				(linkedPageIds.length > 0 && linkedPageIds.some(pageId => {
+						const linkedPost = allPostsMap[pageId];
+						return linkedPost && linkedPost.LastUpdatedTimeStamp > LAST_BUILD_TIME;
+				}));
+
+		const shouldUseCache = postLastUpdatedBeforeLastBuild && !linkedPostsUpdated;
+
+		return { post, shouldUseCache, postLastUpdatedBeforeLastBuild };
+});
+
 const meta = {
-	title: `${collection}`,
-	description: description || "Read my collection of posts.",
-	ogImage: "/og-image/collectionpage---" + collection + ".png",
+		title: `${collection}`,
+		description: description || "Read my collection of posts.",
+		ogImage: "/og-image/collectionpage---" + collection + ".png",
 };
 
 const paginationProps = {
-	...(page.url.prev && {
-		prevUrl: {
-			url: getNavLink(page.url.prev),
-			text: `← Previous Posts`,
-		},
-	}),
-	...(page.url.next && {
-		nextUrl: {
-			url: getNavLink(page.url.next),
-			text: `Next Posts →`,
-		},
-	}),
+		...(page.url.prev && {
+				prevUrl: { url: getNavLink(page.url.prev), text: `← Previous Posts` },
+		}),
+		...(page.url.next && {
+				nextUrl: { url: getNavLink(page.url.next), text: `Next Posts →` },
+		}),
 };
 ---
 
 <PageLayout meta={meta}>
-	<h1 class="title mb-6">{collection}</h1>
-  {description && <q class="block italic mb-6 -mt-3">{description}</q>}
-	<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
-		<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
-			<ul class="space-y-4 text-start">
+		<h1 class="title mb-6">{collection}</h1>
+		{description && <q class="block italic mb-6 -mt-3">{description}</q>}
+		<div class="grid gap-y-16 grid-cols-3 sm:grid-cols-4 sm:items-start sm:gap-x-8">
+				<section aria-label="Blog post list" class="col-span-3 print:col-span-full">
+						<ul class="space-y-4 text-start">
+								{
+										resetFirstImage() && postsWithCacheInfo.map(({ post, shouldUseCache, postLastUpdatedBeforeLastBuild }) =>
+												FULL_PREVIEW_COLLECTIONS.includes(collection) && resetCurrentHeadings() ? (
+														<>
+																<li>
+																		<PostPreviewFull
+																				post_full_preview={post}
+																				shouldUseCache={shouldUseCache}
+																				postLastUpdatedBeforeLastBuild={postLastUpdatedBeforeLastBuild}
+																				as="h2"
+																				withDesc
+																		/>
+																</li>
+																<hr class="divider w-full mx-auto my-4 h-0.5 rounded-sm border-none bg-accent/20" />
+														</>
+												) : (
+														<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
+																<PostPreview post={post} as="h2" withDesc />
+														</li>
+												)
+										)
+								}
+						</ul>
+						<Pagination {...paginationProps} />
+				</section>
 				{
-					resetFirstImage() && page.data.map((post) =>
-						FULL_PREVIEW_COLLECTIONS.includes(collection) && resetCurrentHeadings() ? (
-							<>
-								<li>
-									<PostPreviewFull post_full_preview={post} as="h2" withDesc />
-								</li>
-								<hr class="divider w-full mx-auto my-4 h-0.5 rounded-sm border-none bg-accent/20" />
-							</>
-						) : (
-							<li class="flex flex-col max-w-full flex-wrap gap-1.5 [&_q]:basis-full">
-								<PostPreview post={post} as="h2" withDesc />
-							</li>
-						),
+					!!uniqueTags.length && (
+						<aside class="col-span-3 sm:col-span-1 print:hidden">
+							<h2 class="mb-4 flex items-center text-lg font-semibold text-accent-2">
+								<Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
+								Tags
+							</h2>
+							<ul class="flex flex-wrap gap-2">
+								{uniqueTags.map((tag) => (
+									<li>
+										<a
+											class={`flex items-center justify-center rounded-lg px-2 ${getNotionColorToTailwindColor(
+												tag.color + "-background", true
+											)}`}
+											href={getNavLink("/tags/" + slugify(tag.name) + "/")}
+											aria-label={`View all posts with the tag: ${tag.name}`}
+										>
+											{tag.name}
+										</a>
+									</li>
+								))}
+							</ul>
+							<span class="mt-4 block sm:text-end">
+								<a
+									class="sm:hover:text-accent"
+									href={getNavLink("/tags/")}
+									aria-label="View all tags"
+								>
+									View all →
+								</a>
+							</span>
+						</aside>
 					)
 				}
-			</ul>
-			<Pagination {...paginationProps} />
-		</section>
-		{
-			!!uniqueTags.length && (
-				<aside class="col-span-3 sm:col-span-1 print:hidden">
-					<h2 class="mb-4 flex items-center text-lg font-semibold text-accent-2">
-            <Icon class="h-6 w-6" name={"tag-multiple"} aria-hidden="true" focusable="false"/>
-						Tags
-					</h2>
-					<ul class="flex flex-wrap gap-2">
-						{uniqueTags.map((tag) => (
-							<li>
-								<a
-									class={`flex items-center justify-center rounded-lg px-2 ${getNotionColorToTailwindColor(
-										tag.color + "-background", true
-									)}`}
-									href={getNavLink("/tags/" + slugify(tag.name) + "/")}
-									aria-label={`View all posts with the tag: ${tag.name}`}
-								>
-									{tag.name}
-								</a>
-							</li>
-						))}
-					</ul>
-					<span class="mt-4 block sm:text-end">
-						<a
-							class="sm:hover:text-accent"
-							href={getNavLink("/tags/")}
-							aria-label="View all tags"
-						>
-							View all →
-						</a>
-					</span>
-				</aside>
-			)
-		}
-	</div>
+		</div>
 </PageLayout>
 {
-  FULL_PREVIEW_COLLECTIONS.includes(collection) && (
-  <button
-	id="to-top-btn"
-	class="cursor-pointer z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
-	aria-label="Back to Top"
-	data-show="false"
-	>
-  <Icon
-					name={"to-top"}
-					class="h-6 w-6"
-					aria-label="Go Back to Top"
-          stroke-linecap="round"
-				/>
-</button>
-<script>
+	FULL_PREVIEW_COLLECTIONS.includes(collection) && (
+			<button
+			id="to-top-btn"
+			class="cursor-pointer z-30 print:hidden fixed bottom-8 end-4 flex h-10 w-10 translate-y-28 items-center justify-center rounded-full border-2 border-transparent bg-zinc-200 text-3xl opacity-0 transition-all duration-300 hover:border-zinc-400 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 dark:bg-zinc-700 sm:end-8 sm:h-12 sm:w-12"
+			aria-label="Back to Top"
+			data-show="false"
+			>
+			<Icon
+							name={"to-top"}
+							class="h-6 w-6"
+							aria-label="Go Back to Top"
+							stroke-linecap="round"
+						/>
+		</button>
+		<script>
+		document.addEventListener("DOMContentLoaded", function () {
+		const scrollBtn = document.getElementById("to-top-btn");
+		const targetHeader = document.getElementById("main-header");
 
-document.addEventListener("DOMContentLoaded", function () {
-const scrollBtn = document.getElementById("to-top-btn");
-const targetHeader = document.getElementById("main-header");
+		function callback(entries) {
+			entries.forEach((entry) => {
+				// only show the scroll to top button when the heading is out of view
+				scrollBtn.dataset.show = (!entry.isIntersecting).toString();
+			});
+		}
 
-function callback(entries) {
-  entries.forEach((entry) => {
-    // only show the scroll to top button when the heading is out of view
-    scrollBtn.dataset.show = (!entry.isIntersecting).toString();
-  });
-}
+		scrollBtn.addEventListener("click", () => {
+			document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+		});
 
-scrollBtn.addEventListener("click", () => {
-  document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-const observer = new IntersectionObserver(callback);
-observer.observe(targetHeader);});
-</script>
-  )
+		const observer = new IntersectionObserver(callback);
+		observer.observe(targetHeader);});
+		</script>
+	)
 }

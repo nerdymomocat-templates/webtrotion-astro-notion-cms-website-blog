@@ -1,16 +1,16 @@
 ---
 import type { Page, GetStaticPaths } from "astro";
 // import type { CollectionEntry } from "astro:content";
-import PageLayout from "@/layouts/Base";
-import PostPreview from "@/components/blog/PostPreview";
-import Pagination from "@/components/Paginator";
+import PageLayout from "@/layouts/Base.astro";
+import PostPreview from "@/components/blog/PostPreview.astro";
+import Pagination from "@/components/Paginator.astro";
 import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
-import type { Post } from "@/lib/notion/interfaces";
+import type { Post } from "@/lib/interfaces";
 import { getTagsNameWDesc, slugify } from "@/utils";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
-import Icon from "@/components/Icon";
+import Icon from "@/components/Icon.astro";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	let posts = await getAllPosts();

@@ -1,4 +1,4 @@
-import { HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
+import { BUILD_FOLDER_PATHS, HOME_PAGE_SLUG, MENU_PAGES_COLLECTION } from "../constants";
 import type {
 	Block,
 	Heading1,
@@ -8,11 +8,12 @@ import type {
 	Column,
 	ReferencesInPage,
 	Post,
-} from "./interfaces";
+} from "@/lib/interfaces";
 import { slugify } from "../utils/slugify";
 import path from "path";
 import fs from "node:fs";
-import { getBlock, getPostByPageId } from "./notion/client";
+import { getBlock, getPostByPageId } from "../lib/notion/client";
+import superjson from "superjson";
 
 const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
@@ -69,21 +70,21 @@ export const buildTimeFilePath = (url: URL): string => {
 export function getReferencesInPage(entryId: string) {
 	// Load and aggregate data if referencesInPageCache is null
 	if (referencesInPageCache === null) {
-		referencesInPageCache = {};
-
-		// Assuming you have a way to list all relevant JSON files in ./tmp/
-		const files = fs.readdirSync("./tmp").filter((file) => file.endsWith("_ReferencesInPage.json"));
-
-		for (const file of files) {
-			const filePath = path.join("./tmp", file);
-			const fileContent = fs.readFileSync(filePath, "utf-8");
-			const pageId = file.replace("_ReferencesInPage.json", "");
-			referencesInPageCache[pageId] = JSON.parse(fileContent);
-		}
+		referencesInPageCache = Object.fromEntries(
+			fs.readdirSync(BUILD_FOLDER_PATHS["referencesInPage"]).map((file) => {
+				const pageId = file.replace(".json", "");
+				return [
+					pageId,
+					superjson.parse(
+						fs.readFileSync(path.join(BUILD_FOLDER_PATHS["referencesInPage"], file), "utf-8"),
+					),
+				];
+			}),
+		);
 	}
 
 	// Return the references for the given entryId, or null if not found
-	return referencesInPageCache[entryId] || null;
+	return referencesInPageCache ? referencesInPageCache[entryId] : null;
 }
 
 export function getReferencesToPage(entryId: string) {
@@ -91,19 +92,20 @@ export function getReferencesToPage(entryId: string) {
 	if (referencesToPageCache === null) {
 		referencesToPageCache = {};
 
-		// Assuming you have a way to list all relevant JSON files in ./tmp/
-		const files = fs.readdirSync("./tmp").filter((file) => file.endsWith("_ReferencesToPage.json"));
-
-		for (const file of files) {
-			const filePath = path.join("./tmp", file);
-			const fileContent = fs.readFileSync(filePath, "utf-8");
-			const pageId = file.replace("_ReferencesToPage.json", "");
-			referencesToPageCache[pageId] = JSON.parse(fileContent);
-		}
+		referencesToPageCache = Object.fromEntries(
+			fs.readdirSync(BUILD_FOLDER_PATHS["referencesToPage"]).map((file) => {
+				const pageId = file.replace(".json", "");
+				return [
+					pageId,
+					superjson.parse(
+						fs.readFileSync(path.join(BUILD_FOLDER_PATHS["referencesToPage"], file), "utf-8"),
+					),
+				];
+			}),
+		);
 	}
-
 	// Return the references for the given entryId, or null if not found
-	return referencesToPageCache[entryId] || null;
+	return referencesToPageCache ? referencesToPageCache[entryId] : null;
 }
 
 export const extractTargetBlocks = (blockTypes: string[], blocks: Block[]): Block[] => {

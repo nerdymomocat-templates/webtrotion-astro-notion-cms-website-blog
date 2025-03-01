@@ -1,12 +1,11 @@
 ---
 import BaseLayout from "./Base.astro";
-import BlogHero from "@/components/blog/Hero";
-import TOC from "@/components/blog/TOC";
-import WebMentions from "@/components/blog/webmentions/index";
-
-import type { Post } from "src/lib/interfaces";
+import BlogHero from "@/components/blog/Hero.astro";
+import TOC from "@/components/blog/TOC.astro";
+import WebMentions from "@/components/blog/webmentions/index.astro";
+import type { Post } from "@/lib/interfaces";
 import type { Heading } from "@/types";
-import PostComments from "@/components/blog/PostComments";
+import PostComments from "@/components/blog/PostComments.astro";
 import { REFERENCES } from "@/constants";
 import ReferencesSection from "@/components/blog/references/ReferencesSection.astro";
 import Icon from "@/components/Icon.astro";
@@ -15,9 +14,11 @@ interface Props {
 	post: Post;
 	ogImage?: string;
 	headings: Heading[];
+	shouldUseCache: boolean;
 }
 
-const { post, ogImage, headings } = Astro.props;
+const { post, ogImage, headings, shouldUseCache } = Astro.props;
+
 REFERENCES
 	? headings.push({
 			text: "Interlinked Content",
@@ -30,7 +31,6 @@ const socialImage = ogImage ? ogImage : `/og-image/${post.Slug}.png`;
 const articleDate = new Date(post.Date).toISOString();
 ---
 
-{/* <BaseLayout meta={{ title, description, articleDate, ogImage: socialImage }}> */}
 <BaseLayout
 	meta={{ title: post.Title, description: post.Excerpt, articleDate, ogImage: socialImage }}
 >
@@ -39,8 +39,9 @@ const articleDate = new Date(post.Date).toISOString();
 			<div id="blog-hero"><BlogHero post={post} /></div>
 			<div class="mt-8">
 				<slot />
+				{/* Post body content */}
 				<hr class="divider bg-accent/30 mx-auto my-4 h-0.5 w-full rounded-sm border-none" />
-				{REFERENCES && <ReferencesSection post={post} />}
+				{REFERENCES && <ReferencesSection post={post} shouldUseCache={shouldUseCache} />}
 			</div>
 		</article>
 		{!!headings.length && <TOC headings={headings} />}
@@ -48,7 +49,6 @@ const articleDate = new Date(post.Date).toISOString();
 	<div class="max-w-[708px] sm:mr-20 print:hidden">
 		<aside class="" data-pagefind-ignore="all">
 			<WebMentions />
-
 			<PostComments post={post} />
 		</aside>
 	</div>

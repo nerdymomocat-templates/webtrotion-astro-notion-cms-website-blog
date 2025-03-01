@@ -1,7 +1,7 @@
 ---
 import type { HTMLTag } from "astro/types";
-import * as interfaces from "../../lib/interfaces.ts";
-import RichTextB from "./RichText.astro";
+import * as interfaces from "@/lib/interfaces.ts";
+import RichText from "@/components/notion-blocks/RichText.astro";
 
 export interface Props {
 	richTexts: interfaces.RichText[];
@@ -16,7 +16,7 @@ const { richTexts, block, as: Tag = "div" } = Astro.props;
 	(
 		<Tag class="caption text-textColor/70 min-w-0 pt-1 text-sm">
 			{richTexts.map((richText: interfaces.RichText) => (
-				<RichTextB richText={richText} blockID={block.Id} />
+				<RichText richText={richText} blockID={block.Id} />
 			))}
 		</Tag>
 	)

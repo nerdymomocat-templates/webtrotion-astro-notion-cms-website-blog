@@ -12,6 +12,22 @@ import {
 	transformerNotationErrorLevel,
 } from "@shikijs/transformers";
 
+export const BUILD_FOLDER_PATHS = {
+	buildcache: "./buildcache",
+	tmp: "./tmp",
+	styles: path.join("src", "styles"),
+	blocksJson: path.join("./tmp", "blocks-json-cache"),
+	headingsCache: path.join("./tmp", "blocks-json-cache", "headings"),
+	referencesInPage: path.join("./tmp", "blocks-json-cache", "references-in-page"),
+	referencesToPage: path.join("./tmp", "blocks-json-cache", "references-to-page"),
+	ogImages: path.join("./tmp", "og-images"),
+	rssCache: path.join("./tmp", "rss-cache"),
+	blocksHtmlCache: path.join("./tmp", "blocks-html-cache"),
+	referencesHtmlCache: path.join("./tmp", "blocks-html-cache", "references"),
+	public: path.join("./public"),
+	publicNotion: path.join("./public", "notion/"),
+};
+
 export const NOTION_API_SECRET =
 	import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
 export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["database-id"] || "";
@@ -71,7 +87,7 @@ export const SHORTCODES = key_value_from_json["shortcodes"] || {
 
 // Function to read the build start time from the file
 const readBuildStartTime = () => {
-	const filePath = path.join("./tmp", "build_start_timestamp.txt");
+	const filePath = path.join(BUILD_FOLDER_PATHS["tmp"], "build_start_timestamp.txt");
 	if (fs.existsSync(filePath)) {
 		const buildTimestampStr = fs.readFileSync(filePath, "utf8");
 		const buildTimestamp = parseInt(buildTimestampStr, 10);

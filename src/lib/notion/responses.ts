@@ -1,7 +1,7 @@
 /* eslint-disable prettier/prettier */
 // Query a database response
 
-import type { BlockTypes } from "../interfaces";
+import type { BlockTypes } from "@/lib/interfaces";
 
 // https://developers.notion.com/reference/post-database-query
 export interface QueryDatabaseResponse {

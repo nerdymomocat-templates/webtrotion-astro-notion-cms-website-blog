@@ -40,6 +40,7 @@ export default [
 				"warn",
 				{ varsIgnorePattern: "Props", ignoreRestSiblings: true },
 			],
+			indent: "off",
 		},
 	},
 	{

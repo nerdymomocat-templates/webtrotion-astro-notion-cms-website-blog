@@ -9,22 +9,71 @@ import {
 	setTrackCurrentPageId,
 } from "@/lib/blog-helpers";
 import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
+import { getReferencesInPage } from "@/lib/blog-helpers";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
+import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME } from "@/constants";
+import fs from "fs/promises";
+import path from "path";
+import superjson from "superjson";
 
 export async function getStaticPaths() {
 	const posts = await getAllPosts();
+	const allPostsMap: Record<string, Post> = Object.fromEntries(posts.map((p) => [p.PageId, p])); // Map of PageId to Post
 
-	return posts.map((post) => ({
-		params: { slug: post.Slug },
-		props: { post },
-	}));
+	return posts.map((post) => {
+		const referencesInPage = getReferencesInPage(post.PageId);
+		const linkedPageIdsSet = new Set<string>(); // Use a Set to collect unique PageIds
+
+		// Collect linked PageIds, automatically deduplicating
+		if (referencesInPage) {
+			referencesInPage.forEach((ref) => {
+				if (ref.link_to_pageid) {
+					linkedPageIdsSet.add(ref.link_to_pageid);
+				}
+				if (ref.other_pages) {
+					ref.other_pages.forEach((richText) => {
+						if (richText.InternalHref?.PageId) {
+							linkedPageIdsSet.add(richText.InternalHref.PageId);
+						} else if (richText.Mention?.Page?.PageId) {
+							linkedPageIdsSet.add(richText.Mention.Page.PageId);
+						}
+					});
+				}
+			});
+		}
+
+		const linkedPageIds = Array.from(linkedPageIdsSet); // Convert Set back to an array
+
+		// Check if the post was updated before LAST_BUILD_TIME
+		const postLastUpdatedBeforeLastBuild =
+			LAST_BUILD_TIME && post?.LastUpdatedTimeStamp && post.LastUpdatedTimeStamp < LAST_BUILD_TIME;
+
+		// Check if any linked post was updated after LAST_BUILD_TIME
+		const linkedPostsUpdated =
+			!LAST_BUILD_TIME ||
+			(linkedPageIds.length > 0 &&
+				linkedPageIds.some((pageId) => {
+					const linkedPost = allPostsMap[pageId];
+					return linkedPost && linkedPost.LastUpdatedTimeStamp > LAST_BUILD_TIME;
+				}));
+
+		const shouldUseCache = postLastUpdatedBeforeLastBuild && !linkedPostsUpdated;
+
+		return {
+			params: { slug: post.Slug },
+			props: { post, shouldUseCache, postLastUpdatedBeforeLastBuild },
+		};
+	});
 }
+
 interface Props {
 	post: Post;
+	shouldUseCache: boolean;
+	postLastUpdatedBeforeLastBuild: boolean;
 }
 
-const { post } = Astro.props;
+const { post, shouldUseCache, postLastUpdatedBeforeLastBuild } = Astro.props; // Extract shouldUseCache from props
 
 resetCurrentHeadings();
 let postFound = true;
@@ -37,39 +86,82 @@ if (!post) {
 	postFound = false;
 }
 
+// Load cached HTML only if shouldUseCache is true
+let cachedHtml = "";
+if (postFound && shouldUseCache) {
+	const cacheFilePath = path.join(BUILD_FOLDER_PATHS["blocksHtmlCache"], `${post.Slug}.html`);
+	try {
+		cachedHtml = await fs.readFile(cacheFilePath, "utf-8");
+	} catch (e) {
+		cachedHtml = ""; // Fallback to rendering if cache read fails
+	}
+}
+
+let cachedHeadings = null;
+const headingsCacheDir = BUILD_FOLDER_PATHS["headingsCache"];
+if (postFound && postLastUpdatedBeforeLastBuild) {
+	const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
+	try {
+		const headingsData = await fs.readFile(headingsCacheFile, "utf-8");
+		cachedHeadings = superjson.parse(headingsData);
+	} catch (e) {
+		cachedHeadings = null; // Fallback to building headings if cache read fails
+	}
+}
+
 if (postFound) {
 	const result = await getPostContentByPostId(post);
 	blocks = result.blocks;
 	referencesInPage = result.referencesInPage;
 
-	headings = buildHeadings(blocks);
-	setCurrentHeadings(headings);
-
-	const fileAtacchedBlocks = extractTargetBlocks(
-		["image", "video", "file", "audio"],
-		blocks,
-	).filter((block) => {
-		if (!block) {
-			return false;
+	// Use cached headings if available, otherwise build and save them
+	if (cachedHeadings) {
+		headings = cachedHeadings;
+	} else {
+		headings = buildHeadings(blocks);
+		setCurrentHeadings(headings);
+		const headingsCacheFile = path.join(headingsCacheDir, `${post.Slug}.json`);
+		try {
+			await fs.writeFile(headingsCacheFile, superjson.stringify(headings), "utf-8");
+		} catch (e) {
+			console.error("Error saving headings cache:", e);
 		}
-		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-		return (
-			imageOrVideoOrAudioOrFile &&
-			imageOrVideoOrAudioOrFile.File &&
-			imageOrVideoOrAudioOrFile.File.Url
-		);
-	});
+	}
 
-	const processedFile = await processFileBlocks(fileAtacchedBlocks);
+	// Process file blocks only if cache isn't used
+	if (!postLastUpdatedBeforeLastBuild) {
+		const fileAtacchedBlocks = extractTargetBlocks(
+			["image", "video", "file", "audio"],
+			blocks,
+		).filter((block) => {
+			if (!block) return false;
+			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+			return (
+				imageOrVideoOrAudioOrFile &&
+				imageOrVideoOrAudioOrFile.File &&
+				imageOrVideoOrAudioOrFile.File.Url
+			);
+		});
+
+		await processFileBlocks(fileAtacchedBlocks);
+	}
 }
 ---
 
 {
 	postFound && resetFirstImage() && setTrackCurrentPageId(post.PageId) && (
-		<PostLayout post={post} headings={headings}>
-			<div class="post-body max-w-[708px] print:max-w-full">
-				<NotionBlocks blocks={blocks} />
-			</div>
+		<PostLayout post={post} headings={headings} shouldUseCache={shouldUseCache}>
+			{shouldUseCache && cachedHtml ? (
+				<div
+					class="post-body max-w-[708px] print:max-w-full"
+					data-html-type="cached"
+					set:html={cachedHtml}
+				/>
+			) : (
+				<div class="post-body max-w-[708px] print:max-w-full" data-html-type="new">
+					<NotionBlocks blocks={blocks} />
+				</div>
+			)}
 		</PostLayout>
 	)
 }

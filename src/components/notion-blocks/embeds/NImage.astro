@@ -1,8 +1,8 @@
 ---
-import { ENABLE_LIGHTBOX } from "../../../constants.ts";
-import * as interfaces from "../../../lib/interfaces.ts";
-import { filePath, getFirstImage } from "../../../lib/blog-helpers";
-import Caption from "../Caption.astro";
+import { ENABLE_LIGHTBOX } from "@/constants.ts";
+import * as interfaces from "@/lib/interfaces.ts";
+import { filePath, getFirstImage } from "@/lib/blog-helpers";
+import Caption from "@/components/notion-blocks/Caption.astro";
 
 export interface Props {
 	block: interfaces.Block;
