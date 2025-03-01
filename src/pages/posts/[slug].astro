@@ -129,22 +129,20 @@ if (postFound) {
 	setCurrentHeadings(headings);
 
 	// Process file blocks only if cache isn't used
-	if (!postLastUpdatedBeforeLastBuild) {
-		const fileAtacchedBlocks = extractTargetBlocks(
-			["image", "video", "file", "audio"],
-			blocks,
-		).filter((block) => {
-			if (!block) return false;
-			const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-			return (
-				imageOrVideoOrAudioOrFile &&
-				imageOrVideoOrAudioOrFile.File &&
-				imageOrVideoOrAudioOrFile.File.Url
-			);
-		});
+	const fileAtacchedBlocks = extractTargetBlocks(
+		["image", "video", "file", "audio"],
+		blocks,
+	).filter((block) => {
+		if (!block) return false;
+		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+		return (
+			imageOrVideoOrAudioOrFile &&
+			imageOrVideoOrAudioOrFile.File &&
+			imageOrVideoOrAudioOrFile.File.Url
+		);
+	});
 
-		await processFileBlocks(fileAtacchedBlocks);
-	}
+	await processFileBlocks(fileAtacchedBlocks);
 }
 ---
 

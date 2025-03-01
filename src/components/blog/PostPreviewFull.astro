@@ -78,11 +78,8 @@ if (shouldUseCache) {
 	}
 }
 
-if (!postLastUpdatedBeforeLastBuild) {
-	const fileAtacchedBlocks = extractTargetBlocks(
-		["image", "video", "file", "audio"],
-		blocks,
-	).filter((block) => {
+const fileAtacchedBlocks = extractTargetBlocks(["image", "video", "file", "audio"], blocks).filter(
+	(block) => {
 		if (!block) return false;
 		const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
 		return (
@@ -90,9 +87,9 @@ if (!postLastUpdatedBeforeLastBuild) {
 			imageOrVideoOrAudioOrFile.File &&
 			imageOrVideoOrAudioOrFile.File.Url
 		);
-	});
-	await processFileBlocks(fileAtacchedBlocks);
-}
+	},
+);
+await processFileBlocks(fileAtacchedBlocks);
 
 const postLink = getPostLink(
 	post_full_preview.Slug,

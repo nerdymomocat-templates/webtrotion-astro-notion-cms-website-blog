@@ -126,21 +126,19 @@ if (pageFound) {
 		}
     setCurrentHeadings(headings);
 
-		if (!pageLastUpdatedBeforeLastBuild) {
-				const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
-						.filter((block) => {
-								if (!block) {
-										return false;
-								}
-								const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
-								return (
-										imageOrVideoOrAudioOrFile &&
-										imageOrVideoOrAudioOrFile.File &&
-										imageOrVideoOrAudioOrFile.File.Url
-								);
-						});
-				await processFileBlocks(fileAtacchedBlocks);
-		}
+    const fileAtacchedBlocks = extractTargetBlocks(["image","video","file","audio"], blocks)
+        .filter((block) => {
+            if (!block) {
+                return false;
+            }
+            const imageOrVideoOrAudioOrFile = block.NImage || block.File || block.Video || block.NAudio;
+            return (
+                imageOrVideoOrAudioOrFile &&
+                imageOrVideoOrAudioOrFile.File &&
+                imageOrVideoOrAudioOrFile.File.Url
+            );
+        });
+    await processFileBlocks(fileAtacchedBlocks);
 }
 
 let recent_posts = null;

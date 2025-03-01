@@ -83,6 +83,23 @@ jobs:
           key: public-webtrotion-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: public-webtrotion-${{ github.repository_id }}-
 
+      - name: Restore Cached constants-config
+        id: restore-constants-config
+        uses: actions/cache/restore@v4
+        with:
+          path: ./constants-config.json
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
+
+      - name: Process constants-config if cache not hit
+        if: steps.restore-constants-config.outputs.cache-hit != 'true'
+        run: |
+          echo "Cached old_constants-config.json is different than current constants-config."
+          # Insert any additional processing or cleanup commands as needed.
+          rm -rf tmp/blocks-html-cache
+          rm -rf tmp/rss-cache
+          rm -rf tmp/og-images
+          rm -rf public/notion
+
       - name: Trim public and tmp files based on cache changes
         env:
           CACHE_HIT: ${{ steps.npm-cache-restore.outputs.cache-hit }}
@@ -177,7 +194,14 @@ jobs:
       - name: Clear Previous `old-package-json-cache` (if needed)
         if: env.DELETE_CACHES_GH_TOKEN != ''
         run: |
-          gh cache list --json key --jq '.[].key' | grep -E 'old-package-json-cache-' | xargs -I {} gh cache delete {}
+          gh cache list --key old-package-json-cache- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
+        env:
+          GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
+
+      - name: Clear Previous constants config Cache (if needed)
+        if: env.DELETE_CACHES_GH_TOKEN != ''
+        run: |
+          gh cache list --key constants-config- --json key --jq '.[].key' | xargs -I {} gh cache delete {}
         env:
           GH_TOKEN: ${{ env.DELETE_CACHES_GH_TOKEN }}
 
@@ -206,11 +230,18 @@ jobs:
       - name: Copy package.json to old_package.json
         run: cp ./package.json ./old_package.json
 
-      - name: Save package.json Cache
+      - name: Save old_package.json Cache
         uses: actions/cache/save@v4
         with:
           path: ./old_package.json
           key: old-package-json-cache-${{ github.repository_id }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+      - name: Save Cached constants-config
+        if: steps.restore-constants-config.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ./constants-config.json
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
