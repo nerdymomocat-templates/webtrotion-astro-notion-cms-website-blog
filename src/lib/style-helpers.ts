@@ -121,7 +121,7 @@ export const getTextToAstroIcon = (text: string) => {
 		"table-of-contents": "mdi:table-of-contents",
 		"clear-search": "mdi:format-clear",
 		close: "mdi:close-thick",
-		"checkbox-blank": "mdi:checkbox-blank-outline",
+		"checkbox-unchecked": "mdi:checkbox-blank-outline",
 		"checkbox-checked": "mdi:checkbox-marked",
 		"clipboard-copy-code": "mdi:clipboard",
 		"clipboard-copy-code-done": "mdi:clipboard-check",
@@ -192,7 +192,7 @@ export const getTextToSVGPath = (text: string) => {
 			"m12.546 9.966l-.94-.941l.788-1.904h-2.73L8.427 5.885h10.689v1.23h-5.358zm6.793 10.788l-7.973-7.993l-2.308 5.431H7.706l2.725-6.365l-7.377-7.358l.708-.707l16.284 16.284z",
 		close:
 			"M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12z",
-		"checkbox-blank":
+		"checkbox-unchecked":
 			"M19 3H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2m0 2v14H5V5z",
 		"checkbox-checked":
 			"m10 17l-5-5l1.41-1.42L10 14.17l7.59-7.59L19 8m0-5H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2",
