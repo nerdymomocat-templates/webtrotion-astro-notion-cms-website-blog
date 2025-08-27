@@ -78,6 +78,10 @@ const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 // Generic function to save data to buildcache
 function saveBuildcache<T>(filename: string, data: T): void {
 	const filePath = path.join(BUILDCACHE_DIR, filename);
+	const dir = path.dirname(filePath);
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir, { recursive: true });
+	}
 	fs.writeFileSync(filePath, superjson.stringify(data), "utf8");
 }
 
