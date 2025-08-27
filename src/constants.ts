@@ -61,6 +61,7 @@ export const HEADING_BLOCKS = key_value_from_json["heading-blocks"] || [
 ];
 
 export const FULL_PREVIEW_COLLECTIONS = key_value_from_json["full-preview-collections"] || [];
+export const GALLERY_VIEW_COLLECTIONS = key_value_from_json["gallery-view-collections"] || [];
 
 export const HIDE_UNDERSCORE_SLUGS_IN_LISTS =
 	key_value_from_json["hide-underscore-slugs-in-lists"] || false;

@@ -1,0 +1,77 @@
+---
+import type { Post } from "@/lib/interfaces";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
+import { getNavLink, getPostLink, filePath } from "@/lib/blog-helpers";
+import { MENU_PAGES_COLLECTION } from "@/constants";
+import Icon from "@/components/Icon.astro";
+import { slugify } from "@/utils";
+
+interface Props {
+	post: Post;
+}
+
+const { post } = Astro.props;
+const postLink = getPostLink(post.Slug, post.Collection === MENU_PAGES_COLLECTION);
+
+console.log(`[PostGallery] Post: ${post.Title}`);
+console.log(`[PostGallery] CoverImage: ${JSON.stringify(post.CoverImage)}`);
+console.log(`[PostGallery] FeaturedImage: ${JSON.stringify(post.FeaturedImage)}`);
+
+let image = null;
+if (post.CoverImage) {
+	if (post.CoverImage.Type === "external") {
+		image = post.CoverImage.Url;
+	} else if (post.CoverImage.Type === "file" || post.CoverImage.Type === "files") {
+		image = filePath(new URL(post.CoverImage.Url));
+	}
+} else if (post.FeaturedImage) {
+	if (post.FeaturedImage.Type === "external") {
+		image = post.FeaturedImage.Url;
+	} else if (post.FeaturedImage.Type === "file" || post.FeaturedImage.Type === "files") {
+		image = filePath(new URL(post.FeaturedImage.Url));
+	}
+}
+console.log(`[PostGallery] Rendering image for ${post.Title}: ${image}`);
+---
+
+<a href={postLink} class="group block" data-astro-prefetch>
+	<div
+		class="overflow-hidden rounded-lg bg-white shadow-md transition-shadow duration-300 ease-in-out group-hover:shadow-xl dark:bg-gray-800"
+	>
+		{
+			image && (
+				<div class="relative h-48 w-full">
+					<img
+						src={image}
+						alt={post.Title}
+						class="h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105"
+					/>
+				</div>
+			)
+		}
+		<div class="p-4">
+			<h2 class="group-hover:text-accent mb-2 text-xl font-bold">{post.Title}</h2>
+			{
+				post.Excerpt && (
+					<p class="mb-3 line-clamp-3 text-sm text-gray-600 dark:text-gray-400">{post.Excerpt}</p>
+				)
+			}
+			{
+				post.Tags && post.Tags.length > 0 && (
+					<div class="flex flex-wrap gap-2">
+						{post.Tags.map((tag) => (
+							<span
+								class={`rounded-full px-2 py-1 text-xs font-semibold ${getNotionColorToTailwindColor(
+									tag.color + "-background",
+									true,
+								)}`}
+							>
+								{tag.name}
+							</span>
+						))}
+					</div>
+				)
+			}
+		</div>
+	</div>
+</a>

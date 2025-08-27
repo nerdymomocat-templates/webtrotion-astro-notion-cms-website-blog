@@ -21,6 +21,7 @@ export interface Post {
 	Tags: SelectProperty[];
 	Excerpt: string;
 	FeaturedImage: FileObject | null;
+	CoverImage: FileObject | null;
 	Rank: number;
 	LastUpdatedDate: string;
 	LastUpdatedTimeStamp: Date;

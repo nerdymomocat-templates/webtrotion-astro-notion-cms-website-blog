@@ -38,6 +38,28 @@ export default (): AstroIntegration => ({
 						}
 					}
 
+					// Conditionally add the downloadFile task for CoverImage
+					if (
+						entry.Cover &&
+						entry.Cover.Url &&
+						!(
+							LAST_BUILD_TIME &&
+							entry.LastUpdatedTimeStamp < LAST_BUILD_TIME &&
+							!fs.existsSync(generateFilePath(new URL(entry.Cover.Url)))
+						)
+					) {
+						console.log(
+							`[entry-cache-er] Downloading cover image for: ${entry.Title}, URL: ${entry.Cover.Url}`,
+						);
+						let url;
+						try {
+							url = new URL(entry.Cover.Url);
+							tasks.push(downloadFile(url, false));
+						} catch (err) {
+							console.log("Invalid CoverImage URL");
+						}
+					}
+
 					// Add the getPostContentByPostId task
 					const postContentPromise = getPostContentByPostId(entry).then((result) => ({
 						referencesInPage: result.referencesInPage,

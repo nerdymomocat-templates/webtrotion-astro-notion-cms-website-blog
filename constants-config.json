@@ -117,6 +117,7 @@
 	"menu-pages-collection": "main",
 	"heading-blocks": ["heading_1", "heading_2", "heading_3"],
 	"full-preview-collections": ["Stream"],
+	"gallery-view-collections": ["Personal Notes"],
 	"hide-underscore-slugs-in-lists": true,
 	"home-page-slug": "",
 	"all-footnotes-page-slug": "_all-footnotes",

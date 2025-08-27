@@ -78,6 +78,10 @@ const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 // Generic function to save data to buildcache
 function saveBuildcache<T>(filename: string, data: T): void {
 	const filePath = path.join(BUILDCACHE_DIR, filename);
+	const dir = path.dirname(filePath);
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir, { recursive: true });
+	}
 	fs.writeFileSync(filePath, superjson.stringify(data), "utf8");
 }
 
@@ -1259,10 +1263,18 @@ function _buildPost(pageObject: responses.PageObject): Post {
 
 	let cover: FileObject | null = null;
 	if (pageObject.cover) {
-		cover = {
-			Type: pageObject.cover.type,
-			Url: pageObject.cover.external?.url || "",
-		};
+		if (pageObject.cover.type === "external") {
+			cover = {
+				Type: pageObject.cover.type,
+				Url: pageObject.cover.external?.url || "",
+			};
+		} else if (pageObject.cover.type === "file") {
+			cover = {
+				Type: pageObject.cover.type,
+				Url: pageObject.cover.file?.url || "",
+				ExpiryTime: pageObject.cover.file?.expiry_time,
+			};
+		}
 	}
 
 	let featuredImage: FileObject | null = null;
@@ -1298,6 +1310,7 @@ function _buildPost(pageObject: responses.PageObject): Post {
 				? prop.Excerpt.rich_text.map((richText) => richText.plain_text).join("")
 				: "",
 		FeaturedImage: featuredImage,
+		CoverImage: cover,
 		Rank: prop.Rank.number ? prop.Rank.number : 0,
 		LastUpdatedDate: prop["Last Updated Date"]?.formula?.date
 			? prop["Last Updated Date"]?.formula.date.start

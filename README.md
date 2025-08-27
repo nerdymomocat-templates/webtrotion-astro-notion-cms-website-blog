@@ -46,11 +46,10 @@ Check out the [Demo with Template](https://nerdymomocat-templates.github.io/webt
 
 # Preview
 
-|Device        | Light Mode                             | Dark Mode                             |
-|--------------| -------------------------------------- | ------------------------------------- |
-|Desktop       | ![Light Mode Desktop](https://github.com/user-attachments/assets/7c7b2633-b656-4cd6-977f-c57f799350c8)|![Dark Mode Desktop](https://github.com/user-attachments/assets/9dbdba46-4f87-4496-8e86-053e3a0171a0)|
-|Mobile       |![Light Mode Mobile](https://github.com/user-attachments/assets/b6324270-eb43-48f2-a407-65db92d98d4e)|![Dark Mode Mobile](https://github.com/user-attachments/assets/4bb660f4-27c0-46f0-875e-6c43889ed94f)|
-
+| Device  | Light Mode                                                                                             | Dark Mode                                                                                             |
+| ------- | ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Desktop | ![Light Mode Desktop](https://github.com/user-attachments/assets/7c7b2633-b656-4cd6-977f-c57f799350c8) | ![Dark Mode Desktop](https://github.com/user-attachments/assets/9dbdba46-4f87-4496-8e86-053e3a0171a0) |
+| Mobile  | ![Light Mode Mobile](https://github.com/user-attachments/assets/b6324270-eb43-48f2-a407-65db92d98d4e)  | ![Dark Mode Mobile](https://github.com/user-attachments/assets/4bb660f4-27c0-46f0-875e-6c43889ed94f)  |
 
 # License
 
