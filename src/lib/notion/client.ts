@@ -9,6 +9,7 @@ import path from "path";
 import {
 	NOTION_API_SECRET,
 	DATABASE_ID,
+	DATA_SOURCE_ID,
 	MENU_PAGES_COLLECTION,
 	OPTIMIZE_IMAGES,
 	LAST_BUILD_TIME,
@@ -68,13 +69,69 @@ import superjson from "superjson";
 
 const client = new Client({
 	auth: NOTION_API_SECRET,
+	notionVersion: "2025-09-03",
 });
 
+let resolvedDataSourceId: string | null = null;
+
+const numberOfRetry = 2;
+const minTimeout = 1000; // waits 1 second before the first retry
+const factor = 2; // doubles the wait time with each retry
+
 let allEntriesCache: Post[] | null = null;
-let dbCache: Database | null = null;
+let dsCache: Database | null = null;
 let blockIdPostIdMap: { [key: string]: string } | null = null;
 
 const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
+async function getResolvedDataSourceId(): Promise<string> {
+	if (resolvedDataSourceId) {
+		return resolvedDataSourceId;
+	}
+
+	if (DATA_SOURCE_ID) {
+		resolvedDataSourceId = DATA_SOURCE_ID;
+		return resolvedDataSourceId;
+	}
+
+	if (!DATABASE_ID) {
+		throw new Error("Either DATA_SOURCE_ID or DATABASE_ID must be defined in environment variables.");
+	}
+
+	console.log(`DATA_SOURCE_ID not provided, fetching from database: ${DATABASE_ID}`);
+
+	const response = await retry(
+		async (bail) => {
+			try {
+				return (await client.databases.retrieve({
+					database_id: DATABASE_ID,
+				})) as any;
+			} catch (error: unknown) {
+				if (error instanceof APIResponseError) {
+					if (error.status && error.status >= 400 && error.status < 500) {
+						bail(error);
+					}
+				}
+				throw error;
+			}
+		},
+		{
+			retries: numberOfRetry,
+			minTimeout: minTimeout,
+			factor: factor,
+		},
+	);
+
+	const dataSources = response.data_sources;
+
+	if (!dataSources || dataSources.length === 0) {
+		throw new Error(`No data sources found for database ID: ${DATABASE_ID}`);
+	}
+
+	resolvedDataSourceId = dataSources[0].id;
+	console.log(`Using the first data source found: ${resolvedDataSourceId}`);
+	return resolvedDataSourceId;
+}
+
 // Generic function to save data to buildcache
 function saveBuildcache<T>(filename: string, data: T): void {
 	const filePath = path.join(BUILDCACHE_DIR, filename);
@@ -95,10 +152,6 @@ function loadBuildcache<T>(filename: string): T | null {
 	return null;
 }
 
-const numberOfRetry = 2;
-const minTimeout = 1000; // waits 1 second before the first retry
-const factor = 2; // doubles the wait time with each retry
-
 type QueryFilters = requestParams.CompoundFilterObject;
 
 export async function getAllEntries(): Promise<Post[]> {
@@ -114,9 +167,10 @@ export async function getAllEntries(): Promise<Post[]> {
 	// console.log("Did not find cache for getAllEntries");
 
 	const queryFilters: QueryFilters = {};
+	const dataSourceId = await getResolvedDataSourceId();
 
-	const params: requestParams.QueryDatabase = {
-		database_id: DATABASE_ID,
+	const params: any = {
+		data_source_id: dataSourceId,
 		filter: {
 			and: [
 				{
@@ -161,7 +215,7 @@ export async function getAllEntries(): Promise<Post[]> {
 		const res = await retry(
 			async (bail) => {
 				try {
-					return (await client.databases.query(
+					return (await client.dataSources.query(
 						params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 					)) as responses.QueryDatabaseResponse;
 				} catch (error: unknown) {
@@ -510,13 +564,13 @@ export async function getAllTagsWithCounts(): Promise<
 	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 		? allPosts.filter((post) => !post.Slug.startsWith("_"))
 		: allPosts;
-	const { propertiesRaw } = await getDatabase();
+	const { propertiesRaw } = await getDataSource();
 	const options = propertiesRaw.Tags?.multi_select?.options || [];
 
 	const tagsNameWDesc = options.reduce((acc, option) => {
 		acc[option.name] = option.description || "";
 		return acc;
-	}, {});
+	}, {} as Record<string, string>);
 	const tagCounts: Record<string, { count: number; description: string; color: string }> = {};
 
 	filteredPosts.forEach((post) => {
@@ -651,7 +705,7 @@ export async function downloadFile(
 				sharp()
 					// .resize({ width: 1024 }) // Adjust the size as needed for "medium"
 					.webp({ quality: 80 }),
-			) // Adjust quality as needed
+			)
 			.toFile(webpPath)
 			.catch((err) => {
 				console.error("Error processing image:", err);
@@ -724,23 +778,25 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
 	);
 }
 
-export async function getDatabase(): Promise<Database> {
-	if (dbCache !== null) {
-		return Promise.resolve(dbCache);
+export async function getDataSource(): Promise<Database> {
+	if (dsCache !== null) {
+		return Promise.resolve(dsCache);
 	}
-	dbCache = loadBuildcache<Database>("database.json");
-	if (dbCache) {
-		return dbCache;
+	dsCache = loadBuildcache<Database>("dataSource.json");
+	if (dsCache) {
+		return dsCache;
 	}
 
-	const params: requestParams.RetrieveDatabase = {
-		database_id: DATABASE_ID,
+	const dataSourceId = await getResolvedDataSourceId();
+
+	const params: any = {
+		data_source_id: dataSourceId,
 	};
 
 	const res = await retry(
 		async (bail) => {
 			try {
-				return (await client.databases.retrieve(
+				return (await client.dataSources.retrieve(
 					params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
 				)) as responses.RetrieveDatabaseResponse;
 			} catch (error: unknown) {
@@ -796,8 +852,8 @@ export async function getDatabase(): Promise<Database> {
 		LastUpdatedTimeStamp: new Date(res.last_edited_time),
 	};
 
-	dbCache = database;
-	saveBuildcache("database.json", dbCache);
+	dsCache = database;
+	saveBuildcache("dataSource.json", dsCache);
 	return database;
 }
 
