@@ -782,12 +782,14 @@ export async function getDataSource(): Promise<Database> {
 	if (dsCache !== null) {
 		return Promise.resolve(dsCache);
 	}
-	dsCache = loadBuildcache<Database>("dataSource.json");
+
+	const dataSourceId = await getResolvedDataSourceId();
+	const cacheFileName = `datasource_${dataSourceId}.json`;
+
+	dsCache = loadBuildcache<Database>(cacheFileName);
 	if (dsCache) {
 		return dsCache;
 	}
-
-	const dataSourceId = await getResolvedDataSourceId();
 
 	const params: any = {
 		data_source_id: dataSourceId,
@@ -853,7 +855,7 @@ export async function getDataSource(): Promise<Database> {
 	};
 
 	dsCache = database;
-	saveBuildcache("dataSource.json", dsCache);
+	saveBuildcache(cacheFileName, dsCache);
 	return database;
 }
 
