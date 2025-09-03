@@ -94,7 +94,9 @@ async function getResolvedDataSourceId(): Promise<string> {
 	}
 
 	if (!DATABASE_ID) {
-		throw new Error("Either DATA_SOURCE_ID or DATABASE_ID must be defined in environment variables.");
+		throw new Error(
+			"Either DATA_SOURCE_ID or DATABASE_ID must be defined in environment variables.",
+		);
 	}
 
 	console.log(`DATA_SOURCE_ID not provided, fetching from database: ${DATABASE_ID}`);
@@ -572,10 +574,13 @@ export async function getAllTagsWithCounts(): Promise<
 	const { propertiesRaw } = await getDataSource();
 	const options = propertiesRaw.Tags?.multi_select?.options || [];
 
-	const tagsNameWDesc = options.reduce((acc, option) => {
-		acc[option.name] = option.description || "";
-		return acc;
-	}, {} as Record<string, string>);
+	const tagsNameWDesc = options.reduce(
+		(acc, option) => {
+			acc[option.name] = option.description || "";
+			return acc;
+		},
+		{} as Record<string, string>,
+	);
 	const tagCounts: Record<string, { count: number; description: string; color: string }> = {};
 
 	filteredPosts.forEach((post) => {
@@ -755,7 +760,7 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
 			const cacheFilePath = generateFilePath(url, isConvImageType(url.pathname) && OPTIMIZE_IMAGES);
 
 			const shouldDownload = LAST_BUILD_TIME
-				? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME) || !fs.existsSync(cacheFilePath)
+				? block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(cacheFilePath)
 				: true;
 
 			if (shouldDownload) {
