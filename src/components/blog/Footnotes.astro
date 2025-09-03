@@ -1,0 +1,34 @@
+---
+import { useStore } from "@nanostores/react";
+import { footnotes, footnoteOrder } from "@/lib/footnotes";
+
+const $footnotes = useStore(footnotes);
+const $footnoteOrder = useStore(footnoteOrder);
+
+const sortedFootnotes = Object.entries($footnotes).sort(
+  ([tagA], [tagB]) => $footnoteOrder[tagA] - $footnoteOrder[tagB]
+);
+---
+
+{
+  sortedFootnotes.length > 0 && (
+    <section id="footnotes">
+      <hr />
+      <ol>
+        {sortedFootnotes.map(([tag, footnote]) => (
+          <li id={`footnote-${$footnoteOrder[tag]}`}>
+            <p>
+              {footnote.content}
+              <a
+                href={`#footnote-ref-${$footnoteOrder[tag]}`}
+                title="Back to reference"
+              >
+                &#8617;
+              </a>
+            </p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}

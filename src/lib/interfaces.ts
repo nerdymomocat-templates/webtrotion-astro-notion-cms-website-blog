@@ -361,3 +361,9 @@ export type BlockTypes =
 	| "toggle"
 	| "video"
 	| "audio";
+
+export interface Footnote {
+  tag?: string;
+  content: string;
+  blockId: string;
+}
