@@ -471,25 +471,28 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 	return allBlocks;
 }
 
-export async function getBlock(blockId: string): Promise<Block | null> {
-	// First, check if the block-id exists in our mapping
-	const blockIdPostIdMap = getBlockIdPostIdMap();
-	const postId = blockIdPostIdMap[formatUUID(blockId)];
+export async function getBlock(blockId: string, forceRefresh = false): Promise<Block | null> {
+	if (!forceRefresh) {
+		// First, check if the block-id exists in our mapping
+		const blockIdPostIdMap = getBlockIdPostIdMap();
+		const postId = blockIdPostIdMap[formatUUID(blockId)];
 
-	if (postId) {
-		// If we have a mapping, look for the block in the cached post JSON
-		const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
-		const cacheFilePath = path.join(tmpDir, `${postId}.json`);
+		if (postId) {
+			// If we have a mapping, look for the block in the cached post JSON
+			const tmpDir = BUILD_FOLDER_PATHS["blocksJson"];
+			const cacheFilePath = path.join(tmpDir, `${postId}.json`);
 
-		if (fs.existsSync(cacheFilePath)) {
-			const cachedBlocks: Block[] = superjson.parse(fs.readFileSync(cacheFilePath, "utf-8"));
-			const block = cachedBlocks.find((b) => b.Id === formatUUID(blockId));
+			if (fs.existsSync(cacheFilePath)) {
+				const cachedBlocks: Block[] = superjson.parse(fs.readFileSync(cacheFilePath, "utf-8"));
+				const block = cachedBlocks.find((b) => b.Id === formatUUID(blockId));
 
-			if (block) {
-				return block;
+				if (block) {
+					return block;
+				}
 			}
 		}
 	}
+
 	// console.log("Did not find cache for blockId: " + formatUUID(blockId));
 	// If we couldn't find the block in our cache, fall back to the API call
 	const params: requestParams.RetrieveBlock = {
@@ -522,6 +525,8 @@ export async function getBlock(blockId: string): Promise<Block | null> {
 		const block = _buildBlock(res);
 
 		// Update our mapping and cache with this new block
+		const blockIdPostIdMap = getBlockIdPostIdMap();
+		const postId = blockIdPostIdMap[formatUUID(blockId)];
 		if (!postId) {
 			updateBlockIdPostIdMap(blockId, [block]);
 		}
@@ -750,13 +755,13 @@ export async function processFileBlocks(fileAttachedBlocks: Block[]) {
 			const cacheFilePath = generateFilePath(url, isConvImageType(url.pathname) && OPTIMIZE_IMAGES);
 
 			const shouldDownload = LAST_BUILD_TIME
-				? block.LastUpdatedTimeStamp > LAST_BUILD_TIME || !fs.existsSync(cacheFilePath)
+				? (block.LastUpdatedTimeStamp > LAST_BUILD_TIME) || !fs.existsSync(cacheFilePath)
 				: true;
 
 			if (shouldDownload) {
 				if (Date.parse(expiryTime) < Date.now()) {
 					// If the file is expired, get the block again and extract the new URL
-					const updatedBlock = await getBlock(block.Id);
+					const updatedBlock = await getBlock(block.Id, true);
 					if (!updatedBlock) {
 						return null;
 					}
