@@ -4,6 +4,8 @@ import Caption from "@/components/notion-blocks/Caption.astro";
 import { SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
 import Icon from "@/components/Icon.astro";
 import { Code } from "astro:components";
+import { RemoteMdx } from "astro-remote";
+import { mdxComponents } from "@/components/mdx-components";
 
 export interface Props {
 	block: interfaces.Block;
@@ -12,86 +14,24 @@ export interface Props {
 
 const { block, setId = true } = Astro.props;
 
-/*
-//TODO for cleaning up clipboard code
-Rules:
-1. Two things to do: remove lines and clean up comments in remaining lines
-2. For remove lines, only consider these commands: [!code --] or [!code warning] or [!code error]
-3. Remove the line when the command is after the comment mark (any number of spaces between comment mark and coommand are fine). there can be text after command.
-4. do not consider command or comment mark if they are part of a string literal enclosed with ` ` or " "
-5. if a line is not removed, then consider these commands: [!code --] [!code ++] [!code warning] [!code error] [!code highlight] [!code highlight:number_here] [!code word:word_here:number_here] [!code word:word_here] [!code focus] [!code focus:number_here].
-6. if these occur right after the comment mark (any number of spaces between comment mark and coommand are fine)
-and are not part of string literal, just remove the command from if it occurs after the comment mark (and is not in string literal).
-do not remove the line. there can be stuff after the command.
-7. if the part after comment mark is empty or only white spaces, remeove the comment mark. again remember comment marks that are part of string literals are not considered for this.
-
---
-Currently shiki transformers only find the first occurence of comment mark and command use that.
-it also deals with tokenization such that '# [!code --]' is removed but '\# [!code --]' is not considered.
-but we don't care about that, because it should not be happening in the first place
-*/
-
 const commentStyles = {
-	// Double slash comments
 	"//": [
-		"default",
-		"c",
-		"cpp",
-		"java",
-		"javascript",
-		"typescript",
-		"csharp",
-		"go",
-		"swift",
-		"kotlin",
-		"scala",
-		"rust",
-		"dart",
-		"css",
-		"php",
-		"pascal",
-		"groovy",
+		"default", "c", "cpp", "java", "javascript", "typescript", "csharp", "go", "swift", "kotlin", "scala", "rust", "dart", "css", "php", "pascal", "groovy",
 	],
-
-	// Hash comments
-	"#": [
-		"python",
-		"ruby",
-		"perl",
-		"bash",
-		"powershell",
-		"php",
-		"yaml",
-		"toml",
-		"r",
-		"julia",
-		"elixir",
-	],
-
-	// Double dash comments
+	"#": ["python", "ruby", "perl", "bash", "powershell", "php", "yaml", "toml", "r", "julia", "elixir"],
 	"--": ["haskell", "lua", "sql", "plsql", "ada"],
-
-	// Percent comments
 	"%": ["matlab", "octave", "latex", "katex", "erlang"],
-
-	// Semicolon comments
 	";": ["lisp", "clojure", "scheme", "ini"],
-
-	// Other specific comment styles
 	"⍝": ["apl"],
 	"!": ["fortran"],
 	"'": ["vb"],
 	"*>": ["cobol"],
-	"<!--": ["html"],
-
-	// Languages without standard comment syntax
+	"<!--": ["html", "markdown"],
 	"": ["brainfuck", "whitespace"],
 };
 
 function processCode(code: string, language: string): string {
-	const commentStyle =
-		Object.entries(commentStyles).find(([_, langs]) => langs.includes(language))?.[0] || "";
-
+	const commentStyle = Object.entries(commentStyles).find(([_, langs]) => langs.includes(language))?.[0] || "";
 	if (!commentStyle) return code;
 
 	const lines = code.split("\n");
@@ -101,8 +41,7 @@ function processCode(code: string, language: string): string {
 
 		const beforeComment = line.slice(0, commentIndex);
 		const afterComment = line.slice(commentIndex + commentStyle.length);
-		const commandRegex =
-			/^\s*(\[!code\s+(--|\+\+|warning|error|highlight(?::\d+)?|word:\w+(?::\d+)?|focus(?::\d+)?)\])(.*)/;
+		const commandRegex = /^\s*(\[!code\s+(--|\+\+|warning|error|highlight(?::\d+)?|word:\w+(?::\d+)?|focus(?::\d+)?)\])(.*)/;
 		const match = afterComment.match(commandRegex);
 
 		if (match) {
@@ -126,18 +65,13 @@ function processCode(code: string, language: string): string {
 	return processedLines.filter((line) => line !== "").join("\n");
 }
 
-// Usage
-let code = block.Code.RichTexts.map((richText: interfaces.RichText) => richText.Text.Content).join(
-	"",
-);
-const language =
-	block.Code.Language.toLowerCase() === "plain text"
-		? "plaintext"
-		: block.Code.Language.toLowerCase();
+let code = block.Code.RichTexts.map((richText: interfaces.RichText) => richText.Text.Content).join("");
+const language = block.Code.Language.toLowerCase() === "plain text" ? "plaintext" : block.Code.Language.toLowerCase();
 
-const shiki_transform_code = SHORTCODES["shiki-transform"]
-	? code.startsWith(SHORTCODES["shiki-transform"])
-	: false;
+const isMdxBucket = language === "markdown" && code.trim().startsWith("<!-- mdx inject -->");
+const mdxSource = isMdxBucket ? code.replace("<!-- mdx inject -->", "").trim() : "";
+
+const shiki_transform_code = SHORTCODES["shiki-transform"] ? code.startsWith(SHORTCODES["shiki-transform"]) : false;
 code = shiki_transform_code ? code.replace(SHORTCODES["shiki-transform"], "").trimStart() : code;
 
 const modifiedCode = shiki_transform_code ? processCode(code, language) : code;
@@ -148,7 +82,12 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 ---
 
 {
-	code_render ? (
+	isMdxBucket ? (
+		<div class="mdx-bucket mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
+			<RemoteMdx source={mdxSource} components={mdxComponents} />
+			<Caption richTexts={block.Code.Caption} block={block} />
+		</div>
+	) : code_render ? (
 		<div class="renderedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
 			<iframe
 				srcdoc={code.replace(SHORTCODES["html-render"], "")}
@@ -163,10 +102,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 			<Caption richTexts={block.Code.Caption} block={block} />
 		</div>
 	) : (
-		<div
-			class="code group relative z-0 mb-1 w-full max-w-full text-sm"
-			id={setId ? block.Id : undefined}
-		>
+		<div class="code group relative z-0 mb-1 w-full max-w-full text-sm" id={setId ? block.Id : undefined}>
 			<div
 				class={`${language === "mermaid" ? "overflow-x-scroll" : "max-h-[340px] overflow-scroll print:max-h-full"} min-w-0`}
 				{...(language !== "mermaid" && { "data-pagefind-ignore": "all" })}
@@ -191,27 +127,14 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
                 }
             "
 					>
-						<Icon
-							class="copy-icon-before h-6 w-6"
-							name={"clipboard-copy-code"}
-							aria-label="copy code"
-						/>
-						<Icon
-							class="copy-icon-done hidden h-6 w-6"
-							name={"clipboard-copy-code-done"}
-							aria-label="copied code"
-						/>
+						<Icon class="copy-icon-before h-6 w-6" name={"clipboard-copy-code"} aria-label="copy code" />
+						<Icon class="copy-icon-done hidden h-6 w-6" name={"clipboard-copy-code-done"} aria-label="copied code" />
 					</button>
 				</div>
 				{language === "mermaid" ? (
 					<pre class="mermaid max-w-full rounded-sm p-4 font-mono">{code}</pre>
 				) : (
-					<Code
-						code={code}
-						lang={language}
-						theme={"github-dark-dimmed"}
-						transformers={TRANSFORMER_FUNCTIONS_ARR}
-					/>
+					<Code code={code} lang={language} theme={"github-dark-dimmed"} transformers={TRANSFORMER_FUNCTIONS_ARR} />
 				)}
 			</div>
 			<Caption richTexts={block.Code.Caption} block={block} />

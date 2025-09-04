@@ -8,12 +8,19 @@ import type {
 	Column,
 	ReferencesInPage,
 	Post,
+	SelectProperty,
 } from "@/lib/interfaces";
 import { slugify } from "../utils/slugify";
 import path from "path";
 import fs from "node:fs";
-import { getBlock, getPostByPageId } from "../lib/notion/client";
+import {
+	getBlock,
+	getPosts,
+	getPostByPageId,
+	getAllTags as getAllNotionTags,
+} from "../lib/notion/client";
 import superjson from "superjson";
+import { getCollection } from "astro:content";
 
 const BASE_PATH = import.meta.env.BASE_URL;
 let referencesInPageCache: { [entryId: string]: ReferencesInPage[] } | null = null;
@@ -21,6 +28,61 @@ let referencesToPageCache: { [entryId: string]: { entryId: string; block: Block 
 let firstImage = true;
 let track_current_page_id: string | null = null;
 let current_headings = null;
+
+export async function getAllPosts() {
+	const notionPosts = await getPosts();
+
+	const localPosts = await getCollection("blog");
+	const formattedLocalPosts = localPosts.map((post) => ({
+		PageId: post.slug,
+		Title: post.data.title,
+		Slug: post.slug,
+		Date: post.data.pubDate,
+		Tags: post.data.tags || [],
+		Authors: post.data.authors || [],
+		Excerpt: post.data.description,
+		OGImage: post.data.ogImage,
+		Ranking: 0,
+		OuterLine: "",
+		Icon: { Type: "emoji", Emoji: "📝" },
+		Collection: "Blog",
+		IsDraft: post.data.isDraft || false,
+		Source: "Local",
+	}));
+
+	const allPosts = [...notionPosts, ...formattedLocalPosts];
+
+	allPosts.sort((a, b) => {
+		return b.Date.getTime() - a.Date.getTime();
+	});
+
+	return allPosts;
+}
+
+export async function getAllTags() {
+	const notionTags = await getAllNotionTags();
+	const localPosts = await getCollection("blog");
+
+	const localTags: SelectProperty[] = localPosts.reduce((acc, post) => {
+		if (post.data.tags) {
+			post.data.tags.forEach((tag) => {
+				if (!acc.some((t) => t.name === tag)) {
+					acc.push({ id: tag, name: tag, color: "default" });
+				}
+			});
+		}
+		return acc;
+	}, [] as SelectProperty[]);
+
+	const allTags = [...notionTags];
+	localTags.forEach((tag) => {
+		if (!allTags.some((t) => t.name === tag.name)) {
+			allTags.push(tag);
+		}
+	});
+
+	return allTags;
+}
 
 export function setCurrentHeadings(headings) {
 	current_headings = headings;

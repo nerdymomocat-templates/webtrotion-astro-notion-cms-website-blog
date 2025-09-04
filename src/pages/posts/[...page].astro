@@ -1,10 +1,9 @@
 ---
 import type { Page, GetStaticPaths } from "astro";
-// import type { CollectionEntry } from "astro:content";
 import PageLayout from "@/layouts/Base.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Pagination from "@/components/Paginator.astro";
-import { getAllPosts, getAllTags } from "@/lib/notion/client";
+import { getAllPosts, getAllTags } from "@/lib/blog-helpers";
 import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
