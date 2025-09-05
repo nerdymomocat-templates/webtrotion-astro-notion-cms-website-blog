@@ -31,6 +31,8 @@ export const BUILD_FOLDER_PATHS = {
 export const NOTION_API_SECRET =
 	import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
 export const DATABASE_ID = process.env.DATABASE_ID || key_value_from_json["database-id"] || "";
+export const DATA_SOURCE_ID =
+	process.env.DATA_SOURCE_ID || key_value_from_json["data-source-id"] || "";
 export const AUTHOR = key_value_from_json["author"] || "";
 export const TRACKING = key_value_from_json["tracking"] || {};
 export const WEBMENTION_API_KEY =
