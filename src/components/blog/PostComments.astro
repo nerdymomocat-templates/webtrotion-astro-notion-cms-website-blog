@@ -28,7 +28,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
    (bluesky_url ||
     (BLUESKY_COMM["auto-search-for-match"] &&
      BLUESKY_COMM["auto-search-for-match"]["turn-on-auto-search"] &&
-     BLUESKY_COMM["auto-search-for-match"]["author"]))
+     BLUESKY_COMM["auto-search-for-match"]["author"]));
 ---
 
 {(filled_in_giscus || use_bluesky) && (
@@ -47,12 +47,37 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
     </h2>
     <div class="tabs-container flex flex-col items-left w-full my-8 mx-auto">
       <div class="tabs flex gap-4 mb-4">
+        {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
         {use_bluesky && (
           <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="bluesky"><Icon class="h-6 w-6" name={"bluesky"} aria-label={"Bluesky Comments"} focusable="false" />Bluesky</button>
         )}
-        {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
       </div>
       <div class="tab-content w-full">
+        {filled_in_giscus && (
+          <div class="tab-pane w-full" id="giscus-tab" hidden>
+            <section
+              class="giscus mx-auto mt-6 w-full"
+              id="--layout-div-giscus-post-comments"
+            />
+            <script
+              src="https://giscus.app/client.js"
+              data-repo={GISCUS["data-repo"]}
+              data-repo-id={GISCUS["data-repo-id"]}
+              data-category={GISCUS["data-category"]}
+              data-category-id={GISCUS["data-category-id"]}
+              data-mapping={GISCUS["data-mapping"] || "url"}
+              data-strict="0"
+              data-reactions-enabled={GISCUS["data-reactions-enabled"] ? "1" : "0"}
+              data-emit-metadata="0"
+              data-input-position={GISCUS["data-input-position"] || "bottom"}
+              data-theme="preferred_color_scheme"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async
+            />
+          </div>
+        )}
         {use_bluesky && (
           <div class="tab-pane w-full" id="bluesky-tab" hidden>
             <bluesky-comments
@@ -523,9 +548,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
 
                     const authorHandle = thread.post.author.handle;
                     const authorProfileUrl = `https://bsky.app/profile/${thread.post.author.did}`;
-                    const postUrl = `https://bsky.app/profile/${
-                      thread.post.author.did
-                    }/post/${thread.post.uri.split("/").pop()}`;
+                    const postUrl = `https://bsky.app/profile/${thread.post.author.did}/post/${thread.post.uri.split("/").pop()}`;
                     const createdAt = new Date(thread.post.record.createdAt);
                     const createdAtFull = createdAt.toLocaleString();
                     const createdAtAbbreviated = this.#getAbbreviatedTime(createdAt);
@@ -622,31 +645,6 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
             </script>
           </div>
         )}
-        {filled_in_giscus && (
-          <div class="tab-pane w-full" id="giscus-tab" hidden>
-            <section
-              class="giscus mx-auto mt-6 w-full"
-              id="--layout-div-giscus-post-comments"
-            />
-            <script
-              src="https://giscus.app/client.js"
-              data-repo={GISCUS["data-repo"]}
-              data-repo-id={GISCUS["data-repo-id"]}
-              data-category={GISCUS["data-category"]}
-              data-category-id={GISCUS["data-category-id"]}
-              data-mapping={GISCUS["data-mapping"] || "url"}
-              data-strict="0"
-              data-reactions-enabled={GISCUS["data-reactions-enabled"] ? "1" : "0"}
-              data-emit-metadata="0"
-              data-input-position={GISCUS["data-input-position"] || "bottom"}
-              data-theme="preferred_color_scheme"
-              data-lang="en"
-              data-loading="lazy"
-              crossorigin="anonymous"
-              async
-            />
-          </div>
-        )}
       </div>
     </div>
   </div>
@@ -690,4 +688,3 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
     }
   </style>
 )}
-
