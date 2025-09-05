@@ -1,9 +1,8 @@
 ---
-import { useStore } from "@nanostores/react";
-import { footnotes, footnoteOrder } from "@/lib/footnotes";
+import { getFootnotes, getFootnoteOrder } from "@/lib/footnote-store";
 
-const $footnotes = useStore(footnotes);
-const $footnoteOrder = useStore(footnoteOrder);
+const $footnotes = getFootnotes();
+const $footnoteOrder = getFootnoteOrder();
 
 const sortedFootnotes = Object.entries($footnotes).sort(
   ([tagA], [tagB]) => $footnoteOrder[tagA] - $footnoteOrder[tagB]

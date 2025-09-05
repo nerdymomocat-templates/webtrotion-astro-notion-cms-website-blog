@@ -1,7 +1,7 @@
 ---
 import PageLayout from "@/layouts/Base.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
-import { extractTargetBlocks, getNavLink, getReferencesInPage, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "@/lib/blog-helpers";
+import { extractTargetBlocks, getNavLink, getReferencesInPage, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId, resetFootnotes } from "@/lib/blog-helpers";
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import type { Post } from "@/lib/interfaces";
 import { siteInfo } from "@/siteInfo";
@@ -72,6 +72,7 @@ const { page: slug } = Astro.params;
 const { page, shouldUseCache, pageLastUpdatedBeforeLastBuild } = Astro.props;
 
 resetCurrentHeadings();
+resetFootnotes();
 
 let pageFound = true;
 let blocks = null;

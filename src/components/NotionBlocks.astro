@@ -1,5 +1,6 @@
 ---
 import * as interfaces from "@/lib/interfaces";
+import { addFootnote } from "@/lib/blog-helpers";
 import { isTweetURL, isAmazonURL, buildURLToHTMLMap } from "@/lib/blog-helpers";
 import Paragraph from "@/components/notion-blocks/Paragraph.astro";
 import Heading1 from "@/components/notion-blocks/Heading1.astro";
@@ -35,7 +36,68 @@ export interface Props {
 
 const { blocks: rawBlocks, level = 1, renderChildren = true, setId = true } = Astro.props;
 
-const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
+const footnoteRegex = /\[\^([^\]]+)\]:\s*(.*)/;
+
+function extractFootnotes(blocks: interfaces.Block[]): interfaces.Block[] {
+  const nonFootnotes = [];
+  for (const block of blocks) {
+    let children = null;
+    if (block.Type === "paragraph" && block.Paragraph) children = block.Paragraph.Children;
+    else if (block.Type === "heading_1" && block.Heading1) children = block.Heading1.Children;
+    else if (block.Type === "heading_2" && block.Heading2) children = block.Heading2.Children;
+    else if (block.Type === "heading_3" && block.Heading3) children = block.Heading3.Children;
+    else if (block.Type === "bulleted_list_item" && block.BulletedListItem) children = block.BulletedListItem.Children;
+    else if (block.Type === "numbered_list_item" && block.NumberedListItem) children = block.NumberedListItem.Children;
+    else if (block.Type === "to_do" && block.ToDo) children = block.ToDo.Children;
+    else if (block.Type === "synced_block" && block.SyncedBlock) children = block.SyncedBlock.Children;
+    else if (block.Type === "toggle" && block.Toggle) children = block.Toggle.Children;
+    else if (block.Type === "quote" && block.Quote) children = block.Quote.Children;
+    else if (block.Type === "callout" && block.Callout) children = block.Callout.Children;
+
+    if (children) {
+      const grandChildren = [];
+      for (const child of children) {
+        if (child.Type === "paragraph") {
+          const richText = child.Paragraph.RichTexts[0];
+          if (richText) {
+            const match = richText.PlainText.match(footnoteRegex);
+            if (match) {
+              addFootnote({
+                tag: match[1],
+                content: match[2],
+                blockId: child.Id,
+                block: child,
+              });
+            } else {
+              grandChildren.push(child);
+            }
+          } else {
+            grandChildren.push(child);
+          }
+        } else {
+          grandChildren.push(child);
+        }
+      }
+      if (block.Type === "paragraph" && block.Paragraph) block.Paragraph.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "heading_1" && block.Heading1) block.Heading1.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "heading_2" && block.Heading2) block.Heading2.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "heading_3" && block.Heading3) block.Heading3.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "bulleted_list_item" && block.BulletedListItem) block.BulletedListItem.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "numbered_list_item" && block.NumberedListItem) block.NumberedListItem.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "to_do" && block.ToDo) block.ToDo.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "synced_block" && block.SyncedBlock) block.SyncedBlock.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "toggle" && block.Toggle) block.Toggle.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "quote" && block.Quote) block.Quote.Children = extractFootnotes(grandChildren);
+      else if (block.Type === "callout" && block.Callout) block.Callout.Children = extractFootnotes(grandChildren);
+    }
+    nonFootnotes.push(block);
+  }
+  return nonFootnotes;
+}
+
+const blocksWithoutFootnotes = extractFootnotes(rawBlocks);
+
+const blocks = blocksWithoutFootnotes.reduce((arr, block: interfaces.Block, i: number) => {
 	const isBulletedListItem = block.Type === "bulleted_list_item";
 	const isNumberedListItem = block.Type === "numbered_list_item";
 	const isToDo = block.Type === "to_do";

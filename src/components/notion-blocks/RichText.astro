@@ -1,7 +1,7 @@
 ---
 import katex from "katex";
 import type { RichText } from "@/lib/interfaces.ts";
-import { footnotes, footnoteOrder } from "@/lib/footnotes";
+import { getFootnotes } from "@/lib/blog-helpers";
 import Bold from "@/components/notion-blocks/annotations/Bold.astro";
 import Italic from "@/components/notion-blocks/annotations/Italic.astro";
 import Strikethrough from "@/components/notion-blocks/annotations/Strikethrough.astro";
@@ -43,10 +43,11 @@ const { richText, blockID } = Astro.props;
 																	const replacedContent = content.replace(
 																		footnoteRegex,
 																		(match, p1) => {
-																			const order = footnoteOrder.get();
-																			const footnoteNumber = order[p1];
-																			if (footnoteNumber) {
-																				return `<sup id="footnote-ref-${footnoteNumber}"><a href="#footnote-${footnoteNumber}">${footnoteNumber}</a></sup>`;
+                                                                            const footnotes = getFootnotes();
+                                                                            const footnote = footnotes.find(f => f.tag === p1);
+																			if (footnote) {
+                                                                                const footnoteNumber = footnotes.indexOf(footnote) + 1;
+																				return `<button class="footnote-ref" data-popover-target="footnote-${footnote.tag}"><sup>${footnoteNumber}</sup></button>`;
 																			}
 																			return match;
 																		},

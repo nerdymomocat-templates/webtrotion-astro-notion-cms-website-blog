@@ -366,4 +366,5 @@ export interface Footnote {
   tag?: string;
   content: string;
   blockId: string;
+  block: Block;
 }

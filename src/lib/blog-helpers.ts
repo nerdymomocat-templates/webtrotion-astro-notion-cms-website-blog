@@ -8,7 +8,22 @@ import type {
 	Column,
 	ReferencesInPage,
 	Post,
+	Footnote,
 } from "@/lib/interfaces";
+
+const footnoteStore: Footnote[] = [];
+
+export function addFootnote(footnote: Footnote) {
+  footnoteStore.push(footnote);
+}
+
+export function getFootnotes() {
+  return footnoteStore;
+}
+
+export function resetFootnotes() {
+  footnoteStore.length = 0;
+}
 import { slugify } from "../utils/slugify";
 import path from "path";
 import fs from "node:fs";

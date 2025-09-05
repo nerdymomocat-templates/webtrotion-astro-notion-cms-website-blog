@@ -7,6 +7,7 @@ import {
 	resetFirstImage,
 	setCurrentHeadings,
 	setTrackCurrentPageId,
+    resetFootnotes,
 } from "@/lib/blog-helpers";
 import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { getReferencesInPage } from "@/lib/blog-helpers";
@@ -76,6 +77,7 @@ interface Props {
 const { post, shouldUseCache, postLastUpdatedBeforeLastBuild } = Astro.props; // Extract shouldUseCache from props
 
 resetCurrentHeadings();
+resetFootnotes();
 let postFound = true;
 let headings = null;
 let blocks = null;

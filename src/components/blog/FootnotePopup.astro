@@ -1,0 +1,16 @@
+---
+import type { Footnote } from "@/lib/interfaces";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+
+export interface Props {
+  footnote: Footnote;
+}
+
+const { footnote } = Astro.props;
+---
+
+<template id={`template-footnote-${footnote.tag}`}>
+    <div id={`footnote-${footnote.tag}`} class="popoverEl">
+        <NotionBlocks blocks={[footnote.block]} />
+    </div>
+</template>

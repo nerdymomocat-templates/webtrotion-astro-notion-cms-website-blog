@@ -1,7 +1,6 @@
 ---
 import * as interfaces from "@/lib/interfaces.ts";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers.ts";
-import { addFootnote } from "@/lib/footnotes";
 import RichText from "@/components/notion-blocks/RichText.astro";
 import NotionBlocks from "@/components/NotionBlocks.astro";
 
@@ -13,35 +12,7 @@ export interface Props {
 
 const { block, renderChildren = true, setId = true } = Astro.props;
 
-const footnoteRegex = /\[\^([^\]]+)\]:\s*(.*)/;
-const children = block.Paragraph.Children || [];
-const footnotes = [];
-const nonFootnotes = [];
-
-for (const child of children) {
-	if (child.Type === "paragraph") {
-		const richText = child.Paragraph.RichTexts[0];
-		if (richText) {
-			const match = richText.PlainText.match(footnoteRegex);
-			if (match) {
-				addFootnote({
-					tag: match[1],
-					content: match[2],
-					blockId: child.Id,
-				});
-				footnotes.push(child);
-			} else {
-				nonFootnotes.push(child);
-			}
-		} else {
-			nonFootnotes.push(child);
-		}
-	} else {
-		nonFootnotes.push(child);
-	}
-}
-
-const hasChildren = nonFootnotes.length > 0;
+const hasChildren = block.Paragraph.Children && block.Paragraph.Children.length > 0;
 const Tag = hasChildren && renderChildren ? "div" : "p";
 ---
 
@@ -62,7 +33,7 @@ const Tag = hasChildren && renderChildren ? "div" : "p";
 		hasChildren && renderChildren && (
 			<div class="pl-6">
 				<NotionBlocks
-					blocks={nonFootnotes}
+					blocks={block.Paragraph.Children}
 					setId={setId}
 					renderChildren={renderChildren}
 				/>
