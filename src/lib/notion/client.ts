@@ -81,6 +81,7 @@ const factor = 2; // doubles the wait time with each retry
 let allEntriesCache: Post[] | null = null;
 let dsCache: Database | null = null;
 let blockIdPostIdMap: { [key: string]: string } | null = null;
+let allTagsWithCountsCache: { name: string; count: number; description: string; color: string }[] | null = null;
 
 const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 async function getResolvedDataSourceId(): Promise<string> {
@@ -567,6 +568,10 @@ export async function getAllTags(): Promise<SelectProperty[]> {
 export async function getAllTagsWithCounts(): Promise<
 	{ name: string; count: number; description: string; color: string }[]
 > {
+	if (allTagsWithCountsCache) {
+		return allTagsWithCountsCache;
+	}
+
 	const allPosts = await getAllPosts();
 	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 		? allPosts.filter((post) => !post.Slug.startsWith("_"))
@@ -608,6 +613,7 @@ export async function getAllTagsWithCounts(): Promise<
 		}))
 		.sort((a, b) => a.name.localeCompare(b.name));
 
+	allTagsWithCountsCache = sortedTagCounts;
 	return sortedTagCounts;
 }
 

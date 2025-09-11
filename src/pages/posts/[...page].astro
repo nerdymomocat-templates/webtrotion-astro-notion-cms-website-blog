@@ -4,7 +4,7 @@ import type { Page, GetStaticPaths } from "astro";
 import PageLayout from "@/layouts/Base.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Pagination from "@/components/Paginator.astro";
-import { getAllPosts, getAllTags } from "@/lib/notion/client";
+import { getAllPosts, getAllTagsWithCounts } from "@/lib/notion/client";
 import type { Post, SelectProperty } from "src/lib/interfaces";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
@@ -19,14 +19,14 @@ export const getStaticPaths = (async ({ paginate }) => {
 	const filteredPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
 		? posts.filter((post) => !post.Slug.startsWith("_"))
 		: posts;
-	const uniqueTags = await getAllTags();
+	const uniqueTags = await getAllTagsWithCounts();
 
 	return paginate(filteredPosts, { props: { uniqueTags }, pageSize: NUMBER_OF_POSTS_PER_PAGE });
 }) satisfies GetStaticPaths;
 
 interface Props {
 	page: Page<Post>;
-	uniqueTags: SelectProperty[];
+	uniqueTags: (SelectProperty & { count: number })[];
 }
 
 const { page, uniqueTags } = Astro.props;
@@ -79,7 +79,7 @@ const paginationProps = {
 						{uniqueTags.map((tag) => (
 							<li>
 								<a
-									class={`flex items-center justify-center rounded-lg px-2 ${getNotionColorToTailwindColor(
+									class={`flex items-center justify-center rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
 										true,
 									)}`}
@@ -87,6 +87,9 @@ const paginationProps = {
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>
 									{tag.name}
+									<span class="ml-2 rounded-sm bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300">
+										{tag.count}
+									</span>
 								</a>
 							</li>
 						))}
