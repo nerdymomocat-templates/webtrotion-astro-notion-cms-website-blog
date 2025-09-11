@@ -11,6 +11,9 @@ jobs:
   recover:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: List all caches
         run: |
           gh cache list
