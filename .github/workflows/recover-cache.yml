@@ -1,0 +1,54 @@
+name: Recover Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      cache_key:
+        description: 'The exact key or prefix of the cache to recover'
+        required: true
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: List all caches
+        run: |
+          gh cache list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine path to recover
+        id: determine_path
+        run: |
+          if [[ "${{ github.event.inputs.cache_key }}" == *"constants-config"* ]]; then
+            echo "path=constants-config.json" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.cache_key }}" == *"tmp-webtrotion"* ]]; then
+            echo "path=tmp" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.cache_key }}" == *"public-webtrotion"* ]]; then
+            echo "path=public" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.cache_key }}" == *"modules"* ]]; then
+            echo "path=node_modules" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.inputs.cache_key }}" == *"old-package-json-cache"* ]]; then
+            echo "path=old_package.json" >> $GITHUB_OUTPUT
+          else
+            echo "::error::Could not determine path to recover from cache key. Please check the cache key."
+            exit 1
+          fi
+
+      - name: Restore Cache
+        id: cache-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ./${{ steps.determine_path.outputs.path }}
+          key: ${{ github.event.inputs.cache_key }}
+          restore-keys: |
+            ${{ github.event.inputs.cache_key }}
+
+      - name: List restored files
+        run: ls -lR ./${{ steps.determine_path.outputs.path }}
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovered-${{ github.event.inputs.cache_key }}
+          path: ./${{ steps.determine_path.outputs.path }}
