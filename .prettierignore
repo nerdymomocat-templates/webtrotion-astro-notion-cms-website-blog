@@ -4,7 +4,7 @@ node_modules
 # cache-dirs
 **/.cache
 
-pnpm-lock.yaml
+
 dist
 
 # because i want global css output to look good
