@@ -7,15 +7,13 @@ const { description } = Astro.props;
 const id = "info-popover-" + Math.random().toString(16).slice(2);
 ---
 
-<span class="ml-2">
-  <span
-    data-popover-target={id}
-    data-popover-placement="bottom-end"
-    class="cursor-pointer"
-  >
-    <span class="text-xl">ⓘ</span>
-    <span class="sr-only">Show description</span>
-  </span>
+<span
+  data-popover-target={id}
+  data-popover-placement="bottom-end"
+  class="cursor-pointer ml-2"
+>
+  <span class="text-xl">ⓘ</span>
+  <span class="sr-only">Show description</span>
 </span>
 
 <template id={`template-${id}`}>

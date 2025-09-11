@@ -4,9 +4,9 @@ import type { Page, GetStaticPaths } from "astro";
 import PageLayout from "@/layouts/Base.astro";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Pagination from "@/components/Paginator.astro";
-import { getAllPosts, getUniqueTags } from "@/lib/notion/client";
+import { getAllPosts, getAllTagsWithCounts } from "@/lib/notion/client";
 import type { Post } from "@/lib/interfaces";
-import { getTagsNameWDesc, slugify } from "@/utils";
+import { slugify } from "@/utils";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, NUMBER_OF_POSTS_PER_PAGE } from "@/constants";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
@@ -18,8 +18,7 @@ export const getStaticPaths = (async ({ paginate }) => {
 		posts = posts.filter((post) => !post.Slug.startsWith("_"));
 	}
 
-	const tags = await getUniqueTags(posts);
-	const tagsNameWDesc = await getTagsNameWDesc();
+	const tags = await getAllTagsWithCounts();
 
 	return tags.flatMap((tag) => {
 		// Initially filter posts based on the collection
@@ -37,8 +36,9 @@ export const getStaticPaths = (async ({ paginate }) => {
 			params: { tag: slugify(tag.name) },
 			props: {
 				tag: tag.name,
-				description: tagsNameWDesc[tag.name] ? tagsNameWDesc[tag.name] : "",
+				description: tag.description,
 				color: tag.color,
+				count: tag.count,
 			},
 			pageSize: NUMBER_OF_POSTS_PER_PAGE,
 		});
@@ -50,9 +50,10 @@ interface Props {
 	tag: string;
 	description: string;
 	color: string;
+	count: number;
 }
 
-const { page, tag, description, color } = Astro.props as Props;
+const { page, tag, description, color, count } = Astro.props as Props;
 
 const meta = {
 	title: `Tag: ${tag}`,
@@ -79,9 +80,12 @@ const paginationProps = {
 <PageLayout meta={meta}>
 	<h1 class="title mb-6 flex max-w-full items-center">
 		<span
-			class={`rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(color + "-background", true)} `}
+			class={`flex items-center gap-2 rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(color + "-background", true)} `}
 			><Icon class="inline h-6 w-6" name={"tag-outline"} aria-hidden="true" focusable="false" />
 			{tag}
+			<span class="ml-2 rounded-sm bg-gray-100 px-2 text-base text-rose-800 dark:bg-gray-800 dark:text-rose-300">
+				{count}
+			</span>
 		</span>
 	</h1>
 	{description && <q class="-mt-3 mb-6 block italic">{description}</q>}
