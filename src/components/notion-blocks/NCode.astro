@@ -142,8 +142,52 @@ code = shiki_transform_code ? code.replace(SHORTCODES["shiki-transform"], "").tr
 
 const modifiedCode = shiki_transform_code ? processCode(code, language) : code;
 
-const code_render = SHORTCODES["html-render"] ? code.startsWith(SHORTCODES["html-render"]) : false;
-const code_inject = SHORTCODES["html-inject"] ? code.startsWith(SHORTCODES["html-inject"]) : false;
+// Notion's "Format code" feature can split the default shortcodes into two lines.
+// The following logic handles both the standard single-line shortcode and the
+// two-line version to ensure users can use the formatting feature without issues.
+
+// --- Logic for html-inject ---
+let htmlToInject: string | null = null;
+const injectShortcode = SHORTCODES["html-inject"];
+const defaultInjectShortcode = "<!DOCTYPE html> <!-- inject -->";
+
+if (injectShortcode) {
+	// Check for the standard shortcode first.
+	if (code.startsWith(injectShortcode)) {
+		htmlToInject = code.substring(injectShortcode.length);
+	}
+	// As a fallback, if the configured shortcode is the default one,
+	// check for the newline-variant that Notion's formatter creates.
+	else if (injectShortcode === defaultInjectShortcode) {
+		const injectShortcodeNewline = "<!DOCTYPE html>\n<!-- inject -->";
+		if (code.startsWith(injectShortcodeNewline)) {
+			htmlToInject = code.substring(injectShortcodeNewline.length);
+		}
+	}
+}
+
+// --- Logic for html-render ---
+let iframeSrcDoc: string | null = null;
+const renderShortcode = SHORTCODES["html-render"];
+const defaultRenderShortcode = "<!DOCTYPE html> <!-- iframe -->";
+
+if (renderShortcode) {
+	// Check for the standard shortcode first.
+	if (code.startsWith(renderShortcode)) {
+		iframeSrcDoc = code.substring(renderShortcode.length);
+	}
+	// As a fallback, if the configured shortcode is the default one,
+	// check for the newline-variant that Notion's formatter creates.
+	else if (renderShortcode === defaultRenderShortcode) {
+		const renderShortcodeNewline = "<!DOCTYPE html>\n<!-- iframe -->";
+		if (code.startsWith(renderShortcodeNewline)) {
+			iframeSrcDoc = code.substring(renderShortcodeNewline.length);
+		}
+	}
+}
+
+const code_render = iframeSrcDoc !== null;
+const code_inject = htmlToInject !== null;
 const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainText).join(" ");
 ---
 
@@ -151,7 +195,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 	code_render ? (
 		<div class="renderedcode mb-1 w-full max-w-full" id={setId ? block.Id : undefined}>
 			<iframe
-				srcdoc={code.replace(SHORTCODES["html-render"], "")}
+				srcdoc={iframeSrcDoc}
 				class="h-[340px] w-full max-w-full rounded-lg border-none print:max-h-full"
 				loading="lazy"
 				title={plainTextCaption}
@@ -159,7 +203,7 @@ const plainTextCaption = block.Code?.Caption.map((richText) => richText.PlainTex
 		</div>
 	) : code_inject ? (
 		<div class="injectedcode mb-1 max-w-full" id={setId ? block.Id : undefined}>
-			<Fragment set:html={code.replace(SHORTCODES["html-inject"], "")} />
+			<Fragment set:html={htmlToInject} />
 			<Caption richTexts={block.Code.Caption} block={block} />
 		</div>
 	) : (
