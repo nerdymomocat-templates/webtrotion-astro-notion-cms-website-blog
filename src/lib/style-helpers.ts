@@ -97,6 +97,30 @@ export const getIconTailwindFilterStyle = (url: string): string => {
 	return "";
 };
 
+export const SYMBOLS = [
+  '*',
+  '†',
+  '‡',
+  '§',
+  '‖',
+  '¶',
+  '#',
+  'Δ',
+  '◊',
+  '↓',
+  '☞',
+  '♠',
+  '♥',
+  '♦',
+  '♣',
+];
+
+export const getSymbol = (index: number) => {
+  const symbol = SYMBOLS[index % SYMBOLS.length];
+  const repeat = Math.floor(index / SYMBOLS.length) + 1;
+  return symbol.repeat(repeat);
+};
+
 export const getTextToAstroIcon = (text: string) => {
 	const textIconMap = {
 		"🗓️": "mdi:calendar-blank",

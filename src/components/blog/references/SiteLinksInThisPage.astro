@@ -4,6 +4,8 @@ import NBlocksPopover from "@/components/blog/references/NBlocksPopover.astro";
 import { getReferenceLink } from "@/lib/blog-helpers";
 import NPagePopover from "@/components/blog/references/NPagePopover.astro";
 import { REFERENCES } from "@/constants";
+import { getSymbol } from "@/lib/style-helpers";
+
 interface Props {
 	post: Post;
 	filteredReferencesInPage: ReferencesInPage[];
@@ -81,7 +83,7 @@ entryIdsToDel.forEach((entryId) => {
 										<NBlocksPopover
 											block={block}
 											linkedTo={blockIdLinks[block.Id]}
-											popoverSpanText={`[${index + 1}]`}
+											popoverSpanText={`[${getSymbol(index)}]`}
 											isInterlinkedBack={true}
 										/>
 									))}
@@ -94,7 +96,7 @@ entryIdsToDel.forEach((entryId) => {
 									{" at "}
 									{blocks.map((block, index) => (
 										<a href={blockIdLinks[block.Id]} class="text-link font-mono">
-											{`[${index + 1}]`}{" "}
+											{`[${getSymbol(index)}]`}{" "}
 										</a>
 									))}
 								</>
