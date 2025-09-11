@@ -2,6 +2,7 @@
 import PageLayout from "@/layouts/Base.astro";
 import { getNavLink } from "@/lib/blog-helpers";
 import { getAllTagsWithCounts } from "@/lib/notion/client";
+import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { slugify } from "@/utils";
 import InfoPopover from "@/components/InfoPopover.astro";
 
@@ -27,9 +28,14 @@ const meta = {
             aria-label={`View posts with the tag: ${tag.name}`}
             data-astro-prefetch
           >
-            <span class="rounded-lg bg-nred-bg-tag-light px-2 py-1 dark:bg-nred-bg-tag-dark">
+            <span
+              class={`rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(
+                tag.color + "-background",
+                true,
+              )} `}
+            >
               {tag.name}
-              <span class="rounded-sm bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300">
+              <span class="ml-2 rounded-sm bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300">
                 {tag.count}
               </span>
             </span>
