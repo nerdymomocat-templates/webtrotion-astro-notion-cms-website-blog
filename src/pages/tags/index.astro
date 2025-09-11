@@ -4,7 +4,7 @@ import { getNavLink } from "@/lib/blog-helpers";
 import { getAllTagsWithCounts } from "@/lib/notion/client";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { slugify } from "@/utils";
-import InfoPopover from "@/components/InfoPopover.astro";
+import TagDescPopover from "@/components/TagDescPopover.astro";
 
 const allTags = await getAllTagsWithCounts();
 
@@ -41,7 +41,7 @@ const meta = {
             </span>
           </a>
           {tag.description && (
-            <InfoPopover description={tag.description} />
+            <TagDescPopover description={tag.description} />
           )}
         </div>
       ))
