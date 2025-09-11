@@ -72,17 +72,23 @@ try {
 						</div>
 					</div>
 
-					{metadata && metadata.image && (
-						<div class="flex-bookmark-image relative hidden sm:block">
-							<img
-								class="absolute! h-full w-full object-contain object-right"
-								loading="lazy"
-								src={metadata.image}
-								alt="title"
-								decoding="async"
-							/>
-						</div>
-					)}
+					{/*
+					Metascraper can return an emoji as an image for Twitter profile bookmarks.
+					We don't want to display it, so we filter out images from twimg.com/emoji.
+					*/}
+					{metadata &&
+						metadata.image &&
+						!metadata.image.includes("twimg.com/emoji") && (
+							<div class="flex-bookmark-image relative hidden sm:block">
+								<img
+									class="absolute! h-full w-full object-contain object-right"
+									loading="lazy"
+									src={metadata.image}
+									alt="title"
+									decoding="async"
+								/>
+							</div>
+						)}
 				</a>
 			</div>
 		) : (
