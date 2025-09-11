@@ -52,6 +52,7 @@ import Icon from "@/components/Icon.astro";
 		private observer: MutationObserver;
 		private initialized: boolean = false;
 		private idleCallbackId: number | null = null;
+		private pagefindUI: any = null;
 
 		constructor() {
 			super();
@@ -75,7 +76,7 @@ import Icon from "@/components/Icon.astro";
 			const onIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 1));
 			onIdle(async () => {
 				const { PagefindUI } = await import("@pagefind/default-ui");
-				new PagefindUI({
+				this.pagefindUI = new PagefindUI({
 					element: "#webtrotion__search",
 					baseUrl: import.meta.env.BASE_URL,
 					bundlePath: import.meta.env.BASE_URL.replace(/\/$/, "") + "/pagefind/",
@@ -91,6 +92,14 @@ import Icon from "@/components/Icon.astro";
 
 				// Start observing the dialog for changes
 				this.observer.observe(this.dialog, { childList: true, subtree: true });
+
+				const queryParams = new URLSearchParams(window.location.search);
+				const searchTerm = queryParams.get("q");
+
+				if (searchTerm) {
+					this.openModal();
+					this.pagefindUI.triggerSearch(searchTerm);
+				}
 			});
 		}
 
