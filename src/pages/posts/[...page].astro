@@ -79,7 +79,7 @@ const paginationProps = {
 						{uniqueTags.map((tag) => (
 							<li>
 								<a
-									class={`flex items-center justify-center rounded-lg px-2 py-1 ${getNotionColorToTailwindColor(
+									class={`flex items-center justify-center rounded-lg px-2 ${getNotionColorToTailwindColor(
 										tag.color + "-background",
 										true,
 									)}`}
@@ -87,7 +87,7 @@ const paginationProps = {
 									aria-label={`View all posts with the tag: ${tag.name}`}
 								>
 									{tag.name}
-									<span class="ml-2 rounded-sm bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300">
+									<span class="ml-2 rounded-sm bg-gray-100 px-1 text-xs text-rose-800 dark:bg-gray-800 dark:text-rose-300">
 										{tag.count}
 									</span>
 								</a>
