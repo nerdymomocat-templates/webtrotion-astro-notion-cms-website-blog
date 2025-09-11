@@ -97,27 +97,20 @@ export const getIconTailwindFilterStyle = (url: string): string => {
 	return "";
 };
 
-export const SYMBOLS = [
-  '*',
-  '†',
+export const LINKED_CONTENT_SYMBOLS = [
   '‡',
   '§',
-  '‖',
-  '¶',
-  '#',
   'Δ',
   '◊',
-  '↓',
   '☞',
   '♠',
-  '♥',
   '♦',
   '♣',
 ];
 
-export const getSymbol = (index: number) => {
-  const symbol = SYMBOLS[index % SYMBOLS.length];
-  const repeat = Math.floor(index / SYMBOLS.length) + 1;
+export const getSymbolForLinkedContent = (index: number) => {
+  const symbol = LINKED_CONTENT_SYMBOLS[index % LINKED_CONTENT_SYMBOLS.length];
+  const repeat = Math.floor(index / LINKED_CONTENT_SYMBOLS.length) + 1;
   return symbol.repeat(repeat);
 };
 

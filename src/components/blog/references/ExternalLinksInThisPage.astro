@@ -8,7 +8,7 @@ import NBlocksPopover from "@/components/blog/references/NBlocksPopover.astro";
 import { buildURLToHTMLMap, getReferenceLink } from "@/lib/blog-helpers";
 import { REFERENCES } from "@/constants";
 import Icon from "@/components/Icon.astro";
-import { getSymbol } from "@/lib/style-helpers";
+import { getSymbolForLinkedContent } from "@/lib/style-helpers";
 
 interface Props {
 	post: Post;
@@ -134,7 +134,7 @@ if (groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap) {
 											<NBlocksPopover
 												block={block}
 												linkedTo={blockIdLinks[block.Id]}
-												popoverSpanText={`[${getSymbol(index)}]`}
+												popoverSpanText={`[${getSymbolForLinkedContent(index)}]`}
 												isInterlinkedBack={true}
 											/>
 										))}
@@ -143,7 +143,7 @@ if (groupedReferences && Object.keys(groupedReferences).length > 0 && urlMap) {
 									<>
 										{blocks.map((block, index) => (
 											<a href={blockIdLinks[block.Id]} class="text-link font-mono text-xs">
-												{`[${getSymbol(index)}]`}
+												{`[${getSymbolForLinkedContent(index)}]`}
 											</a>
 										))}
 									</>

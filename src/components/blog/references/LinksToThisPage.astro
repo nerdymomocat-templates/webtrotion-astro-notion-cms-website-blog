@@ -3,7 +3,7 @@ import type { Block, Post } from "@/lib/interfaces";
 import NBlocksPopover from "@/components/blog/references/NBlocksPopover.astro";
 import { getReferenceLink } from "@/lib/blog-helpers";
 import { REFERENCES } from "@/constants";
-import { getSymbol } from "@/lib/style-helpers";
+import { getSymbolForLinkedContent } from "@/lib/style-helpers";
 
 interface Props {
 	post: Post;
@@ -50,7 +50,7 @@ if (groupedReferences) {
 										<NBlocksPopover
 											block={block}
 											linkedTo={blockIdLinks[block.Id]}
-											popoverSpanText={`[${getSymbol(index)}]`}
+											popoverSpanText={`[${getSymbolForLinkedContent(index)}]`}
 											popoverTitle={entryIdLinksEntry[entryId][1].Title}
 											isInterlinkedBack={true}
 										/>
@@ -60,7 +60,7 @@ if (groupedReferences) {
 								<>
 									{blocks.map((block, index) => (
 										<a href={blockIdLinks[block.Id]} class="text-link font-mono text-xs">
-											{`[${getSymbol(index)}]`}
+											{`[${getSymbolForLinkedContent(index)}]`}
 										</a>
 									))}
 								</>

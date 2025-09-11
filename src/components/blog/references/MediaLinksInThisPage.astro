@@ -3,7 +3,7 @@ import type { Block, Post, ReferencesInPage } from "@/lib/interfaces";
 import NBlocksPopover from "@/components/blog/references/NBlocksPopover.astro";
 import { getReferenceLink } from "@/lib/blog-helpers";
 import { REFERENCES } from "@/constants";
-import { getSymbol } from "@/lib/style-helpers";
+import { getSymbolForLinkedContent } from "@/lib/style-helpers";
 
 interface Props {
 	post: Post;
@@ -59,7 +59,7 @@ if (groupedReferences) {
 											<NBlocksPopover
 												block={blockdml.block}
 												linkedTo={blockIdLinks[blockdml.block.Id]}
-												popoverSpanText={`[${getSymbol(index)}]`}
+												popoverSpanText={`[${getSymbolForLinkedContent(index)}]`}
 												isInterlinkedBack={true}
 											/>
 										</>
@@ -70,7 +70,7 @@ if (groupedReferences) {
 									<span class="italic">{dmltype}</span> {" at "}
 									{blockdmls.map((blockdml, index) => (
 										<a href={blockIdLinks[blockdml.block.Id]} class="text-link font-mono text-xs">
-											{`[${getSymbol(index)}]`}
+											{`[${getSymbolForLinkedContent(index)}]`}
 										</a>
 									))}
 								</>

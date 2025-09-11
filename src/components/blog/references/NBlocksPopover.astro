@@ -33,9 +33,8 @@ if (linkedTo && (linkedTo.includes(footnotePattern + "/") || linkedTo.endsWith(f
       data-popover-target=`popover-description-${id}`
       data-popover-placement="bottom-end"
       class={`cursor-pointer`}
-      >{popoverSpanText ? popoverSpanText : <slot />}<span class="sr-only"
-        >Show information for the linked content</span
-      ></span
+      aria-label="Show information for the linked content"
+      >{popoverSpanText ? popoverSpanText : <slot />}</span
     ></span
   >
 ) : (
@@ -46,9 +45,8 @@ if (linkedTo && (linkedTo.includes(footnotePattern + "/") || linkedTo.endsWith(f
       data-popover-placement="bottom-end"
       class={`cursor-pointer ${isInterlinkedBack ? 'text-sm font-mono' : ''}`}
       data-href={linkedTo}
-      >{popoverSpanText ? popoverSpanText : <slot />}<span class="sr-only"
-        >Show information for the linked content</span
-      ></span
+      aria-label="Show information for the linked content"
+      >{popoverSpanText ? popoverSpanText : <slot />}</span
     ></span
   >
 )}
