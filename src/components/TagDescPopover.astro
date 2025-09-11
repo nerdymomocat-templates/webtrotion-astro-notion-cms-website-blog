@@ -1,0 +1,28 @@
+---
+interface Props {
+  description: string;
+}
+
+const { description } = Astro.props;
+const id = "info-popover-" + Math.random().toString(16).slice(2);
+---
+
+<span
+  data-popover-target={id}
+  data-popover-placement="bottom-end"
+  class="cursor-pointer ml-2"
+>
+  <span class="text-xl">ⓘ</span>
+  <span class="sr-only">Show description</span>
+</span>
+
+<template id={`template-${id}`}>
+  <div
+    data-popover
+    id={id}
+    role="tooltip"
+    class="popoverEl invisible absolute z-40 inline-block w-72 rounded-lg border border-gray-200 bg-white p-3 text-sm text-gray-500 opacity-0 shadow-sm transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+  >
+    <p>{description}</p>
+  </div>
+</template>
