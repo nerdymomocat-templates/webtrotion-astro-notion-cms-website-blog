@@ -79,6 +79,5 @@
 		"satori": "^0.12.0",
 		"tailwindcss": "^4.0.2",
 		"typescript": "^5.7.2"
-	},
-	"packageManager": "pnpm@9.15.0"
+	}
 }
