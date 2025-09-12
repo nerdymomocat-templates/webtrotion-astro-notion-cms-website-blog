@@ -49,7 +49,7 @@ const plainTextCaption = block.NImage?.Caption.map((richText) => richText.PlainT
 					/>
 				)}
 			</div>
-			<Caption richTexts={block.NImage.Caption} block={block} as="figcaption" />
+			<Caption richTexts={block.NImage.Caption} block={block} as="figcaption" footnotes={block.Footnotes} />
 		</figure>
 	)
 }

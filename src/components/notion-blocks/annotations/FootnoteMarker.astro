@@ -1,0 +1,32 @@
+---
+import NotionBlocks from "@/components/NotionBlocks.astro";
+import type { Footnote } from "@/lib/interfaces";
+
+export interface Props {
+	id: string;
+    footnotes: Footnote[];
+}
+const { id, footnotes } = Astro.props;
+const footnote = footnotes.find(f => f.id === id);
+---
+<span
+    data-popover-target={`popover-footnote-${id}`}
+    class="footnote-marker cursor-pointer text-link underline decoration-dotted decoration-accent-2/40 underline-offset-2"
+    >†</span
+>
+<template id={`template-popover-footnote-${id}`}>
+    <div
+        data-popover
+        id={`popover-footnote-${id}`}
+        role="tooltip"
+        class="popoverEl invisible absolute z-40 inline-block hidden w-72 rounded-lg border border-gray-200 bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+    >
+        {
+            footnote && (
+                <div class="space-y-2 p-3">
+                    <NotionBlocks blocks={footnote.content} renderChildren={false} setId={false} />
+                </div>
+            )
+        }
+    </div>
+</template>

@@ -15,6 +15,7 @@ import {
 	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
 	BUILD_FOLDER_PATHS,
+	FOOTNOTES,
 } from "../../constants";
 import type * as responses from "@/lib/notion/responses";
 import type * as requestParams from "@/lib/notion/request-params";
@@ -59,6 +60,8 @@ import type {
 	Reference,
 	NAudio,
 	ReferencesInPage,
+	Comment,
+	Footnote,
 } from "@/lib/interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from "@notionhq/client";
@@ -437,39 +440,7 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 		params["start_cursor"] = res.next_cursor as string;
 	}
 
-	const allBlocks = results.map((blockObject) => _buildBlock(blockObject));
-
-	for (let i = 0; i < allBlocks.length; i++) {
-		const block = allBlocks[i];
-
-		if (block.Type === "table" && block.Table) {
-			block.Table.Rows = await _getTableRows(block.Id);
-		} else if (block.Type === "column_list" && block.ColumnList) {
-			block.ColumnList.Columns = await _getColumns(block.Id);
-		} else if (block.Type === "bulleted_list_item" && block.BulletedListItem && block.HasChildren) {
-			block.BulletedListItem.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "numbered_list_item" && block.NumberedListItem && block.HasChildren) {
-			block.NumberedListItem.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "to_do" && block.ToDo && block.HasChildren) {
-			block.ToDo.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "synced_block" && block.SyncedBlock) {
-			block.SyncedBlock.Children = await _getSyncedBlockChildren(block);
-		} else if (block.Type === "toggle" && block.Toggle) {
-			block.Toggle.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "paragraph" && block.Paragraph && block.HasChildren) {
-			block.Paragraph.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "heading_1" && block.Heading1 && block.HasChildren) {
-			block.Heading1.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "heading_2" && block.Heading2 && block.HasChildren) {
-			block.Heading2.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "heading_3" && block.Heading3 && block.HasChildren) {
-			block.Heading3.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "quote" && block.Quote && block.HasChildren) {
-			block.Quote.Children = await getAllBlocksByBlockId(block.Id);
-		} else if (block.Type === "callout" && block.Callout && block.HasChildren) {
-			block.Callout.Children = await getAllBlocksByBlockId(block.Id);
-		}
-	}
+	const allBlocks = await Promise.all(results.map((blockObject) => _buildBlock(blockObject)));
 
 	return allBlocks;
 }
@@ -525,7 +496,7 @@ export async function getBlock(blockId: string, forceRefresh = false): Promise<B
 			},
 		);
 
-		const block = _buildBlock(res);
+		const block = await _buildBlock(res);
 
 		// Update our mapping and cache with this new block
 		const blockIdPostIdMap = getBlockIdPostIdMap();
@@ -875,12 +846,13 @@ export async function getDataSource(): Promise<Database> {
 	return database;
 }
 
-function _buildBlock(blockObject: responses.BlockObject): Block {
+async function _buildBlock(blockObject: responses.BlockObject): Promise<Block> {
 	const block: Block = {
 		Id: blockObject.id,
 		Type: blockObject.type,
 		HasChildren: blockObject.has_children,
 		LastUpdatedTimeStamp: new Date(blockObject.last_edited_time),
+		Footnotes: [],
 	};
 
 	switch (blockObject.type) {
@@ -1175,8 +1147,367 @@ function _buildBlock(blockObject: responses.BlockObject): Block {
 			break;
 	}
 
+	if (block.HasChildren) {
+		if (block.Type === "table" && block.Table) {
+			block.Table.Rows = await _getTableRows(block.Id);
+			if (block.Table.Rows) {
+				let allTableFootnotes: Footnote[] = [];
+				for (const row of block.Table.Rows) {
+					for (const cell of row.Cells) {
+						const { processedRichTexts, footnotes } = _processRichTextsForEndOfBlockFootnotes(cell.RichTexts);
+						cell.RichTexts = processedRichTexts;
+						if (footnotes.length > 0) {
+							allTableFootnotes = allTableFootnotes.concat(footnotes);
+						}
+					}
+				}
+				if (allTableFootnotes.length > 0) {
+					block.Footnotes = (block.Footnotes || []).concat(allTableFootnotes);
+				}
+			}
+		} else if (block.Type === "column_list" && block.ColumnList) {
+			block.ColumnList.Columns = await _getColumns(block.Id);
+		} else if (block.Type === "bulleted_list_item" && block.BulletedListItem) {
+			block.BulletedListItem.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "numbered_list_item" && block.NumberedListItem) {
+			block.NumberedListItem.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "to_do" && block.ToDo) {
+			block.ToDo.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "synced_block" && block.SyncedBlock) {
+			block.SyncedBlock.Children = await _getSyncedBlockChildren(block);
+		} else if (block.Type === "toggle" && block.Toggle) {
+			block.Toggle.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "paragraph" && block.Paragraph) {
+			block.Paragraph.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "heading_1" && block.Heading1) {
+			block.Heading1.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "heading_2" && block.Heading2) {
+			block.Heading2.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "heading_3" && block.Heading3) {
+			block.Heading3.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "quote" && block.Quote) {
+			block.Quote.Children = await getAllBlocksByBlockId(block.Id);
+		} else if (block.Type === "callout" && block.Callout) {
+			block.Callout.Children = await getAllBlocksByBlockId(block.Id);
+		}
+	}
+
+	await _extractFootnotes(block);
 	return block;
 }
+
+async function _extractFootnotes(block: Block): Promise<Block> {
+	if (!FOOTNOTES || !FOOTNOTES["page-settings"].enabled) {
+		return block;
+	}
+
+	const footnoteSettings = FOOTNOTES["page-settings"];
+	const source = Object.keys(footnoteSettings.source).find((key) => footnoteSettings.source[key as keyof typeof footnoteSettings.source]);
+
+	switch (source) {
+		case "end-of-block":
+			return _extractFootnotesFromEndOfBlock(block);
+		case "start-of-child-blocks":
+			return await _extractFootnotesFromStartOfChildBlocks(block);
+		case "block-comments":
+		case "block-inline-text-comments":
+			return await _extractFootnotesFromComments(block);
+		default:
+			return block;
+	}
+}
+
+async function _extractFootnotesFromComments(block: Block): Promise<Block> {
+	const hasPermission = await checkCommentsPermission();
+	if (!hasPermission) {
+		// Fallback to end-of-block source if comments are not readable
+		return _extractFootnotesFromEndOfBlock(block);
+	}
+
+	const comments = await getComments(block.Id);
+	if (!comments || comments.length === 0) {
+		return block;
+	}
+
+	let allCommentFootnotes: Footnote[] = [];
+	for (const comment of comments) {
+		if (comment.rich_text) {
+			const { footnotes } = _processRichTextsForEndOfBlockFootnotes(comment.rich_text.map(_buildRichText));
+			if (footnotes.length > 0) {
+				allCommentFootnotes = allCommentFootnotes.concat(footnotes);
+			}
+		}
+	}
+
+	if (allCommentFootnotes.length > 0) {
+		block.Footnotes = (block.Footnotes || []).concat(allCommentFootnotes);
+	}
+
+	return block;
+}
+
+async function _extractFootnotesFromStartOfChildBlocks(block: Block): Promise<Block> {
+    if (!block.HasChildren) {
+        return block;
+    }
+
+	const getChildren = (b: Block): Block[] | undefined => {
+		switch (b.Type) {
+			case "paragraph": return b.Paragraph?.Children;
+			case "bulleted_list_item": return b.BulletedListItem?.Children;
+			case "numbered_list_item": return b.NumberedListItem?.Children;
+			case "to_do": return b.ToDo?.Children;
+			case "toggle": return b.Toggle?.Children;
+			case "heading_1": return b.Heading1?.Children;
+			case "heading_2": return b.Heading2?.Children;
+			case "heading_3": return b.Heading3?.Children;
+			case "quote": return b.Quote?.Children;
+			case "callout": return b.Callout?.Children;
+			default: return undefined;
+		}
+	}
+
+	const setChildren = (b: Block, children: Block[]) => {
+		switch (b.Type) {
+			case "paragraph": if (b.Paragraph) b.Paragraph.Children = children; break;
+			case "bulleted_list_item": if (b.BulletedListItem) b.BulletedListItem.Children = children; break;
+			case "numbered_list_item": if (b.NumberedListItem) b.NumberedListItem.Children = children; break;
+			case "to_do": if (b.ToDo) b.ToDo.Children = children; break;
+			case "toggle": if (b.Toggle) b.Toggle.Children = children; break;
+			case "heading_1": if (b.Heading1) b.Heading1.Children = children; break;
+			case "heading_2": if (b.Heading2) b.Heading2.Children = children; break;
+			case "heading_3": if (b.Heading3) b.Heading3.Children = children; break;
+			case "quote": if (b.Quote) b.Quote.Children = children; break;
+			case "callout": if (b.Callout) b.Callout.Children = children; break;
+		}
+	}
+
+    let children = getChildren(block);
+
+    if (!children || children.length === 0) {
+        return block;
+    }
+
+    const richTexts =
+        block.Paragraph?.RichTexts ||
+        block.Heading1?.RichTexts ||
+        block.Heading2?.RichTexts ||
+        block.Heading3?.RichTexts ||
+        block.BulletedListItem?.RichTexts ||
+        block.NumberedListItem?.RichTexts ||
+        block.ToDo?.RichTexts ||
+        block.Quote?.RichTexts ||
+        block.Callout?.RichTexts ||
+        [];
+
+    if (richTexts.length === 0) {
+        return block;
+    }
+
+    const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+    const markerRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]`, "g");
+
+    const footnotes: Footnote[] = [];
+    const consumedChildIndices = new Set<number>();
+
+    for (const rt of richTexts) {
+        if (rt.Text?.Content) {
+            let match;
+            while ((match = markerRegex.exec(rt.Text.Content)) !== null) {
+                const footnoteId = match[1];
+                if (footnoteId) {
+                    let childIndex = 0;
+                    while(consumedChildIndices.has(childIndex)) {
+                        childIndex++;
+                    }
+
+                    if (childIndex < children.length) {
+                        footnotes.push({
+                            id: footnoteId,
+                            content: [children[childIndex]],
+                        });
+                        consumedChildIndices.add(childIndex);
+                    }
+                }
+            }
+        }
+    }
+
+    if (footnotes.length > 0) {
+        block.Footnotes = (block.Footnotes || []).concat(footnotes);
+
+        const newChildren = children.filter((_, index) => !consumedChildIndices.has(index));
+		setChildren(block, newChildren);
+
+		const newRichTexts = _extractFootnoteMarkers(richTexts);
+
+		if (block.Paragraph) block.Paragraph.RichTexts = newRichTexts;
+		if (block.Heading1) block.Heading1.RichTexts = newRichTexts;
+		if (block.Heading2) block.Heading2.RichTexts = newRichTexts;
+		if (block.Heading3) block.Heading3.RichTexts = newRichTexts;
+		if (block.BulletedListItem) block.BulletedListItem.RichTexts = newRichTexts;
+		if (block.NumberedListItem) block.NumberedListItem.RichTexts = newRichTexts;
+		if (block.ToDo) block.ToDo.RichTexts = newRichTexts;
+		if (block.Quote) block.Quote.RichTexts = newRichTexts;
+		if (block.Callout) block.Callout.RichTexts = newRichTexts;
+    }
+
+    return block;
+}
+
+function _processRichTextsForEndOfBlockFootnotes(richTexts: RichText[]): { processedRichTexts: RichText[], footnotes: Footnote[] } {
+	if (richTexts.length === 0) {
+		return { processedRichTexts: [], footnotes: [] };
+	}
+
+	const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+	const defRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]:`, "g");
+
+	const newRichTexts: RichText[] = [];
+	const footnotes: Footnote[] = [];
+	let currentFootnoteContent: RichText[] | null = null;
+	let currentFootnoteId: string | null = null;
+
+	for (const rt of richTexts) {
+		if (!rt.Text?.Content) {
+			if (currentFootnoteContent) {
+				currentFootnoteContent.push(rt);
+			} else {
+				newRichTexts.push(rt);
+			}
+			continue;
+		}
+
+		const content = rt.Text.Content;
+		defRegex.lastIndex = 0;
+		let lastSliceEnd = 0;
+
+		let match;
+		while ((match = defRegex.exec(content)) !== null) {
+			const beforeContent = content.substring(lastSliceEnd, match.index);
+			if (beforeContent) {
+				const beforeRichText: RichText = JSON.parse(JSON.stringify(rt));
+				beforeRichText.Text!.Content = beforeContent;
+				beforeRichText.PlainText = beforeContent;
+				if (currentFootnoteContent) {
+					currentFootnoteContent.push(beforeRichText);
+				} else {
+					newRichTexts.push(beforeRichText);
+				}
+			}
+
+			if (currentFootnoteContent && currentFootnoteId) {
+				footnotes.push({ id: currentFootnoteId, content: currentFootnoteContent });
+			}
+
+			currentFootnoteId = match[1] ?? null;
+			currentFootnoteContent = [];
+
+			lastSliceEnd = defRegex.lastIndex;
+		}
+
+		const remainingContent = content.substring(lastSliceEnd);
+		if (remainingContent) {
+			const remainingRichText: RichText = JSON.parse(JSON.stringify(rt));
+			remainingRichText.Text!.Content = remainingContent;
+			remainingRichText.PlainText = remainingContent;
+			if (currentFootnoteContent) {
+				currentFootnoteContent.push(remainingRichText);
+			} else {
+				newRichTexts.push(remainingRichText);
+			}
+		}
+	}
+
+	if (currentFootnoteContent && currentFootnoteId) {
+		footnotes.push({ id: currentFootnoteId, content: currentFootnoteContent });
+	}
+
+	return { processedRichTexts: newRichTexts, footnotes };
+}
+
+function _extractFootnotesFromEndOfBlock(block: Block): Block {
+	const richTexts =
+		block.Paragraph?.RichTexts ||
+		block.Heading1?.RichTexts ||
+		block.Heading2?.RichTexts ||
+		block.Heading3?.RichTexts ||
+		block.BulletedListItem?.RichTexts ||
+		block.NumberedListItem?.RichTexts ||
+		block.ToDo?.RichTexts ||
+		block.Quote?.RichTexts ||
+		block.Callout?.RichTexts ||
+		block.NImage?.Caption ||
+		block.Video?.Caption ||
+		block.NAudio?.Caption ||
+		block.File?.Caption ||
+		[];
+
+	if (richTexts.length === 0) {
+		return block;
+	}
+
+	const { processedRichTexts, footnotes } = _processRichTextsForEndOfBlockFootnotes(richTexts);
+
+	if (footnotes.length === 0) {
+		return block;
+	}
+
+	block.Footnotes = footnotes;
+
+	const newRichTexts = _extractFootnoteMarkers(processedRichTexts);
+
+	if (block.Paragraph) block.Paragraph.RichTexts = newRichTexts;
+	if (block.Heading1) block.Heading1.RichTexts = newRichTexts;
+	if (block.Heading2) block.Heading2.RichTexts = newRichTexts;
+	if (block.Heading3) block.Heading3.RichTexts = newRichTexts;
+	if (block.BulletedListItem) block.BulletedListItem.RichTexts = newRichTexts;
+	if (block.NumberedListItem) block.NumberedListItem.RichTexts = newRichTexts;
+	if (block.ToDo) block.ToDo.RichTexts = newRichTexts;
+	if (block.Quote) block.Quote.RichTexts = newRichTexts;
+	if (block.Callout) block.Callout.RichTexts = newRichTexts;
+	if (block.NImage) block.NImage.Caption = newRichTexts;
+	if (block.Video) block.Video.Caption = newRichTexts;
+	if (block.NAudio) block.NAudio.Caption = newRichTexts;
+	if (block.File) block.File.Caption = newRichTexts;
+
+	return block;
+}
+
+function _extractFootnoteMarkers(richText: RichText[]): RichText[] {
+	const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+	const markerRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]`, "g");
+
+	const newRichText: RichText[] = [];
+
+	for (const rt of richText) {
+		if (rt.Text?.Content) {
+			const text = rt.Text.Content;
+			const parts = text.split(markerRegex);
+
+			for (let i = 0; i < parts.length; i++) {
+				if (i % 2 === 0) {
+					if (parts[i]) {
+						newRichText.push({ ...rt, Text: { Content: parts[i] } });
+					}
+				} else {
+					const id = parts[i];
+					const marker = `[${markerPrefix}${id}]`;
+					newRichText.push({
+						...rt,
+						Annotation: { ...rt.Annotation, isFootnoteMarker: true },
+						Text: { Content: marker },
+					});
+				}
+			}
+		} else {
+			newRichText.push(rt);
+		}
+	}
+
+	return newRichText;
+}
+
 
 async function _getTableRows(blockId: string): Promise<TableRow[]> {
 	let results: responses.BlockObject[] = [];
@@ -1495,4 +1826,70 @@ function _buildRichText(richTextObject: responses.RichTextObject): RichText {
 	}
 
 	return richText;
+}
+
+let hasCommentsPermission: boolean | null = null;
+
+export async function checkCommentsPermission(): Promise<boolean> {
+	if (hasCommentsPermission !== null) {
+		return hasCommentsPermission;
+	}
+
+	try {
+		await client.comments.list({ block_id: "abcd" });
+		hasCommentsPermission = true;
+	} catch (error: unknown) {
+		if (error instanceof APIResponseError && error.code === "restricted_resource") {
+			console.warn(
+				"Warning: Notion integration does not have permission to read comments. Falling back to end-of-block source for footnotes.",
+			);
+			hasCommentsPermission = false;
+		} else {
+			console.warn("An unexpected error occurred while checking for comment permissions.");
+			hasCommentsPermission = false;
+		}
+	}
+	return hasCommentsPermission;
+}
+
+export async function getComments(blockId: string): Promise<responses.CommentObject[]> {
+	let results: responses.CommentObject[] = [];
+	const params = {
+		block_id: blockId,
+	};
+
+	// eslint-disable-next-line no-constant-condition
+	while (true) {
+		const res = await retry(
+			async (bail) => {
+				try {
+					return (await client.comments.list(
+						params as any, // eslint-disable-line @typescript-eslint/no-explicit-any
+					)) as responses.ListCommentsResponse;
+				} catch (error: unknown) {
+					if (error instanceof APIResponseError) {
+						if (error.status && error.status >= 400 && error.status < 500) {
+							bail(error);
+						}
+					}
+					throw error;
+				}
+			},
+			{
+				retries: numberOfRetry,
+				minTimeout: minTimeout,
+				factor: factor,
+			},
+		);
+
+		results = results.concat(res.results);
+
+		if (!res.has_more) {
+			break;
+		}
+
+		params["start_cursor"] = res.next_cursor as string;
+	}
+
+	return results;
 }

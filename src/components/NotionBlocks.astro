@@ -35,7 +35,7 @@ export interface Props {
 
 const { blocks: rawBlocks, level = 1, renderChildren = true, setId = true } = Astro.props;
 
-const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
+const blocks = (rawBlocks || []).reduce((arr, block: interfaces.Block, i: number) => {
 	const isBulletedListItem = block.Type === "bulleted_list_item";
 	const isNumberedListItem = block.Type === "numbered_list_item";
 	const isToDo = block.Type === "to_do";
@@ -80,8 +80,8 @@ const blocks = rawBlocks.reduce((arr, block: interfaces.Block, i: number) => {
 	return arr;
 }, []);
 
-const bookmarkURLs = blocks
-	.filter((b: interfaces.Block) => ["bookmark", "link_preview", "embed"].includes(b.Type))
+const bookmarkURLs = (blocks || [])
+	.filter((b: interfaces.Block) => b && ["bookmark", "link_preview", "embed"].includes(b.Type))
 	.map((b: interfaces.Block) => {
 		const urlString = (b.Bookmark || b.LinkPreview || b.Embed).Url;
 

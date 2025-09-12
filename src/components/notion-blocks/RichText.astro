@@ -1,6 +1,6 @@
 ---
 import katex from "katex";
-import type { RichText } from "@/lib/interfaces.ts";
+import type { RichText, Footnote } from "@/lib/interfaces.ts";
 import Bold from "@/components/notion-blocks/annotations/Bold.astro";
 import Italic from "@/components/notion-blocks/annotations/Italic.astro";
 import Strikethrough from "@/components/notion-blocks/annotations/Strikethrough.astro";
@@ -12,21 +12,32 @@ import MentionPage from "@/components/notion-blocks/MentionPage.astro";
 import MentionDate from "@/components/notion-blocks/MentionDate.astro";
 import MentionLink from "@/components/notion-blocks/MentionLink.astro";
 import MentionCustomEmoji from "@/components/notion-blocks/MentionCustomEmoji.astro";
+import FootnoteMarker from "@/components/notion-blocks/annotations/FootnoteMarker.astro";
+import { FOOTNOTES } from "@/constants";
 
 export interface Props {
 	richText: RichText;
 	blockID?: string;
+    footnotes?: Footnote[];
 }
 
-const { richText, blockID } = Astro.props;
+const { richText, blockID, footnotes } = Astro.props;
+const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+const markerRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]`);
+
+const footnoteId =
+	richText.Annotation.isFootnoteMarker && richText.Text?.Content
+		? richText.Text.Content.match(markerRegex)?.[1] || ""
+		: "";
 ---
 
 <Anchor richText={richText} blockID={blockID}>
-	{
-		(
-			<Code richText={richText}>
-				{
-					<Color richText={richText}>
+	{richText.Annotation.isFootnoteMarker ? (
+		<FootnoteMarker id={footnoteId} footnotes={footnotes || []} />
+	) : (
+		<Code richText={richText}>
+			{
+				<Color richText={richText}>
 						{
 							<Underline richText={richText}>
 								{

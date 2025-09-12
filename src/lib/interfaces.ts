@@ -58,6 +58,7 @@ export interface Block {
 	ColumnList?: ColumnList;
 	TableOfContents?: TableOfContents;
 	LinkToPage?: LinkToPage;
+	Footnotes?: Footnote[];
 }
 
 export interface ReferencesInPage {
@@ -174,7 +175,7 @@ export interface Quote {
 }
 
 export interface Equation {
-	Expression: string;
+	Expression: string | undefined;
 }
 
 export interface Callout {
@@ -279,6 +280,7 @@ export interface Annotation {
 	Underline: boolean;
 	Code: boolean;
 	Color: string;
+	isFootnoteMarker?: boolean;
 }
 
 export interface Link {
@@ -361,3 +363,33 @@ export type BlockTypes =
 	| "toggle"
 	| "video"
 	| "audio";
+
+export interface Footnote {
+	id: string;
+	content: RichText[] | Block[];
+}
+
+export interface Footnotes {
+	[id: string]: Footnote;
+}
+
+export interface Comment {
+	id: string;
+	rich_text: RichText[];
+}
+
+export interface FootnoteSettings {
+    enabled: boolean;
+    source: {
+        'end-of-block': boolean;
+        'start-of-child-blocks': boolean;
+        'block-comments': boolean;
+        'block-inline-text-comments': boolean;
+    };
+    'marker-prefix': string;
+    'generate-footnotes-section': boolean;
+    'intext-display': {
+        'always-popup': boolean;
+        'small-popup-medium-margin': boolean;
+    };
+}

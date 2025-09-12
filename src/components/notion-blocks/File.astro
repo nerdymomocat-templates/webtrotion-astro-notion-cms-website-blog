@@ -3,6 +3,7 @@ import * as interfaces from "@/lib/interfaces";
 import { filePath } from "@/lib/blog-helpers";
 import Icon from "@/components/Icon.astro";
 import { ENABLE_LIGHTBOX } from "@/constants";
+import Caption from "@/components/notion-blocks/Caption.astro";
 
 export interface Props {
 	block: interfaces.Block;
@@ -18,19 +19,22 @@ try {
 	console.error(`Invalid file URL. error: ${err}`);
 }
 const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
+const plainTextCaption = block.File?.Caption.map((richText) => richText.PlainText).join("");
 ---
 
 <div class="file" id={setId ? block.Id : undefined}>
 	{
 		url && (
 			<div>
-				{block.File.Caption && block.File.Caption.length > 0 && block.File.Caption[0].Text.Content
-					? block.File.Caption[0].Text.Content
-					: filename}
+                {block.File.Caption && block.File.Caption.length > 0 ? (
+                    <Caption richTexts={block.File.Caption} block={block} footnotes={block.Footnotes} />
+                ) : (
+                    <span>{filename}</span>
+                )}
 				{"  "}
 				<span class="border-accent-2/20 hover:border-accent/40 inline-flex max-w-full rounded-lg border p-1">
 					<a
-						href={block.File.External ? url.String() : filePath(url)}
+						href={block.File.External ? url.href : filePath(url)}
 						target="_blank"
 						rel="noopener noreferrer"
 					>
@@ -42,7 +46,7 @@ const filename = decodeURIComponent(url.pathname.split("/").slice(-1)[0]);
 					{/* Conditional Preview for PDFs */}
 					{filename.endsWith(".pdf") && ENABLE_LIGHTBOX && (
 						<a
-							href={block.File.External ? url.String() : filePath(url)}
+							href={block.File.External ? url.href : filePath(url)}
 							class="fileglightbox hidden sm:inline"
 							type="application/pdf"
 						>

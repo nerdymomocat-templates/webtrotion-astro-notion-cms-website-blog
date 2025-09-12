@@ -306,8 +306,8 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 				.then((res) => {
 					return res.text();
 				})
-				.catch(() => {
-					console.log("Request was aborted");
+				.catch((err) => {
+					console.log(`Could not fetch ${url.toString()}: ${err}`);
 					return "";
 				})
 				.finally(() => {
@@ -611,11 +611,15 @@ export const parseYouTubeVideoIdTitle = async (url: URL): Promise<[string, strin
 
 	let title = "";
 	if (id) {
-		const res = await fetch(
-			`https://noembed.com/embed?dataType=json&url=https://www.youtube.com/embed/${id}`,
-		);
-		const data = await res.json();
-		title = data.title;
+		try {
+			const res = await fetch(
+				`https://noembed.com/embed?dataType=json&url=https://www.youtube.com/embed/${id}`,
+			);
+			const data = await res.json();
+			title = data.title;
+		} catch (err) {
+			console.log(`Could not fetch title for YouTube video ${id}: ${err}`);
+		}
 	}
 	return [id, title];
 };

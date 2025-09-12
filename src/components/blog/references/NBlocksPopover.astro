@@ -1,7 +1,7 @@
 ---
 import type { Block } from "@/lib/interfaces";
 import NotionBlocks from "@/components/NotionBlocks.astro";
-import { ALL_FOOTNOTES_PAGE_SLUG } from "@/constants";
+import { FOOTNOTES } from "@/constants";
 interface Props {
 	block: Block;
 	linkedTo: string;
@@ -18,9 +18,9 @@ const {
 	linkText = "Read more",
   isInterlinkedBack = false,
 } = Astro.props;
-let id = "id" + Math.random().toString(16).slice(2) + "---" + block.Id;
+let id = "id" + Math.random().toString(16).slice(2) + "---" + (block ? block.Id : "");
 let isFootnote = false;
-const footnotePattern = "posts/" + ALL_FOOTNOTES_PAGE_SLUG;
+const footnotePattern = "posts/" + FOOTNOTES["all-footnotes-page-slug"];
 if (linkedTo && (linkedTo.includes(footnotePattern + "/") || linkedTo.endsWith(footnotePattern))) {
 	isFootnote = true;
 }

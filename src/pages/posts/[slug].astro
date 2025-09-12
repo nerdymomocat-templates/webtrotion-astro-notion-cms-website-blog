@@ -12,8 +12,9 @@ import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/no
 import { getReferencesInPage } from "@/lib/blog-helpers";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
-import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME } from "@/constants";
+import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME, FOOTNOTES } from "@/constants";
 import fs from "fs/promises";
+import FootnotesSection from "@/components/blog/FootnotesSection.astro";
 import path from "path";
 import superjson from "superjson";
 
@@ -160,6 +161,7 @@ if (postFound) {
 					<NotionBlocks blocks={blocks} />
 				</div>
 			)}
+			{FOOTNOTES && FOOTNOTES["page-settings"]["generate-footnotes-section"] && <FootnotesSection footnotes={blocks.flatMap(b => b.Footnotes || [])} />}
 		</PostLayout>
 	)
 }

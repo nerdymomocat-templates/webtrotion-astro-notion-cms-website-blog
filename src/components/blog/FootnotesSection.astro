@@ -1,0 +1,32 @@
+---
+import type { Footnote } from "@/lib/interfaces";
+import RichText from "@/components/notion-blocks/RichText.astro";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+
+export interface Props {
+	footnotes: Footnote[];
+}
+
+const { footnotes } = Astro.props;
+---
+
+{
+	footnotes.length > 0 && (
+		<section class="footnotes">
+			<hr />
+			<ol>
+				{footnotes.map((footnote) => (
+					<li id={`fn-${footnote.id}`}>
+						{footnote.content.map((item) => {
+							if ('Type' in item) {
+								return <NotionBlocks blocks={[item]} />;
+							} else {
+								return <RichText richText={item} />;
+							}
+						})}
+					</li>
+				))}
+			</ol>
+		</section>
+	)
+}
