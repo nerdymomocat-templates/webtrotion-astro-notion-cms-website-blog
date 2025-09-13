@@ -1356,74 +1356,88 @@ async function _extractFootnotesFromStartOfChildBlocks(block: Block): Promise<Bl
 }
 
 function _processRichTextsForEndOfBlockFootnotes(richTexts: RichText[]): { processedRichTexts: RichText[], footnotes: Footnote[] } {
-	if (richTexts.length === 0) {
-		return { processedRichTexts: [], footnotes: [] };
-	}
+    if (richTexts.length === 0) {
+        return { processedRichTexts: [], footnotes: [] };
+    }
 
-	const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
-	const defRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]:`, "g");
+    const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+    const defRegex = new RegExp(`\\[${markerPrefix.replace("^", "\\^")}([^\\s\\]]+)\\]:`, "g");
 
-	const newRichTexts: RichText[] = [];
-	const footnotes: Footnote[] = [];
-	let currentFootnoteContent: RichText[] | null = null;
-	let currentFootnoteId: string | null = null;
+    const newRichTexts: RichText[] = [];
+    const footnotes: Footnote[] = [];
+    let currentFootnoteContent: RichText[] | null = null;
+    let currentFootnoteId: string | null = null;
 
-	for (const rt of richTexts) {
-		if (!rt.Text?.Content) {
-			if (currentFootnoteContent) {
-				currentFootnoteContent.push(rt);
-			} else {
-				newRichTexts.push(rt);
-			}
-			continue;
-		}
+    const createFootnoteBlock = (id: string, content: RichText[]): Footnote => {
+        const paragraphBlock: Block = {
+            Id: `footnote-p-${id}`,
+            Type: 'paragraph',
+            HasChildren: false,
+            LastUpdatedTimeStamp: new Date(),
+            Paragraph: {
+                RichTexts: content,
+                Color: 'default',
+            },
+        };
+        return { id, content: [paragraphBlock] };
+    };
 
-		const content = rt.Text.Content;
-		defRegex.lastIndex = 0;
-		let lastSliceEnd = 0;
+    for (const rt of richTexts) {
+        if (!rt.Text?.Content) {
+            if (currentFootnoteContent) {
+                currentFootnoteContent.push(rt);
+            } else {
+                newRichTexts.push(rt);
+            }
+            continue;
+        }
 
-		let match;
-		while ((match = defRegex.exec(content)) !== null) {
-			const beforeContent = content.substring(lastSliceEnd, match.index);
-			if (beforeContent) {
-				const beforeRichText: RichText = JSON.parse(JSON.stringify(rt));
-				beforeRichText.Text!.Content = beforeContent;
-				beforeRichText.PlainText = beforeContent;
-				if (currentFootnoteContent) {
-					currentFootnoteContent.push(beforeRichText);
-				} else {
-					newRichTexts.push(beforeRichText);
-				}
-			}
+        const content = rt.Text.Content;
+        defRegex.lastIndex = 0;
+        let lastSliceEnd = 0;
 
-			if (currentFootnoteContent && currentFootnoteId) {
-				footnotes.push({ id: currentFootnoteId, content: currentFootnoteContent });
-			}
+        let match;
+        while ((match = defRegex.exec(content)) !== null) {
+            const beforeContent = content.substring(lastSliceEnd, match.index);
+            if (beforeContent) {
+                const beforeRichText: RichText = JSON.parse(JSON.stringify(rt));
+                beforeRichText.Text!.Content = beforeContent;
+                beforeRichText.PlainText = beforeContent;
+                if (currentFootnoteContent) {
+                    currentFootnoteContent.push(beforeRichText);
+                } else {
+                    newRichTexts.push(beforeRichText);
+                }
+            }
 
-			currentFootnoteId = match[1] ?? null;
-			currentFootnoteContent = [];
+            if (currentFootnoteContent && currentFootnoteId) {
+                footnotes.push(createFootnoteBlock(currentFootnoteId, currentFootnoteContent));
+            }
 
-			lastSliceEnd = defRegex.lastIndex;
-		}
+            currentFootnoteId = match[1] ?? null;
+            currentFootnoteContent = [];
 
-		const remainingContent = content.substring(lastSliceEnd);
-		if (remainingContent) {
-			const remainingRichText: RichText = JSON.parse(JSON.stringify(rt));
-			remainingRichText.Text!.Content = remainingContent;
-			remainingRichText.PlainText = remainingContent;
-			if (currentFootnoteContent) {
-				currentFootnoteContent.push(remainingRichText);
-			} else {
-				newRichTexts.push(remainingRichText);
-			}
-		}
-	}
+            lastSliceEnd = defRegex.lastIndex;
+        }
 
-	if (currentFootnoteContent && currentFootnoteId) {
-		footnotes.push({ id: currentFootnoteId, content: currentFootnoteContent });
-	}
+        const remainingContent = content.substring(lastSliceEnd);
+        if (remainingContent) {
+            const remainingRichText: RichText = JSON.parse(JSON.stringify(rt));
+            remainingRichText.Text!.Content = remainingContent;
+            remainingRichText.PlainText = remainingContent;
+            if (currentFootnoteContent) {
+                currentFootnoteContent.push(remainingRichText);
+            } else {
+                newRichTexts.push(remainingRichText);
+            }
+        }
+    }
 
-	return { processedRichTexts: newRichTexts, footnotes };
+    if (currentFootnoteContent && currentFootnoteId) {
+        footnotes.push(createFootnoteBlock(currentFootnoteId, currentFootnoteContent));
+    }
+
+    return { processedRichTexts: newRichTexts, footnotes };
 }
 
 function _extractFootnotesFromEndOfBlock(block: Block): Block {
@@ -1475,37 +1489,55 @@ function _extractFootnotesFromEndOfBlock(block: Block): Block {
 }
 
 function _extractFootnoteMarkers(richText: RichText[]): RichText[] {
-	const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
-	const markerRegex = new RegExp(`\\[${markerPrefix}([^\\s\\]]+)\\]`, "g");
+    const markerPrefix = FOOTNOTES["page-settings"]["marker-prefix"];
+    const markerRegex = new RegExp(`\\[${markerPrefix.replace("^", "\\^")}([^\\s\\]]+)\\]`, "g");
 
-	const newRichText: RichText[] = [];
+    const newRichText: RichText[] = [];
 
-	for (const rt of richText) {
-		if (rt.Text?.Content) {
-			const text = rt.Text.Content;
-			const parts = text.split(markerRegex);
+    for (const rt of richText) {
+        if (!rt.Text?.Content) {
+            newRichText.push(rt);
+            continue;
+        }
 
-			for (let i = 0; i < parts.length; i++) {
-				if (i % 2 === 0) {
-					if (parts[i]) {
-						newRichText.push({ ...rt, Text: { Content: parts[i] } });
-					}
-				} else {
-					const id = parts[i];
-					const marker = `[${markerPrefix}${id}]`;
-					newRichText.push({
-						...rt,
-						Annotation: { ...rt.Annotation, isFootnoteMarker: true },
-						Text: { Content: marker },
-					});
-				}
-			}
-		} else {
-			newRichText.push(rt);
-		}
-	}
+        const content = rt.Text.Content;
+        markerRegex.lastIndex = 0;
+        let lastSliceEnd = 0;
+        let match;
 
-	return newRichText;
+        let hasContent = false;
+        while ((match = markerRegex.exec(content)) !== null) {
+            hasContent = true;
+            const beforeContent = content.substring(lastSliceEnd, match.index);
+            if (beforeContent) {
+                const newRt: RichText = JSON.parse(JSON.stringify(rt));
+                newRt.Text!.Content = beforeContent;
+                newRt.PlainText = beforeContent;
+                newRichText.push(newRt);
+            }
+
+            const markerText = match[0];
+            const markerRt: RichText = JSON.parse(JSON.stringify(rt));
+            markerRt.Annotation.isFootnoteMarker = true;
+            markerRt.Text!.Content = markerText;
+            markerRt.PlainText = markerText;
+            newRichText.push(markerRt);
+
+            lastSliceEnd = markerRegex.lastIndex;
+        }
+
+        const remainingContent = content.substring(lastSliceEnd);
+        if (remainingContent) {
+            const newRt: RichText = JSON.parse(JSON.stringify(rt));
+            newRt.Text!.Content = remainingContent;
+            newRt.PlainText = remainingContent;
+            newRichText.push(newRt);
+        } else if (!hasContent) {
+            newRichText.push(rt);
+        }
+    }
+
+    return newRichText;
 }
 
 

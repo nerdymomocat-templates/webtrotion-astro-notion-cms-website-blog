@@ -10,9 +10,9 @@
 		"lastBuildTimestampStore": "vB"
 	},
 	"scripts": {
-		"predev": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
+		"prebuild-local": "rm -rf buildcache && rm -rf tmp",
 		"dev": "astro dev",
-		"prebuild-local": "rm -rf buildcache && for folder in blocks-html-cache rss-cache; do if [ -d \"./tmp/$folder\" ]; then echo \"Deleting $folder folder\"; rm -rf \"./tmp/$folder\"; else echo \"No $folder folder to delete\"; fi; done",
+		"postbuild-local": "echo \"Build finished\"",
 		"build-local": "astro build",
 		"start": "astro dev",
 		"build": "rm -rf buildcache && astro build",
