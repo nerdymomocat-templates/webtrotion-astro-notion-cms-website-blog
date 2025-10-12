@@ -1,7 +1,7 @@
 {
-	"database-id": "169b6e632b7448529120599281265ac5",
+	"database-id": "28a9a705eca68145ac63d6d5a95acbe8",
 	"data-source-id": "",
-	"author": "",
+	"author": "Nayana Gadde",
 	"tracking": {
 		"google-analytics": {
 			"use-ga": true,
@@ -16,7 +16,7 @@
 	},
 	"google-search-console-html-tag": "",
 	"socials": {
-		"email": "",
+		"email": "nayanachandrika99@gmail.com",
 		"github": "",
 		"googlescholar": "",
 		"semanticscholar": "",
@@ -31,17 +31,17 @@
 		"calendar": "",
 		"kofi": "",
 		"buy-me-a-coffee": "",
-		"this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog"
+		"this-github-repo": ""
 	},
 	"custom-domain": "",
 	"base-path": "",
 	"giscus": {
-		"data-repo": "nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
-		"data-repo-id": "R_kgDOK0FuUA",
+		"data-repo": "",
+		"data-repo-id": "R_kgDOQBL1xA",
 		"data-category": "Announcements",
-		"data-category-id": "DIC_kwDOK0FuUM4CbZ5A",
+		"data-category-id": "DIC_kwDOQBL1xM4CwkA7",
 		"data-mapping": "pathname",
-		"data-input-position": "top",
+		"data-input-position": "bottom",
 		"data-reactions-enabled": true
 	},
 	"bluesky-comments": {
