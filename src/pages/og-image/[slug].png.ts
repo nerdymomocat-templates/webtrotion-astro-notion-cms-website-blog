@@ -8,8 +8,8 @@ import { getFormattedDate } from "@/utils";
 import { buildTimeFilePath } from "@/lib/blog-helpers";
 
 //ADDITION
-import { getPostBySlug, getAllEntries } from "@/lib/notion/client";
-import { getCollections } from "@/utils";
+import { getPostBySlug, getAllEntries, getAllTagsWithCounts } from "@/lib/notion/client";
+import { getCollectionsWDesc } from "@/utils";
 
 // import { siteInfo } from "@/utils";
 import { siteInfo } from "@/siteInfo";
@@ -1059,7 +1059,7 @@ const obj_img_bg = function (title: string, pubDate: string, img_url: string, au
 	};
 };
 
-export async function GET({ params: { slug } }: APIContext) {
+export async function GET({ params: { slug }, props }: APIContext) {
 	const BASE_DIR = BUILD_FOLDER_PATHS["ogImages"];
 	let keyStr = slug;
 	let type = "postpage";
@@ -1141,17 +1141,23 @@ export async function GET({ params: { slug } }: APIContext) {
 			? obj_img_none_with_desc(title, postDate, post?.Excerpt, author)
 			: obj_img_none_without_desc(title, postDate, author);
 	} else if (type == "collectionpage") {
-		chosen_markup = obj_img_none_without_desc(
-			keyStr + " : " + "A collection of posts",
-			" ",
-			author,
-		);
+		const collectionDescription = (props as any)?.description || "";
+		chosen_markup = collectionDescription
+			? obj_img_none_with_desc(keyStr + " : " + "A collection of posts", " ", collectionDescription, author)
+			: obj_img_none_without_desc(
+					keyStr + " : " + "A collection of posts",
+					" ",
+					author,
+				);
 	} else if (type == "tagsindex") {
 		chosen_markup = obj_img_none_without_desc("All topics I've written about", " ", author);
 	} else if (type == "collectionsindex") {
 		chosen_markup = obj_img_none_without_desc("All collections that hold my posts", " ", author);
 	} else if (type == "tagpage") {
-		chosen_markup = obj_img_none_without_desc("All posts tagged with #" + keyStr, " ", author);
+		const tagDescription = (props as any)?.description || "";
+		chosen_markup = tagDescription
+			? obj_img_none_with_desc("All posts tagged with #" + keyStr, " ", tagDescription, author)
+			: obj_img_none_without_desc("All posts tagged with #" + keyStr, " ", author);
 	} else {
 		chosen_markup = obj_img_none_without_desc("All posts in one place", " ", author);
 	}
@@ -1190,14 +1196,16 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 	const postsMap = posts.map(({ Slug }) => ({ params: { slug: Slug } }));
 
-	const collections = await getCollections();
-	const collectionMap = collections.map((collection) => ({
-		params: { slug: "collectionpage---" + collection },
+	const collectionsWDesc = await getCollectionsWDesc();
+	const collectionMap = collectionsWDesc.map((collection) => ({
+		params: { slug: "collectionpage---" + collection.name },
+		props: { description: collection.description },
 	}));
 
-	const uniqueTags = [...new Set(posts.flatMap((post) => post.Tags))];
-	const tagMap = uniqueTags.map((tag) => ({
+	const allTags = await getAllTagsWithCounts();
+	const tagMap = allTags.map((tag) => ({
 		params: { slug: "tagpage---" + tag.name },
+		props: { description: tag.description },
 	}));
 
 	const tagsindex = { params: { slug: "tagsindex---index" } };
