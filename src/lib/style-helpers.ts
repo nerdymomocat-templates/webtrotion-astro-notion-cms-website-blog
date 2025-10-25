@@ -108,10 +108,17 @@ export const LINKED_CONTENT_SYMBOLS = [
   '♣',
 ];
 
-export const getSymbolForLinkedContent = (index: number) => {
-  const symbol = LINKED_CONTENT_SYMBOLS[index % LINKED_CONTENT_SYMBOLS.length];
-  const repeat = Math.floor(index / LINKED_CONTENT_SYMBOLS.length) + 1;
-  return symbol.repeat(repeat);
+export const getSymbolForLinkedContent = (index) => {
+  const base = LINKED_CONTENT_SYMBOLS.length;
+  let result = '';
+
+  // Base-N encoding (like converting to base 8)
+  do {
+    result = LINKED_CONTENT_SYMBOLS[index % base] + result;
+    index = Math.floor(index / base) - 1; // subtract 1 to make sequence continuous (like Excel columns)
+  } while (index >= 0);
+
+  return result;
 };
 
 export const getTextToAstroIcon = (text: string) => {
