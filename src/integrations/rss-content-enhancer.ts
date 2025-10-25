@@ -191,7 +191,9 @@ const rssContentEnhancer = (): AstroIntegration => {
 											(frame.tag === "strong" &&
 												frame.text.trim().toLowerCase() === "table of contents") ||
 											frame.tag === "h1" ||
-											(frame.tag === "span" && !frame.text.trim()) ||
+											// Only remove spans that are completely empty (no text at all)
+											// Keep spans with whitespace for proper spacing
+											(frame.tag === "span" && !frame.text) ||
 											(frame.tag === "p" && !frame.text.trim())
 										);
 									},
@@ -260,6 +262,10 @@ const rssContentEnhancer = (): AstroIntegration => {
 
 								// Remove empty elements
 								removeEmptyElementsFromDom(root);
+
+								// Fix footnotes for RSS: strip markers and normalize spacing
+								fixFootnotesForRss(root);
+
 								// Serialize back to HTML
 								let cleanContentFinal = DomUtils.getInnerHTML(cleanContentDom);
 								cleanContentFinal = cleanContentFinal.replace(/^\s*<div>\s*<article[^>]*>/i, "");
@@ -478,4 +484,266 @@ function cleanupInterlinkedContentDom(node) {
 	if (node.children) {
 		node.children.forEach(cleanupInterlinkedContentDom);
 	}
+}
+
+function fixFootnotesForRss(node) {
+	// Strip footnote marker prefixes like [^ft_marker]:
+	stripFootnoteMarkers(node);
+
+	// Remove back-reference links in footnotes section
+	removeFootnoteBackLinks(node);
+
+	// Trim whitespace from links and move outside
+	trimLinksAndMoveSpacesOutside(node);
+
+	// Consolidate adjacent spans to reduce clutter
+	consolidateAdjacentSpans(node);
+
+	// Normalize spacing between inline elements
+	normalizeSpacing(node);
+
+	return node;
+}
+
+function stripFootnoteMarkers(node) {
+	if (node.type === "text") {
+		// Remove patterns like [^ft_marker]: from the start of text
+		node.data = node.data.replace(/^\[\^ft_[^\]]+\]:\s*/, "");
+		return;
+	}
+
+	if (node.children) {
+		node.children.forEach(stripFootnoteMarkers);
+	}
+}
+
+function removeFootnoteBackLinks(node) {
+	// Find sections with footnotes by looking for <section><hr><h2>Footnotes</h2><ol>
+	if (node.type === "tag" && node.name === "section" && node.children) {
+		// Check if this section contains the "Footnotes" heading
+		const hasFootnotesHeading = DomUtils.findOne(
+			(elem) => {
+				if (elem.type === "tag" && elem.name === "h2") {
+					const text = DomUtils.textContent(elem).trim();
+					return text === "Footnotes";
+				}
+				return false;
+			},
+			node.children,
+			true
+		);
+
+		if (hasFootnotesHeading) {
+			// Find the <ol> element
+			const olElement = DomUtils.findOne(
+				(elem) => elem.type === "tag" && elem.name === "ol",
+				node.children,
+				true
+			);
+
+			if (olElement && olElement.children) {
+				// For each <li> in the <ol>
+				olElement.children.forEach((li) => {
+					if (li.type === "tag" && li.name === "li" && li.children) {
+						// Remove the first <a> child if it's a back-reference (href starts with #)
+						const firstChild = li.children[0];
+						if (
+							firstChild &&
+							firstChild.type === "tag" &&
+							firstChild.name === "a" &&
+							firstChild.attribs?.href?.startsWith("#")
+						) {
+							li.children.shift(); // Remove the first element
+						}
+					}
+				});
+			}
+		}
+	}
+
+	// Recurse into children
+	if (node.children) {
+		node.children.forEach(removeFootnoteBackLinks);
+	}
+}
+
+function trimLinksAndMoveSpacesOutside(node) {
+	if (node.type === "tag" && node.name === "a" && node.children) {
+		// For <a> tags, trim leading/trailing whitespace from text content
+		const firstChild = node.children[0];
+		const lastChild = node.children[node.children.length - 1];
+
+		// Track spaces to move outside
+		let leadingSpace = "";
+		let trailingSpace = "";
+
+		// Check first text node for leading space
+		if (firstChild && firstChild.type === "text") {
+			const match = firstChild.data.match(/^(\s+)/);
+			if (match) {
+				leadingSpace = match[1];
+				firstChild.data = firstChild.data.slice(leadingSpace.length);
+			}
+		}
+
+		// Check last text node for trailing space
+		if (lastChild && lastChild.type === "text") {
+			const match = lastChild.data.match(/(\s+)$/);
+			if (match) {
+				trailingSpace = match[1];
+				lastChild.data = lastChild.data.slice(0, -trailingSpace.length);
+			}
+		}
+
+		// Store the spaces so parent can add them outside the link
+		if (leadingSpace) node._leadingSpace = leadingSpace;
+		if (trailingSpace) node._trailingSpace = trailingSpace;
+	}
+
+	// Recurse into children first
+	if (node.children) {
+		node.children.forEach(trimLinksAndMoveSpacesOutside);
+
+		// After processing children, move spaces outside links
+		const newChildren = [];
+		for (const child of node.children) {
+			if (child.type === "tag" && child.name === "a") {
+				if (child._leadingSpace) {
+					newChildren.push({ type: "text", data: child._leadingSpace, parent: node });
+					delete child._leadingSpace;
+				}
+				newChildren.push(child);
+				if (child._trailingSpace) {
+					newChildren.push({ type: "text", data: child._trailingSpace, parent: node });
+					delete child._trailingSpace;
+				}
+			} else {
+				newChildren.push(child);
+			}
+		}
+		node.children = newChildren;
+	}
+}
+
+function consolidateAdjacentSpans(node) {
+	if (!node.children || node.children.length === 0) {
+		return;
+	}
+
+	const newChildren = [];
+	let i = 0;
+
+	while (i < node.children.length) {
+		const child = node.children[i];
+
+		// If this is a span with only text content and no attributes, try to merge with adjacent spans
+		if (
+			child.type === "tag" &&
+			child.name === "span" &&
+			(!child.attribs || Object.keys(child.attribs).length === 0)
+		) {
+			// Collect all adjacent spans with no attributes
+			const spansToMerge = [child];
+			let j = i + 1;
+
+			while (j < node.children.length) {
+				const nextChild = node.children[j];
+				if (
+					nextChild.type === "tag" &&
+					nextChild.name === "span" &&
+					(!nextChild.attribs || Object.keys(nextChild.attribs).length === 0)
+				) {
+					spansToMerge.push(nextChild);
+					j++;
+				} else {
+					break;
+				}
+			}
+
+			// If we found adjacent spans, merge them
+			if (spansToMerge.length > 1) {
+				const mergedSpan = {
+					type: "tag",
+					name: "span",
+					attribs: {},
+					children: [],
+					parent: node,
+				};
+
+				// Combine all children from the spans
+				for (const span of spansToMerge) {
+					if (span.children) {
+						mergedSpan.children.push(...span.children);
+					}
+				}
+
+				newChildren.push(mergedSpan);
+				i = j;
+			} else {
+				newChildren.push(child);
+				i++;
+			}
+		} else {
+			newChildren.push(child);
+			i++;
+		}
+	}
+
+	node.children = newChildren;
+
+	// Recurse into children
+	node.children.forEach((child) => {
+		if (child.type === "tag") {
+			consolidateAdjacentSpans(child);
+		}
+	});
+}
+
+function normalizeSpacing(node) {
+	if (!node.children || node.children.length === 0) {
+		return;
+	}
+
+	const inlineElements = ["span", "a", "strong", "em", "b", "i", "code", "u", "s", "sup", "sub"];
+	const newChildren = [];
+
+	for (let i = 0; i < node.children.length; i++) {
+		const child = node.children[i];
+		const nextChild = node.children[i + 1];
+
+		// Add current child to newChildren
+		newChildren.push(child);
+
+		// Check if we need to add a space between inline elements
+		if (child.type === "tag" && inlineElements.includes(child.name)) {
+			if (nextChild && nextChild.type === "tag" && inlineElements.includes(nextChild.name)) {
+				// Two adjacent inline elements - check if there's a space between them
+				const childText = DomUtils.textContent(child);
+				const nextText = DomUtils.textContent(nextChild);
+
+				// Check if child ends with space or nextChild starts with space
+				const childEndsWithSpace = childText.match(/\s$/);
+				const nextStartsWithSpace = nextText.match(/^\s/);
+
+				// If neither has a space at the boundary, insert a space
+				if (!childEndsWithSpace && !nextStartsWithSpace && childText && nextText) {
+					const spaceNode = {
+						type: "text",
+						data: " ",
+						parent: node,
+					};
+					newChildren.push(spaceNode);
+				}
+			}
+		}
+	}
+
+	node.children = newChildren;
+
+	// Recurse into children
+	node.children.forEach((child) => {
+		if (child.type === "tag") {
+			normalizeSpacing(child);
+		}
+	});
 }
