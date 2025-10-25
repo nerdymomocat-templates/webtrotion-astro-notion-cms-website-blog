@@ -72,10 +72,14 @@ export function buildHeadings(blocks: Block[]): Heading[] | [] | null {
 	const headingBlocks: Block[] = [];
 
 	blocks.forEach((block) => {
+		// Extract page-level headings
 		if (HEADING_BLOCKS.includes(block.Type)) {
 			headingBlocks.push(block);
 		}
 
+		// Extract headings that are direct children (1 level deep) of special blocks
+		// This includes headings inside toggles, callouts, columns, and toggleable headings
+		// Note: Only direct children are extracted, NOT nested deeper than 1 level
 		if (
 			block.Type === "toggle" ||
 			block.Type === "column_list" ||
@@ -92,14 +96,28 @@ export function buildHeadings(blocks: Block[]): Heading[] | [] | null {
 	return headingBlocks.map(cleanHeading);
 }
 
+/**
+ * Extracts headings that are DIRECT CHILDREN (1 level deep) of special container blocks.
+ *
+ * Examples:
+ * ✅ Page → Callout → Heading (direct child, INCLUDED)
+ * ✅ Page → Toggle → Heading (direct child, INCLUDED)
+ * ❌ Page → Callout → Toggle → Heading (2 levels deep, NOT INCLUDED)
+ * ❌ Page → Toggle → Callout → Heading (2 levels deep, NOT INCLUDED)
+ *
+ * This function uses .filter() on the Children array to find only direct heading children,
+ * ensuring it does NOT recurse into nested structures.
+ */
 function getChildHeadings(block: Block): Block[] {
 	const childHeadings: Block[] = [];
 
 	if (block.Type === "toggle" && block.Toggle?.Children) {
+		// Extract headings that are direct children of toggle blocks
 		childHeadings.push(
 			...block.Toggle.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)),
 		);
 	} else if (block.Type === "column_list" && block.ColumnList?.Columns) {
+		// Extract headings that are direct children of each column
 		block.ColumnList.Columns.forEach((column) => {
 			if (column.Children) {
 				childHeadings.push(
@@ -108,6 +126,7 @@ function getChildHeadings(block: Block): Block[] {
 			}
 		});
 	} else if (block.Type === "callout" && block.Callout?.Children) {
+		// Extract headings that are direct children of callout blocks
 		childHeadings.push(
 			...block.Callout.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)),
 		);
@@ -116,6 +135,7 @@ function getChildHeadings(block: Block): Block[] {
 		block.Heading1?.IsToggleable &&
 		block.Heading1.Children
 	) {
+		// Extract headings that are direct children of toggleable H1 headings
 		childHeadings.push(
 			...block.Heading1.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)),
 		);
@@ -124,6 +144,7 @@ function getChildHeadings(block: Block): Block[] {
 		block.Heading2?.IsToggleable &&
 		block.Heading2.Children
 	) {
+		// Extract headings that are direct children of toggleable H2 headings
 		childHeadings.push(
 			...block.Heading2.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)),
 		);
@@ -132,6 +153,7 @@ function getChildHeadings(block: Block): Block[] {
 		block.Heading3?.IsToggleable &&
 		block.Heading3.Children
 	) {
+		// Extract headings that are direct children of toggleable H3 headings
 		childHeadings.push(
 			...block.Heading3.Children.filter((child) => HEADING_BLOCKS.includes(child.Type)),
 		);
