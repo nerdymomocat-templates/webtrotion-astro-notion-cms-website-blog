@@ -199,9 +199,8 @@ const _filterRichTexts = (
 });
 
 const _extractReferencesInBlock = (postId: string, block: Block): ReferencesInPage => {
-	//MISSING TABLE ROWS
 	// console.debug("here in _extractReferencesInBlock");
-	const rich_texts =
+	let rich_texts =
 		block.Bookmark?.Caption ||
 		block.BulletedListItem?.RichTexts ||
 		block.Callout?.RichTexts ||
@@ -221,6 +220,23 @@ const _extractReferencesInBlock = (postId: string, block: Block): ReferencesInPa
 		block.Toggle?.RichTexts ||
 		block.Video?.Caption ||
 		[];
+
+	// Extract RichTexts from table cells
+	if (block.Table?.Rows) {
+		const tableRichTexts: RichText[] = [];
+		block.Table.Rows.forEach((row) => {
+			row.Cells.forEach((cell) => {
+				if (cell.RichTexts && cell.RichTexts.length > 0) {
+					tableRichTexts.push(...cell.RichTexts);
+				}
+			});
+		});
+		// Combine table RichTexts with existing rich_texts
+		if (tableRichTexts.length > 0) {
+			rich_texts = [...rich_texts, ...tableRichTexts];
+		}
+	}
+
 	let filteredRichText = _filterRichTexts(postId, block, rich_texts);
 	let direct_media_link =
 		block.NAudio?.External?.Url ||
