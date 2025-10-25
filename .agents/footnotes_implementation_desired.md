@@ -3,14 +3,14 @@
 First, we'll write a Product Requirements Document (PRD) before implementing anything. This is about introducing footnotes to Webtrotion.
 
 We currently have this in our configuration:
-`"all-footnotes-page-slug": "_all-footnotes",`
+`"sitewide-footnotes-page-slug": "_all-footnotes",`
 
 Now we'll create a dictionary:
 
 ```json
 {
   "footnotes": {
-    "all-footnotes-page-slug": "_all-footnotes",
+    "sitewide-footnotes-page-slug": "_all-footnotes",
     "page-settings": {
       "enabled": true,
       "source": {

@@ -32,79 +32,13 @@ import { OPTIMIZE_IMAGES } from "../constants";
 // ============================================================================
 // Configuration and Validation
 // ============================================================================
-
-/**
- * Default configuration for footnotes
- */
-export const DEFAULT_FOOTNOTES_CONFIG: FootnotesConfig = {
-	allFootnotesPageSlug: "_all-footnotes",
-	pageSettings: {
-		enabled: false,
-		source: {
-			"end-of-block": true,
-			"start-of-child-blocks": false,
-			"block-comments": false,
-		},
-		markerPrefix: "ft_",
-		generateFootnotesSection: false,
-		intextDisplay: {
-			alwaysPopup: true,
-			smallPopupLargeMargin: false,
-		},
-	},
-};
-
-/**
- * Normalizes footnotes configuration from constants-config.json
- */
-export function normalizeFootnotesConfig(rawConfig: any): FootnotesConfig {
-	if (!rawConfig || typeof rawConfig !== "object") {
-		return DEFAULT_FOOTNOTES_CONFIG;
-	}
-
-	const inPageSettings = rawConfig["in-page-footnotes-settings"] || {};
-
-	// Handle block-inline-text-comments: treat as block-comments (forward-looking feature)
-	// If block-inline-text-comments is enabled, treat it as block-comments
-	// The permission check will then handle fallback to end-of-block if no permission
-	const blockCommentsEnabled =
-		inPageSettings.source?.["block-comments"] === true ||
-		inPageSettings.source?.["block-inline-text-comments"] === true;
-
-	return {
-		allFootnotesPageSlug:
-			rawConfig["all-footnotes-page-slug"] ||
-			DEFAULT_FOOTNOTES_CONFIG.allFootnotesPageSlug,
-		pageSettings: {
-			enabled: inPageSettings.enabled === true,
-			source: {
-				"end-of-block": inPageSettings.source?.["end-of-block"] === true,
-				"start-of-child-blocks":
-					inPageSettings.source?.["start-of-child-blocks"] === true,
-				"block-comments": blockCommentsEnabled,
-			},
-			markerPrefix:
-				inPageSettings["marker-prefix"] ||
-				DEFAULT_FOOTNOTES_CONFIG.pageSettings.markerPrefix,
-			generateFootnotesSection:
-				inPageSettings["generate-footnotes-section"] === true,
-			intextDisplay: {
-				alwaysPopup: inPageSettings["intext-display"]?.["always-popup"] === true,
-				smallPopupLargeMargin:
-					inPageSettings["intext-display"]?.["small-popup-large-margin"] ===
-					true,
-			},
-		},
-	};
-}
-
 /**
  * Determines which source type is active (only one can be active at a time)
  */
 function getActiveSource(
 	config: FootnotesConfig
 ): "end-of-block" | "start-of-child-blocks" | "block-comments" | null {
-	const source = config.pageSettings.source;
+	const source = config["in-page-footnotes-settings"].source;
 	if (source["end-of-block"]) return "end-of-block";
 	if (source["start-of-child-blocks"]) return "start-of-child-blocks";
 	if (source["block-comments"]) return "block-comments";
@@ -651,7 +585,7 @@ function extractEndOfBlockFootnotes(
 ): FootnoteExtractionResult {
 	const locations = getAllRichTextLocations(block);
 	const footnotes: Footnote[] = [];
-	const markerPrefix = config.pageSettings.markerPrefix;
+	const markerPrefix = config["in-page-footnotes-settings"]["marker-prefix"];
 
 	// Find all markers first
 	const markers = findAllFootnoteMarkers(locations, markerPrefix);
@@ -820,7 +754,7 @@ function extractStartOfChildBlocksFootnotes(
 ): FootnoteExtractionResult {
 	const locations = getAllRichTextLocations(block);
 	const footnotes: Footnote[] = [];
-	const markerPrefix = config.pageSettings.markerPrefix;
+	const markerPrefix = config["in-page-footnotes-settings"]["marker-prefix"];
 
 	// Find all markers
 	const markers = findAllFootnoteMarkers(locations, markerPrefix);
@@ -1016,7 +950,7 @@ async function extractBlockCommentsFootnotes(
 ): Promise<FootnoteExtractionResult> {
 	const locations = getAllRichTextLocations(block);
 	const footnotes: Footnote[] = [];
-	const markerPrefix = config.pageSettings.markerPrefix;
+	const markerPrefix = config["in-page-footnotes-settings"]["marker-prefix"];
 
 	// Find all markers in the block
 	const markers = findAllFootnoteMarkers(locations, markerPrefix);
@@ -1176,15 +1110,6 @@ export function extractFootnotesFromBlock(
 	block: Block,
 	config: FootnotesConfig
 ): FootnoteExtractionResult {
-	// Check if footnotes are enabled
-	if (!config.pageSettings.enabled) {
-		return {
-			footnotes: [],
-			hasProcessedRichTexts: false,
-			hasProcessedChildren: false,
-		};
-	}
-
 	const source = getActiveSource(config);
 
 	switch (source) {
@@ -1226,15 +1151,6 @@ export async function extractFootnotesFromBlockAsync(
 	config: FootnotesConfig,
 	notionClient?: any
 ): Promise<FootnoteExtractionResult> {
-	// Check if footnotes are enabled
-	if (!config.pageSettings.enabled) {
-		return {
-			footnotes: [],
-			hasProcessedRichTexts: false,
-			hasProcessedChildren: false,
-		};
-	}
-
 	const source = getActiveSource(config);
 
 	switch (source) {
@@ -1251,4 +1167,79 @@ export async function extractFootnotesFromBlockAsync(
 				hasProcessedChildren: false,
 			};
 	}
+}
+
+/**
+ * Extracts all footnotes from all blocks in a page (recursively)
+ * Returns an array of all unique footnotes with their assigned indices
+ * This is used to cache footnotes for the page
+ */
+export function extractFootnotesInPage(blocks: Block[]): Footnote[] {
+	const allFootnotes: Footnote[] = [];
+	let footnoteIndex = 0;
+
+	function collectFromBlock(block: Block): void {
+		// Collect footnotes from this block
+		if (block.Footnotes && block.Footnotes.length > 0) {
+			block.Footnotes.forEach(footnote => {
+				// Assign sequential index if not already assigned
+				if (!footnote.Index) {
+					footnote.Index = ++footnoteIndex;
+				}
+				// Store the block ID where this marker appears (for back-links)
+				if (!footnote.SourceBlockId) {
+					footnote.SourceBlockId = block.Id;
+				}
+				allFootnotes.push(footnote);
+			});
+		}
+
+		// Recursively collect from children
+		const childBlocks = getChildrenBlocks(block);
+		if (childBlocks) {
+			childBlocks.forEach(collectFromBlock);
+		}
+
+		// Collect from column lists
+		if (block.ColumnList?.Columns) {
+			block.ColumnList.Columns.forEach(column => {
+				if (column.Children) {
+					column.Children.forEach(collectFromBlock);
+				}
+			});
+		}
+	}
+
+	// Helper to get children blocks from any block type
+	function getChildrenBlocks(block: Block): Block[] | null {
+		if (block.Paragraph?.Children) return block.Paragraph.Children;
+		if (block.Heading1?.Children) return block.Heading1.Children;
+		if (block.Heading2?.Children) return block.Heading2.Children;
+		if (block.Heading3?.Children) return block.Heading3.Children;
+		if (block.Quote?.Children) return block.Quote.Children;
+		if (block.Callout?.Children) return block.Callout.Children;
+		if (block.Toggle?.Children) return block.Toggle.Children;
+		if (block.BulletedListItem?.Children) return block.BulletedListItem.Children;
+		if (block.NumberedListItem?.Children) return block.NumberedListItem.Children;
+		if (block.ToDo?.Children) return block.ToDo.Children;
+		if (block.SyncedBlock?.Children) return block.SyncedBlock.Children;
+		return null;
+	}
+
+	blocks.forEach(collectFromBlock);
+
+	// Remove duplicates based on Marker
+	const uniqueFootnotes = Array.from(
+		new Map(allFootnotes.map(fn => [fn.Marker, fn])).values()
+	);
+
+	// Sort by Index
+	uniqueFootnotes.sort((a, b) => {
+		if (a.Index && b.Index) {
+			return a.Index - b.Index;
+		}
+		return a.Marker.localeCompare(b.Marker);
+	});
+
+	return uniqueFootnotes;
 }

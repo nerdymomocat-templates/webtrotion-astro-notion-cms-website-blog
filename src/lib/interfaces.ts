@@ -382,6 +382,7 @@ export interface Footnote {
 	Content: FootnoteContent;
 	Index?: number; // Sequential index for display (1, 2, 3...)
 	SourceLocation: "content" | "caption" | "table" | "comment"; // Where it came from
+	SourceBlockId?: string; // ID of the block where the marker appears (for back-links)
 }
 
 /**
@@ -421,19 +422,20 @@ export interface FootnoteMarkerInfo {
  * Configuration for footnotes system
  */
 export interface FootnotesConfig {
-	allFootnotesPageSlug: string; // Legacy system slug
-	pageSettings: {
+	"sitewide-footnotes-page-slug": string; // Legacy system slug
+	"in-page-footnotes-settings": {
 		enabled: boolean;
 		source: {
 			"end-of-block": boolean;
 			"start-of-child-blocks": boolean;
 			"block-comments": boolean;
+			"block-inline-text-comments": boolean;
 		};
-		markerPrefix: string; // e.g., "ft_" → markers like [^ft_a]
-		generateFootnotesSection: boolean; // Collated list at page end
-		intextDisplay: {
-			alwaysPopup: boolean; // Always show as popup
-			smallPopupLargeMargin: boolean; // Responsive: margin on large screens (≥1024px), popup on mobile
+		"marker-prefix": string; // e.g., "ft_" → markers like [^ft_a]
+		"generate-footnotes-section": boolean; // Collated list at page end
+		"intext-display": {
+			"always-popup": boolean; // Always show as popup
+			"small-popup-large-margin": boolean; // Responsive: margin on large screens (≥1024px), popup on mobile
 		};
 	};
 }

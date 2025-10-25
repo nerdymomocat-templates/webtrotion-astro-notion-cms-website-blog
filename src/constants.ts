@@ -20,6 +20,7 @@ export const BUILD_FOLDER_PATHS = {
 	headingsCache: path.join("./tmp", "blocks-json-cache", "headings"),
 	referencesInPage: path.join("./tmp", "blocks-json-cache", "references-in-page"),
 	referencesToPage: path.join("./tmp", "blocks-json-cache", "references-to-page"),
+	footnotesInPage: path.join("./tmp", "blocks-json-cache", "footnotes-in-page"),
 	ogImages: path.join("./tmp", "og-images"),
 	rssCache: path.join("./tmp", "rss-cache"),
 	blocksHtmlCache: path.join("./tmp", "blocks-html-cache"),
@@ -71,13 +72,13 @@ export const HOME_PAGE_SLUG = key_value_from_json["home-page-slug"] || "home";
 
 /**
  * Footnotes configuration
- * - "all-footnotes-page-slug": Legacy manual footnotes page (already works via NBlocksPopover)
+ * - "sitewide-footnotes-page-slug": Legacy manual footnotes page (already works via NBlocksPopover)
  * - "in-page-footnotes-settings": Automatic in-page footnotes with markers (new feature)
  */
 export const FOOTNOTES = key_value_from_json["footnotes"] || null;
 
 // Legacy manual footnotes page slug (used by NBlocksPopover)
-export const ALL_FOOTNOTES_PAGE_SLUG = FOOTNOTES?.["all-footnotes-page-slug"] || "_all-footnotes";
+export const SITEWIDE_FOOTNOTES_PAGE_SLUG = FOOTNOTES?.["sitewide-footnotes-page-slug"] || "_all-footnotes";
 
 // Helper to check if in-page footnotes are enabled
 export const IN_PAGE_FOOTNOTES_ENABLED =

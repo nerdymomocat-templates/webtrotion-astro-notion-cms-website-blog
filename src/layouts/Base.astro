@@ -5,7 +5,8 @@ import Header from "@/components/layout/Header.astro";
 import Footer from "@/components/layout/Footer.astro";
 import SkipLink from "@/components/SkipLink.astro";
 import { siteInfo } from "@/siteInfo";
-import { ENABLE_LIGHTBOX, REFERENCES, FOOTNOTES } from "@/constants";
+import { ENABLE_LIGHTBOX, REFERENCES } from "@/constants";
+import { adjustedFootnotesConfig } from "@/lib/notion/client";
 interface Props {
 meta: SiteMeta;
 }
@@ -78,20 +79,28 @@ window.addEventListener('afterprint', function () {
   } from 'https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.5.3/+esm';
 
   document.addEventListener('DOMContentLoaded', () => {
+      // State variables for popovers
+      let popoverTriggersSet = new Set(); // Track which elements have listeners
+
       // Determine if it's a mobile device
-  const isSmBreakpoint = window.matchMedia('(max-width: 639px)').matches;
-  const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+  let isSmBreakpoint = window.matchMedia('(max-width: 639px)').matches;
+  let isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
 
 // Create the selector based on the device type
 // Exclude footnote markers with data-margin-note on large screens (they use margin notes instead)
-const selector = isSmBreakpoint
-  ? '[data-popover-target]:not([data-popover-type-lm="true"])'
-  : isLargeScreen
-    ? '[data-popover-target]:not([data-margin-note])'
-    : '[data-popover-target]';
+function getPopoverSelector() {
+  const isSmBreakpoint = window.matchMedia('(max-width: 639px)').matches;
+  const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+
+  return isSmBreakpoint
+    ? '[data-popover-target]:not([data-popover-type-lm="true"])'
+    : isLargeScreen
+      ? '[data-popover-target]:not([data-margin-note])'
+      : '[data-popover-target]';
+}
 
 // Select popover triggers based on the device-specific selector
-const popoverTriggers = document.querySelectorAll(selector);
+const popoverTriggers = document.querySelectorAll(getPopoverSelector());
 
       let openPopovers = [];
       let cleanupAutoUpdate = new Map();
@@ -257,9 +266,28 @@ const popoverTriggers = document.querySelectorAll(selector);
           cleanupAutoUpdate.set(popoverEl, autoUpdate(triggerEl, popoverEl, update));
       };
 
+      // Function to initialize popover triggers for footnote markers only (on resize to small screen)
+      const initializeFootnotePopoverTriggers = () => {
+          // Only add listeners to footnote markers that don't already have them
+          const footnoteMarkers = document.querySelectorAll('[data-margin-note]');
+
+          footnoteMarkers.forEach(triggerEl => {
+              // Only add listeners if not already added
+              if (!popoverTriggersSet.has(triggerEl)) {
+                  addPTEventListeners(triggerEl, null);
+                  popoverTriggersSet.add(triggerEl);
+              }
+          });
+      };
+
+      // Initialize popovers for the first time
       popoverTriggers.forEach(triggerEl => {
           addPTEventListeners(triggerEl, null);
+          popoverTriggersSet.add(triggerEl);
       });
+
+      // Store the initialization function globally so resize handler can access it
+      window.reinitializeFootnotePopovers = initializeFootnotePopoverTriggers;
 
       document.addEventListener('click', (event) => {
           const popoverLink = event.target.closest('[data-popover-link]');
@@ -283,7 +311,7 @@ const popoverTriggers = document.querySelectorAll(selector);
       )
       }
 {/* Margin Notes Script (for small-popup-large-margin display mode) */}
-{FOOTNOTES && FOOTNOTES["in-page-footnotes-settings"]?.["intext-display"]?.["small-popup-large-margin"] && (
+{adjustedFootnotesConfig && adjustedFootnotesConfig["in-page-footnotes-settings"]?.["intext-display"]?.["small-popup-large-margin"] && (
 <script type="module">
   /**
    * Initializes Tufte-style margin notes for footnotes
@@ -314,12 +342,41 @@ const popoverTriggers = document.querySelectorAll(selector);
         const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
 
         if (isLargeScreen) {
-          // Switched to large screen - remove old margin notes and recreate them
+          // Switched to large screen - remove margin notes and recreate them
           document.querySelectorAll('.footnote-margin-note').forEach(n => n.remove());
           positionMarginNotes();
+
+          // Hide any open popovers for footnote markers and mark them as non-interactive
+          document.querySelectorAll('[data-margin-note]').forEach(marker => {
+            const popoverId = marker.getAttribute('data-popover-target');
+            if (popoverId) {
+              const popover = document.getElementById(popoverId);
+              if (popover) {
+                popover.style.display = 'none';
+                popover.style.visibility = 'hidden';
+                popover.classList.add('hidden');
+              }
+            }
+          });
         } else {
-          // Switched to small screen - remove margin notes (popover system takes over)
+          // Switched to small screen - remove margin notes and reinitialize popover listeners for footnotes only
           document.querySelectorAll('.footnote-margin-note').forEach(n => n.remove());
+
+          // Re-enable popovers for footnote markers
+          document.querySelectorAll('[data-margin-note]').forEach(marker => {
+            const popoverId = marker.getAttribute('data-popover-target');
+            if (popoverId) {
+              const popover = document.getElementById(popoverId);
+              if (popover) {
+                popover.style.display = '';
+              }
+            }
+          });
+
+          // Reinitialize popover listeners only for footnote markers that were previously excluded
+          if (window.reinitializeFootnotePopovers) {
+            window.reinitializeFootnotePopovers();
+          }
         }
       }, 250);
     });
@@ -327,7 +384,6 @@ const popoverTriggers = document.querySelectorAll(selector);
 
   function positionMarginNotes() {
     const markers = document.querySelectorAll('[data-margin-note]');
-    const createdNotes = [];
 
     markers.forEach((markerEl) => {
       const footnoteId = markerEl.getAttribute('data-margin-note');
@@ -339,12 +395,15 @@ const popoverTriggers = document.querySelectorAll(selector);
       const postBody = markerEl.closest('.post-body');
       if (!postBody) return;
 
+      // Skip if inside a post-preview-full-container (collection full preview pages)
+      if (postBody.classList.contains('post-preview-full-container')) return;
+
       if (getComputedStyle(postBody).position === 'static') {
         postBody.style.position = 'relative';
       }
 
       const marginNote = document.createElement('aside');
-      marginNote.className = 'footnote-margin-note';
+      marginNote.className = 'footnote-margin-note absolute left-full ml-8 w-32 xl:ml-12 xl:w-48 text-sm leading-relaxed text-gray-500 dark:text-gray-400 opacity-70 transition-opacity duration-200 pointer-events-auto';
       marginNote.dataset.noteId = footnoteId;
 
       const content = template.content.cloneNode(true);
@@ -357,13 +416,12 @@ const popoverTriggers = document.querySelectorAll(selector);
       marginNote.style.top = `${topOffset}px`;
 
       postBody.appendChild(marginNote);
-      createdNotes.push(marginNote);
 
       setupHoverHighlight(markerEl, marginNote);
-      setupClickHighlight(markerEl, marginNote);
     });
 
-    stackOverlappingNotes(createdNotes);
+    // After all notes are created, stack them globally to prevent overlaps
+    stackAllMarginNotesGlobally();
   }
 
   function setupHoverHighlight(marker, note) {
@@ -388,49 +446,35 @@ const popoverTriggers = document.querySelectorAll(selector);
     });
   }
 
+
   /**
-   * Sets up click-to-highlight for margin notes
-   * Clicking a note toggles a persistent highlight class
+   * Stacks all margin notes globally to prevent overlaps across different blocks
+   * This ensures that even if Block 1 has a very long footnote, it won't overlap
+   * with footnotes from Block 2
    */
-  function setupClickHighlight(marker, note) {
-    note.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event bubbling
+  function stackAllMarginNotesGlobally() {
+    // Find all margin notes in the document
+    const allNotes = Array.from(document.querySelectorAll('.footnote-margin-note'));
 
-      // Remove highlight from all other notes
-      document.querySelectorAll('.footnote-margin-note').forEach(n => {
-        if (n !== note) {
-          n.classList.remove('clicked-highlight');
-        }
-      });
+    if (allNotes.length === 0) return;
 
-      // Toggle highlight on clicked note
-      note.classList.toggle('clicked-highlight');
-    });
-  }
-
-  // Click outside to dismiss highlights
-  document.addEventListener('click', (e) => {
-    // If click is outside any margin note, remove all highlights
-    if (!e.target.closest('.footnote-margin-note')) {
-      document.querySelectorAll('.footnote-margin-note').forEach(note => {
-        note.classList.remove('clicked-highlight');
-      });
-    }
-  });
-
-  function stackOverlappingNotes(notes) {
-    const sortedNotes = notes.sort((a, b) => {
-      return parseInt(a.style.top || '0') - parseInt(b.style.top || '0');
+    // Sort by initial top position
+    allNotes.sort((a, b) => {
+      const aTop = parseInt(a.style.top) || 0;
+      const bTop = parseInt(b.style.top) || 0;
+      return aTop - bTop;
     });
 
-    for (let i = 1; i < sortedNotes.length; i++) {
-      const prevNote = sortedNotes[i - 1];
-      const currNote = sortedNotes[i];
+    // Stack with minimum gap of 8px
+    for (let i = 1; i < allNotes.length; i++) {
+      const prevNote = allNotes[i - 1];
+      const currNote = allNotes[i];
 
-      const prevTop = parseInt(prevNote.style.top || '0');
+      const prevTop = parseInt(prevNote.style.top) || 0;
       const prevBottom = prevTop + prevNote.offsetHeight;
-      const currTop = parseInt(currNote.style.top || '0');
+      const currTop = parseInt(currNote.style.top) || 0;
 
+      // If current note would overlap with previous note, push it down
       if (currTop < prevBottom + 8) {
         currNote.style.top = `${prevBottom + 8}px`;
       }
@@ -452,44 +496,20 @@ const popoverTriggers = document.querySelectorAll(selector);
    * - No need to modify article/body widths!
    */
 
-  .footnote-margin-note {
-    position: absolute;
-    left: 100%;           /* Start at right edge of .post-body (708px) */
-    margin-left: 3rem;    /* 48px gap from content (increased from 1.5rem) */
-    width: 10rem;         /* 160px */
-    font-size: 0.75rem;   /* Small text */
-    line-height: 1.5;
-    color: rgb(107 114 128); /* gray-500 */
-    opacity: 0.7;
-    transition: opacity 0.2s ease, color 0.2s ease;
-    pointer-events: auto;
-  }
-
+  /* Highlighted state for margin notes (toggled via JavaScript) */
   .footnote-margin-note.highlighted {
     opacity: 1;
     color: rgb(31 41 55); /* gray-800 */
-  }
-
-  /* Clicked highlight state - more prominent than hover */
-  .footnote-margin-note.clicked-highlight {
-    opacity: 1;
-    background-color: rgb(254 243 199); /* yellow-100 */
-    border-left: 3px solid rgb(251 191 36); /* yellow-400 */
-    padding-left: 0.5rem;
-    transition: all 0.2s ease;
-  }
-
-  :global(.dark) .footnote-margin-note {
-    color: rgb(156 163 175); /* gray-400 */
   }
 
   :global(.dark) .footnote-margin-note.highlighted {
     color: rgb(243 244 246); /* gray-100 */
   }
 
-  :global(.dark) .footnote-margin-note.clicked-highlight {
-    background-color: rgb(113 63 18); /* yellow-900 */
-    border-left-color: rgb(245 158 11); /* yellow-500 */
+  /* Make second child (first content block after <sup>) in blocks-type margin notes display inline with the marker */
+  .footnote-margin-blocks > :nth-child(2) {
+    display: inline !important;
+    margin-top: 0 !important;
   }
 
   @media (max-width: 1023px) {
@@ -506,6 +526,11 @@ const popoverTriggers = document.querySelectorAll(selector);
     .post-body {
       position: relative;
     }
+  }
+
+  /* Hide margin notes when inside PostPreviewFull component (collection full preview pages) */
+  .post-preview-full-container .footnote-margin-note {
+    display: none !important;
   }
 
   .footnote-marker span.highlighted {

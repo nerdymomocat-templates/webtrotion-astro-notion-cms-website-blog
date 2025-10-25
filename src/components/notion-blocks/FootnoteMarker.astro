@@ -1,6 +1,6 @@
 ---
 import type { RichText, Block, Footnote } from "@/lib/interfaces";
-import { FOOTNOTES } from "@/constants";
+import { adjustedFootnotesConfig } from "@/lib/notion/client";
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import RichTextComponent from "@/components/notion-blocks/RichText.astro";
 
@@ -12,7 +12,7 @@ export interface Props {
 const { richText, block } = Astro.props;
 
 // Get footnote configuration
-const config = FOOTNOTES?.["in-page-footnotes-settings"];
+const config = adjustedFootnotesConfig?.["in-page-footnotes-settings"];
 const displayMode = config?.["intext-display"];
 
 // Determine display mode
@@ -32,10 +32,11 @@ if (block.Footnotes && footnoteRef) {
 const uniqueId = `footnote-${block.Id}-${footnoteRef}`;
 
 // Determine what symbol to display:
-// - Use sequential numbers if footnotes section is enabled OR margin mode is enabled
-// - Otherwise use † symbol
+// - Use † ONLY when always-popup is true AND generate-footnotes-section is false
+// - Otherwise use sequential numbers [1], [2], etc.
 const generateSection = config?.['generate-footnotes-section'];
-const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[${footnote.Index}]` : '[†]';
+const useNumbering = generateSection || isMarginMode || !isAlwaysPopup;
+const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : '[†]';
 ---
 
 {/* If no footnote content found, render as muted text (broken reference) */}
@@ -52,7 +53,7 @@ const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[$
 					data-footnote-id={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -67,7 +68,7 @@ const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[$
 					data-margin-note={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -81,7 +82,7 @@ const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[$
 					data-footnote-id={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -135,40 +136,39 @@ const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[$
 		<!-- Template for margin notes content (same structure, used by margin notes script) -->
 		{isMarginMode && (
 			<template id={`template-margin-${uniqueId}`}>
-				<div class="footnote-margin-content">
-					{/* Add sequential number prefix if index exists */}
-					{footnote.Index && (
-						<strong class="footnote-margin-number">[{footnote.Index}]: </strong>
-					)}
-					{footnote.Content.Type === "rich_text" && footnote.Content.RichTexts && (
-						<span>
-							{footnote.Content.RichTexts.map((rt) => (
-								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
-							))}
-						</span>
-					)}
-					{footnote.Content.Type === "blocks" && footnote.Content.Blocks && (
-						<div class="text-xs">
-							<NotionBlocks blocks={footnote.Content.Blocks} renderChildren={true} setId={false} />
-						</div>
-					)}
-					{footnote.Content.Type === "comment" && footnote.Content.RichTexts && (
-						<span>
-							{footnote.Content.RichTexts.map((rt) => (
-								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
-							))}
-							{footnote.Content.CommentAttachments && footnote.Content.CommentAttachments.length > 0 && (
-								<div class="mt-2 space-y-1">
-									{footnote.Content.CommentAttachments.map((attachment) => (
-										attachment.Category === "image" && (
-											<img src={attachment.Url} alt="" class="max-w-full rounded" />
-										)
-									))}
-								</div>
+				{/* Add sequential number prefix for margin notes as inline superscript */}
+				{footnote.Content.Type === "rich_text" && footnote.Content.RichTexts && (
+					<span class="!text-sm">
+						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						{footnote.Content.RichTexts.map((rt) => (
+							<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+						))}
+					</span>
+				)}
+				{footnote.Content.Type === "blocks" && footnote.Content.Blocks && (
+					<div class="!text-sm footnote-margin-blocks">
+						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						<NotionBlocks blocks={footnote.Content.Blocks} renderChildren={true} setId={false} />
+					</div>
+				)}
+				{footnote.Content.Type === "comment" && footnote.Content.RichTexts && (
+					<span class="!text-sm">
+						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						{footnote.Content.RichTexts.map((rt) => (
+							<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+						))}
+						{footnote.Content.CommentAttachments && footnote.Content.CommentAttachments.length > 0 && (
+							<div class="mt-2 space-y-1">
+								{footnote.Content.CommentAttachments.map((attachment) => (
+									attachment.Category === "image" && (
+										<img src={attachment.Url} alt="" class="max-w-full rounded" />
+									)
+								)
 							)}
-						</span>
-					)}
-				</div>
+							</div>
+						)}
+					</span>
+				)}
 			</template>
 		)}
 	</>

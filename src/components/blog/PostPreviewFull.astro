@@ -12,6 +12,8 @@ import {
 import NotionBlocks from "@/components/NotionBlocks.astro";
 import { getNotionColorToTailwindColor } from "@/lib/style-helpers";
 import { MENU_PAGES_COLLECTION, BUILD_FOLDER_PATHS } from "@/constants";
+import { adjustedFootnotesConfig } from "@/lib/notion/client";
+import FootnotesSection from "@/components/blog/FootnotesSection.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings, slugify } from "@/utils";
 import fs from "fs/promises";
@@ -33,7 +35,7 @@ const {
 	as: Tag = "div",
 	withDesc = false,
 } = Astro.props;
-const { blocks, referencesInPage } = await getPostContentByPostId(post_full_preview);
+const { blocks, referencesInPage, footnotesInPage } = await getPostContentByPostId(post_full_preview);
 
 // --- Headings Cache Handling ---
 let headings = null;
@@ -152,12 +154,18 @@ const postLink = getPostLink(
 	)
 }
 
-{
-	shouldUseCache && cachedHtml ? (
-		<section class="post-body" data-html-type="cached" set:html={cachedHtml} />
+<section class="post-body post-preview-full-container" data-html-type={shouldUseCache && cachedHtml ? "cached" : "new"}>
+	{shouldUseCache && cachedHtml ? (
+		<div set:html={cachedHtml} />
 	) : (
-		<section class="post-body" data-html-type="new">
+		<>
 			<NotionBlocks blocks={blocks} />
-		</section>
-	)
-}
+			{/* Footnotes section - only render when NOT using cache (cached HTML already includes it) */}
+			{adjustedFootnotesConfig?.['in-page-footnotes-settings']?.enabled &&
+			 adjustedFootnotesConfig?.['in-page-footnotes-settings']?.['generate-footnotes-section'] &&
+			 footnotesInPage && (
+				<FootnotesSection footnotes={footnotesInPage} />
+			)}
+		</>
+	)}
+</section>
