@@ -48,11 +48,11 @@ const { block, renderChildren = true, setId = true } = Astro.props;
 									return (
 										<span class="line-through decoration-slate-500/50">
 											{/* Block element for the text */}
-											<RichText richText={richText} blockID={b.Id} />
+											<RichText richText={richText} blockID={b.Id} block={b} />
 										</span>
 									);
 								}
-								return <RichText richText={richText} blockID={b.Id} />;
+								return <RichText richText={richText} blockID={b.Id} block={b} />;
 							})}
 						</div>
 					</div>

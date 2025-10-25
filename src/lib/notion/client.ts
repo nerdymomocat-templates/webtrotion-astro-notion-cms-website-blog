@@ -15,7 +15,13 @@ import {
 	LAST_BUILD_TIME,
 	HIDE_UNDERSCORE_SLUGS_IN_LISTS,
 	BUILD_FOLDER_PATHS,
+	IN_PAGE_FOOTNOTES_ENABLED,
+	FOOTNOTES,
 } from "../../constants";
+import {
+	extractFootnotesFromBlockAsync,
+	normalizeFootnotesConfig,
+} from "../../lib/footnotes";
 import type * as responses from "@/lib/notion/responses";
 import type * as requestParams from "@/lib/notion/request-params";
 import type {
@@ -82,6 +88,53 @@ let allEntriesCache: Post[] | null = null;
 let dsCache: Database | null = null;
 let blockIdPostIdMap: { [key: string]: string } | null = null;
 let allTagsWithCountsCache: { name: string; count: number; description: string; color: string }[] | null = null;
+
+// Footnotes: Comments API permission check cache (checked once per build)
+// null = not checked yet, true = has permission, false = no permission
+let hasCommentsPermission: boolean | null = null;
+
+/**
+ * Check Comments API permission once per build
+ * This is called from getAllBlocksByBlockId the first time it's invoked
+ */
+async function ensureCommentsPermissionChecked(): Promise<void> {
+	// If already checked, return immediately
+	if (hasCommentsPermission !== null) {
+		return;
+	}
+
+	// Only check if block-comments source is enabled
+	if (!IN_PAGE_FOOTNOTES_ENABLED || !FOOTNOTES) {
+		hasCommentsPermission = false; // Mark as checked (not needed)
+		return;
+	}
+
+	const config = normalizeFootnotesConfig(FOOTNOTES);
+	const activeSource = config.pageSettings.source['block-comments'];
+
+	if (!activeSource) {
+		hasCommentsPermission = false; // Mark as checked (not needed)
+		return;
+	}
+
+	console.log('Footnotes: Checking Comments API permission (block-comments source configured)...');
+	console.log('           The "@notionhq/client warn" below is EXPECTED and means permission is granted.');
+
+	try {
+		await client.comments.list({ block_id: "00000000-0000-0000-0000-000000000000" });
+		hasCommentsPermission = true;
+		console.log('Footnotes: ✓ Permission confirmed - block-comments source available.');
+	} catch (error: any) {
+		if (error?.status === 403 || error?.code === 'restricted_resource') {
+			hasCommentsPermission = false;
+			console.log('Footnotes: ✗ Permission denied - falling back to end-of-block source.');
+		} else {
+			// Any other error (object_not_found, validation_error) = has permission
+			hasCommentsPermission = true;
+			console.log('Footnotes: ✓ Permission confirmed - block-comments source available.');
+		}
+	}
+}
 
 const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];
 async function getResolvedDataSourceId(): Promise<string> {
@@ -437,7 +490,37 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 		params["start_cursor"] = res.next_cursor as string;
 	}
 
-	const allBlocks = results.map((blockObject) => _buildBlock(blockObject));
+	const allBlocks = await Promise.all(results.map((blockObject) => _buildBlock(blockObject)));
+
+	// Check Comments API permission once (cached for entire build)
+	await ensureCommentsPermissionChecked();
+
+	// Prepare footnotes config with permission-based fallback
+	let adjustedFootnotesConfig = null;
+	if (IN_PAGE_FOOTNOTES_ENABLED && FOOTNOTES) {
+		const footnotesConfig = normalizeFootnotesConfig(FOOTNOTES);
+
+		// If block-comments is enabled but no permission, create a modified copy
+		if (footnotesConfig.pageSettings.source['block-comments'] && !hasCommentsPermission) {
+			console.warn(
+				'Footnotes: block-comments source enabled but permission denied. Falling back to end-of-block source.'
+			);
+			// Create a new config object with modified source settings
+			adjustedFootnotesConfig = {
+				...footnotesConfig,
+				pageSettings: {
+					...footnotesConfig.pageSettings,
+					source: {
+						...footnotesConfig.pageSettings.source,
+						'block-comments': false,
+						'end-of-block': true,
+					},
+				},
+			};
+		} else {
+			adjustedFootnotesConfig = footnotesConfig;
+		}
+	}
 
 	for (let i = 0; i < allBlocks.length; i++) {
 		const block = allBlocks[i];
@@ -468,6 +551,24 @@ export async function getAllBlocksByBlockId(blockId: string): Promise<Block[]> {
 			block.Quote.Children = await getAllBlocksByBlockId(block.Id);
 		} else if (block.Type === "callout" && block.Callout && block.HasChildren) {
 			block.Callout.Children = await getAllBlocksByBlockId(block.Id);
+		}
+
+		// Extract footnotes AFTER children are fetched
+		// This is critical for start-of-child-blocks mode which needs the Children array populated
+		try {
+			if (adjustedFootnotesConfig) {
+				const extractionResult = await extractFootnotesFromBlockAsync(
+					block,
+					adjustedFootnotesConfig,
+					client
+				);
+				if (extractionResult.footnotes.length > 0) {
+					block.Footnotes = extractionResult.footnotes;
+				}
+			}
+		} catch (error) {
+			console.error(`Failed to extract footnotes from block ${block.Id}:`, error);
+			// Continue without footnotes rather than failing the entire build
 		}
 	}
 
@@ -525,7 +626,7 @@ export async function getBlock(blockId: string, forceRefresh = false): Promise<B
 			},
 		);
 
-		const block = _buildBlock(res);
+		const block = await _buildBlock(res);
 
 		// Update our mapping and cache with this new block
 		const blockIdPostIdMap = getBlockIdPostIdMap();
@@ -875,7 +976,7 @@ export async function getDataSource(): Promise<Database> {
 	return database;
 }
 
-function _buildBlock(blockObject: responses.BlockObject): Block {
+async function _buildBlock(blockObject: responses.BlockObject): Promise<Block> {
 	const block: Block = {
 		Id: blockObject.id,
 		Type: blockObject.type,

@@ -1,0 +1,162 @@
+---
+import type { Block, Footnote } from "@/lib/interfaces";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+
+export interface Props {
+	blocks: Block[];
+}
+
+const { blocks } = Astro.props;
+
+// Collect all footnotes from all blocks
+const allFootnotes: Footnote[] = [];
+blocks.forEach((block) => {
+	if (block.Footnotes && block.Footnotes.length > 0) {
+		allFootnotes.push(...block.Footnotes);
+	}
+});
+
+// Remove duplicates based on Marker (in case same footnote appears in multiple blocks)
+const uniqueFootnotes = Array.from(
+	new Map(allFootnotes.map((fn) => [fn.Marker, fn])).values()
+);
+
+// Sort by marker (alphabetically)
+uniqueFootnotes.sort((a, b) => a.Marker.localeCompare(b.Marker));
+---
+
+{
+	uniqueFootnotes.length > 0 && (
+		<section class="footnotes-section mt-12 border-t border-gray-200 dark:border-gray-700 pt-8">
+			<h2 class="text-xl font-semibold mb-4">Footnotes</h2>
+			<ol class="space-y-4 text-sm">
+				{uniqueFootnotes.map((footnote, index) => (
+					<li
+						id={`footnote-def-${footnote.Marker}`}
+						class="flex gap-2"
+					>
+						<span class="font-mono text-gray-500 dark:text-gray-400 shrink-0">
+							[{index + 1}]
+						</span>
+						<div class="footnote-content flex-1">
+							{footnote.Content.Type === "rich_text" &&
+								footnote.Content.RichTexts && (
+									<div>
+										{footnote.Content.RichTexts.map((rt) => (
+											<>
+												{rt.Text && (
+													<span
+														class={
+															(rt.Annotation.Bold
+																? "font-bold "
+																: "") +
+															(rt.Annotation.Italic ? "italic " : "") +
+															(rt.Annotation.Strikethrough
+																? "line-through "
+																: "") +
+															(rt.Annotation.Underline ? "underline " : "") +
+															(rt.Annotation.Code
+																? "font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded "
+																: "")
+														}
+														style={
+															rt.Annotation.Color &&
+															rt.Annotation.Color !== "default"
+																? `color: ${rt.Annotation.Color}`
+																: ""
+														}
+													>
+														{rt.Href ? (
+															<a
+																href={rt.Href}
+																class="text-link hover:underline"
+															>
+																{rt.Text.Content}
+															</a>
+														) : (
+															rt.Text.Content
+														)}
+													</span>
+												)}
+												{rt.Equation && (
+													<span class="inline-block">{rt.Equation.Expression}</span>
+												)}
+											</>
+										))}
+									</div>
+								)}
+							{footnote.Content.Type === "blocks" &&
+								footnote.Content.Blocks && (
+									<div class="prose prose-sm max-w-none dark:prose-invert">
+										<NotionBlocks
+											blocks={footnote.Content.Blocks}
+											renderChildren={false}
+											setId={false}
+										/>
+									</div>
+								)}
+							{footnote.Content.Type === "comment" &&
+								footnote.Content.RichTexts && (
+									<div>
+										{footnote.Content.RichTexts.map((rt) => (
+											<>
+												{rt.Text && (
+													<span
+														class={
+															(rt.Annotation.Bold
+																? "font-bold "
+																: "") +
+															(rt.Annotation.Italic ? "italic " : "") +
+															(rt.Annotation.Strikethrough
+																? "line-through "
+																: "") +
+															(rt.Annotation.Underline ? "underline " : "") +
+															(rt.Annotation.Code
+																? "font-mono text-xs bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded "
+																: "")
+														}
+														style={
+															rt.Annotation.Color &&
+															rt.Annotation.Color !== "default"
+																? `color: ${rt.Annotation.Color}`
+																: ""
+														}
+													>
+														{rt.Href ? (
+															<a
+																href={rt.Href}
+																class="text-link hover:underline"
+															>
+																{rt.Text.Content}
+															</a>
+														) : (
+															rt.Text.Content
+														)}
+													</span>
+												)}
+											</>
+										))}
+										{footnote.Content.CommentAttachments &&
+											footnote.Content.CommentAttachments.length > 0 && (
+												<div class="mt-2 space-y-1">
+													{footnote.Content.CommentAttachments.map(
+														(attachment) =>
+															attachment.Category === "image" && (
+																<img
+																	src={attachment.Url}
+																	alt=""
+																	class="max-w-full rounded"
+																/>
+															)
+													)}
+												</div>
+											)}
+									</div>
+								)}
+						</div>
+					</li>
+				))}
+			</ol>
+		</section>
+	)
+}

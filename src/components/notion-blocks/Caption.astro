@@ -16,7 +16,7 @@ const { richTexts, block, as: Tag = "div" } = Astro.props;
 	(
 		<Tag class="caption text-textColor/70 min-w-0 pt-1 text-sm">
 			{richTexts.map((richText: interfaces.RichText) => (
-				<RichText richText={richText} blockID={block.Id} />
+				<RichText richText={richText} blockID={block.Id} block={block} />
 			))}
 		</Tag>
 	)

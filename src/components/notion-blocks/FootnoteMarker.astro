@@ -1,0 +1,175 @@
+---
+import type { RichText, Block, Footnote } from "@/lib/interfaces";
+import { FOOTNOTES } from "@/constants";
+import NotionBlocks from "@/components/NotionBlocks.astro";
+import RichTextComponent from "@/components/notion-blocks/RichText.astro";
+
+export interface Props {
+	richText: RichText;
+	block: Block;
+}
+
+const { richText, block } = Astro.props;
+
+// Get footnote configuration
+const config = FOOTNOTES?.["in-page-footnotes-settings"];
+const displayMode = config?.["intext-display"];
+
+// Determine display mode
+const isAlwaysPopup = displayMode?.["always-popup"] === true;
+const isMarginMode = displayMode?.["small-popup-large-margin"] === true;
+
+// Get the footnote marker reference (e.g., "ft_a")
+const footnoteRef = richText.FootnoteRef;
+
+// Find the corresponding footnote in block.Footnotes
+let footnote: Footnote | undefined = undefined;
+if (block.Footnotes && footnoteRef) {
+	footnote = block.Footnotes.find((fn) => fn.Marker === footnoteRef);
+}
+
+// Generate unique ID for this footnote marker
+const uniqueId = `footnote-${block.Id}-${footnoteRef}`;
+
+// Determine what symbol to display:
+// - Use sequential numbers if footnotes section is enabled OR margin mode is enabled
+// - Otherwise use † symbol
+const generateSection = config?.['generate-footnotes-section'];
+const displaySymbol = (generateSection || isMarginMode) && footnote?.Index ? `[${footnote.Index}]` : '[†]';
+---
+
+{/* If no footnote content found, render as muted text (broken reference) */}
+{!footnote ? (
+	<span class="footnote-marker-broken text-gray-400 dark:text-gray-600" title="Footnote content not found">
+		{richText.PlainText}
+	</span>
+) : (
+	<>
+		{/* Render footnote marker with appropriate attributes for popup or margin mode */}
+		{isAlwaysPopup ? (
+			<sup class="footnote-marker">
+				<span
+					data-footnote-id={uniqueId}
+					data-popover-target={`popover-${uniqueId}`}
+					data-popover-placement="bottom-start"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					aria-label={`Show footnote ${displaySymbol}`}
+					role="button"
+					tabindex="0"
+				>
+					{displaySymbol}
+				</span>
+			</sup>
+		) : isMarginMode ? (
+			<sup class="footnote-marker">
+				<span
+					data-footnote-id={uniqueId}
+					data-margin-note={uniqueId}
+					data-popover-target={`popover-${uniqueId}`}
+					data-popover-placement="bottom-start"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					aria-label={`Show footnote ${displaySymbol}`}
+					role="button"
+					tabindex="0"
+				>
+					{displaySymbol}
+				</span>
+			</sup>
+		) : (
+			<sup class="footnote-marker">
+				<span
+					data-footnote-id={uniqueId}
+					data-popover-target={`popover-${uniqueId}`}
+					data-popover-placement="bottom-start"
+					class="cursor-pointer text-link hover:text-link-hover transition-colors"
+					aria-label={`Show footnote ${displaySymbol}`}
+					role="button"
+					tabindex="0"
+				>
+					{displaySymbol}
+				</span>
+			</sup>
+		)}
+
+		<!-- Template for popover content -->
+		<template id={`template-popover-${uniqueId}`}>
+			<div
+				data-popover
+				id={`popover-${uniqueId}`}
+				role="tooltip"
+				class="popoverEl invisible absolute z-40 inline-block hidden w-md rounded-lg border border-gray-200 bg-white text-sm text-gray-500 opacity-0 shadow-xs transition-opacity duration-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400"
+			>
+				<div class="space-y-2 p-2">
+					{footnote.Content.Type === "rich_text" && footnote.Content.RichTexts && (
+						<div class="footnote-content">
+							{footnote.Content.RichTexts.map((rt) => (
+								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+							))}
+						</div>
+					)}
+					{footnote.Content.Type === "blocks" && footnote.Content.Blocks && (
+						<div class="footnote-content">
+							<NotionBlocks blocks={footnote.Content.Blocks} renderChildren={true} setId={false} />
+						</div>
+					)}
+					{footnote.Content.Type === "comment" && footnote.Content.RichTexts && (
+						<div class="footnote-content">
+							{footnote.Content.RichTexts.map((rt) => (
+								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+							))}
+							{footnote.Content.CommentAttachments && footnote.Content.CommentAttachments.length > 0 && (
+								<div class="mt-2 space-y-1">
+									{footnote.Content.CommentAttachments.map((attachment) => (
+										attachment.Category === "image" && (
+											<img src={attachment.Url} alt="" class="max-w-full rounded" />
+										)
+									))}
+								</div>
+							)}
+						</div>
+					)}
+				</div>
+			</div>
+		</template>
+
+		<!-- Template for margin notes content (same structure, used by margin notes script) -->
+		{isMarginMode && (
+			<template id={`template-margin-${uniqueId}`}>
+				<div class="footnote-margin-content">
+					{/* Add sequential number prefix if index exists */}
+					{footnote.Index && (
+						<strong class="footnote-margin-number">[{footnote.Index}]: </strong>
+					)}
+					{footnote.Content.Type === "rich_text" && footnote.Content.RichTexts && (
+						<span>
+							{footnote.Content.RichTexts.map((rt) => (
+								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+							))}
+						</span>
+					)}
+					{footnote.Content.Type === "blocks" && footnote.Content.Blocks && (
+						<div class="text-xs">
+							<NotionBlocks blocks={footnote.Content.Blocks} renderChildren={true} setId={false} />
+						</div>
+					)}
+					{footnote.Content.Type === "comment" && footnote.Content.RichTexts && (
+						<span>
+							{footnote.Content.RichTexts.map((rt) => (
+								<RichTextComponent richText={rt} blockID={block.Id} block={block} />
+							))}
+							{footnote.Content.CommentAttachments && footnote.Content.CommentAttachments.length > 0 && (
+								<div class="mt-2 space-y-1">
+									{footnote.Content.CommentAttachments.map((attachment) => (
+										attachment.Category === "image" && (
+											<img src={attachment.Url} alt="" class="max-w-full rounded" />
+										)
+									))}
+								</div>
+							)}
+						</span>
+					)}
+				</div>
+			</template>
+		)}
+	</>
+)}

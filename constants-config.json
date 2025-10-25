@@ -120,7 +120,24 @@
 	"full-preview-collections": ["Stream"],
 	"hide-underscore-slugs-in-lists": true,
 	"home-page-slug": "",
-	"all-footnotes-page-slug": "_all-footnotes",
+	"footnotes": {
+		"all-footnotes-page-slug": "_all-footnotes",
+		"in-page-footnotes-settings": {
+			"enabled": true,
+			"source": {
+				"end-of-block": false,
+				"start-of-child-blocks": true,
+				"block-comments": false,
+				"block-inline-text-comments": false
+			},
+			"marker-prefix": "ft_",
+			"generate-footnotes-section": true,
+			"intext-display": {
+				"always-popup": true,
+				"small-popup-large-margin": false
+			}
+		}
+	},
 	"og-setup": {
 		"columns": 1,
 		"excerpt": false,

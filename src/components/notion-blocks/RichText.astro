@@ -1,6 +1,6 @@
 ---
 import katex from "katex";
-import type { RichText } from "@/lib/interfaces.ts";
+import type { RichText, Block } from "@/lib/interfaces.ts";
 import Bold from "@/components/notion-blocks/annotations/Bold.astro";
 import Italic from "@/components/notion-blocks/annotations/Italic.astro";
 import Strikethrough from "@/components/notion-blocks/annotations/Strikethrough.astro";
@@ -12,73 +12,79 @@ import MentionPage from "@/components/notion-blocks/MentionPage.astro";
 import MentionDate from "@/components/notion-blocks/MentionDate.astro";
 import MentionLink from "@/components/notion-blocks/MentionLink.astro";
 import MentionCustomEmoji from "@/components/notion-blocks/MentionCustomEmoji.astro";
+import FootnoteMarker from "@/components/notion-blocks/FootnoteMarker.astro";
 
 export interface Props {
 	richText: RichText;
 	blockID?: string;
+	block?: Block;
 }
 
-const { richText, blockID } = Astro.props;
+const { richText, blockID, block } = Astro.props;
 ---
 
-<Anchor richText={richText} blockID={blockID}>
-	{
-		(
-			<Code richText={richText}>
-				{
-					<Color richText={richText}>
-						{
-							<Underline richText={richText}>
-								{
-									<Strikethrough richText={richText}>
-										{
-											<Italic richText={richText}>
-												{
-													<Bold richText={richText}>
-														{richText.Text &&
-															richText.Text.Content.split("\n").map(
-																(content: string, i: number) => {
-																	if (i === 0) {
-																		return content;
-																	}
-																	return (
-																		<>
-																			<br />
-																			{content}
-																		</>
-																	);
-																},
+{richText.IsFootnoteMarker && block ? (
+	<FootnoteMarker richText={richText} block={block} />
+) : (
+	<Anchor richText={richText} blockID={blockID}>
+		{
+			(
+				<Code richText={richText}>
+					{
+						<Color richText={richText}>
+							{
+								<Underline richText={richText}>
+									{
+										<Strikethrough richText={richText}>
+											{
+												<Italic richText={richText}>
+													{
+														<Bold richText={richText}>
+															{richText.Text &&
+																richText.Text.Content.split("\n").map(
+																	(content: string, i: number) => {
+																		if (i === 0) {
+																			return content;
+																		}
+																		return (
+																			<>
+																				<br />
+																				{content}
+																			</>
+																		);
+																	},
+																)}
+															{richText.Equation && (
+																<span
+																	set:html={katex.renderToString(richText.Equation.Expression, {
+																		throwOnError: false,
+																	})}
+																/>
 															)}
-														{richText.Equation && (
-															<span
-																set:html={katex.renderToString(richText.Equation.Expression, {
-																	throwOnError: false,
-																})}
-															/>
-														)}
-														{richText.Mention && richText.Mention.Page && (
-															<MentionPage pageId={richText.Mention.Page.PageId} />
-														)}
-														{richText.Mention && richText.Mention.DateStr && (
-															<MentionDate mention_date={richText.Mention.DateStr} />
-														)}
-														{richText.Mention && richText.Mention.LinkMention && (
-															<MentionLink mention={richText.Mention} />
-														)}
-														{richText.Mention && richText.Mention.CustomEmoji && (
-															<MentionCustomEmoji mention={richText.Mention} />
-														)}
-													</Bold>
-												}
-											</Italic>
-										}
-									</Strikethrough>
-								}
-							</Underline>
-						}
-					</Color>
-				}
-			</Code>
-		)
-	}
-</Anchor>
+															{richText.Mention && richText.Mention.Page && (
+																<MentionPage pageId={richText.Mention.Page.PageId} />
+															)}
+															{richText.Mention && richText.Mention.DateStr && (
+																<MentionDate mention_date={richText.Mention.DateStr} />
+															)}
+															{richText.Mention && richText.Mention.LinkMention && (
+																<MentionLink mention={richText.Mention} />
+															)}
+															{richText.Mention && richText.Mention.CustomEmoji && (
+																<MentionCustomEmoji mention={richText.Mention} />
+															)}
+														</Bold>
+													}
+												</Italic>
+											}
+										</Strikethrough>
+									}
+								</Underline>
+							}
+						</Color>
+					}
+				</Code>
+			)
+		}
+	</Anchor>
+)}

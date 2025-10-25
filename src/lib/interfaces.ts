@@ -58,6 +58,9 @@ export interface Block {
 	ColumnList?: ColumnList;
 	TableOfContents?: TableOfContents;
 	LinkToPage?: LinkToPage;
+
+	// Footnotes (populated by extractFootnotes during build)
+	Footnotes?: Footnote[];
 }
 
 export interface ReferencesInPage {
@@ -260,6 +263,10 @@ export interface RichText {
 	Equation?: Equation;
 	Mention?: Mention;
 	InternalHref?: Reference;
+
+	// Footnote marker (set by extractFootnotes during build)
+	FootnoteRef?: string; // e.g., "ft_a" (without [^] wrapper)
+	IsFootnoteMarker?: boolean;
 }
 
 export interface Text {
@@ -361,3 +368,90 @@ export type BlockTypes =
 	| "toggle"
 	| "video"
 	| "audio";
+
+// ============================================================================
+// Footnotes Types
+// ============================================================================
+
+/**
+ * Represents a single footnote extracted from content
+ */
+export interface Footnote {
+	Marker: string; // e.g., "ft_a" (without [^] wrapper)
+	FullMarker: string; // e.g., "[^ft_a]" (with wrapper for matching)
+	Content: FootnoteContent;
+	Index?: number; // Sequential index for display (1, 2, 3...)
+	SourceLocation: "content" | "caption" | "table" | "comment"; // Where it came from
+}
+
+/**
+ * Content of a footnote - can be RichText, Blocks, or Comments
+ */
+export interface FootnoteContent {
+	Type: "rich_text" | "blocks" | "comment";
+	RichTexts?: RichText[]; // For end-of-block and block-comments
+	Blocks?: Block[]; // For start-of-child-blocks
+	CommentAttachments?: CommentAttachment[]; // For images in comments
+}
+
+/**
+ * Attachment from Notion Comments API
+ */
+export interface CommentAttachment {
+	Category: string; // 'image'
+	Url: string;
+	ExpiryTime?: string;
+}
+
+/**
+ * Information about where a footnote marker was found
+ */
+export interface FootnoteMarkerInfo {
+	Marker: string; // e.g., "ft_a"
+	FullMarker: string; // e.g., "[^ft_a]"
+	Location: {
+		BlockProperty: string; // e.g., 'Paragraph.RichTexts' or 'NImage.Caption'
+		RichTextIndex: number;
+		CharStart: number;
+		CharEnd: number;
+	};
+}
+
+/**
+ * Configuration for footnotes system
+ */
+export interface FootnotesConfig {
+	allFootnotesPageSlug: string; // Legacy system slug
+	pageSettings: {
+		enabled: boolean;
+		source: {
+			"end-of-block": boolean;
+			"start-of-child-blocks": boolean;
+			"block-comments": boolean;
+		};
+		markerPrefix: string; // e.g., "ft_" → markers like [^ft_a]
+		generateFootnotesSection: boolean; // Collated list at page end
+		intextDisplay: {
+			alwaysPopup: boolean; // Always show as popup
+			smallPopupLargeMargin: boolean; // Responsive: margin on large screens (≥1024px), popup on mobile
+		};
+	};
+}
+
+/**
+ * Result from extracting footnotes from a block
+ */
+export interface FootnoteExtractionResult {
+	footnotes: Footnote[];
+	hasProcessedRichTexts: boolean;
+	hasProcessedChildren: boolean;
+}
+
+/**
+ * Location of RichText array within a block
+ */
+export interface RichTextLocation {
+	property: string; // e.g., "Paragraph.RichTexts", "NImage.Caption"
+	richTexts: RichText[];
+	setter: (newRichTexts: RichText[]) => void;
+}

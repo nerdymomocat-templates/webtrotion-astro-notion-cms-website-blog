@@ -68,7 +68,20 @@ export const HIDE_UNDERSCORE_SLUGS_IN_LISTS =
 	key_value_from_json["hide-underscore-slugs-in-lists"] || false;
 
 export const HOME_PAGE_SLUG = key_value_from_json["home-page-slug"] || "home";
-export const ALL_FOOTNOTES_PAGE_SLUG = key_value_from_json["all-footnotes-page-slug"] || null;
+
+/**
+ * Footnotes configuration
+ * - "all-footnotes-page-slug": Legacy manual footnotes page (already works via NBlocksPopover)
+ * - "in-page-footnotes-settings": Automatic in-page footnotes with markers (new feature)
+ */
+export const FOOTNOTES = key_value_from_json["footnotes"] || null;
+
+// Legacy manual footnotes page slug (used by NBlocksPopover)
+export const ALL_FOOTNOTES_PAGE_SLUG = FOOTNOTES?.["all-footnotes-page-slug"] || "_all-footnotes";
+
+// Helper to check if in-page footnotes are enabled
+export const IN_PAGE_FOOTNOTES_ENABLED =
+	FOOTNOTES?.["in-page-footnotes-settings"]?.enabled === true;
 
 export const OG_SETUP = key_value_from_json["og-setup"] || {
 	columns: 1,

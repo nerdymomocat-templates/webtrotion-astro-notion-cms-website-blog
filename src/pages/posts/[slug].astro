@@ -12,7 +12,8 @@ import { getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/no
 import { getReferencesInPage } from "@/lib/blog-helpers";
 import type { Post } from "@/lib/interfaces";
 import { buildHeadings } from "@/utils";
-import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME } from "@/constants";
+import { BUILD_FOLDER_PATHS, LAST_BUILD_TIME, FOOTNOTES } from "@/constants";
+import type { Block } from "@/lib/interfaces";
 import fs from "fs/promises";
 import path from "path";
 import superjson from "superjson";
@@ -109,10 +110,60 @@ if (postFound && postLastUpdatedBeforeLastBuild) {
 	}
 }
 
+// Helper function to get children from a block
+function getChildrenFromBlock(block: Block): Block[] | null {
+	if (block.Paragraph?.Children) return block.Paragraph.Children;
+	if (block.Heading1?.Children) return block.Heading1.Children;
+	if (block.Heading2?.Children) return block.Heading2.Children;
+	if (block.Heading3?.Children) return block.Heading3.Children;
+	if (block.Quote?.Children) return block.Quote.Children;
+	if (block.Callout?.Children) return block.Callout.Children;
+	if (block.Toggle?.Children) return block.Toggle.Children;
+	if (block.BulletedListItem?.Children) return block.BulletedListItem.Children;
+	if (block.NumberedListItem?.Children) return block.NumberedListItem.Children;
+	if (block.ToDo?.Children) return block.ToDo.Children;
+	if (block.SyncedBlock?.Children) return block.SyncedBlock.Children;
+	return null;
+}
+
+// Function to assign footnote indices recursively
+function assignFootnoteIndices(blocks: Block[], footnoteNumber: { value: number }): void {
+	blocks.forEach(block => {
+		if (block.Footnotes && block.Footnotes.length > 0) {
+			block.Footnotes.forEach(footnote => {
+				footnote.Index = footnoteNumber.value++;
+			});
+		}
+
+		// Recursively process children
+		const children = getChildrenFromBlock(block);
+		if (children && children.length > 0) {
+			assignFootnoteIndices(children, footnoteNumber);
+		}
+
+		// Process column lists
+		if (block.ColumnList?.Columns) {
+			block.ColumnList.Columns.forEach(column => {
+				if (column.Children) {
+					assignFootnoteIndices(column.Children, footnoteNumber);
+				}
+			});
+		}
+	});
+}
+
 if (postFound) {
 	const result = await getPostContentByPostId(post);
 	blocks = result.blocks;
 	referencesInPage = result.referencesInPage;
+
+	// Assign footnote indices if generate-footnotes-section OR margin mode is enabled
+	const generateSection = FOOTNOTES?.['in-page-footnotes-settings']?.['generate-footnotes-section'];
+	const isMarginMode = FOOTNOTES?.['in-page-footnotes-settings']?.['intext-display']?.['small-popup-large-margin'];
+	if ((generateSection || isMarginMode) && blocks) {
+		const footnoteNumber = { value: 1 };
+		assignFootnoteIndices(blocks, footnoteNumber);
+	}
 
 	// Use cached headings if available, otherwise build and save them
 	if (cachedHeadings) {

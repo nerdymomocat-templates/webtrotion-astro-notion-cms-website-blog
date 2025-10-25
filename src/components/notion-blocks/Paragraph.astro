@@ -27,7 +27,7 @@ const Tag = hasChildren && renderChildren ? "div" : "p";
 	]}
 	id={setId ? block.Id : undefined}
 >
-	{block.Paragraph.RichTexts.map((richText) => <RichText richText={richText} blockID={block.Id} />)}
+	{block.Paragraph.RichTexts.map((richText) => <RichText richText={richText} blockID={block.Id} block={block} />)}
 	{block.Paragraph.RichTexts.length === 0 && <br />}
 	{
 		hasChildren && renderChildren && (

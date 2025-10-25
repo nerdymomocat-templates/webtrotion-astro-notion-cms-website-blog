@@ -3,9 +3,9 @@ import PageLayout from "@/layouts/Base.astro";
 import { getAllPages, getAllPosts, getPostContentByPostId, processFileBlocks } from "@/lib/notion/client";
 import { extractTargetBlocks, getNavLink, getReferencesInPage, resetCurrentHeadings, resetFirstImage, setCurrentHeadings, setTrackCurrentPageId } from "@/lib/blog-helpers";
 import NotionBlocks from "@/components/NotionBlocks.astro";
-import type { Post } from "@/lib/interfaces";
+import type { Post, Block } from "@/lib/interfaces";
 import { siteInfo } from "@/siteInfo";
-import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "@/constants";
+import { FULL_PREVIEW_COLLECTIONS, HIDE_UNDERSCORE_SLUGS_IN_LISTS, HOME_PAGE_SLUG, RECENT_POSTS_ON_HOME_PAGE, LAST_BUILD_TIME, BUILD_FOLDER_PATHS, FOOTNOTES } from "@/constants";
 import PostPreview from "@/components/blog/PostPreview.astro";
 import Icon from "@/components/Icon.astro";
 import { buildHeadings } from "@/utils";
@@ -109,10 +109,59 @@ if (pageFound && pageLastUpdatedBeforeLastBuild) {
 	}
 }
 
+// Helper function to get children from a block
+function getChildrenFromBlock(block: Block): Block[] | null {
+	if (block.Paragraph?.Children) return block.Paragraph.Children;
+	if (block.Heading1?.Children) return block.Heading1.Children;
+	if (block.Heading2?.Children) return block.Heading2.Children;
+	if (block.Heading3?.Children) return block.Heading3.Children;
+	if (block.Quote?.Children) return block.Quote.Children;
+	if (block.Callout?.Children) return block.Callout.Children;
+	if (block.Toggle?.Children) return block.Toggle.Children;
+	if (block.BulletedListItem?.Children) return block.BulletedListItem.Children;
+	if (block.NumberedListItem?.Children) return block.NumberedListItem.Children;
+	if (block.ToDo?.Children) return block.ToDo.Children;
+	if (block.SyncedBlock?.Children) return block.SyncedBlock.Children;
+	return null;
+}
+
+// Function to assign footnote indices recursively
+function assignFootnoteIndices(blocks: Block[], footnoteNumber: { value: number }): void {
+	blocks.forEach(block => {
+		if (block.Footnotes && block.Footnotes.length > 0) {
+			block.Footnotes.forEach(footnote => {
+				footnote.Index = footnoteNumber.value++;
+			});
+		}
+
+		// Recursively process children
+		const children = getChildrenFromBlock(block);
+		if (children && children.length > 0) {
+			assignFootnoteIndices(children, footnoteNumber);
+		}
+
+		// Process column lists
+		if (block.ColumnList?.Columns) {
+			block.ColumnList.Columns.forEach(column => {
+				if (column.Children) {
+					assignFootnoteIndices(column.Children, footnoteNumber);
+				}
+			});
+		}
+	});
+}
+
 if (pageFound) {
 		const result = await getPostContentByPostId(page);
 		blocks = result.blocks;
 		referencesInPage = result.referencesInPage;
+
+		// Assign footnote indices if generate-footnotes-section is enabled
+		const generateSection = FOOTNOTES?.['in-page-footnotes-settings']?.['generate-footnotes-section'];
+		if (generateSection && blocks) {
+			const footnoteNumber = { value: 1 };
+			assignFootnoteIndices(blocks, footnoteNumber);
+		}
 
 		if (cachedHeadings) {
 				headings = cachedHeadings;
