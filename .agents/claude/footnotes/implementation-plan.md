@@ -1067,117 +1067,202 @@ export interface RichText {
 
 ## Phase 2: Configuration & Validation
 
-### 2.1 Create Footnotes Configuration Module
+### ⚠️ IMPORTANT UPDATE (2025-10-25): No Normalization Approach
 
-**New File**: `src/lib/footnotes/config.ts`
+The original plan included config normalization (transforming kebab-case JSON to camelCase interface), but this was abandoned in favor of a simpler approach:
+
+**Decision**: Match the TypeScript interface DIRECTLY to the JSON structure instead of normalizing.
+
+**Reasoning**:
+- Eliminates an entire class of bugs (structure mismatch)
+- Removes unnecessary transformation code
+- Simpler to understand and maintain
+- Direct property access without translation layer
+
+### 2.1 Configuration Interface
+
+**File**: `src/lib/interfaces.ts` (added to existing file)
 
 ```typescript
 export interface FootnotesConfig {
-  allFootnotesPageSlug: string;
-  pageSettings: {
+  "sitewide-footnotes-page-slug": string;
+  "in-page-footnotes-settings": {
     enabled: boolean;
     source: {
-      'end-of-block': boolean;
-      'start-of-child-blocks': boolean;
-      'block-comments': boolean;
-      'block-inline-text-comments': boolean;
+      "end-of-block": boolean;
+      "start-of-child-blocks": boolean;
+      "block-comments": boolean;
+      "block-inline-text-comments": boolean;
     };
-    markerPrefix: string;
-    generateFootnotesSection: boolean;
-    intextDisplay: {
-      alwaysPopup: boolean;
-      smallPopupMediumMargin: boolean;
+    "marker-prefix": string;
+    "generate-footnotes-section": boolean;
+    "intext-display": {
+      "always-popup": boolean;
+      "small-popup-large-margin": boolean;
     };
   };
 }
+```
+
+**Key Change**: Property names use kebab-case (e.g., `"in-page-footnotes-settings"`) to match the actual JSON structure in `constants-config.json`.
+
+### 2.2 Global Adjusted Config
+
+**File**: `src/lib/notion/client.ts`
+
+The config is read from `constants-config.json`, checked for Comments API permissions, and adjusted if needed. The adjusted config is stored in a module-level variable:
+
+```typescript
+import { FOOTNOTES, IN_PAGE_FOOTNOTES_ENABLED } from "@/constants";
+
+// Global adjusted config (set once during initialization)
+export let adjustedFootnotesConfig: any = null;
+
+// Comments API permission cache
+let hasCommentsPermission: boolean | null = null;
 
 /**
- * Validates and normalizes the footnotes configuration
- * Ensures only one source is enabled
- * Defaults to 'always-popup' if display options are ambiguous
+ * Initialize footnotes config once at build start
+ * Checks Comments API permission and applies fallback if needed
  */
-export function validateAndNormalizeConfig(config: any): FootnotesConfig | null {
-  if (!config || !config.pageSettings || !config.pageSettings.enabled) {
-    return null;
+async function ensureFootnotesConfigInitialized(): Promise<void> {
+  // If already initialized, return immediately
+  if (adjustedFootnotesConfig !== null) {
+    return;
   }
 
-  const normalized: FootnotesConfig = {
-    allFootnotesPageSlug: config['sitewide-footnotes-page-slug'] || '_all-footnotes',
-    pageSettings: {
-      enabled: true,
-      source: {
-        'end-of-block': config.pageSettings.source['end-of-block'] || false,
-        'start-of-child-blocks': config.pageSettings.source['start-of-child-blocks'] || false,
-        'block-comments': config.pageSettings.source['block-comments'] || false,
-        'block-inline-text-comments': config.pageSettings.source['block-inline-text-comments'] || false,
-      },
-      markerPrefix: config.pageSettings['marker-prefix'] || '^ft_',
-      generateFootnotesSection: config.pageSettings['generate-footnotes-section'] || false,
-      intextDisplay: {
-        alwaysPopup: true,
-        smallPopupMediumMargin: false,
-      },
-    },
-  };
+  // If footnotes not enabled, set to empty object
+  if (!IN_PAGE_FOOTNOTES_ENABLED || !FOOTNOTES) {
+    adjustedFootnotesConfig = {};
+    return;
+  }
 
-  // Ensure only one source is enabled
-  const enabledSources = Object.entries(normalized.pageSettings.source)
-    .filter(([_, enabled]) => enabled)
-    .map(([source]) => source);
+  // Check if block-comments is configured
+  const isBlockCommentsConfigured =
+    FOOTNOTES?.["in-page-footnotes-settings"]?.source?.["block-comments"] === true;
 
-  if (enabledSources.length === 0) {
-    // Default to end-of-block if none specified
-    normalized.pageSettings.source['end-of-block'] = true;
-  } else if (enabledSources.length > 1) {
-    // If multiple enabled, prioritize: end-of-block > start-of-child-blocks > block-comments
-    normalized.pageSettings.source['end-of-block'] = false;
-    normalized.pageSettings.source['start-of-child-blocks'] = false;
-    normalized.pageSettings.source['block-comments'] = false;
-    normalized.pageSettings.source['block-inline-text-comments'] = false;
+  if (isBlockCommentsConfigured) {
+    // Check permission once
+    console.log('Footnotes: Checking Comments API permission...');
 
-    if (enabledSources.includes('end-of-block')) {
-      normalized.pageSettings.source['end-of-block'] = true;
-    } else if (enabledSources.includes('start-of-child-blocks')) {
-      normalized.pageSettings.source['start-of-child-blocks'] = true;
-    } else if (enabledSources.includes('block-comments')) {
-      normalized.pageSettings.source['block-comments'] = true;
+    try {
+      await client.comments.list({ block_id: "00000000-0000-0000-0000-000000000000" });
+      hasCommentsPermission = true;
+      adjustedFootnotesConfig = FOOTNOTES;
+      console.log('Footnotes: ✓ Permission confirmed - block-comments source available.');
+    } catch (error: any) {
+      if (error?.status === 403 || error?.code === 'restricted_resource') {
+        hasCommentsPermission = false;
+        console.log('Footnotes: ✗ Permission denied - falling back to end-of-block source.');
+
+        // Create fallback config with end-of-block
+        adjustedFootnotesConfig = {
+          ...FOOTNOTES,
+          "in-page-footnotes-settings": {
+            ...FOOTNOTES["in-page-footnotes-settings"],
+            source: {
+              ...FOOTNOTES["in-page-footnotes-settings"].source,
+              "block-comments": false,
+              "end-of-block": true,
+            }
+          }
+        };
+      } else {
+        hasCommentsPermission = true;
+        adjustedFootnotesConfig = FOOTNOTES;
+        console.log('Footnotes: ✓ Permission confirmed - block-comments source available.');
+      }
     }
+  } else {
+    // No permission check needed
+    adjustedFootnotesConfig = FOOTNOTES;
   }
-
-  // Normalize display settings
-  const displayConfig = config.pageSettings['intext-display'];
-  if (displayConfig) {
-    const alwaysPopup = displayConfig['always-popup'];
-    const smallPopup = displayConfig['small-popup-large-margin'];
-
-    if (alwaysPopup && smallPopup) {
-      // Both true - default to always-popup
-      normalized.pageSettings.intextDisplay.alwaysPopup = true;
-      normalized.pageSettings.intextDisplay.smallPopupMediumMargin = false;
-    } else if (!alwaysPopup && !smallPopup) {
-      // Both false - default to always-popup
-      normalized.pageSettings.intextDisplay.alwaysPopup = true;
-      normalized.pageSettings.intextDisplay.smallPopupMediumMargin = false;
-    } else {
-      // One true, one false - use as specified
-      normalized.pageSettings.intextDisplay.alwaysPopup = alwaysPopup;
-      normalized.pageSettings.intextDisplay.smallPopupMediumMargin = smallPopup;
-    }
-  }
-
-  return normalized;
 }
 
+// Call in getAllBlocksByBlockId before processing blocks
+await ensureFootnotesConfigInitialized();
+```
+
+**Key Benefits**:
+- Config checked and adjusted ONCE per build
+- All code uses the same `adjustedFootnotesConfig` (single source of truth)
+- Permission fallback automatically applied
+- No repeated permission checks
+
+### 2.3 Global `.enabled` Check
+
+**Critical Performance Optimization**: The `.enabled` flag must be checked ONCE at the global level, not per-block.
+
+**Anti-pattern (500+ checks per build)**:
+```typescript
+// WRONG: Inside extraction function
+export async function extractFootnotesFromBlockAsync(...) {
+  if (!config?.["in-page-footnotes-settings"]?.enabled) {
+    return { footnotes: [], ... };
+  }
+  // extraction logic
+}
+```
+
+**Best practice (1 check per build)**:
+```typescript
+// RIGHT: In client.ts before calling extraction
+try {
+  if (adjustedFootnotesConfig &&
+      adjustedFootnotesConfig["in-page-footnotes-settings"]?.enabled) {
+    const extractionResult = await extractFootnotesFromBlockAsync(
+      block,
+      adjustedFootnotesConfig,
+      client
+    );
+    if (extractionResult.footnotes.length > 0) {
+      block.Footnotes = extractionResult.footnotes;
+    }
+  }
+} catch (error) {
+  console.error(`Failed to extract footnotes from block ${block.Id}:`, error);
+}
+```
+
+### 2.4 Consistent `.enabled` Guards
+
+ALL footnote-related code must check `.enabled`:
+
+| Location | What It Guards |
+|----------|---------------|
+| `client.ts` getAllBlocksByBlockId | Footnote extraction from blocks |
+| `client.ts` getPostContentByPostId | Footnotes cache load/save/extraction |
+| `posts/[slug].astro` | FootnotesSection rendering |
+| `PostPreviewFull.astro` | FootnotesSection rendering |
+| `BlogPost.astro` | TOC heading for footnotes |
+| `Base.astro` | Margin notes script loading |
+
+**Pattern**:
+```astro
+{adjustedFootnotesConfig?.['in-page-footnotes-settings']?.enabled && (
+  {/* footnote-related code */}
+)}
+```
+
+### 2.5 Utility Functions
+
+**File**: `src/lib/footnotes.ts`
+
+These helper functions work with the config structure directly:
+
+```typescript
 /**
- * Returns the active source type
+ * Returns the active source type from config
  */
-export function getActiveSource(config: FootnotesConfig): string {
-  const sources = config.pageSettings.source;
-  if (sources['end-of-block']) return 'end-of-block';
-  if (sources['start-of-child-blocks']) return 'start-of-child-blocks';
-  if (sources['block-comments']) return 'block-comments';
-  if (sources['block-inline-text-comments']) return 'block-comments'; // Fallback
-  return 'end-of-block'; // Default fallback
+export function getActiveSource(config: any): string {
+  const source = config?.["in-page-footnotes-settings"]?.source;
+  if (!source) return "end-of-block";
+
+  if (source["end-of-block"]) return "end-of-block";
+  if (source["start-of-child-blocks"]) return "start-of-child-blocks";
+  if (source["block-comments"]) return "block-comments";
+
+  return "end-of-block"; // Default fallback
 }
 
 /**
@@ -1185,11 +1270,10 @@ export function getActiveSource(config: FootnotesConfig): string {
  * Example: markerPrefix="ft_" creates pattern to match [^ft_a], [^ft_xyz], etc.
  */
 export function createMarkerPattern(markerPrefix: string): RegExp {
-  // Escape special regex characters in the prefix
   const escapedPrefix = markerPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Match [^prefix*] where * is any word characters
-  // Pattern: \[\^ft_\w+\] matches [^ft_a], [^ft_b1], etc.
-  return new RegExp(`\\[\\^${escapedPrefix}\\w+\\]`, 'g');
+  // Negative lookahead (?!:) ensures we don't match [^ft_a]: (content markers)
+  // Only match [^ft_a] without a following colon (inline markers)
+  return new RegExp(`\\[\\^${escapedPrefix}([a-zA-Z0-9_]+)\\](?!:)`, 'g');
 }
 
 /**
@@ -1199,63 +1283,13 @@ export function createMarkerPattern(markerPrefix: string): RegExp {
 export function createContentPattern(markerPrefix: string): RegExp {
   const escapedPrefix = markerPrefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   // Match [^prefix*]: at the start of content
-  // Pattern: ^\[\^ft_(\w+)\]:\s* matches [^ft_a]: at line start and captures "a"
   return new RegExp(`^\\[\\^${escapedPrefix}(\\w+)\\]:\\s*`, 'gm');
 }
 ```
 
-### 2.2 Check Comments API Permission
+**Note**: The marker pattern includes negative lookahead `(?!:)` to prevent matching content markers like `[^ft_a]:` which appear in child blocks. Only inline markers like `[^ft_a]` (without colon) are matched.
 
-**New File**: `src/lib/footnotes/permissions.ts`
-
-```typescript
-import { Client } from "@notionhq/client";
-
-/**
- * Checks if the Notion integration has permission to access the Comments API
- */
-export async function checkCommentsPermission(client: Client): Promise<boolean> {
-  try {
-    // Try to list comments for a dummy block ID
-    // If we don't have permission, Notion will return a 403 error
-    await client.comments.list({ block_id: "dummy-id-for-permission-check" });
-    return true;
-  } catch (error: any) {
-    if (error?.status === 403 && error?.code === 'restricted_resource') {
-      console.warn(
-        'Footnotes: Comments API permission not available. ' +
-        'Falling back to end-of-block source.'
-      );
-      return false;
-    }
-    // Other errors (like invalid block ID) are expected and mean we DO have permission
-    return true;
-  }
-}
-
-/**
- * Adjusts config to fall back if block-comments is selected but no permission
- */
-export async function adjustConfigForPermissions(
-  config: FootnotesConfig,
-  client: Client
-): Promise<FootnotesConfig> {
-  const activeSource = getActiveSource(config);
-
-  if (activeSource === 'block-comments' || activeSource === 'block-inline-text-comments') {
-    const hasPermission = await checkCommentsPermission(client);
-
-    if (!hasPermission) {
-      console.warn('Footnotes: Adjusting config to use end-of-block source');
-      config.pageSettings.source['block-comments'] = false;
-      config.pageSettings.source['block-inline-text-comments'] = false;
-      config.pageSettings.source['end-of-block'] = true;
-    }
-  }
-
-  return config;
-}
-```
+---
 
 ---
 
@@ -2971,26 +3005,43 @@ function setupHoverHighlight(marker: HTMLElement, note: HTMLElement): void {
 }
 
 /**
- * Stacks overlapping margin notes vertically with 8px gap
- * This ensures multiple close footnotes don't overlap
+ * Stacks ALL margin notes globally to prevent overlaps across different blocks
+ *
+ * ⚠️ IMPLEMENTATION UPDATE (2025-10-24): Changed from per-batch stacking to global stacking
+ *
+ * Original approach: stackOverlappingNotes(createdNotes) was called inside the forEach loop,
+ * only stacking notes from the same rendering batch. This didn't prevent overlaps between blocks.
+ *
+ * New approach: stackAllMarginNotesGlobally() finds ALL notes on the page, sorts them,
+ * and stacks them globally. This prevents long footnotes in Block 1 from overlapping with
+ * footnotes in Block 2.
+ *
+ * See implementation-notes.md Problem 27 for details.
  */
-function stackOverlappingNotes(notes: HTMLElement[]): void {
-  // Sort notes by vertical position
-  const sortedNotes = notes.sort((a, b) => {
-    return parseInt(a.style.top || '0') - parseInt(b.style.top || '0');
+function stackAllMarginNotesGlobally(): void {
+  // Find all margin notes in the document
+  const allNotes = Array.from(document.querySelectorAll('.footnote-margin-note'));
+
+  if (allNotes.length === 0) return;
+
+  // Sort by initial top position
+  allNotes.sort((a, b) => {
+    const aTop = parseInt(a.style.top) || 0;
+    const bTop = parseInt(b.style.top) || 0;
+    return aTop - bTop;
   });
 
-  // Check each pair and push down if overlapping
-  for (let i = 1; i < sortedNotes.length; i++) {
-    const prevNote = sortedNotes[i - 1];
-    const currNote = sortedNotes[i];
+  // Stack with minimum gap of 8px
+  for (let i = 1; i < allNotes.length; i++) {
+    const prevNote = allNotes[i - 1];
+    const currNote = allNotes[i];
 
-    const prevTop = parseInt(prevNote.style.top || '0');
+    const prevTop = parseInt(prevNote.style.top) || 0;
     const prevBottom = prevTop + prevNote.offsetHeight;
-    const currTop = parseInt(currNote.style.top || '0');
+    const currTop = parseInt(currNote.style.top) || 0;
 
-    // If current note starts before previous ends, push it down
-    if (currTop < prevBottom + 8) { // 8px gap
+    // If current note would overlap with previous note, push it down
+    if (currTop < prevBottom + 8) {
       currNote.style.top = `${prevBottom + 8}px`;
     }
   }

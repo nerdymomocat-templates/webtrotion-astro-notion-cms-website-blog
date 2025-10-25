@@ -32,3 +32,6 @@ tmp/*
 !tmp/.gitkeep
 src/styles/global.css
 buildcache/
+
+#agent conversation copies
+.agents/**/conversation.md
