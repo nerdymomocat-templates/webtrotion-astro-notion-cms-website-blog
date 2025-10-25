@@ -24,7 +24,19 @@ jobs:
         id: determine_path
         run: |
           if [[ "${{ github.event.inputs.cache_key }}" == *"constants-config"* ]]; then
-            echo "path=constants-config.json" >> $GITHUB_OUTPUT
+            # Check if user specified .json5 or .json explicitly in the cache key
+            if [[ "${{ github.event.inputs.cache_key }}" == *".json5"* ]]; then
+              echo "path=constants-config.json5" >> $GITHUB_OUTPUT
+            elif [[ "${{ github.event.inputs.cache_key }}" == *".json"* ]]; then
+              echo "path=constants-config.json" >> $GITHUB_OUTPUT
+            else
+              # No explicit format in key - prefer .json5 if it exists, otherwise .json
+              if [ -f "constants-config.json5" ]; then
+                echo "path=constants-config.json5" >> $GITHUB_OUTPUT
+              else
+                echo "path=constants-config.json" >> $GITHUB_OUTPUT
+              fi
+            fi
           elif [[ "${{ github.event.inputs.cache_key }}" == *"tmp-webtrotion"* ]]; then
             echo "path=tmp" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.inputs.cache_key }}" == *"public-webtrotion"* ]]; then

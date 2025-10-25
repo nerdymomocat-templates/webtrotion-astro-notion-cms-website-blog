@@ -1,0 +1,208 @@
+// This file now supports JSON5 format - you can add comments to document your configuration!
+{
+	// === Notion Configuration ===
+	"notion": {
+		"data-source-id": "", // Preferred: Use this for your main Notion database
+		"database-id": "169b6e632b7448529120599281265ac5" // Fallback: Used if data-source-id is not provided
+	},
+
+	// === Site Information ===
+	"site-info": {
+		"author": "", // Author name for RSS feeds and metadata (important for SEO and attribution)
+		"custom-domain": "", // Your custom domain (e.g., "example.com") - leave empty if using default hosting
+		"base-path": "" // Base path for subdirectory deployment (e.g., "/blog") - leave empty for root
+	},
+
+	// === Collections & Post Listings ===
+	// Configuration for post listings, collections, and page organization
+	"collections-and-listings": {
+		"home-page-slug": "", // Slug of the page to use as home page (empty = use default)
+		"recent-posts-on-home-page": false, // Show recent posts section on home page
+		"number-of-posts-per-page": 10, // Number of posts displayed per page in listings
+		"menu-pages-collection": "main", // Name of the Notion collection used for menu pages
+		"full-preview-collections": ["Stream"], // Collections that show full post content in list views (not just excerpts)
+		"hide-underscore-slugs-in-lists": true // Hide pages with slugs starting with underscore from listings
+	},
+
+	// === Theme Customization ===
+	"theme": {
+		"colors": {
+			// Colors are in RGB format: "R G B" (e.g., "255 255 255" for white)
+			"bg": {
+				"light": "249 249 249",
+				"dark": "28 30 32"
+			},
+			"text": {
+				"light": "34 39 42",
+				"dark": "255 255 255"
+			},
+			"link": {
+				"light": "85 123 118",
+				"dark": "199 200 203"
+			},
+			"accent": {
+				"light": "203 41 65",
+				"dark": "41 188 136"
+			},
+			"accent-2": {
+				"light": "17 17 17",
+				"dark": "237 237 237"
+			},
+			"quote": {
+				"light": "203 41 65",
+				"dark": "205 254 183"
+			}
+		},
+		"fontfamily-google-fonts": {
+			// Combined Google Fonts URL for all fonts used
+			"combined-url": "https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Roboto:ital,wght@0,400;0,500;0,700;1,400;1,500;1,700&display=swap",
+			"sans-font-name": "Roboto",
+			"serif-font-name": "",
+			"mono-font-name": "Roboto\\ Mono" // Note: backslash escape for spaces
+		}
+	},
+
+	// === Social Media Links ===
+	// Social media links displayed on your site
+	"socials": {
+		"email": "",
+		"github": "",
+		"googlescholar": "",
+		"semanticscholar": "",
+		"dblp": "",
+		"substack": "",
+		"facebook": "",
+		"twitter": "",
+		"threads": "",
+		"instagram": "",
+		"mastodon": "",
+		"bluesky": "",
+		"calendar": "",
+		"kofi": "",
+		"buy-me-a-coffee": "",
+		"this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog"
+	},
+
+	// === Analytics Tracking ===
+	"tracking": {
+		"google-analytics": {
+			"use-ga": true,
+			"public-ga-tracking-id": "" // Your GA4 measurement ID (e.g., G-XXXXXXXXXX)
+		},
+		"umami": { // Umami is a privacy-focused, open-source analytics alternative
+			"use-umami": false,
+			"data-website-id": "",
+			"self-hosted": false,
+			"self-hosted-umami-url": ""
+		},
+		"google-search-console-html-tag": "" // Google Search Console verification meta tag content (for SEO)
+	},
+
+
+	// === Open Graph Image Generation ===
+	"og-setup": {
+		"columns": 1, // Number of columns in OG image layout
+		"excerpt": false, // Include excerpt text in OG image
+		"title-font-url": "https://fonts.googleapis.com/css2?family=Kreon:wght@500&display=swap",
+		"footnote-font-url": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&display=swap"
+	},
+
+	// === Comments Configuration ===
+	"comments": {
+		// Giscus: GitHub Discussions-based comments
+		"giscus": {
+			"data-repo": "nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
+			"data-repo-id": "R_kgDOK0FuUA",
+			"data-category": "Announcements",
+			"data-category-id": "DIC_kwDOK0FuUM4CbZ5A",
+			"data-mapping": "pathname", // How to map pages to discussions: pathname, url, title, etc.
+			"data-input-position": "top", // Comment box position: top or bottom
+			"data-reactions-enabled": true
+		},
+
+		// Bluesky comments integration
+		"bluesky-comments": {
+			"show-comments-from-bluesky": false,
+			"auto-search-for-match": {
+				"turn-on-auto-search": false,
+				"author": "", // Your Bluesky handle
+				"echo-feed-emoji": "" // Emoji used to identify echo posts
+			}
+		},
+
+		// Webmention: Receive comments/likes from other sites
+		"webmention": {
+			"webmention-api-key": "",
+			"webmention-link": "" // Your webmention endpoint URL
+		}
+	},
+
+	// === Block Rendering & Visual Display ===
+	// Global settings for how content blocks and media are rendered
+	"block-rendering": {
+		"enable-lightbox": true, // Enable lightbox/modal for images
+		"full-width-social-embeds": false, // Make social media embeds (Twitter, YouTube, etc.) full width
+		"heading-blocks": ["heading_1", "heading_2", "heading_3"], // Which Notion heading blocks to include in table of contents
+		"optimize-images": true // Optimize images during build (can increase build time significantly)
+	},
+
+	// === Shortcodes ===
+	// Special markers for content handling in Notion blocks
+	"shortcodes": {
+		"html-render": "<!DOCTYPE html> <!-- iframe -->", // Renders HTML in iframe
+		"html-inject": "<!DOCTYPE html> <!-- inject -->", // Injects HTML directly
+		"expressive-code": { // Currently unsupported
+			"start": "<<expressive-code-start>>",
+			"end": "<<expressive-code-end>>"
+		},
+		"shiki-transform": "<<shiki-transform>>", // Enhanced code block syntax highlighting
+		"table": "<<🗂️>>" // Special table rendering
+	},
+
+	// === Footnotes Configuration ===
+	"footnotes": {
+		// Slug for the sitewide footnotes page (manual footnotes)
+		"sitewide-footnotes-page-slug": "_all-footnotes",
+
+		// Automatic in-page footnotes settings
+		"in-page-footnotes-settings": {
+			"enabled": true,
+
+			// Where to look for footnote content in Notion blocks
+			"source": {
+				"end-of-block": false, // Text after a marker at end of block
+				"start-of-child-blocks": false, // First child block as footnote
+				"block-comments": true, // Notion comments as footnotes
+				"block-inline-text-comments": false // Inline comments as footnotes
+			},
+
+			// Prefix for footnote markers (e.g., "ft_1", "ft_2")
+			"marker-prefix": "ft_",
+
+			// Automatically generate footnotes section at page end
+			"generate-footnotes-section": true,
+
+			// How footnotes appear in text
+			"intext-display": {
+				"always-popup": false, // Always show as popup vs. margin notes
+				"small-popup-large-margin": true // Use small popup on mobile, margin notes on desktop
+			}
+		}
+	},
+
+	// === References Configuration ===
+	// Configure which types of references/links are shown on pages
+	"references": {
+		"site-links-in-page": true, // Show internal links found in this page
+		"external-links-in-page": true, // Show external links found in this page
+		"media-and-file-links-in-this-page": true, // Show media/file links
+		"links-to-this-page": true, // Show backlinks (pages linking to this one)
+		"popovers": true, // Enable link preview popovers
+		"footnotes": true // Show footnotes section
+	},
+
+	// === URL Redirects ===
+	// Map old paths to new ones (e.g., {"/old-page": "/new-page"})
+	// Note: This is placed at the end as redirect lists can become very long
+	"redirects": {}
+}

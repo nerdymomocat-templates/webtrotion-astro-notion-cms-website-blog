@@ -121,8 +121,8 @@ jobs:
       - name: Save Cached constants-config
         uses: actions/cache/save@v4
         with:
-          path: ./constants-config.json
-          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
+          path: ./constants-config.json5
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json5', env.BUILD_PATH)) }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

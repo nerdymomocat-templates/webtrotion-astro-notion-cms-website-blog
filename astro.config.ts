@@ -2,6 +2,8 @@ import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 
 import path from "path";
+import fs from "fs";
+import JSON5 from "json5";
 import { CUSTOM_DOMAIN, BASE_PATH } from "./src/constants";
 const getSite = function () {
 	if (CUSTOM_DOMAIN) {
@@ -34,8 +36,10 @@ import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
 import createFoldersIfMissing from "./src/integrations/create-folders-if-missing";
 import robotsTxt from "astro-robots-txt";
-import config from "./constants-config.json";
 import partytown from "@astrojs/partytown";
+
+const configContent = fs.readFileSync("./constants-config.json5", "utf8");
+const config = JSON5.parse(configContent);
 const key_value_from_json = {
 	...config,
 };
@@ -70,8 +74,8 @@ function modifyRedirectPaths(
 export default defineConfig({
 	site: getSite(),
 	base: process.env.BASE || BASE_PATH,
-	redirects: key_value_from_json["redirects"]
-		? modifyRedirectPaths(key_value_from_json["redirects"], process.env.BASE || BASE_PATH)
+	redirects: key_value_from_json?.redirects
+		? modifyRedirectPaths(key_value_from_json.redirects, process.env.BASE || BASE_PATH)
 		: {},
 	integrations: [
 		createFoldersIfMissing(),

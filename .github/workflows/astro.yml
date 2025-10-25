@@ -87,13 +87,13 @@ jobs:
         id: restore-constants-config
         uses: actions/cache/restore@v4
         with:
-          path: ./constants-config.json
-          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
+          path: ./constants-config.json5
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json5', env.BUILD_PATH)) }}
 
       - name: Process constants-config if cache not hit
         if: steps.restore-constants-config.outputs.cache-hit != 'true'
         run: |
-          echo "Cached old_constants-config.json is different than current constants-config; trimming tmp (except .gitkeep) and deleting public/notion..."
+          echo "Constants-config changed or cache miss (may be migrating from .json to .json5); trimming tmp (except .gitkeep) and deleting public/notion..."
           # Insert any additional processing or cleanup commands as needed.
           find tmp -mindepth 1 -not -name '.gitkeep' -exec rm -rf {} +
           rm -rf public/notion
@@ -237,8 +237,8 @@ jobs:
         if: steps.restore-constants-config.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4
         with:
-          path: ./constants-config.json
-          key: constants-config-${{ hashFiles(format('{0}/constants-config.json', env.BUILD_PATH)) }}
+          path: ./constants-config.json5
+          key: constants-config-${{ hashFiles(format('{0}/constants-config.json5', env.BUILD_PATH)) }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

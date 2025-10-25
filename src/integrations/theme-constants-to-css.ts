@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import type { AstroIntegration } from "astro";
-import config from "../../constants-config.json";
+import JSON5 from "json5";
+
+const configContent = fs.readFileSync("./constants-config.json5", "utf8");
+const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
 
