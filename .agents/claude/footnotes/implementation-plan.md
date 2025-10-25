@@ -4051,4 +4051,36 @@ With this plan, the footnotes feature will be a powerful addition to Webtrotion,
 
 ---
 
+## Post-Implementation Addendum: Dark Mode Optimization (2025-10-25)
+
+After the initial implementation was completed, user testing revealed that footnote colors didn't adapt properly to dark mode. The issue was that the implementation used standard Tailwind color patterns (`text-gray-500 dark:text-gray-400`, hardcoded RGB values) instead of the site's theme system.
+
+### Issues Found
+
+1. **Margin note hover dimmed** instead of brightening in dark mode
+2. **Yellow highlight colors** (`yellow-100`/`yellow-900`) didn't match site theme
+3. **Permission check** ran 3 times per build instead of once
+
+### Solution Applied
+
+Refactored all footnote colors to use **CSS custom properties** from the theme system:
+
+- Margin notes: `text-textColor/70` → `text-textColor` on hover
+- Marker highlight: `color-mix(in srgb, var(--color-accent) 20%, transparent)`
+- Marker text: `var(--color-accent-2)`
+- Permission check: Added promise caching for single-run guarantee
+
+### Key Lesson
+
+**Theme integration is first-class, not an afterthought.** When a codebase has a custom theme system with CSS variables for colors, those should be used from the start, not generic Tailwind colors. The theme system is as important as the caching system or the block processing pipeline.
+
+This aligns with Tailwind 4 best practices:
+- Use CSS variables directly (not `@apply`)
+- Use `color-mix()` for opacity variations
+- Let theme variables handle light/dark mode automatically
+
+See `implementation-notes.md` for detailed analysis of the root cause and solution.
+
+---
+
 **End of Implementation Plan**

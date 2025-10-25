@@ -1680,6 +1680,155 @@ Content: {
 
 ---
 
+## Post-Implementation: Dark Mode Optimization
+
+**Date**: October 25, 2025 (following initial implementation)
+
+### Problem Identified
+
+During testing, the user discovered that footnote highlighting didn't work properly in dark mode:
+
+1. **Margin note hover**: Text dimmed instead of brightening on hover
+2. **Marker highlight background**: Used hardcoded yellow colors (`yellow-100`/`yellow-900`) that looked wrong in dark mode
+3. **General styling**: Used generic Tailwind gray colors instead of theme-aware colors
+
+### Root Cause
+
+The initial implementation used **standard Tailwind color patterns** commonly seen in many projects:
+- `text-gray-500 dark:text-gray-400` for dimmed text
+- `rgb(254 249 195)` (yellow-100) and `rgb(113 63 18)` (yellow-900) for highlights
+- Separate `:global(.dark)` overrides for dark mode
+
+This approach worked functionally but had issues:
+- Colors didn't match the site's custom theme/accent system
+- Hardcoded RGB values couldn't adapt to theme changes
+- Dark mode yellow-900 was too dark, causing "dimming" instead of highlighting
+
+**Why this was missed initially**: The focus during implementation was on complex functionality (extraction logic, caching, margin notes positioning) rather than fine-tuning the color system integration. Standard Tailwind patterns were used as placeholders.
+
+### Solution: Theme-Aware Colors
+
+Refactored all footnote colors to use **CSS custom properties** from the site's theme system:
+
+#### Changes Made (Base.astro)
+
+**1. Margin notes base color** (line 406):
+```diff
+- text-gray-500 dark:text-gray-400 opacity-70
++ text-textColor/70
+```
+
+**2. Margin notes hover color** (lines 500-507):
+```diff
+- .footnote-margin-note.highlighted {
+-   opacity: 1;
+-   color: rgb(31 41 55); /* gray-800 */
+- }
+- :global(.dark) .footnote-margin-note.highlighted {
+-   color: rgb(243 244 246); /* gray-100 */
+- }
++ .footnote-margin-note.highlighted {
++   opacity: 1;
++   color: var(--color-textColor);
++ }
+```
+
+**3. Marker highlight background** (lines 532-542):
+```diff
+- .footnote-marker span.highlighted {
+-   background-color: rgb(254 249 195); /* yellow-100 */
+- }
+- :global(.dark) .footnote-marker span.highlighted {
+-   background-color: rgb(113 63 18); /* yellow-900 */
+- }
++ .footnote-marker span.highlighted {
++   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
++ }
++ .footnote-marker span {
++   color: var(--color-accent-2);
++ }
+```
+
+#### Changes Made (FootnoteMarker.astro)
+
+Updated marker colors to use theme colors:
+```diff
+- text-link hover:text-link-hover
++ text-quote/70 hover:text-quote
+```
+
+Added explicit color to margin note prefixes:
+```diff
+- <sup class="font-mono text-xxs">
++ <sup class="font-mono text-xxs text-quote">
+```
+
+#### Changes Made (FootnotesSection.astro)
+
+Updated back-link colors:
+```diff
+- text-gray-500 dark:text-gray-400 hover:text-link dark:hover:text-link
++ text-link hover:underline
+```
+
+Updated non-linked number colors:
+```diff
+- text-gray-500 dark:text-gray-400
++ text-accent-2/70
+```
+
+### Benefits of Theme-Aware Approach
+
+✅ **Automatic adaptation**: Colors change properly between light/dark modes
+✅ **Theme consistency**: Uses site's accent colors instead of generic grays/yellows
+✅ **Maintainability**: Single color definition, no separate dark mode overrides
+✅ **Flexibility**: Uses `color-mix()` for opacity instead of hardcoded shades
+✅ **Better UX**: Highlights actually highlight instead of dimming in dark mode
+
+### Additional Fix: Permission Check Optimization
+
+While reviewing the code, discovered that the Comments API permission check was running **3 times per build** instead of once.
+
+**Root cause**: `initializeFootnotesConfig()` was called inside `getResolvedDataSourceId()`, which was invoked multiple times during build.
+
+**Solution**: Added promise caching to ensure initialization only runs once:
+
+```typescript
+let initializationPromise: Promise<void> | null = null;
+
+async function initializeFootnotesConfig(): Promise<void> {
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+
+  initializationPromise = (async () => {
+    // ... initialization logic
+  })();
+
+  return initializationPromise;
+}
+```
+
+Now the permission check runs exactly **once per build** instead of three times.
+
+### Lessons Learned
+
+**1. Theme Integration Should Be First-Class**
+When working in a codebase with a custom theme system, colors should use theme variables from the start, not generic Tailwind colors.
+
+**2. Test Both Light and Dark Modes**
+Dark mode issues aren't always obvious in light mode. Both should be tested during development.
+
+**3. Use Build-in Functions**
+`color-mix()` in CSS is better than hardcoded color shades for creating variations.
+
+**4. Tailwind 4 Best Practices**
+- Use CSS variables directly instead of `@apply` (deprecated in v4)
+- Use `color-mix()` for opacity instead of separate shade definitions
+- Leverage the `@theme` system for design tokens
+
+---
+
 ## Conclusion
 
 This implementation successfully delivers a robust, cache-based footnotes system for Webtrotion that:
@@ -1698,9 +1847,13 @@ The iterative problem-solving approach used throughout implementation—identify
 **New components**: 3 files (FootnotesSection, FootnoteMarker, footnotes.ts)
 **Modified components**: 33 files (types, client, blocks, pages, layouts)
 
+**Post-implementation optimizations**: 5 files, 25 insertions, 24 deletions
+**Dark mode color refactoring**: 4 files (Base.astro, FootnoteMarker.astro, FootnotesSection.astro, constants-config.json5)
+**Performance fix**: 1 file (client.ts - permission check optimization)
+
 ---
 
-**Document Version**: 2.0
+**Document Version**: 3.0
 **Last Updated**: 2025-10-25
 **Author**: Claude Code
-**Implementation Sessions**: October 24-25, 2025
+**Implementation Sessions**: October 24-25, 2025 (Initial + Dark Mode Optimization)

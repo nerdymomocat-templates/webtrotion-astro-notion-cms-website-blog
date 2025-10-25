@@ -98,11 +98,21 @@ let hasCommentsPermission: boolean | null = null;
 // Export so other files can use the same config
 export let adjustedFootnotesConfig: any = null;
 
+// Footnotes: Track initialization promise to ensure it only runs once
+let initializationPromise: Promise<void> | null = null;
+
 /**
  * Initialize footnotes config once at module load
  * This checks permissions and applies fallback if needed
  */
 async function initializeFootnotesConfig(): Promise<void> {
+	// Return existing promise if already initializing/initialized
+	if (initializationPromise) {
+		return initializationPromise;
+	}
+
+	// Create and store the initialization promise
+	initializationPromise = (async () => {
 	// If footnotes not enabled, set to empty object
 	if (!IN_PAGE_FOOTNOTES_ENABLED || !FOOTNOTES) {
 		adjustedFootnotesConfig = {};
@@ -151,6 +161,9 @@ async function initializeFootnotesConfig(): Promise<void> {
 		// No permission check needed
 		adjustedFootnotesConfig = FOOTNOTES;
 	}
+	})();
+
+	return initializationPromise;
 }
 
 const BUILDCACHE_DIR = BUILD_FOLDER_PATHS["buildcache"];

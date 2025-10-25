@@ -170,9 +170,9 @@
 
 			// Where to look for footnote content in Notion blocks
 			"source": {
-				"end-of-block": false, // Text after a marker at end of block
+				"end-of-block": true, // Text after a marker at end of block
 				"start-of-child-blocks": false, // First child block as footnote
-				"block-comments": true, // Notion comments as footnotes
+				"block-comments": false, // Notion comments as footnotes
 				"block-inline-text-comments": false // Inline comments as footnotes
 			},
 

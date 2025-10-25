@@ -78,13 +78,13 @@ const footnotesHeaderStyles = `
 						{footnote.SourceBlockId ? (
 							<a
 								href={`#${footnote.SourceBlockId}`}
-								class="font-mono text-sm text-gray-500 dark:text-gray-400 hover:text-link dark:hover:text-link shrink-0 no-underline"
+								class="font-mono text-sm text-link hover:underline shrink-0 no-underline"
 								aria-label={`Jump back to footnote ${footnote.Index || footnote.Marker} in text`}
 							>
 								[{footnote.Index || footnote.Marker}]
 							</a>
 						) : (
-							<span class="font-mono text-sm text-gray-500 dark:text-gray-400 shrink-0">
+							<span class="font-mono text-sm text-accent-2/70 shrink-0">
 								[{footnote.Index || footnote.Marker}]
 							</span>
 						)}

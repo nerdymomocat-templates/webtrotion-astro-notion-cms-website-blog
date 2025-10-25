@@ -403,7 +403,7 @@ const popoverTriggers = document.querySelectorAll(getPopoverSelector());
       }
 
       const marginNote = document.createElement('aside');
-      marginNote.className = 'footnote-margin-note absolute left-full ml-8 w-32 xl:ml-12 xl:w-48 text-sm leading-relaxed text-gray-500 dark:text-gray-400 opacity-70 transition-opacity duration-200 pointer-events-auto';
+      marginNote.className = 'footnote-margin-note absolute left-full ml-8 w-32 xl:ml-12 xl:w-48 text-sm leading-relaxed text-textColor/70 transition-opacity duration-200 pointer-events-auto';
       marginNote.dataset.noteId = footnoteId;
 
       const content = template.content.cloneNode(true);
@@ -499,11 +499,7 @@ const popoverTriggers = document.querySelectorAll(getPopoverSelector());
   /* Highlighted state for margin notes (toggled via JavaScript) */
   .footnote-margin-note.highlighted {
     opacity: 1;
-    color: rgb(31 41 55); /* gray-800 */
-  }
-
-  :global(.dark) .footnote-margin-note.highlighted {
-    color: rgb(243 244 246); /* gray-100 */
+    color: var(--color-textColor);
   }
 
   /* Make second child (first content block after <sup>) in blocks-type margin notes display inline with the marker */
@@ -531,14 +527,6 @@ const popoverTriggers = document.querySelectorAll(getPopoverSelector());
   /* Hide margin notes when inside PostPreviewFull component (collection full preview pages) */
   .post-preview-full-container .footnote-margin-note {
     display: none !important;
-  }
-
-  .footnote-marker span.highlighted {
-    background-color: rgb(254 249 195); /* yellow-100 */
-  }
-
-  :global(.dark) .footnote-marker span.highlighted {
-    background-color: rgb(113 63 18); /* yellow-900 */
   }
 </style>
 )}

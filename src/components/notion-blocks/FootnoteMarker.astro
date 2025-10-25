@@ -53,7 +53,7 @@ const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : 
 					data-footnote-id={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
+					class="cursor-pointer text-quote/70 hover:text-quote transition-opacity font-mono text-xs"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -68,7 +68,7 @@ const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : 
 					data-margin-note={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
+					class="cursor-pointer text-quote/70 hover:text-quote transition-opacity font-mono text-xs"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -82,7 +82,7 @@ const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : 
 					data-footnote-id={uniqueId}
 					data-popover-target={`popover-${uniqueId}`}
 					data-popover-placement="bottom-start"
-					class="cursor-pointer text-link hover:text-link-hover transition-colors font-mono text-sm"
+					class="cursor-pointer text-quote/70 hover:text-quote transition-opacity font-mono text-xs"
 					aria-label={`Show footnote ${displaySymbol}`}
 					role="button"
 					tabindex="0"
@@ -139,7 +139,7 @@ const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : 
 				{/* Add sequential number prefix for margin notes as inline superscript */}
 				{footnote.Content.Type === "rich_text" && footnote.Content.RichTexts && (
 					<span class="!text-sm">
-						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						<sup class="font-mono text-xxs text-quote">[{footnote.Index || footnote.Marker}]</sup>{" "}
 						{footnote.Content.RichTexts.map((rt) => (
 							<RichTextComponent richText={rt} blockID={block.Id} block={block} />
 						))}
@@ -147,13 +147,13 @@ const displaySymbol = useNumbering && footnote?.Index ? `[${footnote.Index}]` : 
 				)}
 				{footnote.Content.Type === "blocks" && footnote.Content.Blocks && (
 					<div class="!text-sm footnote-margin-blocks">
-						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						<sup class="font-mono text-xxs text-quote">[{footnote.Index || footnote.Marker}]</sup>{" "}
 						<NotionBlocks blocks={footnote.Content.Blocks} renderChildren={true} setId={false} />
 					</div>
 				)}
 				{footnote.Content.Type === "comment" && footnote.Content.RichTexts && (
 					<span class="!text-sm">
-						<sup class="font-mono text-xxs">[{footnote.Index || footnote.Marker}]</sup>{" "}
+						<sup class="font-mono text-xxs text-quote">[{footnote.Index || footnote.Marker}]</sup>{" "}
 						{footnote.Content.RichTexts.map((rt) => (
 							<RichTextComponent richText={rt} blockID={block.Id} block={block} />
 						))}

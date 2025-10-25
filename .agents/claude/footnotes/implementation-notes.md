@@ -3673,3 +3673,236 @@ The user's questions directly led to better solutions:
 Don't defend initial implementations - listen to user observations and adjust accordingly.
 
 ---
+
+## Session 2025-10-25 (Afternoon): Dark Mode Color Optimization
+
+### Problem Discovered
+
+User reported that footnote highlighting colors didn't work properly in dark mode:
+
+1. **Margin note hover**: Text actually dimmed instead of brightening
+2. **Marker highlight**: Wrong yellow colors in dark mode (too dark)
+3. **Permission check**: Running 3 times per build instead of once
+
+**User feedback**:
+> "the hover highlight on margin content as well as the highlight on like inline marker doesn't make sense on dark mode. like the highlight actually dims it more"
+
+### Root Cause Analysis
+
+**Why the issue existed:**
+
+During the initial implementation, the focus was on getting complex functionality working:
+- Extraction logic with rich text preservation
+- Cache-based architecture
+- Margin notes positioning with global stacking
+- Responsive behavior
+
+**Colors were implemented using standard Tailwind patterns:**
+```css
+/* Generic gray colors */
+text-gray-500 dark:text-gray-400
+
+/* Hardcoded RGB values */
+color: rgb(31 41 55);  /* gray-800 for light mode */
+color: rgb(243 244 246);  /* gray-100 for dark mode */
+
+/* Yellow highlight */
+background-color: rgb(254 249 195);  /* yellow-100 for light */
+background-color: rgb(113 63 18);    /* yellow-900 for dark */
+```
+
+**Problems with this approach:**
+1. Hardcoded colors don't adapt to custom themes
+2. Yellow-900 is darker than base text → causes "dimming" effect
+3. Doesn't use site's accent color system
+4. Requires separate `:global(.dark)` overrides for every color
+
+**Why it was missed:** Standard Tailwind color classes work in most projects, so they were used as placeholders while focusing on complex functionality. The site's custom theme system integration wasn't prioritized during initial implementation.
+
+### Solution: Theme-Aware CSS Variables
+
+**Key insight from user:**
+> "use text color with opacity. do not try to use gray or whatever... You can use like accent on hover and then you should modify automatically according to dark or light"
+
+Refactored to use CSS custom properties from the theme system:
+
+#### 1. Margin Notes Color
+
+**Before:**
+```javascript
+// Base.astro line 406
+marginNote.className = '... text-gray-500 dark:text-gray-400 opacity-70 ...';
+```
+
+**After:**
+```javascript
+marginNote.className = '... text-textColor/70 ...';
+```
+
+**Hover state before:**
+```css
+.footnote-margin-note.highlighted {
+  color: rgb(31 41 55);  /* gray-800 */
+}
+:global(.dark) .footnote-margin-note.highlighted {
+  color: rgb(243 244 246);  /* gray-100 */
+}
+```
+
+**Hover state after:**
+```css
+.footnote-margin-note.highlighted {
+  opacity: 1;
+  color: var(--color-textColor);
+}
+```
+
+Now uses 70% opacity of textColor normally, full opacity on hover.
+
+#### 2. Marker Highlight Background
+
+**Before:**
+```css
+.footnote-marker span.highlighted {
+  background-color: rgb(254 249 195);  /* yellow-100 */
+}
+:global(.dark) .footnote-marker span.highlighted {
+  background-color: rgb(113 63 18);    /* yellow-900 */
+}
+```
+
+**After:**
+```css
+.footnote-marker span.highlighted {
+  background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.footnote-marker span {
+  color: var(--color-accent-2);
+}
+```
+
+Uses site's accent color at 20% opacity, adapts automatically to theme.
+
+#### 3. FootnoteMarker Component Colors
+
+**Before:**
+```astro
+class="... text-link hover:text-link-hover ..."
+```
+
+**After:**
+```astro
+class="... text-quote/70 hover:text-quote ..."
+```
+
+Also added explicit color to margin note prefixes:
+```astro
+<sup class="font-mono text-xxs text-quote">[{footnote.Index}]</sup>
+```
+
+#### 4. FootnotesSection Back-Links
+
+**Before:**
+```astro
+class="... text-gray-500 dark:text-gray-400 hover:text-link ..."
+```
+
+**After:**
+```astro
+class="... text-link hover:underline ..."
+```
+
+For non-linked numbers:
+```astro
+class="... text-accent-2/70 ..."
+```
+
+### Permission Check Optimization
+
+**Problem discovered while reviewing code:**
+```
+Footnotes: Checking Comments API permission...
+Footnotes: ✓ Permission confirmed
+... (build continues)
+Footnotes: Checking Comments API permission...
+Footnotes: ✓ Permission confirmed
+... (build continues)
+Footnotes: Checking Comments API permission...
+Footnotes: ✓ Permission confirmed
+```
+
+**Root cause:**
+```typescript
+async function getResolvedDataSourceId(): Promise<string> {
+  await initializeFootnotesConfig();  // Called multiple times!
+  // ...
+}
+```
+
+`getResolvedDataSourceId()` is called 3 times during build, so permission check ran 3 times.
+
+**Solution - Promise caching:**
+```typescript
+let initializationPromise: Promise<void> | null = null;
+
+async function initializeFootnotesConfig(): Promise<void> {
+  // Return existing promise if already initializing
+  if (initializationPromise) {
+    return initializationPromise;
+  }
+
+  // Create and store the initialization promise
+  initializationPromise = (async () => {
+    // ... initialization logic
+  })();
+
+  return initializationPromise;
+}
+```
+
+Now runs exactly **once per build**.
+
+### Tailwind 4 Best Practices Learned
+
+1. **Don't use `@apply` (deprecated in v4)** - Use CSS variables directly
+2. **Use `color-mix()` for opacity** - Better than hardcoded shade variations
+3. **Theme variables auto-adapt** - No need for `:global(.dark)` overrides
+4. **Opacity utilities work with theme colors** - `text-textColor/70` is valid
+
+### Files Modified
+
+1. **Base.astro** - Margin note colors, highlight background
+2. **FootnoteMarker.astro** - Marker text colors
+3. **FootnotesSection.astro** - Back-link colors
+4. **client.ts** - Permission check promise caching
+5. **constants-config.json5** - Switch from block-comments to end-of-block (unrelated config change)
+
+**Total changes:** 5 files, 25 insertions, 24 deletions
+
+### Testing Results
+
+✅ Light mode: Highlights work correctly with accent colors
+✅ Dark mode: Highlights brighten instead of dimming
+✅ Margin notes: Subtle when inactive, full brightness on hover
+✅ Markers: Use accent-2 color, match site theme
+✅ Permission check: Runs once per build
+✅ Theme switching: All colors adapt automatically
+
+### Key Takeaway
+
+**Integration with existing systems should be prioritized alongside functionality.**
+
+During initial implementation, the mindset was:
+1. Get functionality working ✅
+2. Integrate with systems (caching, references) ✅
+3. Fine-tune styling ⚠️ (treated as secondary)
+
+**Better approach:**
+1. Get functionality working
+2. Integrate with ALL systems (caching, references, **theme**)
+3. Test across all modes (responsive, **light/dark**)
+
+The theme system IS a first-class system in this codebase, not a styling detail. Colors should use theme variables from the start, just like components use the caching system from the start.
+
+---
