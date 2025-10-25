@@ -2,8 +2,8 @@
 {
 	// === Notion Configuration ===
 	"notion": {
-		"data-source-id": "", // Preferred: Use this for your main Notion database
-		"database-id": "169b6e632b7448529120599281265ac5" // Fallback: Used if data-source-id is not provided
+		"data-source-id": "f6e3813f-eb93-4a77-bbf4-81ad653d63ba", // Preferred: Use this for your main Notion database
+		"database-id": "" // Fallback: Used if data-source-id is not provided
 	},
 
 	// === Site Information ===
