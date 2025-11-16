@@ -1,10 +1,10 @@
-// This file now supports JSON5 format - and has comments to document your configuration! Te configuration has changed significantly since earlier versions. Please review all settings.
+// This file now supports JSON5 format - and has comments to document your configuration! The configuration has changed significantly since earlier versions. Please review all settings.
 {
 	// === Notion Configuration ===
 	// This section configures the connection to your Notion database.
 	notion: {
 		// (Preferred) The Data Source ID for your Notion integration. This is a more stable way to connect to your database. You can find this in UI here: https://developers.notion.com/reference/retrieve-a-data-source#finding-a-data-source-id
-		"data-source-id": "f6e3813f-eb93-4a77-bbf4-81ad653d63ba",
+		"data-source-id": "28e6de871e3581b69b1bea898f9d5d30",
 		// (Fallback) The classic Database ID. This is used only if 'data-source-id' is empty. The integration will automatically find the Data Source ID and use the first one from this if needed.
 		"database-id": "",
 	},
@@ -13,9 +13,9 @@
 	// Basic details about your website used for metadata, RSS feeds, and SEO.
 	"site-info": {
 		// Your name or the name of your site's author. Used in RSS feeds, OG images etc and other metadata for attribution.
-		author: "",
+		author: "Sithe",
 		// Your custom domain name (e.g., "example.com"). Important: Do NOT include "https://" or a trailing slash. Leave this empty if you are deploying to a service like Vercel or Netlify without a custom domain.
-		"custom-domain": "",
+		"custom-domain": "sithe.me",
 		// The sub-directory your site is deployed in (e.g., "/blog"). Leave empty if your site is at the root of your domain. Must start with a forward slash "/" if used.
 		"base-path": "",
 	},
@@ -45,33 +45,33 @@
 		colors: {
 			// Background colors
 			bg: {
-				light: "249 249 249",
-				dark: "28 30 32",
+				light: "237 237 237",
+				dark: "18 18 18",
 			},
 			// Main text colors
 			text: {
-				light: "34 39 42",
-				dark: "255 255 255",
+				light: "30 26 35",
+				dark: "224 220 229",
 			},
 			// Link colors
 			link: {
-				light: "85 123 118",
-				dark: "199 200 203",
+				light: "234 133 202",
+				dark: "122 21 90",
 			},
 			// Primary accent color (e.g., for titles, highlights)
 			accent: {
-				light: "203 41 65",
-				dark: "41 188 136",
+				light: "185 159 234",
+				dark: "47 21 96",
 			},
 			// Secondary accent color (e.g., for borders, subtle highlights)
 			"accent-2": {
-				light: "17 17 17",
-				dark: "237 237 237",
+				light: "200 146 232",
+				dark: "78 23 109",
 			},
 			// Color for blockquotes and other special text
 			quote: {
-				light: "203 41 65",
-				dark: "205 254 183",
+				light: "234 133 202",
+				dark: "122 21 90",
 			},
 		},
 		"fontfamily-google-fonts": {
@@ -79,10 +79,10 @@
 			// We automatically load weights [400, 500, 600, 700] and styles [normal, italic] for all fonts (it is fine if they are not available).
 			// Main body/UI font - can be a sans-serif OR serif typeface (e.g., "Roboto", "Merriweather", "Inter")
 			// If empty and mono-font-name is set, mono will be used for everything.
-			"sans-font-name": "Roboto",
+			"sans-font-name": "Noto Sans",
 			// Monospace font for code blocks (e.g., "Fira Code", "JetBrains Mono")
 			// No need to escape spaces in font names!
-			"mono-font-name": "Roboto Mono",
+			"mono-font-name": "Noto Mono",
 		},
 	},
 
@@ -90,8 +90,8 @@
 	// Add your social media profile URLs here. They will be displayed in the site's social list component.
 	// The keys (e.g., 'github', 'twitter') are fixed and correspond to specific icons.
 	socials: {
-		email: "mailto:your-email@example.com",
-		github: "",
+		email: "mailto:me.sithe.ncube+contact@gmail.com",
+		github: "github.com/LadySith",
 		googlescholar: "",
 		semanticscholar: "",
 		dblp: "",
@@ -99,14 +99,15 @@
 		facebook: "",
 		twitter: "",
 		threads: "",
-		instagram: "",
+		instagram: "instagram.com/_ladysith",
 		mastodon: "",
 		bluesky: "",
 		calendar: "",
-		kofi: "",
+		linkedin: "bsky.app/profile/sithe.me",
+		kofi: "ko-fi.com/ladysith",
 		"buy-me-a-coffee": "",
 		// This link is for forked repo you'll end up having. Feel free to change it to your needs.
-		"this-github-repo": "https://github.com/nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
+		"this-github-repo": "",
 	},
 
 	// === Analytics Tracking ===
@@ -114,7 +115,7 @@
 		"google-analytics": {
 			"use-ga": true,
 			// Your Google Analytics 4 Measurement ID (e.g., G-XXXXXXXXXX).
-			"public-ga-tracking-id": "",
+			"public-ga-tracking-id": "G-BH8M5L7SJV",
 		},
 		// Umami is a privacy-focused, open-source analytics alternative to Google Analytics.
 		umami: {
@@ -152,10 +153,10 @@
 	comments: {
 		// Giscus is a comments system powered by GitHub Discussions. It's free and open-source. Go here for the process of setting it up: https://giscus.app/
 		giscus: {
-			"data-repo": "nerdymomocat-templates/webtrotion-astro-notion-cms-website-blog",
-			"data-repo-id": "R_kgDOK0FuUA",
+			"data-repo": "LadySith/ladysith.github.io",
+			"data-repo-id": "R_kgDOQD3poQ",
 			"data-category": "Announcements",
-			"data-category-id": "DIC_kwDOK0FuUM4CbZ5A",
+			"data-category-id": "DIC_kwDOQD3poc4Cw0V-",
 			"data-mapping": "pathname",
 			"data-input-position": "top",
 			"data-reactions-enabled": true,
@@ -179,9 +180,9 @@
 		// Requires an account with a service like webmention.io.
 		webmention: {
 			// Your API key from your webmention service.
-			"webmention-api-key": "",
+			"webmention-api-key": "rSz2Y3PXCKZ309XYxf1-IA",
 			// Your personal webmention endpoint URL.
-			"webmention-link": "",
+			"webmention-link": "https://webmention.io/api/mentions.html?token=rSz2Y3PXCKZ309XYxf1-IA",
 		},
 	},
 
