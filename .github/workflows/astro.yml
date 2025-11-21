@@ -239,6 +239,8 @@ jobs:
               echo "lastBuildTimestampStore changed, trimming tmp (except .gitkeep) and deleting public/notion and src/assets/notion..."
               find tmp -mindepth 1 -not -name '.gitkeep' -exec rm -rf {} +
               rm -rf public/notion
+              rm -rf public/external-posts
+              rm -rf public/custom-components
               rm -rf src/assets/notion
             fi
 
@@ -249,6 +251,7 @@ jobs:
             echo "New tmpJSONCache: $NEW_TMPJSON"
             if [ "$OLD_TMPJSON" != "$NEW_TMPJSON" ]; then
               echo "tmpJSONCache changed, trimming blocks-html-cache, blocks-json-cache, rss-cache, src/assets/notion and tmp/.astro..."
+              rm -rf tmp/external-content
               rm -rf tmp/blocks-html-cache
               rm -rf tmp/blocks-json-cache
               rm -rf tmp/rss-cache

@@ -212,6 +212,8 @@
 		},
 		// Triggers advanced syntax highlighting features via Shiki transformers. See documentation https://shiki.style/packages/transformers for details
 		"shiki-transform": "<<shiki-transform>>",
+		// In a Notion markdown code block, starting with this text treats the rest as MDX that will be compiled and injected.
+		"mdx-inject": "<!-- mdx inject -->",
 		// In a Notion table's first cell, this marker enables datatable features (sorting, filtering).
 		table: "<<🗂️>>",
 	},
@@ -299,6 +301,31 @@
 				"show-in-margin-on-large-screens": false,
 			},
 		},
+	},
+
+	// === External Content ===
+	// URL prefixes that tell the site to fetch GitHub content and render it locally.
+	// Add public *parent* GitHub folder/file URLs (/tree/... or /blob/...) used in Notion’s “External URL” field.
+	// Each External URL in Notion should point to a post folder inside one of those parents.
+	// If it matches a prefix, the build downloads and renders it as internal Markdown/MDX/HTML.
+	"external-content": {
+		// Toggle external content pulled from remote sources via Notion’s “External URL” field. Must be true to use features below.
+		enabled: true,
+		// Remote folders containing external content files.
+		sources: {
+			// Each subfolder is treated as a markdown post. Supports media, styled using corresponding Notion blocks.
+			// Example: https://github.com/nerdymomocat-templates/webtrotion-external-content/tree/main/markdown
+			markdown: "",
+			// Each subfolder is treated as an MDX post. Supports custom components/media, lightly Notion-styled.
+			// Example: https://github.com/nerdymomocat-templates/webtrotion-external-content/tree/main/mdx
+			mdx: "",
+			// Each subfolder is treated as an HTML post. Supports assets, no styling applied.
+			// Example: https://github.com/nerdymomocat-templates/webtrotion-external-content/tree/main/html
+			html: "",
+		},
+		// Remote component folders MDX can import from (downloaded to src/external-content/custom-components).
+		// Also usable for markdown codeblocks via `mdx-inject` shortcode above; supports media, no styling applied.
+		"custom-components": "",
 	},
 
 	// === URL Redirects ===

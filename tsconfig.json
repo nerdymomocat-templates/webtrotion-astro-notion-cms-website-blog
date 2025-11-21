@@ -16,7 +16,9 @@
 			"@/types": ["src/types.ts"],
 			"@/lib/notion/*": ["src/lib/notion/*"],
 			"@/lib/*": ["src/lib/*"],
-			"@/siteInfo": ["src/site.config.ts"]
+			"@/siteInfo": ["src/site.config.ts"],
+			"custom-components/*": ["src/components/custom-components/*"],
+			"@custom-components/*": ["src/components/custom-components/*"]
 		}
 	},
 	"include": ["src", "*.ts"],

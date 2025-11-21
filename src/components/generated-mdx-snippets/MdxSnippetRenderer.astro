@@ -1,0 +1,16 @@
+---
+import type { Block } from "@/lib/interfaces";
+import { mdxSnippetLookup } from "./mdxSnippetRegistry";
+
+interface Props {
+	block: Block;
+}
+
+const { block } = Astro.props as Props;
+const entry = block.MdxSnippet
+	? await mdxSnippetLookup(block.MdxSnippet.Slug)
+	: { Component: null };
+const Component = entry.Component;
+---
+
+{Component ? <Component /> : <p class="text-sm text-red-500">MDX snippet failed to load.</p>}

@@ -25,6 +25,7 @@ import SyncedBlock from "@/components/notion-blocks/SyncedBlock.astro";
 import Toggle from "@/components/notion-blocks/Toggle.astro";
 import File from "@/components/notion-blocks/File.astro";
 import LinkToPage from "@/components/notion-blocks/LinkToPage.astro";
+import MdxSnippetRenderer from "@/components/generated-mdx-snippets/MdxSnippetRenderer.astro";
 
 export interface Props {
 	blocks: interfaces.Block[];
@@ -157,6 +158,8 @@ const bookmarkURLMap = await buildURLToHTMLMap(bookmarkURLs);
 				return <File block={block} setId={setId} />;
 			case "link_to_page":
 				return <LinkToPage block={block} setId={setId} />;
+			case "mdx_snippet":
+				return <MdxSnippetRenderer block={block} />;
 		}
 		return null;
 	})

@@ -19,8 +19,11 @@ import { adjustedFootnotesConfig } from "@/lib/notion/client";
 import FootnotesSection from "@/components/auto-added-sections/FootnotesSection.astro";
 import BibliographySection from "@/components/auto-added-sections/BibliographySection.astro";
 import CiteThisPage from "@/components/auto-added-sections/CiteThisPage.astro";
+import { renderExternalHtml } from "@/lib/external-content/external-html-content";
+import { renderExternalMarkdown } from "@/lib/external-content/external-markdown-content";
+import { renderExternalMdx } from "@/lib/external-content/external-mdx-content";
 export async function getStaticPaths() {
-	const posts = (await getAllPosts()).filter((post) => !post.IsExternal);
+	const posts = (await getAllPosts()).filter((post) => !post.IsExternal || !!post.ExternalContent);
 	const allPostsMap: Record<string, Post> = Object.fromEntries(posts.map((p) => [p.PageId, p])); // Map of PageId to Post
 
 	return posts.map((post) => {
@@ -48,8 +51,11 @@ export async function getStaticPaths() {
 		const linkedPageIds = Array.from(linkedPageIdsSet); // Convert Set back to an array
 
 		// Check if the post was updated before LAST_BUILD_TIME
+		const isExternal = !!post.ExternalContent;
 		const postLastUpdatedBeforeLastBuild =
-			LAST_BUILD_TIME && post?.LastUpdatedTimeStamp && post.LastUpdatedTimeStamp < LAST_BUILD_TIME;
+			!isExternal && LAST_BUILD_TIME && post?.LastUpdatedTimeStamp
+				? post.LastUpdatedTimeStamp < LAST_BUILD_TIME
+				: false;
 
 		// Check if any linked post was updated after LAST_BUILD_TIME
 		const linkedPostsUpdated =
@@ -60,7 +66,7 @@ export async function getStaticPaths() {
 					return linkedPost && linkedPost.LastUpdatedTimeStamp > LAST_BUILD_TIME;
 				}));
 
-		const shouldUseCache = postLastUpdatedBeforeLastBuild && !linkedPostsUpdated;
+		const shouldUseCache = !isExternal && postLastUpdatedBeforeLastBuild && !linkedPostsUpdated;
 
 		return {
 			params: { slug: post.Slug },
@@ -75,13 +81,21 @@ interface Props {
 	postLastUpdatedBeforeLastBuild: boolean;
 }
 
-const { post, shouldUseCache, postLastUpdatedBeforeLastBuild } = Astro.props; // Extract shouldUseCache from props
+const { post, shouldUseCache, postLastUpdatedBeforeLastBuild } = Astro.props;
+const hasExternalDescriptor = !!post?.ExternalContent;
+const externalType = post?.ExternalContent?.type ?? null;
+const isExternalHtml = externalType === "html";
+const isExternalMarkdown = externalType === "markdown";
+const isExternalMdx = externalType === "mdx";
 
 resetCurrentHeadings();
 let postFound = true;
 let headings = null;
 let blocks = null;
 let interlinkedContentInPage = null;
+let externalHtml = "";
+let MdxComponent = null;
+let mdxComponents = {};
 
 if (!post) {
 	console.log("Post not found. slug: ${slug}");
@@ -90,20 +104,51 @@ if (!post) {
 
 // Load cached HTML only if shouldUseCache is true
 let cachedHtml = "";
-if (postFound) {
+if (postFound && !hasExternalDescriptor) {
 	cachedHtml = await loadCachedHtml(post.Slug, shouldUseCache);
 }
 
 // Load cached headings if available
 let cachedHeadings = null;
-if (postFound) {
+if (postFound && !hasExternalDescriptor) {
 	cachedHeadings = await loadCachedHeadings(post.Slug, postLastUpdatedBeforeLastBuild);
 }
 
 let footnotesInPage = null;
 let citationsInPage = null;
 
-if (postFound) {
+if (postFound && isExternalHtml) {
+	const { html, headings: externalHeadings } = renderExternalHtml(post);
+	externalHtml = html;
+	headings = externalHeadings;
+	setCurrentHeadings(headings || []);
+} else if (postFound && isExternalMarkdown) {
+	const markdownResult = await renderExternalMarkdown(post);
+	if (markdownResult.cachedHtml) {
+		externalHtml = markdownResult.cachedHtml;
+		headings = markdownResult.headings;
+		footnotesInPage = null;
+		citationsInPage = null;
+		interlinkedContentInPage = null;
+	} else {
+		blocks = markdownResult.blocks;
+		headings = markdownResult.headings;
+		interlinkedContentInPage = markdownResult.interlinkedContent;
+		footnotesInPage = markdownResult.footnotes;
+		citationsInPage = markdownResult.citations;
+	}
+	setCurrentHeadings(headings || []);
+} else if (postFound && isExternalMdx) {
+	const mdxResult = await renderExternalMdx(post);
+	blocks = mdxResult.blocks;
+	headings = mdxResult.headings;
+	interlinkedContentInPage = mdxResult.interlinkedContent;
+	footnotesInPage = mdxResult.footnotes;
+	citationsInPage = mdxResult.citations;
+	MdxComponent = mdxResult.Component;
+	mdxComponents = mdxResult.mdxComponents;
+	setCurrentHeadings(headings || []);
+} else if (postFound) {
 	const result = await getPostContentByPostId(post);
 	blocks = result.blocks;
 	interlinkedContentInPage = result.interlinkedContentInPage;
@@ -133,20 +178,91 @@ if (postFound) {
 				class="post-body max-w-[708px] print:max-w-full"
 				data-html-type={shouldUseCache && cachedHtml ? "cached" : "new"}
 			>
-				{shouldUseCache && cachedHtml ? (
-					<div set:html={cachedHtml} />
-				) : (
+				{isExternalHtml ? (
 					<>
-						<NotionBlocks blocks={blocks} />
-						{/* Cite This Page section */}
+						{externalHtml ? (
+							<div class="external-html" set:html={externalHtml} />
+						) : (
+							<p class="text-sm text-red-500">
+								External HTML content is missing for this post. Check the configured repository.
+							</p>
+						)}
 						{CITATIONS?.["add-cite-this-post-section"] && <CiteThisPage post={post} />}
-						{/* Footnotes section - only render when NOT using cache (cached HTML already includes it) */}
 						{adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.enabled &&
 							adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.[
 								"generate-footnotes-section"
 							] &&
 							footnotesInPage && <FootnotesSection footnotes={footnotesInPage} />}
-						{/* Bibliography section */}
+						{BIBTEX_CITATIONS_ENABLED &&
+							CITATIONS?.["extract-and-process-bibtex-citations"]?.[
+								"generate-bibliography-section"
+							] &&
+							citationsInPage &&
+							citationsInPage.length > 0 && <BibliographySection citations={citationsInPage} />}
+					</>
+				) : isExternalMarkdown ? (
+					<>
+						{externalHtml ? (
+							<div class="external-html" set:html={externalHtml} />
+						) : blocks ? (
+							<NotionBlocks blocks={blocks} />
+						) : (
+							<p class="text-sm text-red-500">
+								Markdown content is missing for this post. Check the configured repository.
+							</p>
+						)}
+						{!externalHtml && CITATIONS?.["add-cite-this-post-section"] && (
+							<CiteThisPage post={post} />
+						)}
+						{!externalHtml &&
+							adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.enabled &&
+							adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.[
+								"generate-footnotes-section"
+							] &&
+							footnotesInPage && <FootnotesSection footnotes={footnotesInPage} />}
+						{!externalHtml &&
+							BIBTEX_CITATIONS_ENABLED &&
+							CITATIONS?.["extract-and-process-bibtex-citations"]?.[
+								"generate-bibliography-section"
+							] &&
+							citationsInPage &&
+							citationsInPage.length > 0 && <BibliographySection citations={citationsInPage} />}
+					</>
+				) : isExternalMdx ? (
+					<>
+						{MdxComponent ? (
+							<div class="mdx-notion">
+								<MdxComponent components={mdxComponents} />
+							</div>
+						) : (
+							<p class="text-sm text-red-500">
+								MDX content is missing for this post. Check the configured repository.
+							</p>
+						)}
+						{CITATIONS?.["add-cite-this-post-section"] && <CiteThisPage post={post} />}
+						{adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.enabled &&
+							adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.[
+								"generate-footnotes-section"
+							] &&
+							footnotesInPage && <FootnotesSection footnotes={footnotesInPage} />}
+						{BIBTEX_CITATIONS_ENABLED &&
+							CITATIONS?.["extract-and-process-bibtex-citations"]?.[
+								"generate-bibliography-section"
+							] &&
+							citationsInPage &&
+							citationsInPage.length > 0 && <BibliographySection citations={citationsInPage} />}
+					</>
+				) : shouldUseCache && cachedHtml ? (
+					<div set:html={cachedHtml} />
+				) : (
+					<>
+						<NotionBlocks blocks={blocks} />
+						{CITATIONS?.["add-cite-this-post-section"] && <CiteThisPage post={post} />}
+						{adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.enabled &&
+							adjustedFootnotesConfig?.["in-page-footnotes-settings"]?.[
+								"generate-footnotes-section"
+							] &&
+							footnotesInPage && <FootnotesSection footnotes={footnotesInPage} />}
 						{BIBTEX_CITATIONS_ENABLED &&
 							CITATIONS?.["extract-and-process-bibtex-citations"]?.[
 								"generate-bibliography-section"
@@ -159,3 +275,109 @@ if (postFound) {
 		</PostLayout>
 	)
 }
+
+{isExternalMdx && (
+	<style>
+		.mdx-notion {
+			max-width: none;
+		}
+
+		.mdx-notion h1,
+		.mdx-notion h2,
+		.mdx-notion h3 {
+			font-weight: 700;
+			color: var(--theme-text);
+			letter-spacing: -0.01em;
+			margin-top: 1.25rem;
+			margin-bottom: 0.75rem;
+		}
+
+		.mdx-notion h1 {
+			font-size: clamp(1.8rem, 2.6vw, 2.05rem);
+			line-height: 1.2;
+		}
+
+		.mdx-notion h2 {
+			font-size: clamp(1.45rem, 2.3vw, 1.8rem);
+			line-height: 1.25;
+		}
+
+		.mdx-notion h3 {
+			font-size: clamp(1.2rem, 2vw, 1.55rem);
+			line-height: 1.3;
+		}
+
+		.mdx-notion p {
+			margin: 0 0 0.9rem 0;
+			color: var(--theme-text);
+			line-height: 1.75;
+			font-size: 1rem;
+		}
+
+		.mdx-notion ul,
+		.mdx-notion ol {
+			margin: 0.2rem 0 1rem 1.25rem;
+			padding-left: 1.25rem;
+			line-height: 1.65;
+			list-style-position: outside;
+			list-style-type: disc;
+		}
+
+		.mdx-notion ol {
+			list-style-type: decimal;
+		}
+
+		.mdx-notion li {
+			margin: 0.1rem 0;
+			padding-left: 0.1rem;
+		}
+
+		.mdx-notion blockquote {
+			margin: 1.1rem 0;
+			padding: 0.75rem 1rem;
+			border-left: 4px solid var(--theme-quote);
+			background: color-mix(in srgb, var(--theme-quote) 8%, transparent);
+			color: var(--theme-text);
+		}
+
+		.mdx-notion code {
+			background: color-mix(in srgb, var(--theme-text) 12%, transparent);
+			border-radius: 6px;
+			padding: 0.15rem 0.35rem;
+			font-size: 0.95rem;
+			color: var(--theme-text);
+		}
+
+		.mdx-notion pre {
+			background: color-mix(in srgb, var(--theme-text) 8%, transparent);
+			border-radius: 10px;
+			padding: 0.95rem 1rem;
+			overflow-x: auto;
+			font-size: 0.95rem;
+			line-height: 1.65;
+			margin: 1.1rem 0;
+			position: relative;
+		}
+
+		.mdx-notion hr {
+			border: 0;
+			border-top: 1px solid color-mix(in srgb, var(--theme-text) 18%, transparent);
+			margin: 1.4rem 0;
+		}
+
+		.mdx-notion table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 0.9rem 0 1.1rem 0;
+			font-size: 0.95rem;
+		}
+
+		.mdx-notion th,
+		.mdx-notion td {
+			border: 1px solid color-mix(in srgb, var(--theme-text) 14%, transparent);
+			padding: 0.55rem 0.75rem;
+			text-align: left;
+			vertical-align: top;
+		}
+	</style>
+)}

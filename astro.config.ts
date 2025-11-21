@@ -1,10 +1,14 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
+import mdx from "@astrojs/mdx";
 
 import path from "path";
 import fs from "fs";
 import JSON5 from "json5";
-import { CUSTOM_DOMAIN, BASE_PATH } from "./src/constants";
+import { CUSTOM_DOMAIN, BASE_PATH, EXTERNAL_CONTENT_CONFIG } from "./src/constants";
+import remarkExternalMdxAssets from "./src/lib/external-content/remark-external-mdx-assets";
+import { externalContentVitePlugins } from "./src/lib/vite-external-content-plugins";
+
 const getSite = function () {
 	if (CUSTOM_DOMAIN) {
 		return new URL(BASE_PATH, `https://${CUSTOM_DOMAIN}`).toString();
@@ -33,10 +37,12 @@ import blocksHtmlCacher from "./src/integrations/block-html-cache-er";
 import DeleteBuildCache from "./src/integrations/delete-build-cache";
 import buildTimestampRecorder from "./src/integrations/build-timestamp-recorder";
 import rssContentEnhancer from "./src/integrations/rss-content-enhancer";
+import externalRenderCacher from "./src/integrations/external-render-cacheer";
 import CSSWriter from "./src/integrations/theme-constants-to-css";
 import createFoldersIfMissing from "./src/integrations/create-folders-if-missing";
 import citationsInitializer from "./src/integrations/citations-initializer";
 import astroImageCacheCleanerCopier from "./src/integrations/astro-image-cache-cleaner-copier";
+import externalContentDownloader from "./src/integrations/external-content-downloader";
 import { fontProviders } from "astro/config";
 import robotsTxt from "astro-robots-txt";
 import partytown from "@astrojs/partytown";
@@ -144,6 +150,10 @@ export default defineConfig({
 	},
 	integrations: [
 		createFoldersIfMissing(),
+		mdx({
+			remarkPlugins: [remarkExternalMdxAssets],
+		}),
+		EXTERNAL_CONTENT_CONFIG.enabled ? externalContentDownloader() : undefined,
 		buildTimestampRecorder(),
 		citationsInitializer(), // Initialize BibTeX cache after timestamp is recorded
 		EntryCacheEr(),
@@ -160,6 +170,7 @@ export default defineConfig({
 		}),
 		rssContentEnhancer(),
 		blocksHtmlCacher(),
+		externalRenderCacher(),
 		PublicNotionCopier(),
 		astroImageCacheCleanerCopier(),
 		DeleteBuildCache(),
@@ -169,7 +180,13 @@ export default defineConfig({
 	},
 	prefetch: true,
 	vite: {
-		plugins: [tailwindcss()],
+		plugins: [...externalContentVitePlugins(), tailwindcss()],
+		resolve: {
+			alias: {
+				"custom-components": path.resolve("./src/components/custom-components"),
+				"@custom-components": path.resolve("./src/components/custom-components"),
+			},
+		},
 		optimizeDeps: {
 			exclude: ["@resvg/resvg-js"],
 		},

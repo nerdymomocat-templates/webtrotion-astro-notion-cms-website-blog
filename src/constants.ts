@@ -1,10 +1,142 @@
 import fs from "fs";
 import path from "path";
 import JSON5 from "json5";
+import type { ExternalContentType } from "./lib/interfaces";
 
 const configContent = fs.readFileSync("./constants-config.json5", "utf8");
 const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
+
+const DEFAULT_MDX_SNIPPET_TRIGGER = "<!-- mdx inject -->";
+
+type GitHubTreeInfo = {
+	owner: string;
+	repo: string;
+	ref: string;
+	path: string;
+};
+
+export type ExternalContentSourceConfig = GitHubTreeInfo & {
+	id: string;
+	externalUrlPrefix: string;
+};
+
+export type ExternalContentCustomComponentConfig = GitHubTreeInfo & {
+	id: string;
+};
+
+export interface ExternalContentConfig {
+	enabled: boolean;
+	sources: ExternalContentSourceConfig[];
+	customComponents: ExternalContentCustomComponentConfig | null;
+}
+
+function parseGitHubTreeUrl(rawUrl: string | null | undefined): GitHubTreeInfo | null {
+	if (!rawUrl || typeof rawUrl !== "string") {
+		return null;
+	}
+
+	try {
+		const trimmed = rawUrl.trim();
+		const url = new URL(trimmed);
+		if (url.hostname !== "github.com") {
+			return null;
+		}
+
+		const segments = url.pathname.split("/").filter(Boolean);
+		if (segments.length < 4) {
+			return null;
+		}
+
+		let keywordIndex = segments.indexOf("tree");
+		if (keywordIndex === -1) {
+			keywordIndex = segments.indexOf("blob");
+		}
+
+		if (keywordIndex === -1 || keywordIndex < 2) {
+			return null;
+		}
+
+		const owner = segments[0];
+		const repo = segments[1];
+		const ref = segments[keywordIndex + 1] || "main";
+		const pathSegments = segments.slice(keywordIndex + 2);
+
+		return {
+			owner,
+			repo,
+			ref,
+			path: pathSegments.join("/"),
+		};
+	} catch (error) {
+		console.warn(`[external-content] Failed to parse GitHub URL "${rawUrl}":`, error);
+		return null;
+	}
+}
+
+function buildExternalContentConfig(): ExternalContentConfig {
+	const rawConfig = key_value_from_json?.["external-content"];
+	const sources: ExternalContentSourceConfig[] = [];
+
+	if (rawConfig && typeof rawConfig === "object") {
+		const rawSources = rawConfig?.sources;
+		if (rawSources && typeof rawSources === "object") {
+			for (const [id, rawUrl] of Object.entries(rawSources)) {
+				if (typeof rawUrl !== "string" || !rawUrl.trim()) {
+					continue;
+				}
+				const parsed = parseGitHubTreeUrl(rawUrl);
+				if (!parsed) {
+					console.warn(
+						`[external-content] Could not parse external content source "${id}". Expected a GitHub tree/blob URL.`,
+					);
+					continue;
+				}
+
+				if (!parsed.path) {
+					console.warn(
+						`[external-content] GitHub URL for "${id}" should reference a subfolder inside the repository.`,
+					);
+				}
+
+				sources.push({
+					id,
+					externalUrlPrefix: rawUrl,
+					...parsed,
+				});
+			}
+		}
+	}
+
+	let customComponents: ExternalContentCustomComponentConfig | null = null;
+	const customComponentsUrl = rawConfig?.["custom-components"];
+	if (typeof customComponentsUrl === "string" && customComponentsUrl.trim()) {
+		const parsed = parseGitHubTreeUrl(customComponentsUrl);
+		if (!parsed) {
+			console.warn(
+				"[external-content] Could not parse external custom-components GitHub URL. Expected a GitHub tree/blob URL.",
+			);
+		} else {
+			if (!parsed.path) {
+				console.warn(
+					"[external-content] Custom components URL should point to a folder path inside the repository.",
+				);
+			}
+			customComponents = {
+				id: "custom-components",
+				...parsed,
+			};
+		}
+	}
+
+	return {
+		enabled: sources.length > 0 || customComponents !== null,
+		sources,
+		customComponents,
+	};
+}
+
+export const EXTERNAL_CONTENT_CONFIG = buildExternalContentConfig();
 
 import {
 	transformerNotationFocus,
@@ -33,6 +165,23 @@ export const BUILD_FOLDER_PATHS = {
 	public: path.join("./public"),
 	publicNotion: path.join("./public", "notion/"),
 	srcAssetsNotion: path.join("src", "assets", "notion"),
+	externalPosts: path.join("src", "external-posts"),
+	externalComponents: path.join("src", "components", "custom-components"),
+	publicExternalPosts: path.join("public", "external-posts"),
+};
+
+export const EXTERNAL_CONTENT_PATHS = {
+	tmpRoot: path.join(BUILD_FOLDER_PATHS.tmp, "external-content"),
+	manifestDir: path.join(BUILD_FOLDER_PATHS.tmp, "cache-manifests"),
+	manifestFile: path.join(BUILD_FOLDER_PATHS.tmp, "cache-manifests", "external-content.json"),
+	commitMetadata: path.join(BUILD_FOLDER_PATHS.tmp, "external-content", "commit-meta"),
+	renderCache: path.join(BUILD_FOLDER_PATHS.tmp, "external-content", "render-cache"),
+	externalPosts: path.join("src", "external-posts"),
+	customComponents: path.join("src", "components", "custom-components"),
+	mdxSnippets: path.join("src", "blocks-mdx-inject-snippets"),
+	mdxSnippetsCache: path.join(BUILD_FOLDER_PATHS.tmp, "blocks-mdx-inject-snippets-cache"),
+	publicAssets: path.join("public", "external-posts"),
+	publicCustomComponents: path.join("public", "custom-components"),
 };
 
 export const NOTION_API_SECRET =
@@ -128,14 +277,29 @@ export const OG_SETUP = key_value_from_json["og-setup"] || {
 export const OPTIMIZE_IMAGES =
 	key_value_from_json?.["block-rendering"]?.["optimize-images"] || false;
 
-export const SHORTCODES = key_value_from_json["shortcodes"] || {
-	"html-render": "",
-	"html-inject": "",
+const defaultShortcodes = {
+	"html-render": "<!DOCTYPE html> <!-- iframe -->",
+	"html-inject": "<!DOCTYPE html> <!-- inject -->",
 	"alt-text": null,
 	"expressive-code": null,
 	"shiki-transform": "",
 	table: "",
 };
+
+const resolvedShortcodes =
+	typeof key_value_from_json["shortcodes"] === "object" &&
+	key_value_from_json["shortcodes"] !== null
+		? key_value_from_json["shortcodes"]
+		: defaultShortcodes;
+
+export const SHORTCODES = resolvedShortcodes;
+
+export const MDX_SNIPPET_TRIGGER =
+	process.env.MDX_SNIPPET_TRIGGER ||
+	(typeof resolvedShortcodes?.["mdx-inject"] === "string" && resolvedShortcodes["mdx-inject"].trim()
+		? resolvedShortcodes["mdx-inject"].trim()
+		: key_value_from_json?.["mdx-snippets"]?.["trigger"]) ||
+	DEFAULT_MDX_SNIPPET_TRIGGER;
 
 // Function to read the build start time from the file
 const readBuildStartTime = () => {

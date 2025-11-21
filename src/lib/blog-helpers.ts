@@ -487,8 +487,15 @@ export const buildHeadingId = (heading: Heading1 | Heading2 | Heading3) => {
 	return slugify(joinPlainText(heading.RichTexts).trim());
 };
 
+export const hasExternalContentDescriptor = (post?: Post | null): boolean => {
+	return !!post?.ExternalContent;
+};
+
 export const isExternalPost = (post?: Post | null): boolean => {
 	if (!post) return false;
+	if (hasExternalContentDescriptor(post)) {
+		return false;
+	}
 	return post.IsExternal === true && !!post.ExternalUrl;
 };
 
