@@ -89,6 +89,16 @@ const useGiscus =
 			{THEME["fontfamily-google-fonts"]["mono-font-name"] && (
 				<Font cssVariable="--font-mono" preload={[{ weight: 400, style: "normal" }]} />
 			)}
+			{THEME["fontfamily-google-fonts"]["accent-font-name"] && (
+				<Font
+					cssVariable="--font-accent"
+					preload={[
+						{ weight: 400, style: "normal" },
+						{ weight: 600, style: "normal" },
+						{ weight: 700, style: "normal" },
+					]}
+				/>
+			)}
 		</>
 	)
 }

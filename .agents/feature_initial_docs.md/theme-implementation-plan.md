@@ -4,9 +4,37 @@
 
 This document provides an **exhaustive specification** for implementing a preset-based theming system. A developer with minimal context should be able to implement this by following the detailed specifications below.
 
-**Goal**: Change `theme.preset` in `constants-config.json5` → entire site looks visually distinct.
+**Goal**: Change `theme.preset` in `constants-config.json5` → entire site looks visually distinct. If the preset name doesn't match a built-in or a custom file in `src/themes`, fall back to `classic`. Custom files must export `<filename>Theme` (e.g., `classic1Theme`) to be picked up.
 
 **Single Source of Truth**: `src/integrations/theme-constants-to-css.ts` generates all CSS at build time using resolved theme tokens.
+
+---
+
+## Revision Notes
+
+This plan has been revised to ensure themes are **truly visually distinct**, not just parameter variations. Key additions:
+
+1. **New token categories**: `fontVariant`, `heading` decoration, `blockquote` style, `divider` ornaments, `code` style, `card` style, `tag` style, `callout` style, `rough` effects
+2. **Distinct icon sets**: Each theme MUST have its own icon set (MDI, Lucide, Tabler, MDI Outline, Phosphor)
+3. **Rough/sketchy effects**: Playful theme gets marker highlights, hand-drawn boxes, squiggly underlines
+4. **Print-inspired features**: Scholar/Newspaper get small-caps, oldstyle numerals, ornamental dividers
+5. **Heading decorations**: Neobrutal gets background highlights, Newspaper gets rule lines, Playful gets rough underlines
+
+---
+
+## Design Philosophy: Distinct Visual Personalities
+
+Each theme MUST be immediately recognizable at a glance. This is NOT achieved by tweaking percentages but through **coherent design decisions** that affect multiple visual aspects simultaneously.
+
+### Theme Personalities
+
+| Theme | Core Identity | Signature Elements |
+|-------|---------------|-------------------|
+| **Classic** | Clean, modern web | Wavy underlines, soft shadows, balanced radii |
+| **Scholar** | Academic gravitas | Serif body, section symbols (§), small-caps, oldstyle numerals feel, print-like flatness |
+| **Neobrutal** | Raw anti-design | Zero radii, hard offset shadows, thick borders, UPPERCASE headings, visible structure |
+| **Newspaper** | Editorial print | Serif body, rule lines, double underlines, column-style feel, masthead aesthetics |
+| **Playful** | Hand-drawn whimsy | Rough/sketchy annotations, bouncy motion, pill shapes, marker-style highlights |
 
 ---
 
@@ -15,13 +43,14 @@ This document provides an **exhaustive specification** for implementing a preset
 1. [File Structure](#1-file-structure)
 2. [Config Changes](#2-config-changes)
 3. [Complete Token Reference](#3-complete-token-reference)
-4. [TypeScript Types](#4-typescript-types)
-5. [Preset Definitions](#5-preset-definitions)
-6. [CSS Variable Emission](#6-css-variable-emission)
-7. [Icon System](#7-icon-system)
-8. [Component Styling Details](#8-component-styling-details)
-9. [Implementation Phases](#9-implementation-phases)
-10. [Testing Checklist](#10-testing-checklist)
+4. [Distinctive Visual Features](#4-distinctive-visual-features)
+5. [TypeScript Types](#5-typescript-types)
+6. [Preset Definitions](#6-preset-definitions)
+7. [CSS Variable Emission](#7-css-variable-emission)
+8. [Icon System](#8-icon-system)
+9. [Component Styling Details](#9-component-styling-details)
+10. [Implementation Phases](#10-implementation-phases)
+11. [Testing Checklist](#11-testing-checklist)
 
 ---
 
@@ -45,7 +74,7 @@ src/
 
 | File | Contents |
 |------|----------|
-| `src/theme.ts` | `ThemePreset` type, `resolveTheme()` function, `getIconPath()` helper, default token values |
+| `src/theme.ts` | `ThemePreset` type, `resolveTheme()` function, `getTextToSVGPath()` helper, default token values |
 | `src/themes/index.ts` | `THEME_PRESETS` map, `DEFAULT_PRESET`, re-exports all presets |
 | `src/themes/[preset].ts` | Full preset definition including all tokens AND icon mappings for that theme |
 
@@ -84,7 +113,7 @@ These colors are **already user-configurable** and should NOT be duplicated in p
 {
   "theme": {
     // REQUIRED: Selects the visual preset
-    "preset": "classic",  // "classic" | "scholar" | "neobrutal" | "newspaper" | "playful"
+    "preset": "classic",  // "classic" | "scholar" | "neobrutal" | "newspaper" | "playful" | "<custom file name in src/themes>"
     
     // EXISTING: User-defined colors (preset provides defaults if omitted)
     "colors": { /* ... */ },
@@ -93,7 +122,7 @@ These colors are **already user-configurable** and should NOT be duplicated in p
     "fontfamily-google-fonts": {
       "sans-font-name": "...",
       "mono-font-name": "...",
-      "accent-font-name": "..."  // NEW: Optional heading/accent font
+      "accent-font-name": "..."  // NEW: Optional heading/accent font (recommended for Scholar/Newspaper/Playful)
     },
     
     // EXISTING
@@ -136,26 +165,26 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `mix.blockquoteBg` | Blockquote bg tint | `8%` | `6%` | `12%` | `5%` | `10%` |
-| `mix.fabBg` | FAB button bg | `12%` | `10%` | `20%` | `8%` | `15%` |
-| `mix.fabBorder` | FAB button border | `40%` | `30%` | `60%` | `25%` | `45%` |
-| `mix.fabText` | FAB button text | `80%` | `70%` | `100%` | `60%` | `85%` |
-| `mix.inlineHighlight` | Margin note highlight | `20%` | `15%` | `25%` | `12%` | `22%` |
-| `mix.anchorHash` | Heading # color | `50%` | `40%` | `70%` | `35%` | `55%` |
-| `mix.navGrad.a` | Nav highlight gradient start | `4%` | `3%` | `8%` | `2%` | `5%` |
-| `mix.navGrad.b` | Nav highlight gradient mid | `10%` | `8%` | `16%` | `6%` | `12%` |
-| `mix.navGrad.c` | Nav highlight gradient end | `5%` | `4%` | `10%` | `3%` | `6%` |
-| `mix.navGradDark.a` | Nav highlight gradient (dark) start | `6%` | `5%` | `12%` | `4%` | `8%` |
-| `mix.navGradDark.b` | Nav highlight gradient (dark) mid | `14%` | `12%` | `24%` | `10%` | `18%` |
-| `mix.navGradDark.c` | Nav highlight gradient (dark) end | `7%` | `6%` | `14%` | `5%` | `9%` |
-| `mix.navActive.a` | Active nav gradient start | `8%` | `6%` | `15%` | `5%` | `10%` |
-| `mix.navActive.b` | Active nav gradient mid | `20%` | `16%` | `30%` | `12%` | `24%` |
-| `mix.navActive.c` | Active nav gradient end | `10%` | `8%` | `18%` | `6%` | `12%` |
-| `mix.heroTintTop` | Hero tint gradient top | `70%` | `75%` | `60%` | `80%` | `65%` |
-| `mix.heroTintBottom` | Hero tint gradient bottom | `50%` | `55%` | `40%` | `60%` | `45%` |
-| `mix.cardPlaceholder.a` | Card placeholder gradient start | `10%` | `8%` | `15%` | `6%` | `12%` |
-| `mix.cardPlaceholder.b` | Card placeholder gradient end | `20%` | `16%` | `30%` | `12%` | `24%` |
-| `mix.cardImageBorder` | Card image border tint | `6%` | `4%` | `10%` | `3%` | `8%` |
+| `mix.blockquoteBg` | Blockquote bg tint | `8%` | `5%` | `18%` | `4%` | `16%` |
+| `mix.fabBg` | FAB button bg | `12%` | `8%` | `25%` | `7%` | `22%` |
+| `mix.fabBorder` | FAB button border | `40%` | `25%` | `70%` | `20%` | `55%` |
+| `mix.fabText` | FAB button text | `80%` | `65%` | `100%` | `60%` | `90%` |
+| `mix.inlineHighlight` | Margin note highlight | `20%` | `12%` | `30%` | `10%` | `26%` |
+| `mix.anchorHash` | Heading # color | `50%` | `35%` | `75%` | `30%` | `60%` |
+| `mix.navGrad.a` | Nav highlight gradient start | `4%` | `2%` | `10%` | `2%` | `6%` |
+| `mix.navGrad.b` | Nav highlight gradient mid | `10%` | `6%` | `20%` | `6%` | `14%` |
+| `mix.navGrad.c` | Nav highlight gradient end | `5%` | `3%` | `12%` | `3%` | `8%` |
+| `mix.navGradDark.a` | Nav highlight gradient (dark) start | `6%` | `4%` | `15%` | `4%` | `10%` |
+| `mix.navGradDark.b` | Nav highlight gradient (dark) mid | `14%` | `10%` | `28%` | `9%` | `20%` |
+| `mix.navGradDark.c` | Nav highlight gradient (dark) end | `7%` | `5%` | `18%` | `5%` | `12%` |
+| `mix.navActive.a` | Active nav gradient start | `8%` | `5%` | `18%` | `5%` | `12%` |
+| `mix.navActive.b` | Active nav gradient mid | `20%` | `14%` | `34%` | `12%` | `28%` |
+| `mix.navActive.c` | Active nav gradient end | `10%` | `7%` | `22%` | `6%` | `16%` |
+| `mix.heroTintTop` | Hero tint gradient top | `70%` | `78%` | `55%` | `80%` | `62%` |
+| `mix.heroTintBottom` | Hero tint gradient bottom | `50%` | `60%` | `35%` | `60%` | `42%` |
+| `mix.cardPlaceholder.a` | Card placeholder gradient start | `10%` | `6%` | `18%` | `6%` | `14%` |
+| `mix.cardPlaceholder.b` | Card placeholder gradient end | `20%` | `14%` | `32%` | `12%` | `26%` |
+| `mix.cardImageBorder` | Card image border tint | `6%` | `3%` | `12%` | `3%` | `10%` |
 
 ---
 
@@ -166,11 +195,13 @@ These are **derived** from user colors using `color-mix()` and opacity:
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
 | `typography.bodyFont` | Body text font stack | `"sans"` | `"serif"` | `"sans"` | `"serif"` | `"sans"` |
-| `typography.headingFont` | Heading font stack | `"sans"` | `"accent"` | `"sans"` | `"accent"` | `"sans"` |
-| `typography.navFont` | Navigation font stack | `"sans"` | `"sans"` | `"sans"` | `"serif"` | `"sans"` |
+| `typography.headingFont` | Heading font stack | `"sans"` | `"accent"` | `"sans"` | `"accent"` | `"accent"` |
+| `typography.navFont` | Navigation font stack | `"sans"` | `"serif"` | `"sans"` | `"serif"` | `"accent"` |
 | `typography.codeFont` | Code font stack | `"mono"` | `"mono"` | `"mono"` | `"mono"` | `"mono"` |
 
 #### Font Sizes
+
+Font sizes are **not themed**; all presets use the classic defaults:
 
 | Token | Description | Default Value |
 |-------|-------------|---------------|
@@ -189,6 +220,8 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 #### MDX Heading Clamp Values
 
+MDX heading clamps are **not themed**; all presets use the classic defaults:
+
 | Token | Description | Default Value |
 |-------|-------------|---------------|
 | `fontSize.mdxH1` | MDX H1 clamp | `clamp(1.8rem, 2.6vw, 2.05rem)` |
@@ -197,35 +230,49 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 #### Font Weights
 
-| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
-|-------|-------------|---------|---------|-----------|-----------|---------|
-| `fontWeight.normal` | Normal text | `400` | `400` | `400` | `400` | `400` |
-| `fontWeight.medium` | Medium emphasis | `500` | `500` | `500` | `500` | `500` |
-| `fontWeight.semibold` | Semibold (headings) | `600` | `600` | `700` | `600` | `600` |
-| `fontWeight.bold` | Bold (titles) | `700` | `700` | `800` | `700` | `700` |
-| `fontWeight.heading` | Heading weight | `600` | `600` | `800` | `700` | `700` |
-| `fontWeight.nav` | Nav link weight | `400` | `400` | `600` | `400` | `500` |
-| `fontWeight.tableHeader` | Table header | `600` | `600` | `700` | `600` | `600` |
-| `fontWeight.chip` | Badge/chip weight | `600` | `500` | `700` | `500` | `600` |
+Font weights are **not themed**; all presets use the classic defaults:
+
+| Token | Description | Default |
+|-------|-------------|---------|
+| `fontWeight.normal` | Normal text | `400` |
+| `fontWeight.medium` | Medium emphasis | `500` |
+| `fontWeight.semibold` | Semibold (headings) | `600` |
+| `fontWeight.bold` | Bold (titles) | `700` |
+| `fontWeight.heading` | Heading weight | `600` |
+| `fontWeight.nav` | Nav link weight | `400` |
+| `fontWeight.tableHeader` | Table header | `600` |
+| `fontWeight.chip` | Badge/chip weight | `600` |
 
 #### Letter Spacing
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `letterSpacing.heading` | Heading tracking | `-0.01em` | `-0.02em` | `0` | `-0.01em` | `0` |
-| `letterSpacing.nav` | Nav tracking | `0` | `0` | `0.05em` | `0` | `0.02em` |
-| `letterSpacing.chip` | Badge/chip tracking | `0.05em` | `0.03em` | `0.08em` | `0.02em` | `0.04em` |
+| `letterSpacing.heading` | Heading tracking | `-0.01em` | `-0.02em` | `0.04em` | `-0.02em` | `0.01em` |
+| `letterSpacing.nav` | Nav tracking | `0` | `0.03em` | `0.12em` | `0.08em` | `0.06em` |
+| `letterSpacing.chip` | Badge/chip tracking | `0.05em` | `0.04em` | `0.14em` | `0.08em` | `0.08em` |
 
 #### Text Transform
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `textTransform.heading` | Heading transform | `none` | `none` | `uppercase` | `none` | `none` |
-| `textTransform.nav` | Nav transform | `none` | `none` | `uppercase` | `none` | `none` |
-| `textTransform.chip` | Badge/chip transform | `uppercase` | `none` | `uppercase` | `uppercase` | `none` |
-| `textTransform.tableHeader` | Table header | `uppercase` | `none` | `uppercase` | `uppercase` | `none` |
+| `textTransform.heading` | Heading transform | `none` | `none` | `uppercase` | `uppercase` | `none` |
+| `textTransform.nav` | Nav transform | `none` | `uppercase` | `uppercase` | `uppercase` | `none` |
+| `textTransform.chip` | Badge/chip transform | `uppercase` | `small-caps` | `uppercase` | `small-caps` | `lowercase` |
+| `textTransform.tableHeader` | Table header | `uppercase` | `small-caps` | `uppercase` | `small-caps` | `none` |
+| `textTransform.meta` | Metadata (dates, authors) | `none` | `small-caps` | `uppercase` | `small-caps` | `none` |
+| `textTransform.cardTitle` | Card title transform | `none` | `none` | `uppercase` | `none` | `none` |
+
+#### Font Variant (NEW)
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `fontVariant.heading` | Heading font variant | `normal` | `normal` | `normal` | `small-caps` | `normal` |
+| `fontVariant.nav` | Nav font variant | `normal` | `small-caps` | `normal` | `small-caps` | `normal` |
+| `fontVariant.numbers` | Numeric style | `normal` | `oldstyle-nums` | `normal` | `oldstyle-nums` | `normal` |
 
 #### Line Heights
+
+Line heights are **theme-variable**; classic values shown here as baseline:
 
 | Token | Description | Default Value |
 |-------|-------------|---------------|
@@ -246,6 +293,8 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 #### Global Layout
 
+Global layout spacing is **theme-variable**; classic values shown here as baseline:
+
 | Token | Description | Default Value |
 |-------|-------------|---------------|
 | `spacing.pageMaxWidth` | Body max-width | `max-w-3xl` (48rem) |
@@ -257,12 +306,12 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `spacing.h1.mt` | H1 margin-top | `2rem` | `2.5rem` | `3rem` | `2rem` | `2rem` |
-| `spacing.h1.mb` | H1 margin-bottom | `0.25rem` | `0.5rem` | `0.5rem` | `0.25rem` | `0.5rem` |
-| `spacing.h2.mt` | H2 margin-top | `1.5rem` | `2rem` | `2.5rem` | `1.5rem` | `1.5rem` |
-| `spacing.h2.mb` | H2 margin-bottom | `0.25rem` | `0.5rem` | `0.5rem` | `0.25rem` | `0.5rem` |
-| `spacing.h3.mt` | H3 margin-top | `1rem` | `1.5rem` | `2rem` | `1rem` | `1rem` |
-| `spacing.h3.mb` | H3 margin-bottom | `0.25rem` | `0.5rem` | `0.5rem` | `0.25rem` | `0.5rem` |
+| `spacing.h1.mt` | H1 margin-top | `2rem` | `2.75rem` | `3rem` | `2.5rem` | `2.25rem` |
+| `spacing.h1.mb` | H1 margin-bottom | `0.25rem` | `0.5rem` | `0.75rem` | `0.25rem` | `0.6rem` |
+| `spacing.h2.mt` | H2 margin-top | `1.5rem` | `2.25rem` | `2.5rem` | `2rem` | `1.75rem` |
+| `spacing.h2.mb` | H2 margin-bottom | `0.25rem` | `0.5rem` | `0.75rem` | `0.25rem` | `0.6rem` |
+| `spacing.h3.mt` | H3 margin-top | `1rem` | `1.75rem` | `2rem` | `1.5rem` | `1.25rem` |
+| `spacing.h3.mb` | H3 margin-bottom | `0.25rem` | `0.5rem` | `0.75rem` | `0.25rem` | `0.6rem` |
 
 #### Content Block Spacing
 
@@ -570,22 +619,24 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `motion.cardImageHoverScale` | Card image hover scale | `1.05` | `1` | `1` | `1` | `1.08` |
-| `motion.iconHoverScale` | Icon hover scale | `1.1` | `1` | `1.05` | `1` | `1.15` |
-| `motion.cardHoverBrightness` | Card placeholder hover | `1.03` | `1` | `1` | `1` | `1.05` |
+| `motion.cardImageHoverScale` | Card image hover scale | `1.05` | `1.01` | `1` | `1.05` | `1.1` |
+| `motion.iconHoverScale` | Icon hover scale | `1.1` | `1.02` | `1.02` | `1.1` | `1.18` |
+| `motion.cardHoverBrightness` | Card placeholder hover | `1.03` | `1` | `1` | `1.03` | `1.06` |
 | `motion.toggleOpenRotate` | Toggle icon rotation | `90deg` | `90deg` | `90deg` | `90deg` | `90deg` |
 | `motion.toTopHiddenTranslateY` | To-top hidden offset | `7rem` | `7rem` | `7rem` | `7rem` | `7rem` |
 
 #### Transition Durations
 
-| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
-|-------|-------------|---------|---------|-----------|-----------|---------|
-| `duration.fast` | Fast transitions | `200ms` | `150ms` | `100ms` | `200ms` | `250ms` |
-| `duration.medium` | Medium transitions | `300ms` | `250ms` | `150ms` | `300ms` | `350ms` |
-| `duration.slow` | Slow transitions | `500ms` | `400ms` | `200ms` | `500ms` | `600ms` |
-| `duration.navHighlight` | Nav highlight | `200ms` | `150ms` | `0ms` | `200ms` | `250ms` |
-| `duration.hashReveal` | Heading hash reveal | `300ms` | `250ms` | `100ms` | `300ms` | `350ms` |
-| `duration.cardHover` | Card hover effects | `300ms` | `200ms` | `100ms` | `300ms` | `400ms` |
+Durations are **not themed**; all presets use the classic defaults:
+
+| Token | Description | Default |
+|-------|-------------|---------|
+| `duration.fast` | Fast transitions | `200ms` |
+| `duration.medium` | Medium transitions | `300ms` |
+| `duration.slow` | Slow transitions | `500ms` |
+| `duration.navHighlight` | Nav highlight | `200ms` |
+| `duration.hashReveal` | Heading hash reveal | `300ms` |
+| `duration.cardHover` | Card hover effects | `300ms` |
 
 #### Transition Easings
 
@@ -600,11 +651,150 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `underline.style` | Link underline style | `wavy` | `solid` | `solid` | `solid` | `wavy` |
-| `underline.thickness` | Link underline thickness | `from-font` | `1px` | `2px` | `1px` | `from-font` |
-| `underline.offset` | Link underline offset | `2px` | `3px` | `2px` | `3px` | `3px` |
-| `underline.offsetHover` | Pagination link hover | `4px` | `4px` | `3px` | `4px` | `5px` |
-| `underline.annotationStyle` | Annotation underline | `dashed` | `dotted` | `solid` | `dotted` | `dashed` |
+| `underline.style` | Link underline style | `wavy` | `solid` | `solid` | `double` | `wavy` |
+| `underline.thickness` | Link underline thickness | `from-font` | `1px` | `3px` | `1px` | `2px` |
+| `underline.offset` | Link underline offset | `2px` | `2px` | `2px` | `2px` | `3px` |
+| `underline.offsetHover` | Pagination link hover | `4px` | `3px` | `3px` | `3px` | `6px` |
+| `underline.annotationStyle` | Annotation underline | `dashed` | `dotted` | `solid` | `dotted` | `dotted` |
+
+### Heading Decoration Tokens (NEW)
+
+Headings can have decorative elements beyond font styling:
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `heading.decoration` | Decoration type | `none` | `none` | `background` | `rule` | `rough-underline` |
+| `heading.decorationColor` | Decoration color | — | — | `var(--theme-accent)/10` | `var(--theme-text)/20` | `var(--theme-accent)/40` |
+| `heading.rulePosition` | Rule position (if rule) | — | — | — | `below` | — |
+| `heading.ruleWidth` | Rule width | — | — | — | `100%` | — |
+| `heading.ruleHeight` | Rule thickness | — | — | — | `1px` | — |
+| `heading.bgPadding` | Background padding (if bg) | — | — | `0.1em 0.3em` | — | — |
+
+### Blockquote Style Tokens (NEW)
+
+Blockquotes have distinct visual treatments per theme:
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `blockquote.style` | Overall style | `border-left` | `quote-marks` | `full-box` | `indent-only` | `rough-box` |
+| `blockquote.quoteMarkChar` | Opening quote char | — | `"` | — | `"` | `"` |
+| `blockquote.quoteMarkSize` | Quote mark size | — | `3rem` | — | `2rem` | `2.5rem` |
+| `blockquote.quoteMarkColor` | Quote mark color | — | `var(--theme-accent)/30` | — | `var(--theme-text)/15` | `var(--theme-accent)/50` |
+| `blockquote.quoteMarkPosition` | Quote position | — | `hanging-left` | — | `inline-start` | `floating-left` |
+| `blockquote.boxBorderWidth` | Full box border | — | — | `3px` | — | — |
+| `blockquote.italicBody` | Italicize body text | `false` | `true` | `false` | `true` | `false` |
+
+### Divider Ornament Tokens (NEW)
+
+Dividers can have decorative elements:
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `divider.style` | Divider style | `line` | `ornament` | `thick-line` | `double-rule` | `dashed-playful` |
+| `divider.ornament` | Ornament character | — | `❧` | — | — | `✦` |
+| `divider.ornamentSize` | Ornament size | — | `1.5rem` | — | — | `1rem` |
+| `divider.lineStyle` | CSS border-style | `solid` | `solid` | `solid` | `double` | `dashed` |
+| `divider.thickness` | Line thickness | `2px` | `1px` | `4px` | `3px` | `2px` |
+
+### Code Block Style Tokens (NEW)
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `code.style` | Code block style | `bg-rounded` | `border-subtle` | `border-thick` | `bg-minimal` | `bg-gradient` |
+| `code.borderStyle` | Border style | `none` | `solid` | `solid` | `none` | `none` |
+| `code.borderWidth` | Border width | — | `1px` | `2px` | — | — |
+| `code.headerBar` | Show filename bar style | `subtle` | `minimal` | `bold` | `minimal` | `colorful` |
+
+### Card Style Tokens (NEW)
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `card.hoverEffect` | Hover effect type | `lift` | `none` | `offset-shift` | `none` | `bounce` |
+| `card.borderOnHover` | Show border on hover | `false` | `true` | `true` | `true` | `false` |
+| `card.placeholderStyle` | No-image placeholder | `gradient` | `pattern` | `solid-block` | `halftone` | `confetti` |
+| `card.imageFilter` | Image filter on hover | `none` | `none` | `grayscale-remove` | `none` | `saturate-boost` |
+
+### Rough/Sketchy Effect Tokens (NEW — Playful Signature)
+
+The Playful theme uses hand-drawn/sketchy effects inspired by RoughNotation. These create the distinctive "marker highlight" and "hand-drawn" aesthetic.
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `rough.enabled` | Enable rough effects | `false` | `false` | `false` | `false` | `true` |
+| `rough.highlightStyle` | Highlight annotation type | — | — | — | — | `marker` |
+| `rough.highlightColor` | Marker highlight color | — | — | — | — | `var(--theme-accent)/25` |
+| `rough.highlightPadding` | Highlight padding | — | — | — | — | `0.1em 0.2em` |
+| `rough.highlightSkew` | Highlight rotation | — | — | — | — | `-1deg` |
+| `rough.underlineStyle` | Underline annotation type | — | — | — | — | `squiggly` |
+| `rough.underlineAmplitude` | Squiggle amplitude | — | — | — | — | `2px` |
+| `rough.underlineFrequency` | Squiggle frequency | — | — | — | — | `0.5` |
+| `rough.circleEnabled` | Circle annotations for emphasis | — | — | — | — | `true` |
+| `rough.boxStyle` | Box annotation style | — | — | — | — | `hand-drawn` |
+| `rough.boxStrokeWidth` | Hand-drawn stroke width | — | — | — | — | `2px` |
+| `rough.boxRoughness` | Roughness factor (0-1) | — | — | — | — | `0.8` |
+| `rough.svgFilter` | SVG filter for sketch effect | — | — | — | — | `url(#roughPaper)` |
+
+#### How Rough Effects Are Implemented
+
+1. **Marker Highlights**: CSS gradient backgrounds that simulate highlighter strokes
+   ```css
+   .rough-highlight {
+     background: linear-gradient(
+       104deg,
+       transparent 0.9%,
+       var(--rough-highlight-color) 2.4%,
+       color-mix(in srgb, var(--rough-highlight-color) 50%, transparent) 5.8%,
+       color-mix(in srgb, var(--rough-highlight-color) 90%, transparent) 93%,
+       transparent 96%
+     );
+     padding: var(--rough-highlight-padding);
+     transform: rotate(var(--rough-highlight-skew));
+     border-radius: 0.2em 0.8em 0.7em 0.3em;
+   }
+   ```
+
+2. **Squiggly Underlines**: SVG `text-decoration-style` or border-image with wavy pattern
+   ```css
+   .rough-underline {
+     text-decoration: underline;
+     text-decoration-style: wavy;
+     text-decoration-thickness: var(--rough-underline-amplitude);
+     text-decoration-skip-ink: none;
+   }
+   ```
+
+3. **Hand-drawn Boxes**: SVG filter or border-image that creates imperfect rectangles
+   ```css
+   .rough-box {
+     border: var(--rough-box-stroke-width) solid var(--theme-accent);
+     border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+   }
+   ```
+
+4. **Paper Texture Filter**: Optional SVG filter for subtle paper-like texture
+   ```svg
+   <filter id="roughPaper">
+     <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="5" />
+     <feDisplacementMap in="SourceGraphic" scale="3" />
+   </filter>
+   ```
+
+### Tag/Badge Style Tokens (NEW)
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `tag.style` | Tag visual style | `pill-bg` | `underline` | `box-invert` | `small-caps-plain` | `pill-gradient` |
+| `tag.invertColors` | Invert fg/bg on tags | `false` | `false` | `true` | `false` | `false` |
+| `tag.showHashPrefix` | Show # before tag | `false` | `false` | `false` | `true` | `false` |
+| `tag.hoverEffect` | Hover animation | `darken` | `underline-grow` | `shadow-shift` | `underline-grow` | `bounce` |
+
+### Callout Style Tokens (NEW)
+
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `callout.style` | Callout visual style | `bg-rounded` | `left-accent` | `full-border` | `top-border` | `rough-box` |
+| `callout.iconStyle` | Icon presentation | `inline` | `hanging` | `box` | `inline` | `floating` |
+| `callout.iconBg` | Icon background | `none` | `none` | `var(--theme-accent)` | `none` | `var(--theme-accent)/20` |
 
 ---
 
@@ -614,9 +804,9 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 | Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
 |-------|-------------|---------|---------|-----------|-----------|---------|
-| `anchor.hashContent` | Anchor hash character | `"#"` | `"§"` | `"#"` | `"¶"` | `"→"` |
-| `anchor.hashMl` | Hash margin-left | `-1.5rem` | `-1.5rem` | `-1.5rem` | `-1.5rem` | `-1.5rem` |
-| `anchor.hashMlToggle` | Toggle heading hash ml | `-2.5rem` | `-2.5rem` | `-2.5rem` | `-2.5rem` | `-2.5rem` |
+| `anchor.hashContent` | Anchor hash character | `"#"` | `"§"` | `"#"` | `"#"` | `"*"` |
+| `anchor.hashMl` | Hash margin-left | `-1.5rem` | `-1.2rem` | `-1.4rem` | `-1.3rem` | `-1.6rem` |
+| `anchor.hashMlToggle` | Toggle heading hash ml | `-2.5rem` | `-2.2rem` | `-2.4rem` | `-2.3rem` | `-2.6rem` |
 | `anchor.hashOpacityHidden` | Hash hidden opacity | `0` | `0` | `0.3` | `0` | `0` |
 | `anchor.hashOpacityShown` | Hash shown opacity | `1` | `1` | `1` | `1` | `1` |
 
@@ -629,11 +819,11 @@ These are **derived** from user colors using `color-mix()` and opacity:
 
 #### Pagefind Underline
 
-| Token | Description | Default Value |
-|-------|-------------|---------------|
-| `pagefind.underlineHeight` | Search result underline height | `6px` |
-| `pagefind.underlineGap` | Baseline gap | `5px` |
-| `pagefind.underlineGapHover` | Baseline gap (hover) | `4px` |
+| Token | Description | Classic | Scholar | Neobrutal | Newspaper | Playful |
+|-------|-------------|---------|---------|-----------|-----------|---------|
+| `pagefind.underlineHeight` | Search result underline height | `6px` | `5px` | `6px` | `4px` | `7px` |
+| `pagefind.underlineGap` | Baseline gap | `5px` | `4px` | `5px` | `4px` | `5px` |
+| `pagefind.underlineGapHover` | Baseline gap (hover) | `4px` | `3px` | `4px` | `3px` | `4px` |
 
 ---
 
@@ -657,7 +847,97 @@ The pinned post indicator can be styled differently per theme:
 
 ---
 
-## 4. TypeScript Types
+## 4. Distinctive Visual Features — Quick Reference
+
+This section summarizes the KEY differentiators that make each theme immediately recognizable. If you're implementing a theme, focus on getting these right first.
+
+### At-a-Glance Identification
+
+A user should be able to identify the theme within 2 seconds of seeing ANY page. Here's what makes each theme instantly recognizable:
+
+| Theme | "I know it's this theme because..." |
+|-------|-------------------------------------|
+| **Classic** | Looks like a modern blog — nothing particularly unusual, wavy link underlines |
+| **Scholar** | Serif text everywhere, `§` symbols by headings, subtle and restrained |
+| **Neobrutal** | UPPERCASE headings, zero rounded corners, offset shadows, bold borders |
+| **Newspaper** | Double underlines, rule lines under headings, small-caps everywhere |
+| **Playful** | Marker-highlight effects, rounded pills, bouncy hover animations, `*` anchors |
+
+### The 5 Most Impactful Token Groups
+
+These token groups have the biggest visual impact. Getting these right means 80% of the theme feel:
+
+#### 1. Text Transform & Font Variant
+```
+Classic:   none / normal
+Scholar:   none / small-caps + oldstyle-nums  
+Neobrutal: UPPERCASE headings + card titles
+Newspaper: UPPERCASE headings / small-caps
+Playful:   none / normal
+```
+
+#### 2. Heading Decoration
+```
+Classic:   none (just styled text)
+Scholar:   none (relies on typography elegance)
+Neobrutal: background highlight behind text
+Newspaper: rule line below
+Playful:   rough/sketchy underline
+```
+
+#### 3. Border Radius Philosophy
+```
+Classic:   balanced (0.375rem)
+Scholar:   minimal (0.0625rem)
+Neobrutal: ZERO everywhere
+Newspaper: near-zero (0.125rem)
+Playful:   generous (0.75rem+), pills for badges
+```
+
+#### 4. Shadow Philosophy
+```
+Classic:   soft, layered box-shadows
+Scholar:   NONE (flat print aesthetic)
+Neobrutal: hard offset (4px 4px 0 currentColor)
+Newspaper: NONE (print aesthetic)
+Playful:   soft, diffuse, larger
+```
+
+#### 5. Link Underline Style
+```
+Classic:   wavy, from-font thickness
+Scholar:   solid, thin (1px)
+Neobrutal: solid, THICK (3px)
+Newspaper: DOUBLE
+Playful:   wavy, medium (2px), large offset on hover
+```
+
+### Rough/Sketchy Effects (Playful Only)
+
+The Playful theme's signature is its hand-drawn aesthetic. Key implementations:
+
+1. **Marker Highlights**: Gradient-based background that looks like a highlighter pen
+2. **Imperfect Boxes**: Border-radius values like `255px 15px 225px 15px / 15px 225px 15px 255px`
+3. **Bouncy Animations**: Exaggerated hover scales (1.1-1.2x)
+4. **Floating Elements**: Slight rotations on cards, pins, decorative elements
+
+### Print-Inspired Features (Scholar & Newspaper)
+
+Both themes evoke print but differently:
+
+| Feature | Scholar | Newspaper |
+|---------|---------|-----------|
+| Body font | Serif | Serif |
+| Headings | Elegant accent font | UPPERCASE + small-caps |
+| Blockquotes | Large hanging " marks, italic | Indent + inline quotes, italic |
+| Dividers | `❧` fleuron ornament | Double rule line |
+| Numbers | Oldstyle numerals | Oldstyle numerals |
+| Shadows | None | None |
+| Nav style | Thin underline | Thin underline |
+
+---
+
+## 5. TypeScript Types
 
 ### Main Types (`src/theme.ts`)
 
@@ -858,6 +1138,93 @@ interface UnderlineTokens {
   offset: string;
   offsetHover: string;
   annotationStyle: string;
+  mdxThickness: string;
+  mdxOffset: string;
+}
+
+// Font variant tokens (NEW)
+interface FontVariantTokens {
+  heading: string;  // "normal" | "small-caps"
+  nav: string;
+  numbers: string;  // "normal" | "oldstyle-nums"
+}
+
+// Heading decoration tokens (NEW)
+interface HeadingDecorationTokens {
+  decoration: "none" | "background" | "rule" | "rough-underline";
+  decorationColor?: string;
+  rulePosition?: "above" | "below";
+  ruleWidth?: string;
+  ruleHeight?: string;
+  bgPadding?: string;
+}
+
+// Blockquote style tokens (NEW)
+interface BlockquoteStyleTokens {
+  style: "border-left" | "quote-marks" | "full-box" | "indent-only" | "rough-box";
+  quoteMarkChar?: string;
+  quoteMarkSize?: string;
+  quoteMarkColor?: string;
+  quoteMarkPosition?: "hanging-left" | "inline-start" | "floating-left";
+  boxBorderWidth?: string;
+  italicBody: boolean;
+}
+
+// Divider ornament tokens (NEW)
+interface DividerTokens {
+  style: "line" | "ornament" | "thick-line" | "double-rule" | "dashed-playful";
+  ornament?: string;  // "❧" | "✦" etc.
+  ornamentSize?: string;
+  lineStyle: string;
+  thickness: string;
+}
+
+// Code block style tokens (NEW)
+interface CodeStyleTokens {
+  style: "bg-rounded" | "border-subtle" | "border-thick" | "bg-minimal" | "bg-gradient";
+  borderStyle: string;
+  borderWidth?: string;
+  headerBar: "subtle" | "minimal" | "bold" | "colorful";
+}
+
+// Card style tokens (NEW)
+interface CardStyleTokens {
+  hoverEffect: "lift" | "none" | "offset-shift" | "bounce";
+  borderOnHover: boolean;
+  placeholderStyle: "gradient" | "pattern" | "solid-block" | "halftone" | "confetti";
+  imageFilter: "none" | "grayscale-remove" | "saturate-boost";
+}
+
+// Rough/sketchy effect tokens (NEW — Playful)
+interface RoughEffectTokens {
+  enabled: boolean;
+  highlightStyle?: "marker";
+  highlightColor?: string;
+  highlightPadding?: string;
+  highlightSkew?: string;
+  underlineStyle?: "squiggly";
+  underlineAmplitude?: string;
+  underlineFrequency?: number;
+  circleEnabled?: boolean;
+  boxStyle?: "hand-drawn";
+  boxStrokeWidth?: string;
+  boxRoughness?: number;
+  svgFilter?: string;
+}
+
+// Tag style tokens (NEW)
+interface TagStyleTokens {
+  style: "pill-bg" | "underline" | "box-invert" | "small-caps-plain" | "pill-gradient";
+  invertColors: boolean;
+  showHashPrefix: boolean;
+  hoverEffect: "darken" | "underline-grow" | "shadow-shift" | "bounce";
+}
+
+// Callout style tokens (NEW)
+interface CalloutStyleTokens {
+  style: "bg-rounded" | "left-accent" | "full-border" | "top-border" | "rough-box";
+  iconStyle: "inline" | "hanging" | "box" | "floating";
+  iconBg?: string;
 }
 
 // Visual pattern tokens
@@ -919,6 +1286,7 @@ export interface ThemePreset {
   fontWeight: FontWeightTokens;
   letterSpacing: LetterSpacingTokens;
   textTransform: TextTransformTokens;
+  fontVariant: FontVariantTokens;      // NEW
   lineHeight: LineHeightTokens;
   
   // Spacing
@@ -945,6 +1313,16 @@ export interface ThemePreset {
   anchor: AnchorTokens;
   nav: NavStyleTokens;
   
+  // Component styles (NEW)
+  heading: HeadingDecorationTokens;    // NEW
+  blockquote: BlockquoteStyleTokens;   // NEW
+  divider: DividerTokens;              // NEW
+  code: CodeStyleTokens;               // NEW
+  card: CardStyleTokens;               // NEW
+  tag: TagStyleTokens;                 // NEW
+  callout: CalloutStyleTokens;         // NEW
+  rough: RoughEffectTokens;            // NEW (Playful signature)
+  
   // Pinned indicator
   pinned: PinnedTokens;
   
@@ -955,63 +1333,121 @@ export interface ThemePreset {
 
 ---
 
-## 5. Preset Definitions
+## 6. Preset Definitions
 
 Each preset file (`src/themes/[preset].ts`) exports a complete `ThemePreset` object.
 
-### Classic Preset (Summary)
+### Classic Preset
 
-The "classic" preset matches the **current site styling** exactly:
-- Sans-serif body, wavy underlines
-- Subtle border radii, soft shadows
-- Standard transitions
-- Gradient-based nav highlights
-- MDI icon set
+The "classic" preset matches the **current site styling** exactly. It's the baseline from which other themes diverge.
 
-### Scholar Preset (Summary)
+**Visual Identity**: Clean, modern, professional web design
 
-Academic/scholarly aesthetic:
-- Serif body font, accent font for headings
-- Solid underlines, minimal radii
-- No shadows, clean borders
-- Underline-based nav highlights
-- Lucide icon set
-- Section symbol (§) for anchor hash
+| Feature | Implementation |
+|---------|----------------|
+| Typography | Sans-serif body and headings |
+| Headings | Normal case, `-0.01em` tracking |
+| Links | Wavy underlines, subtle hover |
+| Shadows | Soft, modern box-shadows |
+| Radii | Balanced (0.375rem default) |
+| Nav highlight | Gradient background at bottom |
+| Anchor hash | `#` character |
+| Icons | MDI filled |
+| Blockquotes | Left border + subtle background |
+| Dividers | Simple solid line |
+| Cards | Subtle lift on hover |
 
-### Neobrutal Preset (Summary)
+### Scholar Preset
 
-Bold, brutalist design:
-- Heavy font weights, uppercase transforms
-- Zero border radius everywhere
-- Hard offset shadows
-- Solid block nav highlights
-- Fast/instant transitions
-- Tabler icon set (bold strokes)
-- Tilted pinned indicator with background
+**Visual Identity**: Academic gravitas, print-inspired, long-form reading optimized
 
-### Newspaper Preset (Summary)
+| Feature | Implementation |
+|---------|----------------|
+| Typography | **Serif body**, accent headings |
+| Headings | Normal case, `-0.02em` tracking, **small-caps for nav** |
+| Font variant | **Oldstyle numerals**, small-caps metadata |
+| Links | Solid thin underlines (1px) |
+| Shadows | **None** (flat, print-like) |
+| Radii | Minimal (0.0625rem) |
+| Nav highlight | Simple underline (2px) |
+| Anchor hash | **`§` (section symbol)** |
+| Icons | **Lucide** (thin, elegant strokes) |
+| Blockquotes | **Large hanging quotation marks**, italic body |
+| Dividers | **Ornamental `❧` fleuron** |
+| Cards | No hover effect (static, print-like) |
+| Toggle icon | **Plus/minus** instead of triangle |
 
-Classic print/editorial aesthetic:
-- Serif fonts throughout
-- Minimal styling, clean lines
-- No shadows
-- Pilcrow (¶) for anchor hash
-- MDI Outline icon set
+### Neobrutal Preset
 
-### Playful Preset (Summary)
+**Visual Identity**: Raw anti-design, bold, intentionally "unfinished"
 
-Fun, modern aesthetic:
-- Large border radii (pill-shaped elements)
-- Soft shadows with blur
-- Scale animations on hover
-- Pill-shaped nav highlights
-- Glass-effect pinned indicator
-- Phosphor icon set
-- Arrow (→) for anchor hash
+| Feature | Implementation |
+|---------|----------------|
+| Typography | Sans-serif body, **UPPERCASE headings** |
+| Headings | **UPPERCASE**, `0.04em` tracking, **background highlight** |
+| Card titles | **UPPERCASE** |
+| Links | **Thick solid underlines (3px)** |
+| Shadows | **Hard offset shadows** (`4px 4px 0 currentColor`) |
+| Radii | **Zero everywhere** |
+| Borders | **Thick (2-3px)** |
+| Nav highlight | Solid block background |
+| Anchor hash | `#` always slightly visible (0.3 opacity) |
+| Icons | **Tabler Bold** (thick 2.5px strokes) |
+| Blockquotes | **Full box border** around entire quote |
+| Dividers | **Thick 4px solid line** |
+| Cards | **Offset shadow shift** on hover |
+| Code blocks | **Thick border**, hard shadow |
+| Tags | **Inverted colors** (dark bg, light text) |
+
+### Newspaper Preset
+
+**Visual Identity**: Editorial print, classic journalism, masthead aesthetic
+
+| Feature | Implementation |
+|---------|----------------|
+| Typography | **Serif body**, accent headings |
+| Headings | **UPPERCASE**, `-0.02em` tracking, **small-caps variant** |
+| Headings | **Rule line below** |
+| Metadata | **Small-caps** |
+| Font variant | **Oldstyle numerals** |
+| Links | **Double underlines** |
+| Shadows | **None** (print aesthetic) |
+| Radii | Near-zero (0.125rem) |
+| Borders | Thin (1px) |
+| Nav highlight | Thin underline |
+| Anchor hash | `#` |
+| Icons | **MDI Outline** (thin, classical) |
+| Blockquotes | **Indent only + inline quotation marks**, italic |
+| Dividers | **Double rule line** |
+| Cards | No hover effect |
+| Tags | **Small-caps plain text with # prefix** |
+
+### Playful Preset
+
+**Visual Identity**: Hand-drawn whimsy, marker highlights, bouncy interactions
+
+| Feature | Implementation |
+|---------|----------------|
+| Typography | Sans-serif body, **accent font headings/nav** |
+| Headings | Normal case, **rough/sketchy underline** |
+| Links | **Wavy underlines**, exaggerated hover offset |
+| Shadows | **Soft, layered** (multiple offsets) |
+| Radii | **Large/pill** (0.75rem+, 9999px for badges) |
+| Nav highlight | **Pill background** (centered) |
+| Anchor hash | **`*` (asterisk)** |
+| Icons | **Phosphor Duotone** (rounded, friendly) |
+| Blockquotes | **Rough/hand-drawn box** effect |
+| Dividers | **Dashed with `✦` ornament** |
+| Cards | **Bounce effect** on hover, saturate filter |
+| **Rough effects** | **Marker-style highlights**, sketchy boxes |
+| Highlight style | CSS gradient simulating highlighter pen |
+| Callouts | **Floating icon** with accent bg |
+| Tags | **Pill with subtle gradient** |
+| Pinned indicator | **Glass blur effect**, rotated |
 
 ---
 
-## 6. CSS Variable Emission & @apply Strategy
+## 7. CSS Variable Emission & @apply Strategy
 
 ### Core Principle: No Component Changes
 
@@ -1583,7 +2019,12 @@ This section lists EVERY styled component in `theme-constants-to-css.ts`, catego
 | `inline-block` | `@apply inline-block` | ✅ | (layout) |
 | `rounded-md` | `@apply rounded-md` | ✅ | `--t-radius-tag` |
 | `px-1` | `@apply px-1` | ✅ | `--t-tag-px` |
-| `text-sm` | `@apply text-sm` | ✅ | `--t-tag-font-size` |
+| `text-sm` | `@apply text-sm` | ✅ | `--t-font-small` |
+| `font-family` | raw CSS | ❌ | `--t-font-nav` |
+| `font-weight` | raw CSS | ❌ | `--t-weight-chip` |
+| `letter-spacing` | raw CSS | ❌ | `--t-tracking-chip` |
+| `text-transform` | raw CSS | ❌ | `--t-transform-chip` |
+| `line-height` | raw CSS | ❌ | `1.3` |
 
 #### `.count-badge` (Count Badges)
 | Property | Current | @apply? | Token |
@@ -1620,7 +2061,8 @@ This section lists EVERY styled component in `theme-constants-to-css.ts`, catego
 | `top-6 right-0 w-8 p-2 space-y-2` | `@apply top-6 right-0 w-8 p-2 space-y-2` | ✅ | `--t-toc-visual-*` |
 | `duration-500` | `@apply duration-500` | ✅ | `--t-duration-slow` |
 | `rounded-xl` | `@apply rounded-xl` | ✅ | `--t-radius-toc` |
-| `border-accent/10` | `@apply border-accent/10` | ✅ | (theme color) |
+| `background-color` | raw CSS | ❌ | `--t-surface-1` |
+| `border-color` | raw CSS | ❌ | `--t-border` |
 | `shadow-xl shadow-accent/5` | `@apply shadow-xl shadow-accent/5` | ⚠️ | `--t-shadow-toc` |
 | `w-76` | `@apply w-76` | ✅ | `--t-toc-width` |
 | `max-h-[55vh]` | `@apply max-h-[55vh]` | ✅ | `--t-toc-max-height` |
@@ -1638,6 +2080,8 @@ This section lists EVERY styled component in `theme-constants-to-css.ts`, catego
 | `translate-y-28` | `@apply translate-y-28` | ✅ | `--t-fab-hidden-translate` |
 | `shadow-lg` | `@apply shadow-lg` | ✅ | `--t-shadow-fab` |
 | `backdrop-blur-md` | `@apply backdrop-blur-md` | ✅ | `--t-fab-backdrop-blur` |
+| `background-color` | raw CSS | ❌ | `--t-surface-1` |
+| `border-color` | raw CSS | ❌ | `--t-border` |
 | `color-mix bg/border/color` | raw CSS | ❌ | `--t-fab-bg/border/text-mix` |
 | `opacity: 0.75` (svg) | raw CSS | ❌ | `--t-fab-icon-opacity` |
 | Success border | `@apply border-green-500/60` | ⚠️ | `--t-color-success-border` |
@@ -1701,7 +2145,9 @@ This section lists EVERY styled component in `theme-constants-to-css.ts`, catego
 | Property | Current | @apply? | Token |
 |----------|---------|---------|-------|
 | `line-through` | `@apply line-through` | ✅ | (style) |
-| `decoration-slate-500/50` | `@apply decoration-slate-500/50` | ⚠️ | `--t-strikethrough-color` |
+| `decoration-style` | raw CSS | ❌ | `--t-underline-annotation-style` |
+| `decoration-thickness` | raw CSS | ❌ | `--t-underline-thickness` |
+| `decoration-color` | raw CSS | ❌ | `color-mix(in srgb, var(--color-accent-2) 45%, transparent)` |
 
 #### `.author-name-link` (Author Links)
 | Property | Current | @apply? | Token |
@@ -1710,6 +2156,7 @@ This section lists EVERY styled component in `theme-constants-to-css.ts`, catego
 | `decoration-wavy` | `@apply decoration-wavy` | ⚠️ | `--t-underline-style` |
 | `decoration-accent-2/40` | `@apply decoration-accent-2/40` | ✅ | (theme color) |
 | `hover:decoration-accent-2/80` | `@apply hover:decoration-accent-2/80` | ✅ | (theme color) |
+| `hover:underline-offset` | raw CSS | ❌ | `--t-underline-offset-hover` |
 | `underline-offset-2` | `@apply underline-offset-2` | ✅ | `--t-underline-offset` |
 
 #### `.author-icon-link`
@@ -1972,70 +2419,127 @@ Same as `.nav-link::before` with different values for height/bottom.
 
 ---
 
-## 7. Icon System
+## 8. Icon System
 
-### Icon Mapping Per Theme
+### CRITICAL: Icons MUST Be Actually Different Per Theme
 
-Each theme includes its own `icons` object mapping icon names to SVG paths. This allows themes to use different icon sets (MDI, Lucide, Tabler, Phosphor, etc.).
+The current implementation has all themes sharing `classicIcons`. **This defeats the purpose of theming.** Each theme MUST have a visually distinct icon set that matches its personality.
+
+### Icon Design Language Per Theme
+
+| Theme | Icon Source | Visual Characteristics |
+|-------|-------------|----------------------|
+| **Classic** | MDI (Material Design) | Standard 24px, balanced stroke weight, filled style |
+| **Scholar** | Lucide/Feather | Thin 1.5px strokes, elegant curves, outlined |
+| **Neobrutal** | Tabler Bold | Thick 2.5px strokes, geometric, chunky |
+| **Newspaper** | MDI Outline | Thin strokes, classical proportion, outlined |
+| **Playful** | Phosphor Duotone | Rounded corners, 2px stroke, some filled accents |
+
+### Example: Pin Icon Across Themes
+
+Each theme should have noticeably different pin icons:
+
+```typescript
+// Classic: Standard pushpin (MDI)
+pin: "M16 12V4h1V2H7v2h1v8l-2 2v2h5.2v6h1.6v-6H18v-2z"
+
+// Scholar: Elegant serif-inspired marker (Lucide style)
+pin: "M12 2v8l-4 4v2h8v-2l-4-4V2m-2 0h4M8 22v-4h8v4"
+
+// Neobrutal: Bold geometric pushpin (Tabler Bold)
+pin: "M15 4.5l-4 4L7 10l1.5 1.5l-5 5l3 3l5-5L13 16l1.5-4l4-4l2-2l-3-3z M9.5 9.5l5 5"
+
+// Newspaper: Thin outlined classic pin
+pin: "M16 12V4h1V2H7v2h1v8l-2 2v2h5v6h2v-6h5v-2l-2-2zm-4 4H8.8l1.2-1.2V4h4v10.8l1.2 1.2z"
+
+// Playful: Rounded, friendly pushpin with filled head
+pin: "M9 2a1 1 0 0 0-1 1v9.586l-2.707 2.707a1 1 0 0 0 1.414 1.414L9 14.414V21a1 1 0 1 0 2 0v-6.586l2.293 2.293a1 1 0 0 0 1.414-1.414L12 12.586V3a1 1 0 0 0-1-1z"
+```
 
 ### Icon Names (Semantic)
 
-These icon names are used throughout the codebase:
+These icon names are used throughout the codebase and MUST be defined in each theme:
 
-| Icon Name | Usage |
-|-----------|-------|
-| `pin` | Pinned post indicator |
-| `tag-outline` | Tag page header |
-| `tag-multiple` | Post list header |
-| `author` | Author page header |
-| `to-top` | Scroll to top button |
-| `search` | Search button |
-| `menu` | Mobile menu toggle |
-| `next` | Pagination next |
-| `before` | Pagination previous |
-| `external-link` | External link indicator |
-| `download` | Download button |
-| `rss` | RSS feed link |
-| `theme-dark` | Dark mode icon |
-| `theme-light` | Light mode icon |
-| `theme-system` | System theme icon |
-| `checkbox-checked` | Todo checked |
-| `checkbox-unchecked` | Todo unchecked |
-| `clipboard-copy-code` | Copy code button |
-| `clipboard-copy-code-done` | Copy code success |
-| `table-of-contents` | TOC button |
-| `close` | Close button |
-| `filter` | Filter toggle |
-| `info` | Info icon |
-| `jump` | Jump to element |
-| `copy-as-markdown` | Copy markdown button |
-| (social icons) | Social links |
+| Icon Name | Usage | Theme Variation Notes |
+|-----------|-------|----------------------|
+| `pin` | Pinned post indicator | Scholar: elegant, Neobrutal: bold, Playful: rounded |
+| `tag-outline` | Tag page header | Scholar: thin, Neobrutal: thick stroke |
+| `tag-multiple` | Post list header | |
+| `author` | Author page header | Scholar: classical portrait, Playful: rounded avatar |
+| `to-top` | Scroll to top button | Playful: bouncy arrow with rounded caps |
+| `search` | Search button | Neobrutal: bold magnifier |
+| `menu` | Mobile menu toggle | Playful: rounded hamburger |
+| `next` / `before` | Pagination | Scholar: thin chevrons, Playful: rounded |
+| `external-link` | External link indicator | |
+| `download` | Download button | |
+| `rss` | RSS feed link | |
+| `theme-dark` | Dark mode icon | Playful: cute moon face |
+| `theme-light` | Light mode icon | Playful: happy sun |
+| `theme-system` | System theme icon | |
+| `checkbox-checked` | Todo checked | Playful: rounded checkbox with bounce |
+| `checkbox-unchecked` | Todo unchecked | |
+| `clipboard-copy-code` | Copy code button | |
+| `clipboard-copy-code-done` | Copy code success | |
+| `table-of-contents` | TOC button | Scholar: book-like, Newspaper: column icon |
+| `close` | Close button | |
+| `filter` | Filter toggle | |
+| `info` | Info icon | |
+| `toggle-triangle` | Toggle/collapse icon | Scholar: plus/minus, others: triangle |
+| `expand` | Expand/fullscreen | |
+| (social icons) | Social links | Keep consistent across themes |
 
-### Theme-Specific Icon Sets
+### Icons That Should Differ Most
 
-| Theme | Icon Set | Style |
-|-------|----------|-------|
-| Classic | MDI (Material Design Icons) | Filled |
-| Scholar | Lucide | Clean, minimal strokes |
-| Neobrutal | Tabler | Bold strokes |
-| Newspaper | MDI Outline | Outlined |
-| Playful | Phosphor | Rounded, friendly |
+These icons have the most visual impact and MUST be distinctly themed:
+
+1. **`pin`** — The pinned indicator is highly visible on cards
+2. **`to-top`** — Always visible floating button
+3. **`search`** — Used in header
+4. **`menu`** — Mobile nav toggle
+5. **`theme-dark`/`theme-light`** — Theme switcher
+6. **`toggle-triangle`** — Used in all toggle blocks
+7. **`checkbox-checked`/`checkbox-unchecked`** — Todo items
+8. **`author`** — Author avatars/headers
+
+### Implementation: Separate Icon Files Per Theme
+
+```
+src/themes/
+├── icons/
+│   ├── classic-icons.ts    # MDI icons
+│   ├── scholar-icons.ts    # Lucide-style icons
+│   ├── neobrutal-icons.ts  # Tabler Bold icons
+│   ├── newspaper-icons.ts  # MDI Outline icons
+│   └── playful-icons.ts    # Phosphor Duotone icons
+├── classic.ts
+├── scholar.ts
+...
+```
 
 ### Icon Component Usage
 
-The `Icon.astro` component will import the resolved theme and use its icon mapping:
+The `Icon.astro` component will use `getTextToSVGPath()` to resolve the icon path from the active theme:
 
 ```typescript
 // src/components/ui/Icon.astro
-import { resolveTheme } from "@/theme";
+import { getTextToSVGPath } from "@/theme";
 
-const theme = resolveTheme();
-const path = theme.icons[name] || "";
+const path = getTextToSVGPath(name);
+```
+
+### Fallback Strategy
+
+If a theme doesn't define an icon, fall back to classic:
+
+```typescript
+function getIconPath(name: string, theme: ThemePreset): string {
+  return theme.icons[name] ?? classicIcons[name] ?? '';
+}
 ```
 
 ---
 
-## 8. Component Styling Details
+## 9. Component Styling Details
 
 ### Pinned Post Indicator Variants
 
@@ -2068,14 +2572,14 @@ const path = theme.icons[name] || "";
 [aria-label="Pinned Post"] {
   position: relative;
   color: var(--theme-accent);
-  transform: rotate(15deg);
+  transform: rotate(12deg);
 }
 [aria-label="Pinned Post"]::before {
   content: "";
   position: absolute;
   inset: -6px;
-  background: color-mix(in srgb, var(--theme-bg) 60%, transparent);
-  backdrop-filter: blur(4px);
+  background: color-mix(in srgb, var(--theme-bg) 55%, transparent);
+  backdrop-filter: blur(8px);
   border-radius: 9999px;
   z-index: -1;
 }
@@ -2111,7 +2615,7 @@ const path = theme.icons[name] || "";
 #### Neobrutal (Solid Block)
 ```css
 .nav-link::before {
-  background: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 25%, transparent);
   height: 0.5em;
   bottom: 0;
   border-radius: 0;
@@ -2121,7 +2625,7 @@ const path = theme.icons[name] || "";
 #### Playful (Pill)
 ```css
 .nav-link::before {
-  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
   border-radius: 9999px;
   inset: 0.25em 0.5em;
   height: auto;
@@ -2134,7 +2638,7 @@ const path = theme.icons[name] || "";
 
 ---
 
-## 9. Implementation Phases
+## 10. Implementation Phases
 
 ### Phase 1: Foundation (No Visual Changes)
 1. Create `src/theme.ts` with types
@@ -2142,6 +2646,8 @@ const path = theme.icons[name] || "";
 3. Create `src/themes/classic.ts` matching current styling exactly
 4. Wire resolver into CSS generator (no output changes)
 5. **Verify**: Generated CSS is byte-for-byte identical
+6. Auto-discover any custom theme files in `src/themes` and allow `theme.preset` to use that filename (requires `<filename>Theme` export)
+7. **Verify**: Unknown preset names fall back to `classic`
 
 ### Phase 2: Emit New CSS Variables
 1. Update `theme-constants-to-css.ts` to emit all tokens as CSS vars
@@ -2153,6 +2659,7 @@ const path = theme.icons[name] || "";
 2. Start with typography, then spacing, then colors
 3. Test each component individually
 4. **Verify**: Classic preset looks identical
+5. Restore any classic-only behavior where required (e.g., body line-height, divider colors, listing spacing)
 
 ### Phase 4: Add Icon System
 1. Move icon mappings into each theme
@@ -2181,28 +2688,70 @@ const path = theme.icons[name] || "";
 
 ---
 
-## 10. Testing Checklist
+## 11. Testing Checklist
 
 ### Per-Preset Visual Tests
 - [ ] Page title styling
-- [ ] Heading hierarchy (H1-H3)
-- [ ] Paragraph and body text
+- [ ] Heading hierarchy (H1-H3) — check text-transform, decoration
+- [ ] Paragraph and body text — check font family (serif vs sans)
 - [ ] Lists (ordered, unordered)
-- [ ] Links (underline style)
-- [ ] Code blocks (inline and block)
-- [ ] Blockquotes
-- [ ] Callouts
-- [ ] Tables
+- [ ] Links (underline style) — CRITICAL: wavy/solid/double/thick
+- [ ] Code blocks (inline and block) — check border style
+- [ ] Blockquotes — CRITICAL: border-left vs quote-marks vs full-box
+- [ ] Callouts — check icon style
+- [ ] Tables — check small-caps headers
+- [ ] Dividers — CRITICAL: line vs ornament (❧/✦) vs double
 - [ ] Navigation (hover, active states)
 - [ ] Footer (links, styling)
-- [ ] Cards (gallery view)
-- [ ] Pinned indicator
-- [ ] Tags and badges
+- [ ] Cards (gallery view) — check hover effect
+- [ ] Pinned indicator — check rotation, glass effect
+- [ ] Tags and badges — check style (pill vs inverted vs underline)
 - [ ] Buttons (FAB, toggle)
 - [ ] Search dialog
 - [ ] TOC panel
 - [ ] Hero background
-- [ ] Icons (all icon types)
+- [ ] Icons (all icon types) — CRITICAL: each theme has different icons
+
+### Theme-Specific Feature Tests
+
+**Scholar:**
+- [ ] Serif body text
+- [ ] § anchor symbols
+- [ ] Hanging quotation marks on blockquotes
+- [ ] ❧ fleuron dividers
+- [ ] Small-caps in nav/metadata
+- [ ] Oldstyle numerals (if font supports)
+- [ ] Lucide icon set
+
+**Neobrutal:**
+- [ ] UPPERCASE headings
+- [ ] Zero border-radius everywhere
+- [ ] Hard offset shadows
+- [ ] Thick borders (2-3px)
+- [ ] Background highlight on headings
+- [ ] Full-box blockquotes
+- [ ] Inverted-color tags
+- [ ] Tabler Bold icons
+
+**Newspaper:**
+- [ ] Serif body text
+- [ ] UPPERCASE headings with small-caps variant
+- [ ] Rule line below headings
+- [ ] Double underline links
+- [ ] Indent-style blockquotes with inline quotes
+- [ ] Double-rule dividers
+- [ ] # prefix on tags
+- [ ] MDI Outline icons
+
+**Playful:**
+- [ ] Rough/marker highlight effect
+- [ ] Hand-drawn box effect (imperfect border-radius)
+- [ ] * anchor symbols
+- [ ] Pill nav highlights
+- [ ] Bouncy hover animations
+- [ ] Glass effect on pinned indicator
+- [ ] ✦ ornament dividers
+- [ ] Phosphor icons
 
 ### Classic Preset Parity
 - [ ] Generate CSS with classic preset
@@ -2212,6 +2761,7 @@ const path = theme.icons[name] || "";
 
 ### Cross-Preset Tests
 - [ ] Switching presets produces distinct visuals
+
 - [ ] No style bleed between presets
 - [ ] All interactive states work
 - [ ] Responsive behavior maintained
@@ -2229,13 +2779,18 @@ const path = theme.icons[name] || "";
 
 | File | Lines (est.) | Purpose |
 |------|-------------|---------|
-| `src/theme.ts` | ~300 | Types, resolver, utilities |
+| `src/theme.ts` | ~350 | Types, resolver, utilities |
 | `src/themes/index.ts` | ~50 | Preset map, exports |
-| `src/themes/classic.ts` | ~500 | Classic preset (matches current) |
-| `src/themes/scholar.ts` | ~500 | Scholar preset |
-| `src/themes/neobrutal.ts` | ~500 | Neobrutal preset |
-| `src/themes/newspaper.ts` | ~500 | Newspaper preset |
-| `src/themes/playful.ts` | ~500 | Playful preset |
+| `src/themes/classic.ts` | ~600 | Classic preset (matches current) |
+| `src/themes/scholar.ts` | ~600 | Scholar preset |
+| `src/themes/neobrutal.ts` | ~600 | Neobrutal preset |
+| `src/themes/newspaper.ts` | ~600 | Newspaper preset |
+| `src/themes/playful.ts` | ~650 | Playful preset (includes rough effects) |
+| `src/themes/icons/classic-icons.ts` | ~150 | MDI icons |
+| `src/themes/icons/scholar-icons.ts` | ~150 | Lucide-style icons |
+| `src/themes/icons/neobrutal-icons.ts` | ~150 | Tabler Bold icons |
+| `src/themes/icons/newspaper-icons.ts` | ~150 | MDI Outline icons |
+| `src/themes/icons/playful-icons.ts` | ~150 | Phosphor Duotone icons |
 
 ### Files to Modify
 

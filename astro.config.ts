@@ -105,6 +105,7 @@ export default defineConfig({
 
 			const sansFontName = fontConfig["sans-font-name"];
 			const monoFontName = fontConfig["mono-font-name"];
+			const accentFontName = fontConfig["accent-font-name"];
 
 			// Add main body/UI font (can be sans or serif typeface)
 			if (sansFontName) {
@@ -149,6 +150,22 @@ export default defineConfig({
 					weights,
 					styles,
 					fallbacks: ["monospace"],
+					optimizedFallbacks: true,
+					display: "swap",
+				});
+			}
+
+			// Add accent/heading font
+			if (accentFontName) {
+				fonts.push({
+					provider: {
+						entrypoint: new URL("./src/integrations/google-woff2-provider.mjs", import.meta.url),
+					},
+					name: accentFontName,
+					cssVariable: "--font-accent",
+					weights,
+					styles,
+					fallbacks: ["sans-serif"],
 					optimizedFallbacks: true,
 					display: "swap",
 				});

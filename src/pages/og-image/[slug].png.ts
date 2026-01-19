@@ -16,6 +16,7 @@ import {
 } from "@/lib/notion/client";
 import { getCollectionsWDesc } from "@/utils";
 import { siteInfo } from "@/siteInfo";
+import { resolveTheme } from "@/theme";
 import {
 	OG_SETUP,
 	LAST_BUILD_TIME,
@@ -41,12 +42,16 @@ const rgbToHex = (rgb: string) =>
 
 const rgbToRgba = (rgb: string, alpha: number) => `rgba(${rgb.split(" ").join(", ")}, ${alpha})`;
 
+const resolvedTheme = resolveTheme();
+const ogBorderWidth = resolvedTheme.name === "neobrutal" ? "2px" : "1px";
+const ogShadowOffset = resolvedTheme.name === "neobrutal" ? 6 : 5;
+
 const og_images_colors = {
 	backgroundColor: THEME["colors"]["bg"]["light"]
 		? rgbToHex(THEME["colors"]["bg"]["light"])
 		: "white",
-	boxShadow: `5px 5px 0px ${THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"}`,
-	border: `1px solid ${THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"}`,
+	boxShadow: `${ogShadowOffset}px ${ogShadowOffset}px 0px ${THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"}`,
+	border: `${ogBorderWidth} solid ${THEME["colors"]["accent-2"]["light"] ? rgbToHex(THEME["colors"]["accent-2"]["light"]) : "#374151"}`,
 	titleColor: THEME["colors"]["accent"]["light"]
 		? rgbToHex(THEME["colors"]["accent"]["light"])
 		: "#374151",

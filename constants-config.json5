@@ -61,8 +61,8 @@
 	// === Theme Customization ===
 	// Customize the look and feel of your site, including colors and fonts.
 	theme: {
-		// Currently only the classic theme is supported and available. Changing this changes nothing.
-		preset: "classic",
+		// Preset-based themes: classic (default), scholar, neobrutal, newspaper, playful.
+		preset: "neobrutal",
 		// Define your site's color palette.
 		// Colors MUST be in RGB format, with spaces between numbers (e.g., "255 255 255").
 		colors: {
@@ -106,6 +106,8 @@
 			// Monospace font for code blocks (e.g., "Fira Code", "JetBrains Mono")
 			// No need to escape spaces in font names!
 			"mono-font-name": "Roboto Mono",
+			// Optional accent/heading font (e.g., "Playfair Display", "DM Serif Display")
+			"accent-font-name": "Fraunces",
 		},
 		// Enable using the cover image as the hero background (with an overlay for text readability).
 		// When enabled, displays a low-opacity tinted banner behind the title/date/tags area
