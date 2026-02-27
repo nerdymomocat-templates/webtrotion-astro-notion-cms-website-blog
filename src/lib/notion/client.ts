@@ -8,6 +8,7 @@ import pngToIco from "png-to-ico";
 import path from "path";
 import {
 	NOTION_API_SECRET,
+	NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API,
 	DATABASE_ID,
 	DATA_SOURCE_ID,
 	MENU_PAGES_COLLECTION,
@@ -77,21 +78,33 @@ import type {
 	AuthorProperty,
 } from "@/lib/interfaces";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import { Client, APIResponseError } from "@notionhq/client";
+import { Client, APIResponseError, LogLevel } from "@notionhq/client";
 import { getFormattedDateWithTime } from "../../utils/date";
 import { slugify } from "../../utils/slugify";
 import { writeMdxSnippet } from "./mdx-snippet-writer";
 import { extractPageContent } from "../../lib/blog-helpers";
+import { buildMarkdownBlocks } from "../external-content/markdown-block-builder";
 import superjson from "superjson";
 
+const notionBlockApiSecret = NOTION_API_SECRET || NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API;
+const notionMarkdownApiSecret = NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API;
+
 const client = new Client({
-	auth: NOTION_API_SECRET,
+	auth: notionBlockApiSecret,
 	notionVersion: "2025-09-03",
 });
 
+const markdownClient = notionMarkdownApiSecret
+	? new Client({
+			auth: notionMarkdownApiSecret,
+			notionVersion: "2025-09-03",
+			logLevel: LogLevel.ERROR,
+		})
+	: null;
+
 let resolvedDataSourceId: string | null = null;
 
-const numberOfRetry = 2;
+const numberOfRetry = 5;
 const minTimeout = 1000; // waits 1 second before the first retry
 const factor = 2; // doubles the wait time with each retry
 
@@ -310,6 +323,138 @@ function loadBuildcache<T>(filename: string): T | null {
 		return superjson.parse(data) as T;
 	}
 	return null;
+}
+
+type RetrievePageMarkdownResponse = {
+	object: "page_markdown";
+	id: string;
+	markdown: string;
+	truncated: boolean;
+	unknown_block_ids: string[];
+};
+
+function isRestrictedResourceError(error: unknown): boolean {
+	return error instanceof APIResponseError && error.code === "restricted_resource";
+}
+
+let markdownApiRestricted = false;
+
+const UNSUPPORTED_NOTION_ENHANCED_MARKDOWN_PATTERNS: RegExp[] = [/<unknown\b/i];
+
+function hasUnsupportedNotionEnhancedMarkdown(markdown: string): boolean {
+	return UNSUPPORTED_NOTION_ENHANCED_MARKDOWN_PATTERNS.some((pattern) => pattern.test(markdown));
+}
+
+function normalizeNotionEnhancedMarkdown(markdown: string): string {
+	let normalized = markdown;
+
+	// Normalize Notion-only placeholders and trailing attribute lists for the generic markdown parser.
+	normalized = normalized.replace(/<empty-block\s*\/>/g, "");
+	normalized = normalized.replace(
+		/\s+\{(?:[^{}"']|"[^"\\]*(?:\\.[^"\\]*)*"|'[^'\\]*(?:\\.[^'\\]*)*')+\}(?=\s*$)/gm,
+		"",
+	);
+	normalized = normalized.replace(/<mention-[^>]+>(.*?)<\/mention-[^>]+>/g, "$1");
+	normalized = normalized.replace(/<mention-[^>]+\/>/g, "");
+
+	return normalized;
+}
+
+async function retrieveNotionPageMarkdown(pageId: string): Promise<string> {
+	if (!markdownClient) {
+		return "";
+	}
+
+	const markdownChunks: string[] = [];
+	const queue = [pageId];
+	const visited = new Set<string>();
+
+	while (queue.length > 0) {
+		const currentId = queue.shift();
+		if (!currentId || visited.has(currentId)) {
+			continue;
+		}
+		visited.add(currentId);
+
+		const response = await retry(
+			async (bail) => {
+				try {
+					return (await markdownClient.pages.retrieveMarkdown({
+						page_id: currentId,
+					})) as RetrievePageMarkdownResponse;
+				} catch (error: unknown) {
+					if (error instanceof APIResponseError) {
+						const status = error.status;
+						if (status && status >= 400 && status < 500 && status !== 429) {
+							bail(error);
+						}
+					}
+					throw error;
+				}
+			},
+			{
+				retries: numberOfRetry,
+				minTimeout: minTimeout,
+				factor: factor,
+			},
+		);
+
+		markdownChunks.push(response.markdown || "");
+		if (response.truncated && response.unknown_block_ids?.length) {
+			queue.push(...response.unknown_block_ids);
+		}
+	}
+
+	return markdownChunks.join("\n\n");
+}
+
+async function getAllBlocksByPageMarkdown(post: Post): Promise<Block[] | null> {
+	if (!markdownClient || markdownApiRestricted) {
+		return null;
+	}
+
+	try {
+		const markdown = await retrieveNotionPageMarkdown(post.PageId);
+		if (hasUnsupportedNotionEnhancedMarkdown(markdown)) {
+			console.warn(
+				`Page ${post.PageId} contains markdown <unknown> blocks; falling back to block API.`,
+			);
+			return null;
+		}
+
+		const normalizedMarkdown = normalizeNotionEnhancedMarkdown(markdown);
+		const blocks = buildMarkdownBlocks(normalizedMarkdown, {
+			post,
+			descriptor: {
+				type: "markdown",
+				sourceId: "notion",
+				folderName: "",
+			},
+		});
+		if (normalizedMarkdown.trim().length > 0 && blocks.length === 0) {
+			console.warn(
+				`Page ${post.PageId} markdown did not map into renderable blocks; falling back to block API.`,
+			);
+			return null;
+		}
+
+		return blocks;
+	} catch (error) {
+		if (isRestrictedResourceError(error)) {
+			if (!markdownApiRestricted) {
+				console.warn(
+					"Notion markdown endpoints are restricted for this integration; using block API fallback.",
+				);
+			}
+			markdownApiRestricted = true;
+		} else {
+			console.warn(
+				`Failed to retrieve markdown for page ${post.PageId}; falling back to block API.`,
+				error,
+			);
+		}
+		return null;
+	}
 }
 
 type QueryFilters = requestParams.CompoundFilterObject;
@@ -567,11 +712,16 @@ export async function getPostContentByPostId(post: Post): Promise<{
 		}
 	} else {
 		// CACHE MISS PATH: Post was updated or no cache exists
-		const { blocks: allBlocks, fileBlocks } = await getAllBlocksByBlockId(post.PageId);
-		blocks = allBlocks;
+		const markdownBlocks = await getAllBlocksByPageMarkdown(post);
+		if (markdownBlocks) {
+			blocks = markdownBlocks;
+		} else {
+			const { blocks: allBlocks, fileBlocks } = await getAllBlocksByBlockId(post.PageId);
+			blocks = allBlocks;
 
-		// Download all files in parallel
-		await processFileBlocks(fileBlocks);
+			// Download all files in parallel
+			await processFileBlocks(fileBlocks);
+		}
 
 		// Use unified extraction for all three types in ONE tree traversal
 		const extracted = extractPageContent(post.PageId, blocks, {

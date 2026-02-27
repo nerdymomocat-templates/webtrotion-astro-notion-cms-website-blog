@@ -62,6 +62,23 @@ Check out the [Demo with Template](https://nerdymomocat-templates.github.io/webt
 | Desktop | ![Light Mode Desktop](https://github.com/user-attachments/assets/7c7b2633-b656-4cd6-977f-c57f799350c8) | ![Dark Mode Desktop](https://github.com/user-attachments/assets/9dbdba46-4f87-4496-8e86-053e3a0171a0) |
 | Mobile  | ![Light Mode Mobile](https://github.com/user-attachments/assets/b6324270-eb43-48f2-a407-65db92d98d4e)  | ![Dark Mode Mobile](https://github.com/user-attachments/assets/4bb660f4-27c0-46f0-875e-6c43889ed94f)  |
 
+## Optional: OAuth token flow for markdown endpoints
+
+The Notion Markdown Content API requires a **public integration token**. This repo now supports two auth paths:
+
+1. **Direct integration token (existing):** set `NOTION_API_SECRET` in GitHub secrets.
+2. **Public integration OAuth token (optional):** set `NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API` in GitHub secrets.
+
+Runtime behavior:
+
+- Markdown retrieval is attempted **first** only when `NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API` is set.
+- If markdown fails/unsupported, the build falls back to block API using `NOTION_API_SECRET` (or `NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API` if direct secret is not set).
+
+### Static helper page
+
+- Hosted helper: `https://nerdymomocat.github.io/tools/webtrotion-oauth-token-generator.html`
+- Use it to start OAuth against your Worker and copy `NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API` into GitHub Secret `NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API`.
+
 # License
 
 MIT

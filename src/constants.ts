@@ -195,6 +195,10 @@ export const EXTERNAL_CONTENT_PATHS = {
 
 export const NOTION_API_SECRET =
 	import.meta.env.NOTION_API_SECRET || process.env.NOTION_API_SECRET || "";
+export const NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API =
+	import.meta.env.NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API ||
+	process.env.NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API ||
+	"";
 export const DATABASE_ID =
 	process.env.DATABASE_ID || key_value_from_json?.notion?.["database-id"] || "";
 export const DATA_SOURCE_ID =

@@ -4,6 +4,8 @@ import remarkParse from "remark-parse";
 import remarkGfm from "remark-gfm";
 import remarkFrontmatter from "remark-frontmatter";
 import remarkMdx from "remark-mdx";
+import { parseDocument, DomUtils } from "htmlparser2";
+import type { Element as ElementNode } from "domhandler";
 import type {
 	Block,
 	Footnote,
@@ -11,8 +13,8 @@ import type {
 	Annotation,
 	Paragraph as ParagraphBlock,
 	Emoji,
-} from "@/lib/interfaces";
-import type { ExternalContentDescriptor, Post } from "@/lib/interfaces";
+} from "../interfaces";
+import type { ExternalContentDescriptor, Post } from "../interfaces";
 import type {
 	Content,
 	DefinitionContent,
@@ -33,7 +35,7 @@ import type {
 } from "mdast";
 import { toString } from "mdast-util-to-string";
 import { isRelativePath, toPublicUrl } from "./external-content-utils";
-import { SHORTCODES, BASE_PATH, CUSTOM_DOMAIN } from "@/constants";
+import { SHORTCODES, BASE_PATH, CUSTOM_DOMAIN } from "../../constants";
 
 type AnnotationState = Partial<Omit<Annotation, "Color">> & {
 	color?: string;
@@ -93,6 +95,53 @@ const CALLOUT_PRESETS: Record<string, { icon: Emoji; color: string }> = {
 	WARNING: { icon: { Type: "emoji", Emoji: "⚠️" }, color: "red_background" },
 	CAUTION: { icon: { Type: "emoji", Emoji: "⚠️" }, color: "yellow_background" },
 };
+
+function normalizeNotionColor(color?: string): string | undefined {
+	if (!color) return undefined;
+	if (color.endsWith("_bg")) {
+		return `${color.slice(0, -3)}_background`;
+	}
+	return color;
+}
+
+function parseBooleanAttribute(value?: string): boolean {
+	return value === "true";
+}
+
+function extractUuidFromString(value?: string): string | null {
+	if (!value) return null;
+	const match = value.match(
+		/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32}/i,
+	);
+	if (!match) return null;
+	const candidate = match[0].toLowerCase();
+	if (candidate.includes("-")) return candidate;
+	return `${candidate.slice(0, 8)}-${candidate.slice(8, 12)}-${candidate.slice(12, 16)}-${candidate.slice(16, 20)}-${candidate.slice(20)}`;
+}
+
+function dedentNotionChildren(markdown: string): string {
+	const lines = markdown.replace(/\r/g, "").split("\n");
+	const nonEmptyLines = lines.filter((line) => line.trim().length > 0);
+	if (!nonEmptyLines.length) return "";
+	const hasUniformTabIndent = nonEmptyLines.every((line) => line.startsWith("\t"));
+	if (!hasUniformTabIndent) {
+		return markdown.trim();
+	}
+	return lines
+		.map((line) => (line.startsWith("\t") ? line.slice(1) : line))
+		.join("\n")
+		.trim();
+}
+
+function getElementAttr(node: ElementNode, keys: string[]): string | undefined {
+	for (const key of keys) {
+		const value = node.attribs?.[key];
+		if (value) {
+			return value;
+		}
+	}
+	return undefined;
+}
 
 export function buildMarkdownBlocks(markdown: string, options: BuilderOptions): Block[] {
 	const builder = new MarkdownBlockBuilder(markdown, options);
@@ -525,9 +574,443 @@ export class MarkdownBlockBuilder {
 		};
 	}
 
+	private buildInlineRichTextsFromNotionMarkdown(markdown: string, blockId: string): RichText[] {
+		const normalized = markdown
+			.replace(/<mention-[^>]+>(.*?)<\/mention-[^>]+>/g, "$1")
+			.replace(/<mention-[^>]+\/>/g, "")
+			.replace(/<span[^>]*>(.*?)<\/span>/g, "$1")
+			.trim();
+
+		if (!normalized) {
+			return [];
+		}
+
+		const tree = this.parseMarkdown(normalized);
+		const firstNode = tree.children[0];
+		if (!firstNode || firstNode.type !== "paragraph") {
+			return [createRichText(normalized)];
+		}
+
+		const footnotes: Footnote[] = [];
+		const richTexts = this.convertInlineNodes(
+			(firstNode as Paragraph).children as PhrasingContent[],
+			{
+				footnotes,
+				blockId,
+			},
+		);
+		return richTexts.length ? richTexts : [createRichText(normalized)];
+	}
+
+	private buildNotionEnhancedTableBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const tableNode = DomUtils.findOne(
+			(node) => node.type === "tag" && (node as ElementNode).name === "table",
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!tableNode) {
+			return null;
+		}
+
+		const columnNodes = DomUtils.findAll(
+			(node) => node.type === "tag" && (node as ElementNode).name === "col",
+			tableNode.children,
+			true,
+		) as ElementNode[];
+		const columnColors = columnNodes.map((node) => normalizeNotionColor(node.attribs?.color));
+
+		const rowNodes = DomUtils.findAll(
+			(node) => node.type === "tag" && (node as ElementNode).name === "tr",
+			tableNode.children,
+			true,
+		) as ElementNode[];
+		if (!rowNodes.length) {
+			return null;
+		}
+
+		const rows = rowNodes.map((rowNode) => {
+			const rowColor = normalizeNotionColor(rowNode.attribs?.color);
+			const cellNodes = DomUtils.findAll(
+				(node) =>
+					node.type === "tag" && ["td", "th"].includes((node as ElementNode).name.toLowerCase()),
+				rowNode.children,
+				false,
+			) as ElementNode[];
+			const cells = cellNodes.map((cellNode, columnIndex) => {
+				const cellColor =
+					normalizeNotionColor(cellNode.attribs?.color) ||
+					rowColor ||
+					columnColors[columnIndex] ||
+					undefined;
+				const cellMarkdown = DomUtils.getInnerHTML(cellNode).replace(/<br\s*\/?>/gi, "\n");
+				const richTexts = this.buildInlineRichTextsFromNotionMarkdown(
+					cellMarkdown,
+					this.nextBlockId("cell"),
+				);
+				return {
+					RichTexts: richTexts.length ? richTexts : [createRichText("")],
+					...(cellColor ? { Color: cellColor } : {}),
+				};
+			});
+			return {
+				Id: this.nextBlockId("row"),
+				Type: "table_row",
+				HasChildren: false,
+				Cells: cells,
+				...(rowColor ? { Color: rowColor } : {}),
+			};
+		});
+
+		const tableWidth = rows[0]?.Cells?.length || 0;
+		return {
+			Id: this.nextBlockId("table"),
+			Type: "table",
+			HasChildren: false,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			Table: {
+				TableWidth: tableWidth,
+				HasColumnHeader: parseBooleanAttribute(tableNode.attribs?.["header-row"]),
+				HasRowHeader: parseBooleanAttribute(tableNode.attribs?.["header-column"]),
+				Rows: rows,
+				...(normalizeNotionColor(tableNode.attribs?.color)
+					? { Color: normalizeNotionColor(tableNode.attribs?.color) }
+					: {}),
+			},
+		};
+	}
+
+	private buildNotionEnhancedSyncedBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const syncedNode = DomUtils.findOne(
+			(node) =>
+				node.type === "tag" &&
+				["synced_block", "synced_block_reference"].includes((node as ElementNode).name),
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!syncedNode) {
+			return null;
+		}
+
+		const isReference = syncedNode.name === "synced_block_reference";
+		const syncedFromId = isReference ? extractUuidFromString(syncedNode.attribs?.url) : null;
+		const childrenMarkdown = dedentNotionChildren(DomUtils.getInnerHTML(syncedNode));
+		const children = childrenMarkdown
+			? this.convertNodes(this.parseMarkdown(childrenMarkdown).children, [], "synced")
+			: [];
+
+		return {
+			Id: this.nextBlockId("synced"),
+			Type: "synced_block",
+			HasChildren: children.length > 0,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			SyncedBlock: {
+				SyncedFrom: syncedFromId ? { BlockId: syncedFromId } : null,
+				Children: children,
+			},
+		};
+	}
+
+	private buildNotionEnhancedColumnsBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const containerNode = DomUtils.findOne(
+			(node) =>
+				node.type === "tag" &&
+				["columns", "tabs"].includes((node as ElementNode).name.toLowerCase()),
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!containerNode) {
+			return null;
+		}
+
+		const childTagName = containerNode.name.toLowerCase() === "tabs" ? "tab" : "column";
+		const childNodes = containerNode.children.filter(
+			(node) => node.type === "tag" && (node as ElementNode).name.toLowerCase() === childTagName,
+		) as ElementNode[];
+		if (!childNodes.length) {
+			return null;
+		}
+
+		const columns = childNodes.map((childNode) => {
+			const childrenMarkdown = dedentNotionChildren(DomUtils.getInnerHTML(childNode));
+			const childBlocks = childrenMarkdown
+				? this.convertNodes(this.parseMarkdown(childrenMarkdown).children, [], childTagName)
+				: [];
+			const tabTitle = getElementAttr(childNode, ["title", "name", "label"]);
+			if (tabTitle) {
+				childBlocks.unshift({
+					Id: this.nextBlockId("tab-title"),
+					Type: "paragraph",
+					HasChildren: false,
+					LastUpdatedTimeStamp: this.lastUpdated,
+					Paragraph: {
+						RichTexts: [createRichText(tabTitle)],
+						Color: "default",
+					},
+				});
+			}
+			return {
+				Id: this.nextBlockId(childTagName),
+				Type: "column",
+				HasChildren: childBlocks.length > 0,
+				Children: childBlocks,
+			};
+		});
+
+		return {
+			Id: this.nextBlockId(containerNode.name.toLowerCase()),
+			Type: "column_list",
+			HasChildren: columns.length > 0,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			ColumnList: {
+				Columns: columns,
+			},
+		};
+	}
+
+	private buildNotionEnhancedToggleBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const detailsNode = DomUtils.findOne(
+			(node) => node.type === "tag" && (node as ElementNode).name.toLowerCase() === "details",
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!detailsNode) {
+			return null;
+		}
+
+		const summaryNode = detailsNode.children.find(
+			(node) => node.type === "tag" && (node as ElementNode).name.toLowerCase() === "summary",
+		) as ElementNode | undefined;
+		const summaryMarkdown = summaryNode ? DomUtils.getInnerHTML(summaryNode) : "";
+		const summaryHtml = summaryNode ? DomUtils.getOuterHTML(summaryNode) : "";
+		const childrenHtml = summaryHtml
+			? DomUtils.getInnerHTML(detailsNode).replace(summaryHtml, "")
+			: DomUtils.getInnerHTML(detailsNode);
+		const childrenMarkdown = dedentNotionChildren(childrenHtml);
+		const children = childrenMarkdown
+			? this.convertNodes(this.parseMarkdown(childrenMarkdown).children, [], "toggle")
+			: [];
+
+		return {
+			Id: this.nextBlockId("toggle"),
+			Type: "toggle",
+			HasChildren: children.length > 0,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			Toggle: {
+				RichTexts: this.buildInlineRichTextsFromNotionMarkdown(
+					summaryMarkdown || "Toggle",
+					this.nextBlockId("toggle-summary"),
+				),
+				Color: normalizeNotionColor(detailsNode.attribs?.color) || "default",
+				Children: children,
+			},
+		};
+	}
+
+	private buildNotionEnhancedTableOfContentsBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const tocNode = DomUtils.findOne(
+			(node) =>
+				node.type === "tag" && (node as ElementNode).name.toLowerCase() === "table_of_contents",
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!tocNode) {
+			return null;
+		}
+
+		return {
+			Id: this.nextBlockId("toc"),
+			Type: "table_of_contents",
+			HasChildren: false,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			TableOfContents: {
+				Color: normalizeNotionColor(tocNode.attribs?.color) || "default",
+			},
+		};
+	}
+
+	private buildNotionEnhancedMediaBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const mediaNode = DomUtils.findOne(
+			(node) =>
+				node.type === "tag" &&
+				["audio", "video", "file", "pdf"].includes((node as ElementNode).name.toLowerCase()),
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!mediaNode) {
+			return null;
+		}
+
+		const src = this.resolveAssetUrl(mediaNode.attribs?.src || "");
+		if (!src) {
+			return null;
+		}
+
+		const captionText = DomUtils.textContent(mediaNode)?.trim() || "";
+		const caption = captionText
+			? this.buildInlineRichTextsFromNotionMarkdown(captionText, this.nextBlockId("caption"))
+			: [];
+
+		if (mediaNode.name.toLowerCase() === "audio") {
+			return {
+				Id: this.nextBlockId("audio"),
+				Type: "audio",
+				HasChildren: false,
+				LastUpdatedTimeStamp: this.lastUpdated,
+				NAudio: {
+					Type: "external",
+					External: { Url: src },
+					Caption: caption,
+				},
+			};
+		}
+
+		if (mediaNode.name.toLowerCase() === "video") {
+			return {
+				Id: this.nextBlockId("video"),
+				Type: "video",
+				HasChildren: false,
+				LastUpdatedTimeStamp: this.lastUpdated,
+				Video: {
+					Type: "external",
+					External: { Url: src },
+					Caption: caption,
+				},
+			};
+		}
+
+		return {
+			Id: this.nextBlockId("file"),
+			Type: "file",
+			HasChildren: false,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			File: {
+				Type: "external",
+				External: { Url: src },
+				Caption: caption,
+			},
+		};
+	}
+
+	private buildNotionEnhancedReferenceBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const referenceNode = DomUtils.findOne(
+			(node) =>
+				node.type === "tag" &&
+				["page", "database"].includes((node as ElementNode).name.toLowerCase()),
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!referenceNode) {
+			return null;
+		}
+
+		const url = referenceNode.attribs?.url || "";
+		const title = DomUtils.textContent(referenceNode)?.trim() || "Untitled";
+		if (referenceNode.name.toLowerCase() === "page") {
+			const pageId = extractUuidFromString(url);
+			if (pageId) {
+				return {
+					Id: this.nextBlockId("page"),
+					Type: "link_to_page",
+					HasChildren: false,
+					LastUpdatedTimeStamp: this.lastUpdated,
+					LinkToPage: {
+						Type: "page_id",
+						PageId: pageId,
+					},
+				};
+			}
+		}
+
+		return {
+			Id: this.nextBlockId("reference"),
+			Type: "embed",
+			HasChildren: false,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			Embed: {
+				Url: this.resolveAssetUrl(url),
+				Caption: title ? [createRichText(title)] : [],
+			},
+		};
+	}
+
+	private buildNotionEnhancedMeetingNotesBlock(raw: string): Block | null {
+		const document = parseDocument(raw);
+		const meetingNotesNode = DomUtils.findOne(
+			(node) => node.type === "tag" && (node as ElementNode).name.toLowerCase() === "meeting-notes",
+			document.children,
+			true,
+		) as ElementNode | null;
+		if (!meetingNotesNode) {
+			return null;
+		}
+
+		const childrenMarkdown = dedentNotionChildren(DomUtils.getInnerHTML(meetingNotesNode));
+		const children = childrenMarkdown
+			? this.convertNodes(this.parseMarkdown(childrenMarkdown).children, [], "meeting-notes")
+			: [];
+		return {
+			Id: this.nextBlockId("meeting-notes"),
+			Type: "toggle",
+			HasChildren: children.length > 0,
+			LastUpdatedTimeStamp: this.lastUpdated,
+			Toggle: {
+				RichTexts: [createRichText("Meeting notes")],
+				Color: "default",
+				Children: children,
+			},
+		};
+	}
+
 	private buildHtmlBlock(node: HTML): Block | null {
 		const raw = typeof node.value === "string" ? node.value : "";
 		if (!raw.trim()) return null;
+
+		const notionTable = this.buildNotionEnhancedTableBlock(raw);
+		if (notionTable) {
+			return notionTable;
+		}
+
+		const notionSyncedBlock = this.buildNotionEnhancedSyncedBlock(raw);
+		if (notionSyncedBlock) {
+			return notionSyncedBlock;
+		}
+
+		const notionColumns = this.buildNotionEnhancedColumnsBlock(raw);
+		if (notionColumns) {
+			return notionColumns;
+		}
+
+		const notionToggle = this.buildNotionEnhancedToggleBlock(raw);
+		if (notionToggle) {
+			return notionToggle;
+		}
+
+		const notionToc = this.buildNotionEnhancedTableOfContentsBlock(raw);
+		if (notionToc) {
+			return notionToc;
+		}
+
+		const notionMedia = this.buildNotionEnhancedMediaBlock(raw);
+		if (notionMedia) {
+			return notionMedia;
+		}
+
+		const notionReference = this.buildNotionEnhancedReferenceBlock(raw);
+		if (notionReference) {
+			return notionReference;
+		}
+
+		const notionMeetingNotes = this.buildNotionEnhancedMeetingNotesBlock(raw);
+		if (notionMeetingNotes) {
+			return notionMeetingNotes;
+		}
 
 		const rewritten = raw.replace(/(src|href)=(["'])([^"']+)\2/gi, (_, attr, quote, url) => {
 			const resolved = this.resolveAssetUrl(url);

@@ -10,6 +10,8 @@ declare module "@pagefind/default-ui" {
 
 interface ImportMetaEnv {
 	readonly WEBMENTION_API_KEY: string;
+	readonly NOTION_API_SECRET: string;
+	readonly NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API: string;
 }
 
 interface ImportMeta {

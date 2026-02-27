@@ -109,13 +109,12 @@ export default defineConfig({
 			// Add main body/UI font (can be sans or serif typeface)
 			if (sansFontName) {
 				fonts.push({
-					provider: {
-						entrypoint: new URL("./src/integrations/google-woff2-provider.mjs", import.meta.url),
-					},
+					provider: fontProviders.google(),
 					name: sansFontName,
 					cssVariable: "--font-sans",
 					weights,
 					styles,
+					formats: ["woff2"],
 					fallbacks: ["sans-serif"],
 					optimizedFallbacks: true,
 					display: "swap",
@@ -127,13 +126,12 @@ export default defineConfig({
 				// If mono is the ONLY font set, also use it for body text (--font-sans)
 				if (!sansFontName) {
 					fonts.push({
-						provider: {
-							entrypoint: new URL("./src/integrations/google-woff2-provider.mjs", import.meta.url),
-						},
+						provider: fontProviders.google(),
 						name: monoFontName,
 						cssVariable: "--font-sans",
 						weights,
 						styles,
+						formats: ["woff2"],
 						fallbacks: ["monospace", "sans-serif"],
 						optimizedFallbacks: true,
 						display: "swap",
@@ -141,13 +139,12 @@ export default defineConfig({
 				}
 				// Always add mono to --font-mono for code blocks
 				fonts.push({
-					provider: {
-						entrypoint: new URL("./src/integrations/google-woff2-provider.mjs", import.meta.url),
-					},
+					provider: fontProviders.google(),
 					name: monoFontName,
 					cssVariable: "--font-mono",
 					weights,
 					styles,
+					formats: ["woff2"],
 					fallbacks: ["monospace"],
 					optimizedFallbacks: true,
 					display: "swap",

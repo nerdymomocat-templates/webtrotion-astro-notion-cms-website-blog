@@ -21,6 +21,7 @@ concurrency:
 env:
   BUILD_PATH: "."
   NOTION_API_SECRET: ${{ secrets.NOTION_API_SECRET }}
+  NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API: ${{ secrets.NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API }}
   DELETE_CACHES_GH_TOKEN: ${{ secrets.DELETE_CACHES_GH_TOKEN }}
 
 jobs:
@@ -297,11 +298,13 @@ jobs:
       - name: Set and log environment secrets and variables and then Build with Astro and postbuild for pagefind
         env:
           NOTION_API_SECRET: ${{ env.NOTION_API_SECRET }}
+          NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API: ${{ env.NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API }}
           GITHUB_PAGES: true
           SITE: ${{ steps.pages.outputs.origin }}
           BASE: ${{ steps.pages.outputs.base_path }}
         run: |
           echo "NOTION_API_SECRET = $NOTION_API_SECRET"
+          echo "NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API = ${NOTION_OAUTH_TOKEN_FOR_MARKDOWN_API:+[set]}"
           echo "GITHUB_PAGES = $GITHUB_PAGES"
           echo "SITE = $SITE"
           echo "BASE = $BASE"

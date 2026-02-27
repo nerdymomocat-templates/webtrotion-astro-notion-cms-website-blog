@@ -246,6 +246,7 @@ export interface Table {
 	HasColumnHeader: boolean;
 	HasRowHeader: boolean;
 	Rows: TableRow[];
+	Color?: string;
 }
 
 export interface TableRow {
@@ -253,10 +254,12 @@ export interface TableRow {
 	Type: string;
 	HasChildren: boolean;
 	Cells: TableCell[];
+	Color?: string;
 }
 
 export interface TableCell {
 	RichTexts: RichText[];
+	Color?: string;
 }
 
 export interface ColumnList {
