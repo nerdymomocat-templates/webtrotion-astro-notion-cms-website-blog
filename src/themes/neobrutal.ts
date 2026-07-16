@@ -7,7 +7,7 @@ import type { ThemeTemplateParams } from "./css-template-types";
 export const neobrutalOverride = (params: ThemeTemplateParams): string => `
 @layer components {
 .ann-bg-c {
-    @apply rounded-sm px-1;
+    @apply rounded-none px-1;
     background-color: var(--abc, transparent);
   }
 .annotation-underline {
@@ -21,7 +21,7 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     @apply border-gray-400;
   }
 .author-name-link {
-    @apply transition-colors border-b-2 border-gray-200 px-1 font-bold uppercase tracking-[0.18em];
+    @apply transition-colors underline decoration-2 underline-offset-4 px-1 font-bold uppercase tracking-[0.18em];
   }
 .author-name-link:hover {
     @apply bg-accent/20;
@@ -66,7 +66,9 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: 3px 3px 0 var(--nb-shadow);
   }
 .divider {
-    @apply bg-accent/30 mx-auto w-full border-none my-6 h-2 rounded-none;
+    @apply mx-auto w-full border-none my-6 rounded-none;
+    height: 3px;
+    background-color: var(--nb-ink);
   }
 .footer-link {
     @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 uppercase tracking-[0.12em] border-2 border-gray-200 bg-bgColor font-sans;
@@ -143,7 +145,7 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: 6px 6px 0 var(--nb-shadow);
   }
 .non-toggle-h2 {
-    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.14em] font-sans;
+    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.14em] border-b-2 border-accent-2/70 pb-1 font-sans;
   }
 .non-toggle-h2::before {
     content: "■";
@@ -155,16 +157,18 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .notion-divider {
-    @apply bg-accent-2/10 mx-auto w-full border-none my-6 h-2 rounded-none;
+    @apply mx-auto w-full border-none my-6 rounded-none;
+    height: 3px;
+    background-color: var(--nb-ink);
   }
 .notion-h1 {
-    @apply cursor-pointer text-2xl mt-10 mb-2 font-black uppercase tracking-[0.14em] border-b-4 border-accent-2/40 pb-2 font-sans;
+    @apply cursor-pointer text-2xl mt-10 mb-2 font-black uppercase tracking-[0.14em] border-b-4 border-accent-2/70 pb-2 font-sans;
   }
 .notion-h2 {
-    @apply cursor-pointer text-xl mt-8 mb-2 font-bold uppercase tracking-[0.12em] border-b-2 border-accent-2/30 pb-1 font-sans;
+    @apply cursor-pointer text-xl mt-8 mb-2 font-bold uppercase tracking-[0.12em] border-b-2 border-accent-2/70 pb-1 font-sans;
   }
 .notion-h3 {
-    @apply cursor-pointer text-lg mt-6 mb-2 font-bold uppercase tracking-[0.1em] border-b-2 border-accent-2/20 pb-1 font-sans;
+    @apply cursor-pointer text-lg mt-6 mb-2 font-bold uppercase tracking-[0.1em] border-b-2 border-accent-2/70 pb-1 font-sans;
   }
 .notion-list-ol {
     @apply list-outside space-y-2 pl-7;
@@ -183,7 +187,10 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: 3px 3px 0 var(--nb-shadow);
   }
 .nquote {
-    @apply border-gray-600 dark:border-gray-300 my-6 border-s-[6px] px-3! py-2 bg-accent/5;
+    @apply my-6 border-s-8 px-4! py-3 rounded-none font-medium;
+    border-inline-start-color: var(--nb-ink);
+    background-color: color-mix(in srgb, var(--color-accent) 12%, var(--color-bgColor));
+    box-shadow: 6px 6px 0 var(--nb-shadow);
   }
 .search-btn {
     @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-none border-2;
@@ -210,7 +217,7 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: 3px 3px 0 var(--nb-shadow);
   }
 .title {
-    @apply text-3xl text-accent-2 font-black uppercase tracking-[0.18em] border-b-4 border-accent-2/60 pb-2 font-sans;
+    @apply text-3xl text-accent-2 font-black uppercase tracking-[0.18em] border-b-4 border-accent-2/70 pb-2 font-sans;
   }
 .to-top-btn {
     @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden rounded-none border-2;
@@ -240,7 +247,7 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: none;
   }
 #auto-recent-posts {
-    @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-sans;
+    @apply relative mt-8 mb-4 cursor-pointer text-2xl font-bold uppercase tracking-[0.14em] font-sans;
   }
 #auto-recent-posts::before {
     content: "■";
@@ -257,7 +264,9 @@ a[aria-label^="View posts by"] {
 }
 @layer components {
 .auto-imported-section > hr {
-    @apply mx-auto w-full border-none bg-accent/40 my-6 h-2 rounded-none;
+    @apply mx-auto w-full border-none my-6 rounded-none;
+    height: 3px;
+    background-color: var(--nb-ink);
   }
 }
 @layer components {
@@ -281,6 +290,9 @@ a[aria-label^="View posts with the tag:"] > span,
 @layer components {
 details.toggle[open] > summary > div > .rotate-svg {
     @apply rotate-90;
+  }
+details.toggle > summary .rotate-svg {
+    @apply h-5 w-5;
   }
 }
 @media (max-width: 640px) {
@@ -334,7 +346,7 @@ details.toggle[open] > summary > div > .rotate-svg {
     transform: translateY(-3px);
 }
 [data-margin-note].highlighted {
-    @apply rounded px-[2px] -mx-[2px];
+    @apply rounded-none px-[2px] -mx-[2px];
     background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
   /* This prevents the padding from shifting surrounding text */
 }
@@ -378,7 +390,7 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply text-quote bg-transparent font-semibold;
   }
 .footnote-margin-note.highlighted > :first-child > :first-child {
-    @apply rounded px-[2px] -mx-[2px];
+    @apply rounded-none px-[2px] -mx-[2px];
     background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
     color: var(--color-quote);
   /* Prevents padding from shifting text */
@@ -432,6 +444,11 @@ html {
   --nb-ink: color-mix(in srgb, var(--color-textColor) 90%, var(--color-bgColor));
   --nb-shadow: color-mix(in srgb, var(--color-textColor) 82%, transparent);
 }
+/* One hard-offset elevation token for all card-like blocks (search-dialog keeps its own 8px, notion-tab-block its 5px, defined later). */
+:is(.callout, .bookmark-card, .code, .ntable table, .notion-tab-block,
+    .notion-image, .embed-media-box) {
+  box-shadow: 6px 6px 0 var(--nb-shadow);
+}
 html site-search {
   --pf-border-radius: 0;
   --pf-shadow: 6px 6px 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
@@ -450,7 +467,7 @@ html .webtrotion-search-subresult-link {
 
 
 /* Component radius (new astro-v7 components -> theme radius scale) */
-html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-file-container, .notion-file-link, .notion-tab-button, .notion-tab-button.is-active, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
+html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-image-container, .equation, .callout-icon, .todo-checkbox-wrapper, .ncolumns, .notion-file-container, .notion-file-link, .notion-tab-button, .notion-tab-button.is-active, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
     border-radius: 0;
   }
 html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annotation-code, .toc-link, .toc-visual) {
@@ -469,8 +486,16 @@ html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annota
     a[aria-label^="View all posts with the tag:"] > span,
     a[aria-label^="View posts with the tag:"] > span,
     a[aria-label^="View posts by"], a[aria-label^="View posts by"] > span,
+    .notion-image, .embed-media-box, .equation,
     h1.title > span) {
   border-color: var(--nb-ink) !important;
+}
+
+/* Neobrutal is strictly square — no radius anywhere on chrome/blocks */
+html :is(.count-badge, .todo-item-colored, [data-margin-note].highlighted,
+    .notion-tab-button, .notion-tab-button.is-active, .author-icon-link,
+    .author-name-link, .search-close-btn, .ann-bg-c) {
+  border-radius: 0 !important;
 }
 
 /* Code blocks — ink frame + hard offset shadow (border on the clipping scroll box, shadow on outer .code) */
@@ -529,6 +554,43 @@ site-search .pf-dropdown-trigger {
   border-radius: 0 !important;
   border: 2px solid var(--nb-ink);
   box-shadow: 2px 2px 0 var(--nb-shadow);
+}
+
+/* Images — brutalist ink frame (shadow + radius handled by shared elevation/radius lists) */
+.notion-image {
+  border: 2px solid var(--nb-ink);
+}
+
+/* Embeds — ink frame so working iframes and failure states are contained (shadow/radius via shared lists) */
+.embed-media-box {
+  border: 2px solid var(--nb-ink);
+}
+
+/* Equation block — parity with quote/callout */
+.equation {
+  @apply rounded-none border-2 px-3 py-2 my-3 overflow-x-auto;
+  border-color: var(--nb-ink);
+  box-shadow: 4px 4px 0 var(--nb-shadow);
+}
+
+/* Todo checkboxes — full-contrast bordered square (checked/unchecked driven by icon swap, not CSS) */
+.todo-checkbox-icon {
+  @apply h-5 w-5 rounded-none border-2;
+  border-color: var(--nb-ink);
+  color: var(--color-textColor);
+}
+
+/* Columns — hard inter-column rule + gutter (parent .notion-column-list is flex) */
+.notion-column-list > .ncolumns + .ncolumns {
+  border-inline-start: 2px solid var(--nb-ink);
+  padding-inline-start: 1rem;
+}
+
+/* Callout icon — square boxed tile backing */
+.callout-icon {
+  @apply mr-3 flex h-6 w-6 shrink-0 items-center justify-center rounded-none border-2 leading-6;
+  border-color: var(--nb-ink);
+  background-color: var(--color-bgColor);
 }
 `;
 

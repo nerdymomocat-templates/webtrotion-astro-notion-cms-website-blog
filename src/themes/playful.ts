@@ -30,16 +30,18 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     @apply border-gray-400;
   }
 .author-name-link {
-    @apply underline decoration-wavy transition-colors decoration-accent/60 underline-offset-4 font-medium tracking-[0.08em];
+    @apply underline decoration-wavy decoration-1 transition-colors decoration-accent/60 underline-offset-4 font-medium;
   }
 .author-name-link:hover {
     @apply decoration-accent/90 text-quote;
   }
 .auto-imported-section {
-    @apply mt-12 border-t-2 border-dashed border-accent/30 pt-4;
+    @apply mt-12 border-t border-accent/15 pt-4;
   }
 .bookmark-card {
-    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden border-gray-200 no-underline select-none dark:border-gray-800 rounded-2xl border-2 border-dashed;
+    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden no-underline select-none border-2 border-solid;
+    border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 225px 15px 255px 15px / 15px 255px 15px 225px;
     box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
 .bottom-toc-button {
@@ -54,27 +56,31 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     color: color-mix(in srgb, var(--color-accent) 85%, var(--color-bgColor));
   }
 .callout {
-    @apply mx-auto flex w-full max-w-full px-3 py-4 leading-6 my-3 rounded-3xl border-2 border-dashed border-gray-200;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 14%, transparent);
+    @apply mx-auto flex w-full max-w-full px-3 py-4 leading-6 my-3 border-2 border-solid;
+    border-color: color-mix(in srgb, var(--color-accent) 25%, transparent);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 10%, transparent);
   }
 .copy-markdown-btn {
     @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-full flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden border-2 border-dashed shadow-none;
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 20%, transparent);
   }
 .count-badge {
-    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-full border border-dashed border-gray-200 dark:border-gray-700;
+    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-full font-mono;
   }
 .dark .footer-link::before {
-    background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent) 24%, transparent) 0, color-mix(in srgb, var(--color-accent) 24%, transparent) 6px, transparent 6px, transparent 10px );
+    background-image: none;
+    background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
 .dark .nav-link::before {
-    background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent) 24%, transparent) 0, color-mix(in srgb, var(--color-accent) 24%, transparent) 6px, transparent 6px, transparent 10px );
+    background-image: none;
+    background-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
   }
 .divider {
-    @apply mx-auto w-full bg-transparent my-6 h-0 rounded-full border-2 border-dashed border-accent/40;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-accent/25;
   }
 .footer-link {
-    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 tracking-[0.08em] font-accent;
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 tracking-[0.08em];
   }
 .footer-link::before {
     content: "";
@@ -84,7 +90,7 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     bottom: 0.05em;
     height: 0.5em;
     border-radius: 0.6em 0.3em;
-    background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent) 18%, transparent) 0, color-mix(in srgb, var(--color-accent) 18%, transparent) 6px, transparent 6px, transparent 10px );
+    background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 200ms ease;
@@ -96,7 +102,7 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent-2) 24%, transparent) 0, color-mix(in srgb, var(--color-accent-2) 24%, transparent) 6px, transparent 6px, transparent 10px );
   }
 .footer-nav {
-    @apply flex flex-wrap gap-x-2 rounded-sm border-t-2 border-b-2 border-gray-200 sm:gap-x-2 sm:border-none dark:border-gray-700 print:hidden border-dashed;
+    @apply flex flex-wrap gap-x-2 rounded-sm border-t border-b border-accent/15 sm:gap-x-2 sm:border-none print:hidden;
   }
 .hasId::before {
     content: "~";
@@ -108,12 +114,14 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .mdx-notion h1,
-  .mdx-notion h2,
-  .mdx-notion h3 {
+  .mdx-notion h2 {
     @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
   }
+.mdx-notion h3 {
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3;
+  }
 .nav-link {
-    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left tracking-[0.08em] font-accent;
+    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left tracking-[0.08em];
   }
 .nav-link::before {
     content: "";
@@ -123,7 +131,7 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     bottom: 0.05em;
     height: 0.5em;
     border-radius: 0.6em 0.3em;
-    background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent) 18%, transparent) 0, color-mix(in srgb, var(--color-accent) 18%, transparent) 6px, transparent 6px, transparent 10px );
+    background-color: color-mix(in srgb, var(--color-accent) 22%, transparent);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 200ms ease;
@@ -135,7 +143,7 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     background-image: repeating-linear-gradient( -12deg, color-mix(in srgb, var(--color-accent-2) 24%, transparent) 0, color-mix(in srgb, var(--color-accent-2) 24%, transparent) 6px, transparent 6px, transparent 10px );
   }
 .nav-menu {
-    @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 rounded-2xl border-2 border-dashed border-gray-200;
+    @apply bg-bgColor/95 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end py-2 text-base shadow-lg backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 rounded-2xl border border-accent/15 sm:border-none;
   }
 .non-toggle-h2 {
     @apply relative mb-4 cursor-pointer text-2xl font-normal tracking-[0.08em] font-accent;
@@ -150,16 +158,28 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .notion-divider {
-    @apply mx-auto w-full bg-transparent my-6 h-0 rounded-full border-2 border-dashed border-accent-2/40;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-accent-2/30;
   }
 .notion-h1 {
-    @apply cursor-pointer text-2xl font-semibold mt-10 mb-2 tracking-[0.05em] underline decoration-wavy decoration-accent/50 underline-offset-4 font-accent;
+    @apply cursor-pointer text-2xl font-semibold mt-10 mb-2 tracking-[0.05em] font-accent;
+    background-image: repeating-linear-gradient( -8deg, color-mix(in srgb, var(--color-accent) 18%, transparent) 0, color-mix(in srgb, var(--color-accent) 18%, transparent) 8px, transparent 8px, transparent 12px );
+    background-repeat: no-repeat;
+    background-size: 100% 0.5em;
+    background-position: 0 92%;
   }
 .notion-h2 {
-    @apply cursor-pointer text-xl font-semibold mt-8 mb-2 tracking-[0.05em] underline decoration-wavy decoration-accent/50 underline-offset-4 font-accent;
+    @apply cursor-pointer text-xl font-semibold mt-8 mb-2 tracking-[0.05em];
+    background-image: repeating-linear-gradient( -8deg, color-mix(in srgb, var(--color-accent) 15%, transparent) 0, color-mix(in srgb, var(--color-accent) 15%, transparent) 8px, transparent 8px, transparent 12px );
+    background-repeat: no-repeat;
+    background-size: 100% 0.45em;
+    background-position: 0 92%;
   }
 .notion-h3 {
-    @apply cursor-pointer text-lg font-semibold mt-6 mb-2 tracking-[0.05em] underline decoration-wavy decoration-accent/50 underline-offset-4 font-accent;
+    @apply cursor-pointer text-lg font-semibold mt-6 mb-2 tracking-[0.05em];
+    background-image: repeating-linear-gradient( -8deg, color-mix(in srgb, var(--color-accent) 13%, transparent) 0, color-mix(in srgb, var(--color-accent) 13%, transparent) 8px, transparent 8px, transparent 12px );
+    background-repeat: no-repeat;
+    background-size: 100% 0.4em;
+    background-position: 0 92%;
   }
 .notion-list-ol {
     @apply list-outside space-y-2 pl-7;
@@ -174,7 +194,9 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
   a[aria-label^="View more blogs with the tag"],
   a[aria-label^="View all posts with the tag:"],
   a[data-pagefind-filter="tags"] {
-    @apply rounded-full border-2 border-dashed border-gray-200 px-3 py-0.5 font-medium tracking-[0.08em];
+    @apply border-2 border-solid px-3 py-0.5 font-medium tracking-[0.08em];
+    border-color: color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border-radius: 120px 18px 120px 18px / 18px 120px 18px 120px;
     background-image: linear-gradient(
       135deg,
       color-mix(in srgb, var(--color-accent) 10%, transparent),
@@ -182,46 +204,65 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     );
   }
 .nquote {
-    @apply my-4 border-s-4 border-gray-600 dark:border-gray-300 border-dashed px-3! py-2 bg-accent/5;
+    @apply relative my-4 border-s-4 border-solid px-4! py-3 bg-accent/8;
+    border-inline-start-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+.nquote::before,
+  .nquote::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    width: 0.7rem;
+    height: 0;
+    border-top: 4px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
+  }
+.nquote::before {
+    top: 0;
+  }
+.nquote::after {
+    bottom: 0;
   }
 .search-btn {
-    @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-full border-2 border-dashed;
+    @apply hover:text-accent hover:bg-accent/10 active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,background-color,transform] duration-150 ease-out rounded-full border-2 border-dashed;
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
 .search-close-btn {
     @apply ms-auto cursor-pointer rounded-full border-2 border-dashed bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
   }
 .search-dialog {
-    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border-2 border-dashed border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-2xl;
+    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border border-solid border-accent/25 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-2xl;
     box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
 .search-frame {
     @apply flex flex-col gap-4 p-6 pt-12 sm:pt-6;
   }
 .site-footer {
-    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t-2 border-dashed border-gray-200;
+    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t border-accent/15;
+  }
+.site-name {
+    @apply font-accent;
   }
 .site-page-link {
-    @apply underline decoration-wavy decoration-from-font decoration-4 decoration-accent-2/70 hover:decoration-accent-2/90 underline-offset-5 tracking-[0.1em] font-accent;
+    @apply underline decoration-wavy decoration-from-font decoration-4 decoration-accent-2/70 hover:decoration-accent-2/90 underline-offset-5 tracking-[0.06em];
   }
 .theme-toggle-btn {
-    @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-full border-2 border-dashed;
+    @apply hover:text-accent hover:bg-accent/10 active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,background-color,transform] duration-150 ease-out rounded-full border-2 border-dashed;
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
 .title {
-    @apply text-3xl text-accent-2 font-extrabold tracking-[0.1em] font-accent;
+    @apply text-3xl text-accent-2 font-extrabold tracking-[0.04em] font-accent;
   }
 .to-top-btn {
     @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden border-2 border-dashed;
     box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 20%, transparent);
   }
 .toc-content {
-    @apply border-accent/10 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto p-2 transition-[opacity,transform] duration-200 ease-out sm:top-0 sm:bottom-auto sm:max-h-[68vh] rounded-2xl border-2 border-dashed;
+    @apply border-accent/15 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto p-2 transition-[opacity,transform] duration-200 ease-out sm:top-0 sm:bottom-auto sm:max-h-[68vh] rounded-2xl border border-solid;
     background-image: repeating-linear-gradient( -6deg, color-mix(in srgb, var(--color-accent) 6%, transparent) 0, color-mix(in srgb, var(--color-accent) 6%, transparent) 10px, transparent 10px, transparent 16px );
     box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
   }
 .toc-content .text-quote\\! {
-    @apply border-2 border-dashed border-gray-200 bg-accent/15 font-semibold;
+    @apply bg-accent/15 font-semibold;
     background-image: repeating-linear-gradient(
       -12deg,
       color-mix(in srgb, var(--color-accent) 12%, transparent) 0,
@@ -231,7 +272,7 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     );
   }
 .toc-content [id^="-tocid--"] {
-    @apply rounded-xl border-2 border-dashed border-gray-200 px-2 py-1 tracking-[0.08em] transition-colors duration-200;
+    @apply rounded-md px-2 py-1 tracking-[0.08em] transition-colors duration-200;
   }
 .toc-content [id^="-tocid--"]:hover {
     @apply bg-accent/10;
@@ -244,12 +285,12 @@ export const playfulOverride = (params: ThemeTemplateParams): string => `
     );
   }
 .visual-container {
-    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border-2 border-dashed border-gray-200 rounded-full;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 16%, transparent);
+    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border border-solid border-accent/15 rounded-full;
   }
 .visual-container [id^="-vistocid--"] {
-    @apply rounded-full border-2 border-dashed border-gray-200;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-accent) 16%, transparent);
+    @apply h-1.5 w-1.5 rounded-full;
+    border: none;
+    box-shadow: none;
   }
 #auto-recent-posts {
     @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-accent;
@@ -269,17 +310,19 @@ a[aria-label^="View posts by"] {
 }
 @layer components {
 .auto-imported-section > hr {
-    @apply mx-auto w-full bg-transparent my-6 h-0 rounded-full border-2 border-dashed border-accent/40;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-accent/15;
   }
 }
 @layer components {
 a[aria-label^="View all posts with the tag:"] > span {
-    @apply rounded-full border border-dashed border-gray-200 px-1 font-semibold tracking-[0.12em];
+    @apply border border-solid border-accent/25 px-1 font-semibold tracking-[0.12em];
+    border-radius: 90px 14px 90px 14px / 14px 90px 14px 90px;
   }
 }
 @layer components {
 a[aria-label^="View posts by"] > span {
-    @apply rounded-full border-2 border-dashed border-gray-200 px-3 py-1 font-semibold tracking-[0.08em];
+    @apply border-2 border-solid border-accent/25 px-3 py-1 font-semibold tracking-[0.08em];
+    border-radius: 120px 18px 120px 18px / 18px 120px 18px 120px;
     background-image: linear-gradient(
       135deg,
       color-mix(in srgb, var(--color-accent) 10%, transparent),
@@ -290,7 +333,8 @@ a[aria-label^="View posts by"] > span {
 @layer components {
 a[aria-label^="View posts with the tag:"] > span,
   h1.title > span {
-    @apply rounded-full border-2 border-dashed border-gray-200 px-3 py-1 font-semibold tracking-[0.08em];
+    @apply border-2 border-solid border-accent/25 px-3 py-1 font-semibold tracking-[0.08em];
+    border-radius: 120px 18px 120px 18px / 18px 120px 18px 120px;
     background-image: linear-gradient(
       135deg,
       color-mix(in srgb, var(--color-accent) 10%, transparent),
@@ -332,7 +376,8 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7;
 }
 .post-card {
-    @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-2xl border-2 border-dashed border-gray-200;
+    @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 border-2 border-solid border-gray-200;
+    border-radius: 250px 25px 230px 20px / 20px 230px 25px 250px;
     transition-timing-function: var(--ease-out);
     box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
@@ -343,7 +388,7 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-2xl;
 }
 .post-card-image-container {
-    @apply relative overflow-hidden aspect-[3/2] rounded-2xl border-2 border-dashed;
+    @apply relative overflow-hidden aspect-[3/2] rounded-2xl border-2 border-solid;
     border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
 }
 .post-card-placeholder {
@@ -413,7 +458,8 @@ details.toggle[open] > summary > div > .rotate-svg {
 
 /* Post cards */
 .post-card {
-  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-2xl border-2 border-dashed border-accent/30;
+  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 border-2 border-solid border-accent/30;
+  border-radius: 250px 25px 230px 20px / 20px 230px 25px 250px;
   transition-timing-function: var(--ease-out);
   box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-accent) 18%, transparent);
 }
@@ -422,7 +468,7 @@ details.toggle[open] > summary > div > .rotate-svg {
   transform: translateY(-4px);
 }
 .post-card-image-container {
-  @apply relative overflow-hidden aspect-[3/2] rounded-2xl border-2 border-dashed border-accent/30;
+  @apply relative overflow-hidden aspect-[3/2] rounded-2xl border-2 border-solid border-accent/30;
 }
 .post-card-image {
   @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-2xl;
@@ -469,12 +515,184 @@ html .webtrotion-search-subresult-link {
 
 
 /* Component radius (new astro-v7 components -> theme radius scale) */
-html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-file-container, .notion-file-link, .notion-tab-button, .notion-tab-button.is-active, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
-    border-radius: 1.5rem;
+html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-file-container, .notion-file-link, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
+    border-radius: 1.25rem;
   }
 html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annotation-code, .toc-link, .toc-visual) {
     border-radius: 0.5rem;
   }
+
+/* ── A5: tinted / alpha Notion colored surfaces (kill opaque poster-slabs) ── */
+/* Non-tag colored fills (callout / to-do / colored list / toggle) mixed toward
+   transparent so the page bg shows through. Tag pills use separate -bg-tag- tokens
+   and are unaffected. Notion "default" uses a border token (no bg fill), so no rule. */
+.callout[class*="ngray-bg"],
+.todo-item-colored[class*="ngray-bg"],
+.notion-list-item-colored[class*="ngray-bg"],
+.toggle-colored[class*="ngray-bg"] {
+  background-color: color-mix(in srgb, var(--color-ngray-bg-light) 62%, transparent);
+}
+.dark .callout[class*="ngray-bg"],
+.dark .todo-item-colored[class*="ngray-bg"],
+.dark .notion-list-item-colored[class*="ngray-bg"],
+.dark .toggle-colored[class*="ngray-bg"] {
+  background-color: color-mix(in srgb, var(--color-ngray-bg-dark) 55%, transparent);
+}
+.callout[class*="nbrown-bg"],
+.todo-item-colored[class*="nbrown-bg"],
+.notion-list-item-colored[class*="nbrown-bg"],
+.toggle-colored[class*="nbrown-bg"] {
+  background-color: color-mix(in srgb, var(--color-nbrown-bg-light) 62%, transparent);
+}
+.dark .callout[class*="nbrown-bg"],
+.dark .todo-item-colored[class*="nbrown-bg"],
+.dark .notion-list-item-colored[class*="nbrown-bg"],
+.dark .toggle-colored[class*="nbrown-bg"] {
+  background-color: color-mix(in srgb, var(--color-nbrown-bg-dark) 55%, transparent);
+}
+.callout[class*="norange-bg"],
+.todo-item-colored[class*="norange-bg"],
+.notion-list-item-colored[class*="norange-bg"],
+.toggle-colored[class*="norange-bg"] {
+  background-color: color-mix(in srgb, var(--color-norange-bg-light) 62%, transparent);
+}
+.dark .callout[class*="norange-bg"],
+.dark .todo-item-colored[class*="norange-bg"],
+.dark .notion-list-item-colored[class*="norange-bg"],
+.dark .toggle-colored[class*="norange-bg"] {
+  background-color: color-mix(in srgb, var(--color-norange-bg-dark) 55%, transparent);
+}
+.callout[class*="nyellow-bg"],
+.todo-item-colored[class*="nyellow-bg"],
+.notion-list-item-colored[class*="nyellow-bg"],
+.toggle-colored[class*="nyellow-bg"] {
+  background-color: color-mix(in srgb, var(--color-nyellow-bg-light) 62%, transparent);
+}
+.dark .callout[class*="nyellow-bg"],
+.dark .todo-item-colored[class*="nyellow-bg"],
+.dark .notion-list-item-colored[class*="nyellow-bg"],
+.dark .toggle-colored[class*="nyellow-bg"] {
+  background-color: color-mix(in srgb, var(--color-nyellow-bg-dark) 55%, transparent);
+}
+.callout[class*="ngreen-bg"],
+.todo-item-colored[class*="ngreen-bg"],
+.notion-list-item-colored[class*="ngreen-bg"],
+.toggle-colored[class*="ngreen-bg"] {
+  background-color: color-mix(in srgb, var(--color-ngreen-bg-light) 62%, transparent);
+}
+.dark .callout[class*="ngreen-bg"],
+.dark .todo-item-colored[class*="ngreen-bg"],
+.dark .notion-list-item-colored[class*="ngreen-bg"],
+.dark .toggle-colored[class*="ngreen-bg"] {
+  background-color: color-mix(in srgb, var(--color-ngreen-bg-dark) 55%, transparent);
+}
+.callout[class*="nblue-bg"],
+.todo-item-colored[class*="nblue-bg"],
+.notion-list-item-colored[class*="nblue-bg"],
+.toggle-colored[class*="nblue-bg"] {
+  background-color: color-mix(in srgb, var(--color-nblue-bg-light) 62%, transparent);
+}
+.dark .callout[class*="nblue-bg"],
+.dark .todo-item-colored[class*="nblue-bg"],
+.dark .notion-list-item-colored[class*="nblue-bg"],
+.dark .toggle-colored[class*="nblue-bg"] {
+  background-color: color-mix(in srgb, var(--color-nblue-bg-dark) 55%, transparent);
+}
+.callout[class*="npurple-bg"],
+.todo-item-colored[class*="npurple-bg"],
+.notion-list-item-colored[class*="npurple-bg"],
+.toggle-colored[class*="npurple-bg"] {
+  background-color: color-mix(in srgb, var(--color-npurple-bg-light) 62%, transparent);
+}
+.dark .callout[class*="npurple-bg"],
+.dark .todo-item-colored[class*="npurple-bg"],
+.dark .notion-list-item-colored[class*="npurple-bg"],
+.dark .toggle-colored[class*="npurple-bg"] {
+  background-color: color-mix(in srgb, var(--color-npurple-bg-dark) 55%, transparent);
+}
+.callout[class*="npink-bg"],
+.todo-item-colored[class*="npink-bg"],
+.notion-list-item-colored[class*="npink-bg"],
+.toggle-colored[class*="npink-bg"] {
+  background-color: color-mix(in srgb, var(--color-npink-bg-light) 62%, transparent);
+}
+.dark .callout[class*="npink-bg"],
+.dark .todo-item-colored[class*="npink-bg"],
+.dark .notion-list-item-colored[class*="npink-bg"],
+.dark .toggle-colored[class*="npink-bg"] {
+  background-color: color-mix(in srgb, var(--color-npink-bg-dark) 55%, transparent);
+}
+.callout[class*="nred-bg"],
+.todo-item-colored[class*="nred-bg"],
+.notion-list-item-colored[class*="nred-bg"],
+.toggle-colored[class*="nred-bg"] {
+  background-color: color-mix(in srgb, var(--color-nred-bg-light) 62%, transparent);
+}
+.dark .callout[class*="nred-bg"],
+.dark .todo-item-colored[class*="nred-bg"],
+.dark .notion-list-item-colored[class*="nred-bg"],
+.dark .toggle-colored[class*="nred-bg"] {
+  background-color: color-mix(in srgb, var(--color-nred-bg-dark) 55%, transparent);
+}
+/* Confine the to-do colored row so it reads as a translucent marker, not a slab */
+.todo-item-colored {
+  @apply rounded-md;
+}
+
+/* ── B3: callout icon badge (contain the info-dot bullet) ── */
+.callout-icon {
+  @apply rounded-full p-1;
+  background-color: color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
+
+/* ── A6: custom playful checkbox (to-do) states ── */
+/* Checkbox is an inline SVG glyph; state comes through via aria-label. Raise
+   contrast and tint by state so checked/unchecked are clearly distinct. */
+.todo-checkbox-icon {
+  color: color-mix(in srgb, var(--color-accent) 70%, var(--color-textColor));
+}
+.todo-checkbox-icon[aria-label="checkbox-checked"] {
+  color: color-mix(in srgb, var(--color-accent) 85%, transparent);
+}
+.todo-checkbox-icon[aria-label="checkbox-unchecked"] {
+  color: color-mix(in srgb, var(--color-accent) 45%, var(--color-textColor));
+}
+/* Completed to-do text: strike-through annotation in accent (R1 strike role) */
+.todo-text .line-through {
+  color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+/* ── B4: tab states (ghost inactive, stronger active box) ── */
+/* Unlayered so these win over base's layered border:none. */
+.notion-tab-button {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  background-color: transparent;
+}
+.notion-tab-button:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 8%, var(--color-bgColor));
+}
+.notion-tab-button.is-active {
+  border: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  background-color: color-mix(in srgb, var(--color-accent) 18%, var(--color-bgColor));
+  border-radius: 130px 14px 130px 14px / 14px 130px 14px 130px;
+}
+.notion-tab-panel {
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 15%, transparent);
+}
+
+/* ── B6: bookmark card dark elevation ── */
+.dark .bookmark-card {
+  background-color: color-mix(in srgb, var(--color-accent) 6%, var(--color-bgColor));
+  box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-accent) 22%, transparent),
+    0 10px 24px -16px color-mix(in srgb, var(--color-textColor) 60%, transparent);
+}
+
+/* ── B5: code caption separation ── */
+.code > .caption {
+  @apply mt-2 pt-1 text-xs text-textColor/55;
+  border-top: 1px solid color-mix(in srgb, var(--color-accent) 12%, transparent);
+}
 `;
 
 // Playful theme icons - Phosphor Duotone style with rounded corners, friendly appearance

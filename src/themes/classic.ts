@@ -15,7 +15,7 @@ export const classicOverride = (params: ThemeTemplateParams): string => `
     @apply border-accent/40;
   }
 .author-name-link {
-    @apply underline decoration-accent-2/40 underline-offset-2 transition-colors decoration-dotted font-medium font-accent;
+    @apply underline decoration-accent-2/40 underline-offset-2 transition-colors decoration-dotted font-medium;
   }
 .author-name-link:hover {
     @apply decoration-accent-2/70 text-accent;
@@ -24,15 +24,17 @@ export const classicOverride = (params: ThemeTemplateParams): string => `
     @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-full border shadow-lg flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden;
   }
 .footer-link {
-    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 font-accent;
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0;
   }
 .mdx-notion h1,
-  .mdx-notion h2,
-  .mdx-notion h3 {
+  .mdx-notion h2 {
     @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
   }
+.mdx-notion h3 {
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3;
+  }
 .nav-link {
-    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left font-accent;
+    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left;
   }
 .non-toggle-h2 {
     @apply relative mb-4 cursor-pointer text-2xl font-normal font-accent;
@@ -41,10 +43,10 @@ export const classicOverride = (params: ThemeTemplateParams): string => `
     @apply mt-8 mb-1 cursor-pointer text-2xl font-semibold font-accent;
   }
 .notion-h2 {
-    @apply mt-6 mb-1 cursor-pointer text-xl font-semibold font-accent;
+    @apply mt-6 mb-1 cursor-pointer text-xl font-semibold;
   }
 .notion-h3 {
-    @apply mt-4 mb-1 cursor-pointer text-lg font-semibold font-accent;
+    @apply mt-4 mb-1 cursor-pointer text-lg font-semibold;
   }
 .notion-tag {
     @apply inline-block text-sm;
@@ -64,8 +66,11 @@ export const classicOverride = (params: ThemeTemplateParams): string => `
 .search-frame {
     @apply flex flex-col gap-4 p-6 pt-12 sm:pt-6;
   }
+.site-name {
+    @apply font-accent;
+  }
 .site-page-link {
-    @apply underline decoration-wavy decoration-from-font decoration-accent-2/40 hover:decoration-accent-2/60 underline-offset-2 font-accent;
+    @apply underline decoration-wavy decoration-from-font decoration-accent-2/40 hover:decoration-accent-2/60 underline-offset-2;
   }
 .title {
     @apply text-3xl font-bold text-accent-2 font-accent;

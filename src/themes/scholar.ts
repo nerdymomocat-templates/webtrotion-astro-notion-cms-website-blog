@@ -14,13 +14,14 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     @apply underline decoration-dotted decoration-2 decoration-accent/40 underline-offset-3;
   }
 .author-icon-link {
-    @apply inline-flex items-center transition-[color,transform] duration-200 ease-out justify-center rounded-full border border-dotted border-gray-200 p-0.5;
+    @apply inline-flex items-center transition-[color,transform] duration-200 ease-out justify-center rounded-none border border-dotted border-gray-200 p-0.5;
   }
 .author-icon-link:hover {
     @apply border-gray-400;
   }
 .author-name-link {
-    @apply transition-colors border-b border-dotted border-gray-200 font-medium tracking-[0.08em];
+    @apply transition-colors border-b border-dotted font-medium tracking-[0.08em];
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 30%, transparent);
   }
 .author-name-link:hover {
     @apply text-quote;
@@ -29,26 +30,31 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     @apply mt-12 border-t border-dotted border-gray-200 pt-4;
   }
 .bookmark-card {
-    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden rounded-sm border border-gray-200 no-underline select-none dark:border-gray-800 border-dotted;
+    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden rounded-none border border-solid no-underline select-none;
+    border-color: color-mix(in srgb, var(--color-textColor) 14%, transparent);
+    background-color: color-mix(in srgb, var(--color-textColor) 3%, var(--color-bgColor));
   }
 .bottom-toc-button {
-    @apply fixed end-4 ${params.bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border text-3xl transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] sm:hidden print:hidden border-dotted;
+    @apply fixed end-4 ${params.bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border text-3xl transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] sm:hidden print:hidden border-dotted;
   }
 .bottom-toc-button,
   .to-top-btn,
   .copy-markdown-btn {
     background-color: color-mix(in srgb, var(--color-accent) 8%, var(--color-bgColor));
-    border-color: color-mix(in srgb, var(--color-textColor) 28%, var(--color-bgColor));
-    color: color-mix(in srgb, var(--color-textColor) 65%, var(--color-bgColor));
+    border-color: color-mix(in srgb, var(--color-textColor) 40%, var(--color-bgColor));
+    color: color-mix(in srgb, var(--color-textColor) 82%, var(--color-bgColor));
   }
 .callout {
-    @apply mx-auto flex w-full max-w-full px-3 py-4 leading-6 my-3 rounded-sm border border-gray-200;
+    @apply mx-auto flex w-full max-w-full px-4 py-4 leading-6 my-3 rounded-none border border-s-4;
+    border-color: color-mix(in srgb, var(--color-textColor) 14%, transparent);
+    border-inline-start-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
   }
 .copy-markdown-btn {
-    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-full border flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden border-dotted shadow-none;
+    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-none border flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden border-dotted shadow-none;
   }
 .count-badge {
-    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-full border border-gray-200 dark:border-gray-700;
+    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-none border;
+    border-color: color-mix(in srgb, var(--color-textColor) 18%, transparent);
   }
 .dark .footer-link::before {
     background-color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
@@ -57,10 +63,11 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     background-color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
   }
 .divider {
-    @apply mx-auto w-full border-none bg-accent/15 my-6 h-px rounded-none;
+    @apply mx-auto w-full border-none border-t-2 border-dotted my-6 h-0 rounded-none bg-transparent;
+    border-top-color: color-mix(in srgb, var(--color-textColor) 30%, transparent);
   }
 .footer-link {
-    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 tracking-[0.06em] font-accent;
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 tracking-[0.06em];
   }
 .footer-link::before {
     content: "";
@@ -94,12 +101,14 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .mdx-notion h1,
-  .mdx-notion h2,
-  .mdx-notion h3 {
+  .mdx-notion h2 {
     @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
   }
+.mdx-notion h3 {
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3;
+  }
 .nav-link {
-    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left tracking-[0.08em] font-accent;
+    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left tracking-[0.08em];
   }
 .nav-link::before {
     content: "";
@@ -121,7 +130,8 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     background-color: color-mix(in srgb, var(--color-accent-2) 55%, transparent);
   }
 .nav-menu {
-    @apply text-accent absolute -inset-x-4 top-14 hidden flex-col items-end py-2 text-base backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 bg-bgColor/95 rounded-sm border border-dotted border-gray-200 shadow-none;
+    @apply text-accent absolute -inset-x-4 top-14 hidden flex-col items-end py-2 text-base backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 bg-bgColor rounded-none border border-dotted shadow-none sm:border-none;
+    border-color: color-mix(in srgb, var(--color-textColor) 20%, transparent);
   }
 .non-toggle-h2 {
     @apply relative mb-4 cursor-pointer text-2xl font-normal tracking-[0.08em] font-accent;
@@ -136,16 +146,19 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .notion-divider {
-    @apply mx-auto w-full border-none bg-accent-2/12 my-6 h-px rounded-none;
+    @apply mx-auto w-full border-none border-t-2 border-dotted my-6 h-0 rounded-none bg-transparent;
+    border-top-color: color-mix(in srgb, var(--color-accent-2) 40%, transparent);
   }
 .notion-h1 {
-    @apply cursor-pointer text-2xl mt-10 mb-2 font-medium tracking-[0.02em] border-b border-dotted border-gray-200 pb-1 font-accent;
+    @apply cursor-pointer text-2xl mt-10 mb-2 font-medium tracking-[0.02em] border-b border-dotted pb-1 font-accent;
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 22%, transparent);
   }
 .notion-h2 {
-    @apply cursor-pointer text-xl mt-8 mb-2 font-medium tracking-[0.02em] border-b border-dotted border-gray-200 pb-1 font-accent;
+    @apply cursor-pointer text-xl mt-8 mb-2 font-medium tracking-[0.02em] border-b border-dotted pb-1;
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 22%, transparent);
   }
 .notion-h3 {
-    @apply cursor-pointer text-lg mt-6 mb-2 font-medium tracking-[0.02em] border-b border-dotted border-gray-200 pb-1 font-accent;
+    @apply cursor-pointer text-lg mt-6 mb-2 font-medium tracking-[0.02em];
   }
 .notion-list-ol {
     @apply list-outside pl-6 space-y-2;
@@ -160,19 +173,21 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
   a[aria-label^="View more blogs with the tag"],
   a[aria-label^="View all posts with the tag:"],
   a[data-pagefind-filter="tags"] {
-    @apply rounded-sm border border-dotted border-gray-200 px-2 py-0.5 font-medium tracking-[0.08em];
+    @apply rounded-none border border-solid px-2 py-0.5 font-medium tracking-[0.08em] items-center align-middle;
+    border-color: color-mix(in srgb, var(--color-textColor) 18%, transparent);
   }
 .nquote {
-    @apply my-4 border-gray-600 dark:border-gray-300 border-s-2 border-dotted px-3!;
+    @apply my-4 border-s-4 border-solid ps-4 pe-3 italic;
+    border-inline-start-color: color-mix(in srgb, var(--color-quote) 60%, var(--color-bgColor));
   }
 .search-btn {
-    @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-full border border-dotted;
+    @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-none border border-dotted;
   }
 .search-close-btn {
-    @apply ms-auto cursor-pointer rounded-full border border-dotted bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
+    @apply ms-auto cursor-pointer rounded-none border border-dotted bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
   }
 .search-dialog {
-    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border border-dotted border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-sm;
+    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border border-dotted border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-none;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-textColor) 10%, transparent);
   }
 .search-frame {
@@ -181,36 +196,44 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
 .site-footer {
     @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t border-dotted border-gray-200;
   }
+.site-name {
+    @apply font-accent;
+  }
 .site-page-link {
-    @apply underline decoration-accent-2/40 hover:decoration-accent-2/60 decoration-dotted decoration-2 underline-offset-3 tracking-[0.06em] font-accent;
+    @apply underline decoration-accent-2/40 hover:decoration-accent-2/60 decoration-dotted decoration-2 underline-offset-3 tracking-[0.06em];
   }
 .theme-toggle-btn {
-    @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-full border border-dotted;
+    @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-none border border-dotted;
   }
 .title {
     @apply text-3xl text-accent-2 font-medium tracking-[0.02em] font-accent;
   }
 .to-top-btn {
-    @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-full border text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden border-dotted;
+    @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-none border text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden border-dotted;
   }
 .toc-content {
-    @apply border-accent/10 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto border p-2 transition-[opacity,transform] duration-200 ease-out sm:top-0 sm:bottom-auto sm:max-h-[68vh] rounded-sm border-dotted;
+    @apply border-accent/10 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto border p-2 transition-[opacity,transform] duration-200 ease-out sm:top-0 sm:bottom-auto sm:max-h-[68vh] rounded-none border-dotted;
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-textColor) 12%, transparent);
   }
 .toc-content .text-quote\\! {
     @apply border border-dotted border-gray-200 bg-accent/15 font-semibold;
   }
 .toc-content [id^="-tocid--"] {
-    @apply rounded-sm border border-dotted border-gray-200 px-2 py-1 tracking-[0.08em] transition-colors duration-200;
+    @apply rounded-none border border-dotted border-gray-200 px-2 py-1 tracking-[0.08em] transition-colors duration-200;
   }
 .toc-content [id^="-tocid--"]:hover {
     @apply bg-accent/10;
   }
 .visual-container {
-    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border border-dotted border-gray-200;
+    @apply bg-bgColor absolute top-6 right-0 hidden w-10 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border border-dotted border-gray-200;
   }
 .visual-container [id^="-vistocid--"] {
-    @apply rounded-full border border-dotted border-gray-200;
+    @apply rounded-none border-none;
+    background-color: color-mix(in srgb, var(--color-textColor) 30%, transparent);
+  }
+.visual-container [id^="-vistocid--"].bg-accent {
+    background-color: color-mix(in srgb, var(--color-accent-2) 80%, transparent);
+    height: 3px;
   }
 #auto-recent-posts {
     @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-accent;
@@ -225,28 +248,33 @@ export const scholarOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 a[aria-label^="View posts by"] {
-    @apply border-b border-dotted border-gray-200 tracking-[0.1em];
+    @apply border-b border-dotted tracking-[0.1em];
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 30%, transparent);
   }
 }
 @layer components {
 .auto-imported-section > hr {
-    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-dotted border-gray-200;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t-2 border-dotted;
+    border-top-color: color-mix(in srgb, var(--color-textColor) 28%, transparent);
   }
 }
 @layer components {
 a[aria-label^="View all posts with the tag:"] > span {
-    @apply rounded-full border border-dotted border-gray-200 px-1 font-semibold tracking-[0.12em];
+    @apply rounded-none border border-dotted border-gray-200 px-1 font-semibold tracking-[0.12em];
+  }
+a[aria-label^="View all posts with the tag:"] > span:empty {
+    @apply hidden border-0 p-0;
   }
 }
 @layer components {
 a[aria-label^="View posts by"] > span {
-    @apply rounded-sm border border-dotted border-gray-200 px-2 py-1 font-semibold tracking-[0.1em];
+    @apply rounded-none border border-dotted border-gray-200 px-2 py-1 font-semibold tracking-[0.1em];
   }
 }
 @layer components {
 a[aria-label^="View posts with the tag:"] > span,
   h1.title > span {
-    @apply rounded-sm border border-dotted border-gray-200 px-2 py-1 font-semibold tracking-[0.08em];
+    @apply rounded-none border border-dotted border-gray-200 px-2 py-1 font-semibold tracking-[0.08em];
   }
 }
 @layer components {
@@ -283,21 +311,21 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7;
 }
 .post-card {
-    @apply relative overflow-hidden bg-bgColor duration-200 rounded-md border border-gray-200 transition-[transform];
+    @apply relative overflow-hidden bg-bgColor duration-200 rounded-none border border-gray-200 transition-[transform];
     transition-timing-function: var(--ease-out);
 }
 .post-card-authors {
     @apply -mt-1 px-0 pb-1 tracking-[0.04em];
 }
 .post-card-image {
-    @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-md;
+    @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-none;
 }
 .post-card-image-container {
-    @apply relative overflow-hidden border aspect-[3/2] rounded-md;
+    @apply relative overflow-hidden border aspect-[3/2] rounded-none;
     border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
 }
 .post-card-placeholder {
-    @apply flex h-full w-full items-center justify-center rounded-md;
+    @apply flex h-full w-full items-center justify-center rounded-none;
     background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
     transition: transform 300ms ease, filter 300ms ease;
 }
@@ -315,11 +343,13 @@ details.toggle[open] > summary > div > .rotate-svg {
     --pagefind-ui-background: var(--color-bgColor);
     --pagefind-ui-border: var(--color-zinc-400);
     --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 0;
   }
 #webtrotion__search .pagefind-ui__result {
     @apply p-3 border-0 overflow-x-hidden;
   }
 #webtrotion__search .pagefind-ui__result-link {
+    @apply font-accent;
     background-size: 100% 6px;
     background-position: bottom;
     background-repeat: repeat-x;
@@ -345,6 +375,9 @@ details.toggle[open] > summary > div > .rotate-svg {
 #webtrotion__search .pagefind-ui__search-clear:focus {
     outline: 1px solid var(--color-accent-2);
   }
+#webtrotion__search .pagefind-ui__search-input:focus {
+    outline-color: color-mix(in srgb, var(--color-accent-2) 45%, transparent);
+  }
 #webtrotion__search mark {
     @apply text-quote bg-transparent font-semibold;
   }
@@ -358,7 +391,7 @@ details.toggle[open] > summary > div > .rotate-svg {
 
 /* Post cards */
 .post-card {
-  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-sm border border-dotted border-gray-300 dark:border-gray-700;
+  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-none border border-dotted border-gray-300 dark:border-gray-700;
   transition-timing-function: var(--ease-out);
 }
 .post-card:hover {
@@ -366,14 +399,14 @@ details.toggle[open] > summary > div > .rotate-svg {
   transform: translateY(-3px);
 }
 .post-card-image-container {
-  @apply relative overflow-hidden aspect-[3/2] rounded-sm border border-dotted;
+  @apply relative overflow-hidden aspect-[3/2] rounded-none border border-dotted;
   border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
 }
 .post-card-image {
-  @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-sm;
+  @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-none;
 }
 .post-card-placeholder {
-  @apply flex h-full w-full items-center justify-center rounded-sm;
+  @apply flex h-full w-full items-center justify-center rounded-none;
   background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
   transition: transform 300ms ease, filter 300ms ease;
 }
@@ -382,7 +415,7 @@ details.toggle[open] > summary > div > .rotate-svg {
   color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 }
 .post-card-badge {
-  @apply bg-quote/90 absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded-sm border border-dotted border-white/40 uppercase tracking-[0.1em];
+  @apply bg-quote/90 absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded-none border border-dotted border-white/40 uppercase tracking-[0.1em];
 }
 .post-card-meta-date {
   @apply text-accent/80 mb-1 block font-mono text-[10px] uppercase tracking-[0.12em];
@@ -397,7 +430,7 @@ details.toggle[open] > summary > div > .rotate-svg {
 
 /* Search modal + results */
 html site-search {
-  --pf-border-radius: 0.15rem;
+  --pf-border-radius: 0;
   --pf-shadow: 0 18px 48px color-mix(in srgb, #000 15%, transparent);
   --pf-border: color-mix(in srgb, var(--color-textColor) 28%, transparent);
 }
@@ -409,17 +442,56 @@ html .webtrotion-search-result-card,
 html .webtrotion-search-navigation-link,
 html .webtrotion-search-pinned-link,
 html .webtrotion-search-subresult-link {
-  border-radius: 0.15rem !important;
+  border-radius: 0 !important;
 }
 
 
 /* Component radius (new astro-v7 components -> theme radius scale) */
 html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-file-container, .notion-file-link, .notion-tab-button, .notion-tab-button.is-active, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
-    border-radius: 0.0625rem;
+    border-radius: 0;
   }
 html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annotation-code, .toc-link, .toc-visual) {
     border-radius: 0;
   }
+@layer components {
+.ntable th {
+    border-bottom-width: 2px;
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 40%, transparent);
+  }
+.ntable td,
+  .ntable tr {
+    border-bottom-color: color-mix(in srgb, var(--color-textColor) 14%, transparent);
+  }
+.notion-tab-list {
+    border-bottom: 1px dotted color-mix(in srgb, var(--color-textColor) 20%, transparent);
+  }
+.notion-tab-button.is-active {
+    box-shadow: inset 0 -2px 0 0 color-mix(in srgb, var(--color-accent-2) 70%, transparent);
+    font-weight: 700;
+  }
+.todo-checkbox-icon {
+    @apply text-textColor/75 h-5 w-5;
+  }
+.todo-checkbox-icon[aria-label="checkbox-checked"] {
+    color: color-mix(in srgb, var(--color-accent-2) 80%, var(--color-textColor));
+  }
+.todo-item-colored {
+    @apply rounded-none px-1 mx-0 w-fit;
+  }
+.bookmark-title {
+    @apply font-accent;
+  }
+.bookmark-link {
+    @apply text-textColor/55;
+  }
+.caption {
+    @apply mt-2;
+  }
+.equation {
+    @apply px-3 py-2;
+    background-color: color-mix(in srgb, var(--color-textColor) 3%, var(--color-bgColor));
+  }
+}
 `;
 
 // Scholar theme icons - Lucide-style thin strokes, elegant curves, outlined
@@ -526,8 +598,8 @@ export const scholarTheme: ThemePreset = deepMerge(classicTheme, {
 	mix: {
 		blockquoteBg: 5,
 		fabBg: 8,
-		fabBorder: 25,
-		fabText: 65,
+		fabBorder: 40,
+		fabText: 82,
 		inlineHighlight: 12,
 		anchorHash: 35,
 		navGrad: { a: 2, b: 6, c: 3 },
@@ -577,7 +649,7 @@ export const scholarTheme: ThemePreset = deepMerge(classicTheme, {
 		h3: { mt: "1.75rem", mb: "0.5rem" },
 		text: { my: "0.4rem", minHeight: "1.9rem" },
 		list: { gap: "0.35rem", pl: "1.75rem" },
-		columnList: { my: "1.5rem", gapX: "1.25rem" },
+		columnList: { my: "1.5rem", gapX: "2rem" },
 		columnBasis: "12rem",
 		divider: { my: "1.25rem", height: "0.125rem" },
 		codeBlock: { padding: "1.25rem", mb: "0.5rem", maxHeight: "360px" },
@@ -616,7 +688,7 @@ export const scholarTheme: ThemePreset = deepMerge(classicTheme, {
 			right: "1.5rem",
 			topSm: "10rem",
 			visualTop: "2rem",
-			visualWidth: "2rem",
+			visualWidth: "2.5rem",
 			visualPadding: "0.5rem",
 			visualGap: "0.5rem",
 			panelRight: "0.5rem",
@@ -687,9 +759,9 @@ export const scholarTheme: ThemePreset = deepMerge(classicTheme, {
 	},
 	radius: {
 		sm: "0",
-		md: "0.0625rem",
-		lg: "0.125rem",
-		xl: "0.125rem",
+		md: "0",
+		lg: "0",
+		xl: "0",
 		"2xl": "0.25rem",
 		full: "9999px",
 		code: "0.0625rem",
@@ -706,7 +778,7 @@ export const scholarTheme: ThemePreset = deepMerge(classicTheme, {
 		focus: "1px",
 		focusRing: "0.1rem",
 		searchDialog: "1px",
-		dividerStyle: "solid",
+		dividerStyle: "dotted",
 	},
 	shadow: {
 		sm: "none",

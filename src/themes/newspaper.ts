@@ -6,6 +6,14 @@ import type { ThemeTemplateParams } from "./css-template-types";
 // Personality deltas merged onto base.ts: matching selectors replace the base body, new rules are appended. Shared rules belong in base.ts.
 export const newspaperOverride = (params: ThemeTemplateParams): string => `
 @layer components {
+:root {
+    --rule-masthead: 3px;
+    --rule-section: 2px;
+    --rule-hairline: 1px;
+    --rule-ink-strong: color-mix(in srgb, var(--color-textColor) 62%, transparent);
+    --rule-ink-section: color-mix(in srgb, var(--color-textColor) 34%, transparent);
+    --rule-ink-hair: color-mix(in srgb, var(--color-textColor) 18%, transparent);
+  }
 .ann-bg-c {
     @apply rounded-sm px-1;
     background-color: var(--abc, transparent);
@@ -14,22 +22,34 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     @apply underline decoration-dotted decoration-2 decoration-accent/50 underline-offset-3;
   }
 .author-icon-link {
-    @apply inline-flex items-center transition-[color,transform] duration-200 ease-out justify-center border-y-2 border-gray-200 px-0.5;
+    @apply inline-flex items-center transition-[color,transform] duration-200 ease-out justify-center px-0.5;
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 .author-icon-link:hover {
-    @apply border-gray-400;
+    border-block-color: var(--rule-ink-strong);
   }
 .author-name-link {
-    @apply transition-colors border-b-2 border-gray-200 font-semibold uppercase tracking-[0.22em];
+    @apply transition-colors font-semibold uppercase tracking-[0.22em];
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-hairline);
+    border-bottom-color: var(--rule-ink-hair);
   }
 .author-name-link:hover {
     @apply text-quote;
   }
 .auto-imported-section {
-    @apply mt-12 border-t-2 border-gray-200 pt-4;
+    @apply mt-12 pt-4;
+    border-top-style: solid;
+    border-top-width: var(--rule-section);
+    border-top-color: var(--rule-ink-section);
   }
 .bookmark-card {
-    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden border-gray-200 no-underline select-none dark:border-gray-800 rounded-none border-t-2 border-b-2 border-x-0;
+    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden no-underline select-none rounded-none;
+    border-style: solid;
+    border-width: var(--rule-hairline);
+    border-color: var(--rule-ink-hair);
   }
 .bottom-toc-button {
     @apply fixed end-4 ${params.bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center text-3xl transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] sm:hidden print:hidden rounded-none border-y-2 border-x-0;
@@ -42,13 +62,23 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     color: color-mix(in srgb, var(--color-textColor) 70%, var(--color-bgColor));
   }
 .callout {
-    @apply mx-auto flex w-full max-w-full px-3 leading-6 my-3 rounded-none border-y-2 border-gray-200 py-3;
+    @apply mx-auto flex w-full max-w-full px-3 leading-6 my-3 rounded-none py-3;
+    border-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-inline-end-width: var(--rule-hairline);
+    border-inline-start-width: 3px;
+    border-block-color: var(--rule-ink-hair);
+    border-inline-end-color: var(--rule-ink-hair);
+    border-inline-start-color: color-mix(in srgb, var(--color-accent-2) 65%, transparent);
   }
 .copy-markdown-btn {
     @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden rounded-none border-y-2 border-x-0 shadow-none;
   }
 .count-badge {
-    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-none border border-gray-200 uppercase tracking-[0.12em] dark:border-gray-700;
+    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-none uppercase tracking-[0.12em];
+    border-style: solid;
+    border-width: var(--rule-hairline);
+    border-color: var(--rule-ink-hair);
   }
 .dark .footer-link::before {
     background-color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
@@ -57,10 +87,13 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     background-color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
   }
 .divider {
-    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-dashed border-accent/30;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t;
+    border-top-style: solid;
+    border-top-width: var(--rule-section);
+    border-top-color: var(--rule-ink-section);
   }
 .footer-link {
-    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 uppercase tracking-[0.14em] font-accent;
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 uppercase tracking-[0.14em];
   }
 .footer-link::before {
     content: "";
@@ -82,7 +115,15 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     background-color: color-mix(in srgb, var(--color-accent-2) 65%, transparent);
   }
 .footer-nav {
-    @apply flex flex-wrap gap-x-2 border-t-2 border-b-2 border-gray-200 sm:gap-x-2 sm:border-none dark:border-gray-700 print:hidden rounded-none;
+    @apply flex flex-wrap gap-x-2 sm:gap-x-2 print:hidden rounded-none;
+    border-block-style: solid;
+    border-block-width: var(--rule-section);
+    border-block-color: var(--rule-ink-section);
+  }
+@media (min-width: 640px) {
+    .footer-nav {
+      border-block-style: none;
+    }
   }
 .hasId::before {
     content: "§";
@@ -94,12 +135,22 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .mdx-notion h1,
-  .mdx-notion h2,
-  .mdx-notion h3 {
+  .mdx-notion h2 {
     @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
   }
+.mdx-notion h3 {
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
+  }
+.mdx-notion h4,
+  .notion-h4 {
+    @apply font-semibold text-textColor tracking-[0.02em] mt-4 mb-2;
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-hairline);
+    border-bottom-color: var(--rule-ink-hair);
+    padding-bottom: 0.15rem;
+  }
 .nav-link {
-    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left uppercase tracking-[0.16em] font-accent;
+    @apply relative z-0 w-fit self-end px-3 py-1 text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left uppercase tracking-[0.16em];
   }
 .nav-link::before {
     content: "";
@@ -121,10 +172,13 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     background-color: color-mix(in srgb, var(--color-accent-2) 65%, transparent);
   }
 .nav-menu {
-    @apply text-accent absolute -inset-x-4 top-14 hidden flex-col items-end text-base backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 bg-bgColor/95 rounded-none border-t-2 border-b-2 border-gray-200 py-3 shadow-none;
+    @apply text-accent absolute -inset-x-4 top-12 hidden flex-col items-end text-base group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none lg:text-base print:hidden gap-y-2 sm:gap-y-0 lg:gap-x-4 bg-bgColor rounded-none py-3 shadow-none;
+    border-block-style: solid;
+    border-block-width: var(--rule-section);
+    border-block-color: var(--rule-ink-section);
   }
 .non-toggle-h2 {
-    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.16em] font-accent;
+    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.08em] font-accent;
   }
 .non-toggle-h2::before {
     content: "§";
@@ -136,16 +190,25 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 .notion-divider {
-    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-dashed border-accent-2/30;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t;
+    border-top-style: solid;
+    border-top-width: var(--rule-section);
+    border-top-color: var(--rule-ink-section);
   }
 .notion-h1 {
-    @apply cursor-pointer text-2xl font-semibold mt-10 mb-2 uppercase tracking-[0.16em] border-b-2 border-gray-200 pb-2 font-accent;
+    @apply cursor-pointer text-2xl font-semibold mt-10 mb-2 uppercase tracking-[0.16em] pb-2 font-accent;
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-section);
+    border-bottom-color: var(--rule-ink-section);
   }
 .notion-h2 {
-    @apply cursor-pointer text-xl font-semibold mt-8 mb-2 uppercase tracking-[0.14em] border-b border-gray-200 pb-1 font-accent;
+    @apply cursor-pointer text-xl font-semibold mt-8 mb-2 uppercase tracking-[0.08em] pb-1;
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-hairline);
+    border-bottom-color: var(--rule-ink-hair);
   }
 .notion-h3 {
-    @apply cursor-pointer text-lg font-semibold mt-6 mb-2 uppercase tracking-[0.12em] border-b border-gray-200 pb-1 font-accent;
+    @apply cursor-pointer text-lg font-semibold italic normal-case mt-6 mb-2 tracking-[0.04em] font-accent;
   }
 .notion-list-ol {
     @apply list-outside space-y-0.5 pl-5;
@@ -160,10 +223,16 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
   a[aria-label^="View more blogs with the tag"],
   a[aria-label^="View all posts with the tag:"],
   a[data-pagefind-filter="tags"] {
-    @apply rounded-none border-y-2 border-gray-200 px-2 py-0.5 font-semibold uppercase tracking-[0.22em];
+    @apply rounded-none px-2 py-0.5 font-semibold uppercase tracking-[0.22em];
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 .nquote {
-    @apply border-gray-600 dark:border-gray-300 my-5 border-s-2 border-dotted px-3! italic;
+    @apply my-5 px-3! italic;
+    border-inline-start-style: solid;
+    border-inline-start-width: 3px;
+    border-inline-start-color: color-mix(in srgb, var(--color-quote) 70%, transparent);
   }
 .search-btn {
     @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-none border-y-2 border-x-0;
@@ -172,22 +241,34 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     @apply ms-auto cursor-pointer rounded-none border-y-2 border-x-0 bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
   }
 .search-dialog {
-    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border-y-2 border-x-0 border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-none;
+    @apply bg-bgColor h-full max-h-full w-full max-w-full border-x-0 shadow-none backdrop:bg-black/40 sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-none;
+    border-block-style: solid;
+    border-block-width: var(--rule-masthead);
+    border-block-color: var(--rule-ink-strong);
   }
 .search-frame {
     @apply flex flex-col gap-4 p-6 pt-12 sm:pt-6;
   }
 .site-footer {
-    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t-2 border-b-2 border-gray-200;
+    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%];
+    border-block-style: solid;
+    border-block-width: var(--rule-section);
+    border-block-color: var(--rule-ink-section);
+  }
+.site-name {
+    @apply font-accent;
   }
 .site-page-link {
-    @apply underline decoration-solid decoration-2 decoration-accent-2/50 hover:decoration-accent-2/80 underline-offset-4 font-accent;
+    @apply underline decoration-solid decoration-2 decoration-accent-2/50 hover:decoration-accent-2/80 underline-offset-4;
   }
 .theme-toggle-btn {
     @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-none border-y-2 border-x-0;
   }
 .title {
-    @apply text-3xl text-accent-2 font-semibold uppercase tracking-[0.26em] border-y-2 border-gray-200 py-2 font-accent;
+    @apply text-3xl text-accent-2 font-semibold uppercase tracking-[0.26em] py-2 font-accent;
+    border-block-style: solid;
+    border-block-width: var(--rule-masthead);
+    border-block-color: var(--rule-ink-strong);
   }
 .to-top-btn {
     @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden rounded-none border-y-2 border-x-0;
@@ -197,19 +278,31 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     box-shadow: none;
   }
 .toc-content .text-quote\\! {
-    @apply border-y-2 border-gray-200 bg-accent/15 font-semibold;
+    @apply bg-accent/15 font-semibold;
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 .toc-content [id^="-tocid--"] {
-    @apply rounded-none border-y border-gray-200 px-2 py-1 font-semibold uppercase tracking-[0.16em] transition-colors duration-200;
+    @apply rounded-none px-2 py-1 font-semibold uppercase tracking-[0.16em] transition-colors duration-200;
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 .toc-content [id^="-tocid--"]:hover {
     @apply bg-accent/10;
   }
 .visual-container {
-    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border-y-2 border-gray-200;
+    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex;
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 .visual-container [id^="-vistocid--"] {
-    @apply rounded-none border-y-2 border-gray-200;
+    @apply rounded-none;
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 #auto-recent-posts {
     @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-accent;
@@ -224,28 +317,43 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     transition: opacity 0.15s ease;
   }
 a[aria-label^="View posts by"] {
-    @apply border-b border-gray-200 uppercase tracking-[0.18em];
+    @apply uppercase tracking-[0.18em];
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-hairline);
+    border-bottom-color: var(--rule-ink-hair);
   }
 }
 @layer components {
 .auto-imported-section > hr {
-    @apply mx-auto w-full bg-transparent my-6 h-0 border-t border-gray-200;
+    @apply mx-auto w-full bg-transparent my-6 h-0 border-t;
+    border-top-style: solid;
+    border-top-width: var(--rule-hairline);
+    border-top-color: var(--rule-ink-hair);
   }
 }
 @layer components {
 a[aria-label^="View all posts with the tag:"] > span {
-    @apply rounded-none border border-gray-200 px-1 font-semibold uppercase tracking-[0.12em];
+    @apply rounded-none px-1 font-semibold uppercase tracking-[0.12em];
+    border-style: solid;
+    border-width: var(--rule-hairline);
+    border-color: var(--rule-ink-hair);
   }
 }
 @layer components {
 a[aria-label^="View posts by"] > span {
-    @apply rounded-none border-y-2 border-gray-200 px-2 py-1 font-semibold uppercase tracking-[0.22em];
+    @apply rounded-none px-2 py-1 font-semibold uppercase tracking-[0.22em];
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 }
 @layer components {
 a[aria-label^="View posts with the tag:"] > span,
   h1.title > span {
-    @apply rounded-none border-y-2 border-gray-200 px-2 py-1 font-semibold uppercase tracking-[0.22em];
+    @apply rounded-none px-2 py-1 font-semibold uppercase tracking-[0.22em];
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
   }
 }
 @layer components {
@@ -282,7 +390,10 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5;
 }
 .post-card {
-    @apply relative overflow-hidden bg-bgColor duration-200 rounded-none border-t-2 border-b-2 border-gray-200 transition-[transform];
+    @apply relative overflow-hidden bg-bgColor duration-200 rounded-none transition-[transform];
+    border-block-style: solid;
+    border-block-width: var(--rule-hairline);
+    border-block-color: var(--rule-ink-hair);
     transition-timing-function: var(--ease-out);
 }
 .post-card-authors {
@@ -292,7 +403,9 @@ details.toggle[open] > summary > div > .rotate-svg {
     @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-none;
 }
 .post-card-image-container {
-    @apply relative overflow-hidden aspect-[3/2] rounded-none border-b border-gray-200;
+    @apply relative overflow-hidden aspect-[3/2] rounded-none border-b;
+    border-bottom-style: solid;
+    border-bottom-width: var(--rule-hairline);
     border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
 }
 .post-card-placeholder {
@@ -357,11 +470,13 @@ details.toggle[open] > summary > div > .rotate-svg {
 
 /* Post cards */
 .post-card {
-  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-none border border-gray-300 dark:border-gray-700;
+  @apply relative overflow-hidden bg-bgColor transition-[transform] duration-200 rounded-none;
+  border-style: solid;
+  border-width: var(--rule-hairline);
+  border-color: var(--rule-ink-hair);
   transition-timing-function: var(--ease-out);
 }
 .post-card:hover {
-  box-shadow: 0 6px 18px -14px color-mix(in srgb, var(--color-textColor) 30%, transparent);
   transform: translateY(-3px);
 }
 .post-card-image-container {
@@ -397,7 +512,7 @@ details.toggle[open] > summary > div > .rotate-svg {
 /* Search modal + results */
 html site-search {
   --pf-border-radius: 0;
-  --pf-shadow: 0 16px 40px color-mix(in srgb, #000 16%, transparent);
+  --pf-shadow: none;
   --pf-border: color-mix(in srgb, var(--color-textColor) 40%, transparent);
 }
 html site-search .pf-modal,
@@ -430,6 +545,42 @@ html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annota
   padding-right: 0.07em;
   margin-top: 0.02em;
   color: var(--color-accent);
+}
+
+/* B2 — todo checkboxes: darker print-ink boxes for stronger contrast */
+.todo-checkbox-icon {
+  @apply h-5 w-5;
+  color: color-mix(in srgb, var(--color-textColor) 75%, transparent);
+}
+
+/* A3 — kill input focus glow on both pagefind systems */
+#webtrotion__search .pagefind-ui__search-input:focus,
+html site-search .pf-input:focus {
+  box-shadow: none;
+  outline: 1px solid color-mix(in srgb, var(--color-accent-2) 60%, transparent);
+  outline-offset: 0;
+}
+
+/* B4 — tabs: flat container, active tab = heavy underline not filled chip */
+.notion-tab-list {
+  border-bottom-style: solid;
+  border-bottom-width: var(--rule-hairline);
+  border-bottom-color: var(--rule-ink-hair);
+}
+.notion-tab-button.is-active {
+  background-color: transparent;
+  font-weight: 700;
+  border-bottom-style: solid;
+  border-bottom-width: var(--rule-section);
+  border-bottom-color: var(--rule-ink-strong);
+}
+
+/* B6 — broadsheet column rule between columns (desktop only, where columns are side-by-side) */
+@media (min-width: 640px) {
+  .notion-column-list > .ncolumns:not(:first-child) {
+    border-inline-start: var(--rule-hairline) solid var(--rule-ink-hair);
+    padding-inline-start: 1rem;
+  }
 }
 `;
 
