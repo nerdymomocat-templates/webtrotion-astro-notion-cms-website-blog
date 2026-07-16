@@ -34,12 +34,39 @@ interface GitHubTreeResponse {
 
 type CacheManifest = Record<string, string>; // path -> sha
 
-async function fetchJson<T>(url: string): Promise<T> {
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === "object" && value !== null;
+}
+
+function isGitHubTreeItem(value: unknown): value is GitHubTreeItem {
+	return (
+		isRecord(value) &&
+		typeof value.path === "string" &&
+		typeof value.mode === "string" &&
+		(value.type === "blob" || value.type === "tree") &&
+		typeof value.sha === "string" &&
+		typeof value.url === "string" &&
+		(value.size === undefined || typeof value.size === "number")
+	);
+}
+
+function isGitHubTreeResponse(value: unknown): value is GitHubTreeResponse {
+	return (
+		isRecord(value) &&
+		typeof value.sha === "string" &&
+		typeof value.url === "string" &&
+		typeof value.truncated === "boolean" &&
+		Array.isArray(value.tree) &&
+		value.tree.every(isGitHubTreeItem)
+	);
+}
+
+async function fetchJson(url: string): Promise<unknown> {
 	const headers: Record<string, string> = { ...RAW_HEADERS };
 	if (githubToken) headers.Authorization = `Bearer ${githubToken}`;
 	const res = await fetch(url, { headers });
 	if (!res.ok) throw new Error(`GitHub request failed: ${res.status} ${res.statusText}`);
-	return res.json() as Promise<T>;
+	return res.json();
 }
 
 function ensureDir(dir: string) {
@@ -110,7 +137,14 @@ async function syncSource(
 	const treeUrl = `${GITHUB_API_BASE}/repos/${config.owner}/${config.repo}/git/trees/${config.ref}?recursive=1`;
 	let treeResponse: GitHubTreeResponse;
 	try {
-		treeResponse = await fetchJson<GitHubTreeResponse>(treeUrl);
+		const response = await fetchJson(treeUrl);
+		if (!isGitHubTreeResponse(response)) {
+			logger.warn(
+				`[external-content] GitHub returned an invalid tree response for ${config.owner}/${config.repo}.`,
+			);
+			return;
+		}
+		treeResponse = response;
 	} catch (error) {
 		logger.warn(
 			`[external-content] Failed to fetch tree for ${config.owner}/${config.repo}:`,

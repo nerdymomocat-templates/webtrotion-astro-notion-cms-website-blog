@@ -163,7 +163,7 @@ ${params.darkVariables}
 
   /* Styles for highlighted words */
   .highlighted-word {
-    @apply bg-gray-500/20 rounded px-1 -mx-[2px];
+    @apply -mx-0.5 rounded bg-gray-500/20 px-1;
   }
 
   pre.has-highlighted .line.highlighted.error::before,
@@ -1393,16 +1393,13 @@ ${params.darkVariables}
     --pf-text: var(--color-textColor);
     --pf-background: var(--color-bgColor);
     --pf-border: color-mix(in srgb, var(--color-textColor) 22%, transparent);
-    --pf-border-radius: 0.4rem;
+    --pf-border-radius: var(--radius-md);
     --pf-shadow: 0 24px 64px color-mix(in srgb, #000 22%, transparent);
-    --pf-highlight-background: color-mix(in srgb, var(--color-accent) 24%, transparent);
+    --pf-highlight-background: color-mix(in srgb, var(--color-accent) 10%, transparent);
     --pf-highlight-text: var(--color-textColor);
     --pf-muted: color-mix(in srgb, var(--color-textColor) 68%, transparent);
     --pf-hover: color-mix(in srgb, var(--color-accent) 5%, transparent);
-    --pf-focus: color-mix(in srgb, var(--color-accent) 10%, transparent);
     --webtrotion-search-rule: color-mix(in srgb, var(--color-textColor) 14%, transparent);
-    --webtrotion-search-surface: var(--color-bgColor);
-    --webtrotion-search-row-padding: 0.5rem 0.6rem;
     --wt-results-col: min(33rem, calc(100vw - 3rem));
     --wt-preview-col: 22rem;
     --wt-preview-shift: calc(var(--wt-preview-col) / 2);
@@ -1410,12 +1407,6 @@ ${params.darkVariables}
     --wt-height-compact: min(32rem, calc(100vh - 5rem));
     --wt-height-results: min(40rem, calc(100vh - 4rem));
     --wt-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-    --wt-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-    --webtrotion-search-ease: var(--wt-ease-out);
-    --wt-fs-title: 0.9rem;
-    --wt-fs-body: 0.82rem;
-    --wt-fs-meta: 0.75rem;
-    --wt-fs-label: 0.68rem;
     --wt-icon-default-tint: color-mix(in srgb, var(--color-accent-2) 62%, var(--pf-muted));
     --wt-sub-tint: color-mix(in srgb, var(--color-link) 80%, var(--pf-muted));
     --pf-outline-focus: var(--color-accent);
@@ -1423,36 +1414,30 @@ ${params.darkVariables}
   }
 
   site-search .search-btn:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 3px;
+    @apply outline-2 outline-accent outline-offset-3;
   }
 
   site-search .search-btn svg {
-    @apply block;
-    fill: currentColor;
+    @apply block fill-current;
   }
 
   site-search pagefind-modal:not(:defined) {
-    display: none !important;
+    @apply hidden!;
   }
 
   site-search .search-loading-modal {
-    @apply fixed inset-0 overflow-hidden p-0;
+    @apply fixed inset-0 overflow-hidden rounded-xl bg-bgColor p-0 text-textColor;
     margin: var(--pf-modal-top, 10dvh) auto;
     width: var(--wt-results-col);
     max-width: calc(100vw - 3rem);
     height: var(--wt-height-compact);
     max-height: calc(100vh - 4rem);
     border: 1px solid var(--webtrotion-search-rule);
-    border-radius: 0.85rem;
-    background: var(--webtrotion-search-surface);
-    color: var(--color-textColor);
     box-shadow: var(--pf-shadow);
   }
 
   site-search .search-loading-modal[open] {
-    @apply flex flex-col;
-    opacity: 1;
+    @apply flex flex-col opacity-100;
     transform: scale(1) translateY(0);
     transition:
       opacity 190ms var(--wt-ease-out),
@@ -1472,27 +1457,20 @@ ${params.darkVariables}
   }
 
   site-search .search-loading-header {
-    @apply flex-none;
-    padding: 0.7rem 0.8rem;
+    @apply flex-none bg-bgColor px-3 py-2.5;
     border-bottom: 1px solid var(--webtrotion-search-rule);
-    background: var(--webtrotion-search-surface);
   }
 
   site-search .search-loading-input {
-    @apply flex items-center gap-2;
-    height: 2.9rem;
-    padding-inline: 0.85rem;
+    @apply flex h-12 items-center gap-2 rounded-md px-3.5 text-base;
     border: 1px solid var(--pf-border);
-    border-radius: 0.35rem;
     background: color-mix(in srgb, var(--color-bgColor) 94%, var(--color-textColor) 2%);
     color: color-mix(in srgb, var(--color-textColor) 42%, transparent);
-    font-size: 1rem;
   }
 
   site-search .search-loading-input-icon {
-    @apply h-[1.15rem] w-[1.15rem] shrink-0;
+    @apply size-4.5 shrink-0 fill-current;
     color: var(--pf-muted);
-    fill: currentColor;
   }
 
   site-search .search-loading-body {
@@ -1500,9 +1478,9 @@ ${params.darkVariables}
   }
 
   site-search .search-loading-spinner {
-    @apply h-[1.6rem] w-[1.6rem] rounded-full;
+    @apply size-6.5 rounded-full;
     border: 2px solid color-mix(in srgb, var(--color-textColor) 15%, transparent);
-    border-top-color: var(--color-accent);
+    @apply border-t-accent;
     animation: webtrotion-search-spin 0.7s linear infinite;
   }
 
@@ -1513,12 +1491,12 @@ ${params.darkVariables}
   }
 
   site-search[data-search-handoff] .pf-modal[open] {
-    transition: none !important;
+    @apply transition-none!;
   }
 
   @media (prefers-reduced-motion: reduce) {
     site-search .search-loading-modal[open] {
-      transition: none;
+      @apply transition-none;
     }
     site-search .search-loading-spinner {
       animation-duration: 1.4s !important;
@@ -1526,17 +1504,12 @@ ${params.darkVariables}
   }
 
   site-search .pf-modal {
+    @apply flex-col! overflow-hidden rounded-xl bg-bgColor p-0 text-textColor;
     width: var(--wt-results-col) !important;
     max-width: calc(100vw - 3rem) !important;
     height: var(--wt-height-compact) !important;
     max-height: calc(100vh - 4rem) !important;
-    flex-direction: column !important;
-    padding: 0;
-    overflow: hidden;
     border: 1px solid var(--webtrotion-search-rule);
-    border-radius: 0.85rem;
-    background: var(--webtrotion-search-surface);
-    color: var(--color-textColor);
     box-shadow: var(--pf-shadow);
     transform-origin: center;
     transition:
@@ -1554,7 +1527,7 @@ ${params.darkVariables}
   }
 
   site-search .pf-modal[open] {
-    opacity: 1;
+    @apply opacity-100;
     transform: translateX(var(--wt-modal-tx, 0px)) scale(1) translateY(0);
   }
 
@@ -1567,20 +1540,26 @@ ${params.darkVariables}
         webtrotion-search-navigation[hidden]
       )
     .webtrotion-search-results-pane {
-    @apply flex flex-col justify-center;
-    padding-block: 1rem;
+    @apply flex flex-col justify-center py-4;
   }
 
   site-search
     .pf-modal:has(.webtrotion-search-empty-state:not([hidden]))
     .pf-summary {
-    display: none !important;
+    @apply hidden!;
   }
 
   site-search
     .webtrotion-search-results-pane:has(webtrotion-search-navigation:not([hidden]))
     .webtrotion-search-empty-state {
-    display: none !important;
+    @apply hidden!;
+  }
+
+  .webtrotion-search-shell[data-idle-mode] pagefind-summary,
+  .webtrotion-search-shell[data-idle-mode] .pagefind-summary,
+  .webtrotion-search-shell[data-idle-mode] pagefind-results,
+  .webtrotion-search-shell[data-idle-mode] .pagefind-results {
+    @apply hidden!;
   }
 
   site-search .pf-modal:has(webtrotion-search-preview[data-preview-active]) {
@@ -1595,33 +1574,25 @@ ${params.darkVariables}
   }
 
   site-search pagefind-modal-header {
-    @apply flex-none;
-    padding: 0.7rem 0.8rem;
+    @apply flex-none bg-bgColor px-3 py-2.5;
     border-bottom: 1px solid var(--webtrotion-search-rule);
-    background: var(--webtrotion-search-surface);
   }
 
   site-search .pf-input-wrapper {
-    position: relative;
+    @apply relative;
   }
 
   site-search .pf-input {
-    height: 2.9rem !important;
-    min-height: 2.9rem !important;
-    padding-inline: 2.55rem 2.5rem !important;
+    @apply h-12! min-h-12! rounded-md px-10! text-base text-textColor;
     border: 1px solid var(--pf-border) !important;
-    border-radius: 0.35rem !important;
     background: color-mix(in srgb, var(--color-bgColor) 94%, var(--color-textColor) 2%) !important;
-    color: var(--color-textColor);
     font: inherit;
-    font-size: 1rem !important;
     box-shadow: inset 0 0 0 1px transparent;
   }
 
   site-search .pf-input:focus {
-    border-color: var(--color-accent);
+    @apply border-accent outline-none;
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 12%, transparent);
-    outline: none;
   }
 
   site-search .pf-input::placeholder {
@@ -1629,12 +1600,12 @@ ${params.darkVariables}
   }
 
   site-search .pf-input-icon {
-    inset-inline-start: 0.8rem;
+    @apply start-3.5;
     color: var(--pf-muted);
   }
 
   site-search .pf-clear-button {
-    inset-inline-end: 0.65rem;
+    @apply end-2.5;
     color: var(--pf-muted);
     transition:
       color 130ms ease,
@@ -1642,7 +1613,7 @@ ${params.darkVariables}
   }
 
   site-search .pf-clear-button:hover {
-    color: var(--color-textColor);
+    @apply text-textColor;
   }
 
   site-search .pf-clear-button:active {
@@ -1650,8 +1621,7 @@ ${params.darkVariables}
   }
 
   site-search pagefind-modal-body {
-    @apply flex-auto! overflow-hidden p-0;
-    min-height: 0;
+    @apply flex-auto! min-h-0 overflow-hidden p-0!;
   }
 
   .webtrotion-search-shell {
@@ -1659,16 +1629,11 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-filters {
-    @apply flex flex-wrap items-center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.7rem;
+    @apply flex flex-wrap items-center gap-1.5 px-3 py-2;
   }
 
   .webtrotion-search-filters-icon {
-    @apply block flex-none;
-    width: 0.95rem;
-    height: 0.95rem;
-    margin-inline-end: 0.05rem;
+    @apply me-px block size-4 flex-none;
   }
 
   .webtrotion-search-filters-icon svg {
@@ -1685,17 +1650,10 @@ ${params.darkVariables}
   }
 
   site-search .pf-dropdown-trigger {
-    @apply inline-flex items-center;
-    gap: 0.35rem;
-    height: 1.9rem !important;
-    min-height: 1.9rem !important;
-    padding-inline: 0.7rem !important;
+    @apply inline-flex h-8! min-h-8! items-center gap-1.5 rounded-full px-3! text-xs! text-textColor;
     border: 1px solid var(--pf-border) !important;
-    border-radius: 999px;
     background: color-mix(in srgb, var(--color-bgColor) 94%, var(--color-textColor) 2%);
-    color: var(--color-textColor);
     font: inherit;
-    font-size: 0.76rem !important;
     transition:
       background-color 130ms ease,
       border-color 130ms ease,
@@ -1708,9 +1666,13 @@ ${params.darkVariables}
   }
 
   site-search .pf-dropdown-trigger:focus-visible {
-    outline: 0;
-    border-color: color-mix(in srgb, var(--color-accent) 55%, var(--pf-border)) !important;
-    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+    @apply font-medium text-accent outline-0;
+    border-color: var(--pf-border) !important;
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent) !important;
+    color: var(--color-accent) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    outline-offset: 0 !important;
   }
 
   site-search .pf-dropdown-trigger:hover,
@@ -1720,44 +1682,29 @@ ${params.darkVariables}
   }
 
   site-search .pf-dropdown-trigger:has(.pf-dropdown-selected-badge:not([data-pf-hidden])) {
-    border-color: color-mix(in srgb, var(--color-accent) 45%, transparent) !important;
+    border-color: var(--pf-border) !important;
     background: color-mix(in srgb, var(--color-accent) 10%, transparent) !important;
-    color: var(--color-accent) !important;
+    @apply text-accent!;
   }
 
   site-search .pf-dropdown-selected-badge {
-    height: 1.05rem !important;
-    min-width: 1.05rem !important;
-    padding: 0 0.32rem !important;
-    border-radius: 999px !important;
-    background: var(--color-accent) !important;
-    color: var(--color-bgColor) !important;
-    font-size: 0.66rem !important;
-    font-weight: 600 !important;
-    font-variant-numeric: tabular-nums;
+    @apply h-4 min-w-4 rounded-full bg-accent! px-1.5 text-xs! font-semibold! text-bgColor! tabular-nums;
   }
 
   site-search .pf-dropdown-arrow {
-    opacity: 0.6;
+    @apply opacity-60;
   }
 
   site-search .pf-dropdown-menu {
+    @apply overflow-y-auto! rounded-lg bg-bgColor! p-1;
     max-height: min(18rem, 48vh) !important;
-    overflow-y: auto !important;
     border: 1px solid var(--pf-border) !important;
-    border-radius: 0.55rem !important;
-    background: var(--color-bgColor) !important;
     box-shadow: 0 12px 32px color-mix(in srgb, #000 12%, transparent) !important;
-    padding: 0.25rem !important;
   }
 
   site-search .pf-dropdown-option,
   site-search .pf-filter-checkbox {
-    color: var(--color-textColor);
-    min-height: 2rem !important;
-    padding: 0.4rem 0.5rem !important;
-    border-radius: 0.4rem !important;
-    font-size: 0.8rem !important;
+    @apply min-h-7! rounded-md px-2! py-1! text-xs! text-textColor!;
   }
 
   site-search .pf-dropdown-option:hover,
@@ -1765,40 +1712,41 @@ ${params.darkVariables}
     background: var(--pf-hover);
   }
 
+  site-search .pf-dropdown-option:focus-visible,
+  site-search .pf-dropdown-option.pf-dropdown-option-focused,
+  site-search .pf-filter-checkbox:focus-within,
+  site-search .pf-filter-checkbox:has(.pf-checkbox-input:focus-visible) {
+    @apply font-medium text-accent outline-0;
+    background: color-mix(in srgb, var(--color-accent) 14%, transparent) !important;
+    color: var(--color-accent) !important;
+    box-shadow: none !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+  }
+
   site-search .pf-dropdown-option[aria-selected="true"],
   site-search .pf-filter-checkbox:has(.pf-checkbox-input:checked) {
+    @apply font-medium text-accent!;
     background: color-mix(in srgb, var(--color-accent) 12%, transparent) !important;
-    color: var(--color-accent) !important;
-    font-weight: 550 !important;
   }
 
   site-search .pf-filter-checkbox:has(.pf-checkbox-input:checked) .pf-checkbox-input,
   site-search .pf-checkbox-input:checked {
-    accent-color: var(--color-accent);
-    border-color: var(--color-accent) !important;
-    background-color: var(--color-accent) !important;
+    @apply accent-accent border-accent! bg-accent!;
   }
 
   site-search .pf-dropdown-option[aria-selected="true"] .pf-dropdown-checkbox {
-    background: var(--color-accent) !important;
-    border-color: var(--color-accent) !important;
+    @apply border-accent! bg-accent!;
   }
 
   site-search .pf-dropdown-option-count {
-    margin-inline-start: auto;
-    padding: 0 0.32rem;
-    border-radius: 0.3rem;
+    @apply ml-auto rounded px-1.5 font-mono text-xs leading-5 tabular-nums;
     background: color-mix(in srgb, var(--color-accent-2) 8%, transparent);
     color: var(--pf-muted);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.35;
   }
 
   site-search .pf-dropdown-option[aria-selected="true"] .pf-dropdown-option-count {
-    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
-    color: var(--color-accent);
+    @apply hidden!;
   }
 
   .webtrotion-search-content {
@@ -1807,51 +1755,34 @@ ${params.darkVariables}
 
   .webtrotion-search-results-pane {
     flex: 0 0 var(--wt-results-col);
-    @apply min-w-0 min-h-0 overflow-auto;
-    padding: 0.4rem 0;
+    @apply min-h-0 min-w-0 overflow-auto py-1.5;
+    scrollbar-gutter: stable;
   }
 
   webtrotion-search-navigation {
-    @apply block;
-    padding: 0.3rem 0.5rem 0.15rem;
+    @apply block px-2 pt-1 pb-0.5;
   }
 
   .webtrotion-search-navigation-label,
   .webtrotion-search-pinned-label {
-    margin: 0.35rem 0.6rem 0.28rem;
+    @apply mx-2.5 mt-1.5 mb-1 text-xs font-semibold tracking-wider uppercase;
     color: color-mix(in srgb, var(--color-textColor) 45%, transparent);
-    font-size: var(--wt-fs-label);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
   }
 
   .webtrotion-search-navigation-list {
-    @apply flex flex-col m-0 p-0 list-none;
-    gap: 0.06rem;
+    @apply m-0 flex list-none flex-col gap-0.5 p-0;
   }
 
   .webtrotion-search-navigation-link {
-    @apply flex items-center no-underline font-medium;
-    gap: 0.6rem;
-    padding: 0.5rem 0.6rem;
-    border-radius: 0.55rem;
-    color: var(--color-textColor);
-    font-size: var(--wt-fs-title);
-    line-height: 1.3;
-    transform-origin: left center;
+    @apply flex items-center gap-2.5 rounded-lg px-2.5 py-2 no-underline text-sm font-medium leading-tight text-textColor;
     transition:
       background-color 120ms ease,
       color 120ms ease,
-      box-shadow 120ms ease,
-      transform 130ms var(--wt-ease-out);
+      box-shadow 120ms ease;
   }
 
   .webtrotion-search-navigation-icon {
-    @apply inline-flex flex-none items-center justify-center leading-none;
-    width: 1.05rem;
-    height: 1.05rem;
-    font-size: 0.92rem;
+    @apply inline-flex size-4 flex-none items-center justify-center leading-none text-sm;
     transition: color 120ms ease;
   }
 
@@ -1860,14 +1791,12 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-navigation-icon img {
-    @apply block h-full w-full object-contain;
-    border-radius: 0.2rem;
+    @apply block h-full w-full rounded-sm object-contain;
   }
 
   .webtrotion-search-navigation-icon.is-default svg {
-    @apply block h-full w-full;
+    @apply block h-full w-full opacity-50;
     fill: var(--wt-icon-default-tint);
-    opacity: 0.5;
     transition:
       fill 120ms ease,
       opacity 120ms ease;
@@ -1875,53 +1804,43 @@ ${params.darkVariables}
 
   .webtrotion-search-navigation-link:hover,
   .webtrotion-search-navigation-link:focus-visible {
-    outline: 0;
+    @apply outline-0;
   }
 
   .webtrotion-search-navigation-link:hover {
     background: color-mix(in srgb, var(--color-accent-2) 7%, transparent);
-    color: var(--color-accent);
+    @apply text-accent;
   }
 
   .webtrotion-search-navigation-link:focus-visible {
     background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-    color: var(--color-accent);
-  }
-
-  .webtrotion-search-navigation-link:active {
-    transform: scale(0.97);
+    @apply text-accent;
   }
 
   .webtrotion-search-navigation-link:hover .webtrotion-search-navigation-icon.is-default svg,
   .webtrotion-search-navigation-link:focus-visible .webtrotion-search-navigation-icon.is-default svg {
-    fill: var(--color-accent);
-    opacity: 1;
+    @apply fill-accent opacity-100;
   }
 
   .webtrotion-search-navigation-link.is-goto {
-    @apply items-start;
-    padding: 0.4rem 0.6rem;
+    @apply items-start px-2.5 py-1.5;
   }
 
   .webtrotion-search-navigation-link.is-goto .webtrotion-search-navigation-text {
-    font-size: var(--wt-fs-body);
-    line-height: 1.25;
+    @apply text-sm leading-tight;
   }
 
   .webtrotion-search-navigation-link.is-goto .webtrotion-search-navigation-icon {
-    margin-top: 0.1rem;
+    @apply mt-0.5;
   }
 
   .webtrotion-search-navigation-body {
-    @apply flex min-w-0 flex-col;
-    gap: 0.1rem;
+    @apply flex min-w-0 flex-col gap-0.5;
   }
 
   .webtrotion-search-navigation-snippet {
-    @apply block min-w-0 truncate;
+    @apply block min-w-0 truncate text-xs font-normal;
     color: color-mix(in srgb, var(--color-textColor) 50%, transparent);
-    font-size: var(--wt-fs-label);
-    font-weight: 400;
     transition: color 120ms ease;
   }
 
@@ -1931,9 +1850,8 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-navigation-empty {
-    margin: 0.6rem 0.7rem;
+    @apply m-3 text-sm;
     color: color-mix(in srgb, var(--color-textColor) 55%, transparent);
-    font-size: var(--wt-fs-title);
   }
 
   .webtrotion-search-goto-section {
@@ -1941,40 +1859,29 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-goto-summary {
-    @apply flex cursor-pointer select-none items-center list-image-none;
-    gap: 0.6rem;
-    margin: 0.6rem 0 0.28rem;
-    padding: 0.1rem 0.6rem;
-    border-radius: 0.55rem;
+    @apply mt-3 mb-1 flex cursor-pointer list-image-none select-none items-center gap-2.5 rounded-lg px-2.5 py-0.5 text-xs font-semibold tracking-wider uppercase;
     color: color-mix(in srgb, var(--color-textColor) 45%, transparent);
-    font-size: var(--wt-fs-label);
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    transform-origin: left center;
     transition:
       color 120ms ease,
-      box-shadow 120ms ease,
-      transform 130ms var(--wt-ease-out);
+      box-shadow 120ms ease;
   }
 
   details.webtrotion-search-goto-section:first-of-type .webtrotion-search-goto-summary {
-    margin-top: 0.15rem;
+    @apply mt-0.5;
   }
 
   details.webtrotion-search-goto-section:not(:first-of-type) {
     border-top: 1px solid var(--webtrotion-search-rule);
-    margin-top: 0.45rem;
-    padding-top: 0.1rem;
+    @apply mt-2 pt-0.5;
   }
 
   .webtrotion-search-goto-summary::-webkit-details-marker {
-    display: none;
+    @apply hidden;
   }
 
   .webtrotion-search-goto-summary:hover,
   .webtrotion-search-goto-summary:focus-visible {
-    outline: 0;
+    @apply outline-0;
   }
 
   .webtrotion-search-goto-summary:hover {
@@ -1982,26 +1889,15 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-goto-summary:focus-visible {
-    color: var(--color-accent);
-  }
-
-  .webtrotion-search-goto-summary:active {
-    transform: scale(0.97);
+    @apply text-accent;
   }
 
   .webtrotion-search-goto-chevron {
-    @apply inline-flex flex-none items-center justify-center;
-    width: 1.05rem;
-    height: 1.05rem;
+    @apply inline-flex size-4 flex-none items-center justify-center;
   }
 
   .webtrotion-search-goto-chevron svg {
-    @apply block flex-none;
-    width: 0.72rem;
-    height: 0.72rem;
-    fill: currentColor;
-    stroke: currentColor;
-    stroke-width: 2;
+    @apply block size-3 flex-none fill-current stroke-current stroke-2;
     stroke-linecap: round;
     stroke-linejoin: round;
     transition: rotate 200ms var(--wt-ease-out);
@@ -2018,54 +1914,37 @@ ${params.darkVariables}
   .webtrotion-search-shell[data-goto-mode] .pagefind-results,
   .webtrotion-search-shell[data-goto-mode] .webtrotion-search-empty-state,
   .webtrotion-search-shell[data-goto-mode] .webtrotion-search-preview-slot {
-    display: none !important;
+    @apply hidden!;
   }
 
   .webtrotion-search-pinned {
-    margin-top: 0.35rem;
-    padding: 0 0.5rem;
+    @apply mt-1.5 px-2;
   }
 
   .webtrotion-search-pinned-link {
-    @apply grid items-start no-underline;
+    @apply grid items-start gap-2 rounded-lg px-2.5 py-2 no-underline text-textColor;
     grid-template-columns: 0.85rem 1.1rem minmax(0, 1fr);
-    gap: 0.5rem;
-    padding: 0.55rem 0.6rem;
-    border-radius: 0.6rem;
     background: color-mix(in srgb, var(--color-textColor) 4%, transparent);
-    color: var(--color-textColor);
-    transform-origin: left center;
     transition:
       background-color 120ms ease,
-      box-shadow 120ms ease,
-      transform 130ms var(--wt-ease-out);
+      box-shadow 120ms ease;
   }
 
   .webtrotion-search-pinned-marker {
-    @apply inline-flex flex-none items-center justify-center;
-    width: 0.85rem;
-    height: 1.1rem;
+    @apply inline-flex w-3.5 h-4.5 flex-none items-center justify-center;
     color: color-mix(in srgb, var(--color-accent) 70%, transparent);
   }
 
   .webtrotion-search-pinned-marker svg {
-    @apply block;
-    width: 0.8rem;
-    height: 0.8rem;
-    fill: currentColor;
+    @apply block size-3 fill-current;
   }
 
   .webtrotion-search-pinned-icon {
-    @apply inline-flex flex-none items-center justify-center leading-none;
-    width: 1.1rem;
-    height: 1.1rem;
-    margin-top: 0.08rem;
-    font-size: 0.95rem;
+    @apply mt-px inline-flex size-4.5 flex-none items-center justify-center leading-none text-sm;
   }
 
   .webtrotion-search-pinned-icon img {
-    @apply block h-full w-full object-contain;
-    border-radius: 0.2rem;
+    @apply block h-full w-full rounded-sm object-contain;
   }
 
   .webtrotion-search-pinned-icon svg {
@@ -2078,14 +1957,12 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-pinned-content {
-    @apply grid min-w-0;
-    gap: 0.14rem;
+    @apply grid min-w-0 gap-0.5;
   }
 
   .webtrotion-search-pinned-link:hover,
   .webtrotion-search-pinned-link:focus-visible {
-    color: inherit;
-    outline: 0;
+    @apply text-textColor outline-0;
   }
 
   .webtrotion-search-pinned-link:hover {
@@ -2096,55 +1973,38 @@ ${params.darkVariables}
     background: color-mix(in srgb, var(--color-accent) 13%, transparent);
   }
 
-  .webtrotion-search-pinned-link:active {
-    transform: scale(0.97);
-  }
-
   .webtrotion-search-pinned-link:hover .webtrotion-search-pinned-marker,
   .webtrotion-search-pinned-link:focus-visible .webtrotion-search-pinned-marker {
-    color: var(--color-accent);
+    @apply text-accent;
   }
 
   .webtrotion-search-pinned-title {
-    font-size: var(--wt-fs-title);
-    font-weight: 600;
-    line-height: 1.35;
+    @apply text-sm font-semibold leading-snug text-textColor;
   }
 
   .webtrotion-search-pinned-detail {
-    @apply truncate;
+    @apply truncate text-xs leading-snug;
     color: var(--pf-muted);
-    font-size: var(--wt-fs-meta);
-    line-height: 1.35;
   }
 
   site-search .pf-summary {
-    margin: 0 0 0.5rem !important;
-    padding-inline: 2.35rem !important;
+    @apply mb-2 px-4.5! text-xs;
     color: var(--pf-muted);
-    font-size: var(--wt-fs-meta) !important;
   }
 
   site-search .pf-results {
-    @apply flex flex-col m-0 p-0;
-    gap: 0 !important;
+    @apply flex flex-col gap-0! m-0 p-0;
   }
 
   .webtrotion-search-result {
-    @apply list-none;
-    scroll-margin-block: 5rem;
+    @apply list-none scroll-my-20;
   }
 
   .webtrotion-search-result-card {
-    position: relative;
-    margin: 0 0.5rem;
-    padding: var(--webtrotion-search-row-padding);
-    border-radius: 0.6rem;
-    transform-origin: left center;
+    @apply relative mx-2 rounded-lg px-2.5 py-2;
     transition:
       background-color 120ms ease,
-      box-shadow 120ms ease,
-      transform 130ms var(--wt-ease-out);
+      box-shadow 120ms ease;
   }
 
   .webtrotion-search-result-card:hover {
@@ -2155,13 +2015,9 @@ ${params.darkVariables}
     background: color-mix(in srgb, var(--color-accent) 14%, transparent);
   }
 
-  .webtrotion-search-result-card:has(.webtrotion-search-result-link:active) {
-    transform: scale(0.985);
-  }
-
   site-search .webtrotion-search-result-link:focus-visible,
   site-search .webtrotion-search-subresult-link:focus-visible {
-    outline: none;
+    @apply outline-none;
   }
 
   .webtrotion-search-result-main {
@@ -2169,18 +2025,12 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-result-heading {
-    @apply flex items-start min-w-0;
-    gap: 0.4rem;
+    @apply flex min-w-0 items-start gap-1.5;
   }
 
   .webtrotion-search-result-icon {
-    @apply inline-flex items-center justify-center leading-none;
-    flex: 0 0 1rem;
-    width: 1rem;
-    height: 1rem;
-    margin-top: 0.12rem;
+    @apply mt-0.5 inline-flex size-4 flex-none items-center justify-center leading-none text-sm;
     color: var(--pf-muted);
-    font-size: 0.9rem;
   }
 
   .webtrotion-search-result-icon img,
@@ -2201,56 +2051,37 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-result-link {
-    @apply block min-w-0 no-underline;
-    color: var(--color-textColor);
-    font-size: var(--wt-fs-title);
-    font-weight: 650;
-    line-height: 1.3;
+    @apply block min-w-0 no-underline text-sm font-semibold leading-tight text-textColor;
   }
 
   .webtrotion-search-result-link:hover,
   .webtrotion-search-result-link:focus-visible {
-    color: var(--color-accent);
+    @apply text-accent;
   }
 
   .webtrotion-search-result-excerpt {
-    @apply line-clamp-1;
-    margin: 0.18rem 0 0;
+    @apply mt-0.5 line-clamp-1 text-sm leading-normal;
     color: var(--pf-muted);
-    line-height: 1.45;
     overflow-wrap: anywhere;
-    font-size: var(--wt-fs-body);
   }
 
   .webtrotion-search-subresults {
-    @apply grid list-none p-0;
-    gap: 0.1rem;
-    margin: 0.15rem 0.5rem 0.35rem 1.35rem;
-    border: 0;
+    @apply grid m-0 mr-2 mb-1.5 ml-5.5 list-none gap-0.5 border-0 p-0;
   }
 
   .webtrotion-search-subresults li {
-    @apply block p-0;
-    border: 0;
+    @apply block border-0 p-0;
   }
 
   .webtrotion-search-subresult-link {
-    @apply flex items-start no-underline;
-    gap: 0.5rem;
-    padding: 0.32rem 0.5rem;
-    border-radius: 0.45rem;
-    transform-origin: left center;
+    @apply flex items-start gap-2 rounded-md px-2 py-1.5 no-underline;
     transition:
       background-color 110ms ease,
-      box-shadow 110ms ease,
-      transform 130ms var(--wt-ease-out);
+      box-shadow 110ms ease;
   }
 
   .webtrotion-search-subresult-icon {
-    @apply block flex-none;
-    width: 0.72rem;
-    height: 0.72rem;
-    margin-top: 0.2rem;
+    @apply mt-1 block size-3 flex-none;
   }
 
   .webtrotion-search-subresult-icon svg {
@@ -2260,30 +2091,24 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-subresult-body {
-    @apply grid min-w-0;
-    gap: 0.08rem;
+    @apply grid min-w-0 gap-0.5;
   }
 
   .webtrotion-search-subresult-title {
-    @apply truncate;
+    @apply truncate text-sm font-medium leading-snug;
     color: color-mix(in srgb, var(--color-textColor) 82%, transparent);
-    font-size: var(--wt-fs-body);
-    font-weight: 550;
-    line-height: 1.35;
     transition: color 110ms ease;
   }
 
   .webtrotion-search-subresult-excerpt {
-    @apply line-clamp-1;
+    @apply line-clamp-1 text-xs leading-snug;
     color: var(--pf-muted);
-    font-size: var(--wt-fs-meta);
-    line-height: 1.4;
     overflow-wrap: anywhere;
   }
 
   .webtrotion-search-subresult-link:hover,
   .webtrotion-search-subresult-link:focus-visible {
-    outline: 0;
+    @apply outline-0;
   }
 
   .webtrotion-search-subresult-link:hover {
@@ -2294,40 +2119,37 @@ ${params.darkVariables}
     background: color-mix(in srgb, var(--color-accent) 12%, transparent);
   }
 
-  .webtrotion-search-subresult-link:active {
-    transform: scale(0.98);
-  }
-
   .webtrotion-search-subresult-link:hover .webtrotion-search-subresult-title,
   .webtrotion-search-subresult-link:focus-visible .webtrotion-search-subresult-title {
-    color: var(--color-accent);
+    @apply text-accent;
   }
 
   .webtrotion-search-subresult-link:hover .webtrotion-search-subresult-icon svg,
   .webtrotion-search-subresult-link:focus-visible .webtrotion-search-subresult-icon svg {
-    fill: var(--color-accent);
+    @apply fill-accent;
   }
 
-  site-search mark,
-  .pagefind-highlight {
+  site-search mark {
+    @apply rounded-sm px-0.5 font-semibold no-underline;
     background: var(--pf-highlight-background);
     color: color-mix(in srgb, var(--color-textColor) 92%, transparent);
-    padding: 0 0.16em;
-    border-radius: 0.22em;
-    font-weight: 600;
-    text-decoration: none;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  .pagefind-highlight {
+    @apply rounded-sm px-0.5 font-semibold no-underline;
+    background: color-mix(in srgb, var(--color-accent) 10%, transparent) !important;
+    color: color-mix(in srgb, var(--color-textColor) 92%, transparent) !important;
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
   }
 
   .webtrotion-search-preview-slot {
-    @apply min-w-0 overflow-auto;
+    @apply min-w-0 overflow-auto px-5 opacity-0 pointer-events-none;
     flex: 0 0 var(--wt-preview-col);
     border-inline-start: 1px solid var(--webtrotion-search-rule);
-    padding-inline: 1.2rem;
     scrollbar-gutter: stable;
-    opacity: 0;
-    pointer-events: none;
     transform: translateX(0.5rem);
     transition:
       opacity 200ms var(--wt-ease-out) 20ms,
@@ -2336,8 +2158,7 @@ ${params.darkVariables}
 
   .webtrotion-search-content:has(webtrotion-search-preview[data-preview-active])
     .webtrotion-search-preview-slot {
-    opacity: 1;
-    pointer-events: auto;
+    @apply opacity-100 pointer-events-auto;
     transform: translateX(0);
   }
 
@@ -2346,15 +2167,16 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-preview-card {
-    padding-block: 0.85rem;
+    @apply py-3.5;
+  }
+
+  .webtrotion-search-preview-kind {
+    @apply mb-1.5 text-xs font-semibold tracking-wider uppercase;
+    color: var(--pf-muted);
   }
 
   .webtrotion-search-preview-title {
-    margin: 0;
-    color: var(--color-textColor);
-    font-size: 1rem;
-    font-weight: 650;
-    line-height: 1.3;
+    @apply text-base font-semibold leading-tight text-textColor;
   }
 
   .webtrotion-search-preview-empty,
@@ -2363,51 +2185,57 @@ ${params.darkVariables}
   }
 
   .webtrotion-search-preview-excerpt {
-    @apply line-clamp-5;
-    margin: 0.7rem 0 0;
-    font-size: 0.82rem;
-    line-height: 1.48;
+    @apply mt-3 line-clamp-5 text-sm leading-normal;
     overflow-wrap: anywhere;
   }
 
+  .webtrotion-search-preview[data-preview-kind="subresult"] .webtrotion-search-preview-excerpt {
+    @apply line-clamp-6;
+  }
+
+  .webtrotion-search-preview-context {
+    @apply mt-1.5 text-xs font-medium leading-snug;
+    color: var(--pf-muted);
+  }
+
+  .webtrotion-search-preview-section-label {
+    @apply mt-3.5 text-xs font-semibold tracking-wide uppercase;
+    color: var(--pf-muted);
+  }
+
   .webtrotion-search-preview-sections {
-    @apply grid p-0 list-none;
-    gap: 0;
-    margin: 0.85rem 0 0;
+    @apply grid list-none gap-0 mt-3.5 p-0;
   }
 
   .webtrotion-search-preview-sections li {
-    padding: 0.55rem 0.1rem;
+    @apply px-0.5 py-2;
     border-bottom: 1px solid var(--webtrotion-search-rule);
   }
 
   .webtrotion-search-preview-sections li:first-child {
-    padding-top: 0;
+    @apply pt-0;
   }
 
   .webtrotion-search-preview-sections li:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
+    @apply border-b-0 pb-0;
   }
 
   .webtrotion-search-preview-sections span {
-    color: var(--color-textColor);
-    font-size: 0.8rem;
-    font-weight: 600;
+    @apply text-xs font-semibold text-textColor;
   }
 
   .webtrotion-search-preview-sections p {
-    @apply line-clamp-3;
-    margin: 0.22rem 0 0;
+    @apply mt-1 line-clamp-3 text-xs leading-snug;
     color: var(--pf-muted);
-    font-size: 0.78rem;
-    line-height: 1.4;
+  }
+
+  .webtrotion-search-preview-related-sections p {
+    @apply line-clamp-2;
   }
 
   .webtrotion-search-skeleton,
   .webtrotion-search-preview-skeleton {
-    @apply block;
-    border-radius: 0.1rem;
+    @apply block rounded-sm;
     background: linear-gradient(
       90deg,
       color-mix(in srgb, var(--color-textColor) 8%, transparent),
@@ -2420,20 +2248,17 @@ ${params.darkVariables}
 
   .webtrotion-search-skeleton-title,
   .webtrotion-search-preview-skeleton.title {
-    width: 70%;
-    height: 1rem;
+    @apply h-4 w-[70%];
   }
 
   .webtrotion-search-skeleton-line,
   .webtrotion-search-preview-skeleton.line {
-    width: 96%;
-    height: 0.75rem;
-    margin-top: 0.7rem;
+    @apply mt-3 h-3 w-[96%];
   }
 
   .webtrotion-search-skeleton-line.short,
   .webtrotion-search-preview-skeleton.short {
-    width: 58%;
+    @apply w-[58%];
   }
 
   @keyframes webtrotion-search-shimmer {
@@ -2446,75 +2271,65 @@ ${params.darkVariables}
   }
 
   site-search pagefind-modal-footer {
-    @apply flex items-center flex-none;
-    padding: 0.5rem 1rem;
+    @apply flex flex-none items-center bg-bgColor px-3 py-2 text-xs;
     border-top: 1px solid var(--webtrotion-search-rule);
-    background: var(--webtrotion-search-surface);
-    font-size: 0.75rem;
   }
 
   .webtrotion-search-navigation-hints {
-    @apply hidden items-center flex-nowrap w-full overflow-hidden;
-    gap: 0.45rem;
+    @apply hidden w-full flex-nowrap items-center justify-start gap-1 font-mono text-xs tracking-normal;
     color: color-mix(in srgb, var(--color-textColor) 58%, transparent);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
-    letter-spacing: 0.01em;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 640px) {
     .webtrotion-search-navigation-hints {
       @apply flex;
     }
   }
 
-  @media (max-width: 767px) {
+  @media (max-width: 639px) {
     site-search pagefind-modal-footer {
-      display: none !important;
+      @apply hidden!;
     }
   }
 
   .webtrotion-search-navigation-hints span {
-    @apply inline-flex items-center whitespace-nowrap flex-none;
-    gap: 0.26rem;
+    @apply inline-flex flex-none items-center gap-1 whitespace-nowrap;
   }
 
   .webtrotion-search-navigation-hints kbd {
-    @apply inline-flex items-center justify-center leading-none;
-    min-width: 1.1rem;
-    height: 1.1rem;
-    padding: 0 0.28rem;
+    @apply inline-flex h-4.5 min-w-4.5 items-center justify-center rounded font-mono text-xs font-bold leading-none;
     border: 1px solid color-mix(in srgb, var(--color-textColor) 20%, transparent);
-    border-radius: 0.28rem;
     background: color-mix(in srgb, var(--color-textColor) 4%, transparent);
-    color: color-mix(in srgb, var(--color-textColor) 75%, transparent);
-    font-family: var(--font-mono);
-    font-size: 0.66rem;
+    color: color-mix(in srgb, var(--color-textColor) 82%, transparent);
+  }
+
+  .webtrotion-search-navigation-hints kbd.webtrotion-search-arrow-key {
+    @apply font-mono text-xs font-bold leading-none;
+  }
+
+  .webtrotion-search-navigation-hints kbd.webtrotion-search-symbol-key,
+  .webtrotion-search-navigation-hints kbd.webtrotion-search-platform-modifier {
+    @apply font-mono text-xs font-bold leading-none;
+    color: color-mix(in srgb, var(--color-textColor) 82%, transparent);
   }
 
   .webtrotion-search-empty-state {
-    @apply flex flex-col items-center text-center;
-    gap: 0.55rem;
-    margin: 0.5rem 0.8rem;
+    @apply m-2 flex flex-col items-center gap-2 text-center text-sm leading-6;
     color: var(--pf-muted);
-    font-size: 0.85rem;
-    line-height: 1.5;
   }
 
   .webtrotion-search-empty-state-icon {
-    @apply block;
-    width: 1.9rem;
-    height: 1.9rem;
+    @apply block size-8;
   }
 
   .webtrotion-search-empty-state-icon svg {
-    @apply block h-full w-full;
-    fill: currentColor;
-    opacity: 0.55;
+    @apply block h-full w-full fill-current opacity-50;
   }
 
   @media (max-width: 1023px) {
     site-search .pf-modal {
+      @apply inset-x-0!;
+      margin: max(2rem, 8dvh) auto !important;
       width: min(34rem, calc(100vw - 1.5rem)) !important;
       max-width: calc(100vw - 1.5rem) !important;
       height: var(--wt-height-compact) !important;
@@ -2538,10 +2353,7 @@ ${params.darkVariables}
     }
 
     .webtrotion-search-preview-slot {
-      @apply flex-none;
-      max-height: 0;
-      border-inline-start: 0;
-      border-top: 0;
+      @apply m-0 max-h-0 flex-none rounded-none border-0 border-s-0 bg-transparent shadow-none;
       transform: translateY(0.6rem);
       transition:
         opacity 180ms var(--wt-ease-out) 40ms,
@@ -2552,8 +2364,19 @@ ${params.darkVariables}
     .webtrotion-search-content:has(webtrotion-search-preview[data-preview-active])
       .webtrotion-search-preview-slot {
       max-height: 42%;
-      border-top: 1px solid var(--webtrotion-search-rule);
+      @apply mx-0 mt-2 rounded-t-xl border border-b-0 border-textColor/5 bg-popover-bg shadow-[0_-10px_24px_-12px_rgba(0,0,0,0.22)];
       transform: translateY(0);
+    }
+
+    .webtrotion-search-content:has(webtrotion-search-preview[data-preview-kind="subresult"][data-preview-active])
+      .webtrotion-search-preview-slot {
+      @apply max-h-3/5;
+    }
+
+    :root.dark
+      .webtrotion-search-content:has(webtrotion-search-preview[data-preview-active])
+      .webtrotion-search-preview-slot {
+      @apply border-textColor/10 shadow-[0_-12px_28px_-12px_rgba(0,0,0,0.42)];
     }
   }
 
@@ -2567,15 +2390,13 @@ ${params.darkVariables}
     site-search .pf-modal,
     site-search .pf-modal:has(.webtrotion-search-result),
     site-search .pf-modal:has(webtrotion-search-preview[data-preview-active]) {
-      inset: 0 !important;
+      @apply inset-0! p-0! rounded-xl!;
       margin: var(--wt-modal-top-m) auto !important;
       width: calc(100vw - 2.5rem) !important;
       max-width: calc(100vw - 2.5rem) !important;
       height: var(--wt-height-results) !important;
       max-height: calc(100dvh - var(--wt-modal-top-m) - 1.5rem) !important;
-      padding: 0 !important;
       border: 1px solid var(--webtrotion-search-rule) !important;
-      border-radius: 0.9rem !important;
       --wt-modal-tx: 0px;
     }
 
@@ -2585,22 +2406,19 @@ ${params.darkVariables}
       max-width: calc(100vw - 2.5rem);
       height: var(--wt-height-results);
       max-height: calc(100dvh - var(--wt-modal-top-m) - 1.5rem);
-      border-radius: 0.9rem;
+      @apply rounded-xl;
     }
 
     site-search pagefind-modal-header {
-      padding: 0.65rem;
+      @apply p-2.5;
     }
 
     site-search .pf-input {
-      min-height: 2.85rem;
-      padding-inline: 2.4rem 2.35rem;
-      font-size: 0.95rem;
+      @apply min-h-11 px-9 text-base;
     }
 
     .webtrotion-search-filters {
-      @apply flex-nowrap overflow-visible relative;
-      padding: 0.45rem 0.65rem;
+      @apply relative flex-nowrap overflow-visible px-2.5 py-2;
       z-index: 2;
     }
 
@@ -2609,8 +2427,7 @@ ${params.darkVariables}
     }
 
     site-search .pf-dropdown-menu {
-      inset-inline-start: 0 !important;
-      left: 0 !important;
+      @apply start-0! left-0!;
       width: min(18rem, calc(100vw - 1.3rem)) !important;
       max-width: min(18rem, calc(100vw - 1.3rem)) !important;
       transform: none !important;
@@ -2626,29 +2443,25 @@ ${params.darkVariables}
     }
 
     webtrotion-search-navigation {
-      margin-bottom: 0.4rem;
-      padding-inline: 0.55rem;
+      @apply mb-1.5 px-2;
     }
 
     .webtrotion-search-result-card {
-      margin-inline: 0.35rem;
+      @apply mx-1.5;
     }
 
-    site-search pagefind-modal-footer {
-      display: none !important;
-    }
   }
 
   @media (hover: none), (pointer: coarse) {
     .webtrotion-search-preview-slot {
-      display: none !important;
+      @apply hidden!;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     site-search .pf-modal,
     site-search .pf-modal[open] {
-      animation: none;
+      @apply animate-none;
       transition: opacity 160ms ease;
     }
 
@@ -2662,17 +2475,11 @@ ${params.darkVariables}
     .webtrotion-search-pinned-link,
     .webtrotion-search-subresult-link,
     site-search .pf-dropdown-trigger {
-      animation: none;
+      @apply animate-none;
       transition: opacity 160ms ease;
       transform: none !important;
     }
   }
-
-@utility transition-height {
-  @apply transition-[height];
-}
-
-
 
 .popoverEl {
   @apply left-0 top-0 max-w-[calc(100vw-10px)];
@@ -2684,7 +2491,7 @@ ${params.darkVariables}
 
 [data-margin-note].highlighted {
   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  @apply rounded px-[2px] -mx-[2px];
+  @apply -mx-0.5 rounded px-0.5;
 }
 
 .footnote-margin-note> :first-child > :nth-child(2) {
@@ -2693,7 +2500,7 @@ ${params.darkVariables}
 
 .footnote-margin-note.highlighted > :first-child > :first-child {
   background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  @apply rounded px-[2px] -mx-[2px];
+  @apply -mx-0.5 rounded px-0.5;
   color: var(--color-quote);
 }
 

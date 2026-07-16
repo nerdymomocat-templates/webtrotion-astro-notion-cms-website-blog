@@ -103,7 +103,9 @@ const placeholderTemplate = String.raw`
 					instance="webtrotion-search"
 					bundle-path={pagefindBundlePath}
 					base-url={baseUrl}
+					excerpt-length="60"
 					highlight-param="highlight"
+					faceted
 				/>
 				<button type="button" disabled class="search-btn" aria-label="Open search">
 					<Icon class="h-7 w-7" name="search" />
@@ -190,29 +192,30 @@ const placeholderTemplate = String.raw`
 						<div class="webtrotion-search-navigation-hints" aria-label="Keyboard shortcuts">
 							<span>
 								<>
-									<kbd>↑</kbd>
-									<kbd>↓</kbd>
+									<kbd class="webtrotion-search-arrow-key">▲</kbd>
+									<kbd class="webtrotion-search-arrow-key">▼</kbd>
 								</>{" "}
 								Navigate
 							</span>
 							<span>
-								<kbd>→</kbd> Matches
+								<kbd class="webtrotion-search-arrow-key">▶</kbd> Matches
 							</span>
 							<span>
-								<kbd>↵</kbd> Open
+								<kbd class="webtrotion-search-symbol-key">⏎</kbd> Open
 							</span>
 							<span>
-								<kbd>/</kbd> Search
+								<kbd class="webtrotion-search-platform-modifier">⌘</kbd>
+								<kbd class="webtrotion-search-symbol-key">/</kbd> Search
 							</span>
 							<span>
 								<>
-									<kbd>⌘</kbd>
-									<kbd>⌫</kbd>
+									<kbd class="webtrotion-search-platform-modifier">⌘</kbd>
+									<kbd class="webtrotion-search-symbol-key">⌫</kbd>
 								</>{" "}
 								Clear
 							</span>
 							<span>
-								<kbd>Esc</kbd> Close
+								<kbd class="webtrotion-search-symbol-key">Esc</kbd> Close
 							</span>
 						</div>
 					</pagefind-modal-footer>
@@ -232,6 +235,14 @@ const placeholderTemplate = String.raw`
 
 		connectedCallback() {
 			if (import.meta.env.DEV) return;
+
+			const isApplePlatform = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent);
+			for (const modifier of this.querySelectorAll<HTMLElement>(
+				".webtrotion-search-platform-modifier",
+			)) {
+				modifier.textContent = isApplePlatform ? "⌘" : "Ctrl";
+				modifier.setAttribute("aria-label", isApplePlatform ? "Command" : "Control");
+			}
 
 			this.openBtn = this.querySelector<HTMLButtonElement>(".search-btn");
 			this.loadingModal = this.querySelector<HTMLDialogElement>(".search-loading-modal");

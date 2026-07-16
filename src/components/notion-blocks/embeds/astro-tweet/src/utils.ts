@@ -55,7 +55,7 @@ export const getMediaUrl = (media: MediaDetails, size: "small" | "medium" | "lar
 };
 
 export const getMp4Videos = (media: MediaAnimatedGif | MediaVideo) => {
-	const { variants } = media.video_info;
+	const variants = media.video_info?.variants ?? [];
 	const sortedMp4Videos = variants
 		.filter((vid) => vid.content_type === "video/mp4")
 		.sort((a, b) => (b.bitrate ?? 0) - (a.bitrate ?? 0));
@@ -70,7 +70,7 @@ export const getMp4Video = (media: MediaAnimatedGif | MediaVideo) => {
 	if (mp4Videos.length === 1) return mp4Videos[0];
 
 	// Fallback: if no MP4 variants, try an HLS variant instead of crashing
-	const hlsVariant = media.video_info.variants.find(
+	const hlsVariant = (media.video_info?.variants ?? []).find(
 		(vid) => vid.content_type === "application/x-mpegURL",
 	);
 	return hlsVariant;
@@ -184,8 +184,12 @@ function addEntities(
  * Array.from is unicode aware, unlike string.slice()
  */
 function fixRange(tweet: TweetBase, entities: EntityWithType[]) {
-	if (tweet.entities.media && tweet.entities.media[0].indices[0] < tweet.display_text_range[1]) {
-		tweet.display_text_range[1] = tweet.entities.media[0].indices[0];
+	const firstMedia = tweet.entities.media?.[0];
+	if (
+		firstMedia?.indices?.[0] !== undefined &&
+		firstMedia.indices[0] < tweet.display_text_range[1]
+	) {
+		tweet.display_text_range[1] = firstMedia.indices[0];
 	}
 	const lastEntity = entities.at(-1);
 	if (lastEntity && lastEntity.indices[1] > tweet.display_text_range[1]) {
