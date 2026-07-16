@@ -123,6 +123,7 @@ export default defineConfig({
 
 		const sansFontName = fontConfig["sans-font-name"];
 		const monoFontName = fontConfig["mono-font-name"];
+		const accentFontName = fontConfig["accent-font-name"];
 
 		if (sansFontName) {
 			fonts.push(
@@ -150,6 +151,16 @@ export default defineConfig({
 					name: monoFontName,
 					cssVariable: "--font-mono",
 					fallbacks: ["monospace"],
+				}),
+			);
+		}
+
+		if (accentFontName) {
+			fonts.push(
+				buildGoogleFont({
+					name: accentFontName,
+					cssVariable: "--font-accent",
+					fallbacks: ["serif"],
 				}),
 			);
 		}

@@ -3,839 +3,75 @@ import { deepMerge } from "./merge";
 import { classicTheme } from "./classic";
 import type { ThemeTemplateParams } from "./css-template-types";
 
-export const neobrutalCssTemplate = (params: ThemeTemplateParams) => `@import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme {
-  --font-sans: ${params.fontSans};
-  --font-serif: ${params.fontSerif};
-  --font-mono: ${params.fontMono};
-  --color-bgColor: var(--theme-bg);
-  --color-textColor: var(--theme-text);
-  --color-link: var(--theme-link);
-  --color-accent: var(--theme-accent);
-  --color-accent-2: var(--theme-accent-2);
-  --color-quote: var(--theme-quote);
-  --color-popover-bg: var(--theme-popover-bg);
-${params.colorDefinitions}
-}
-
-@layer base {
-  :root {
-    color-scheme: light;
-${params.lightVariables}
-  }
-
-  :root.dark {
-    color-scheme: dark;
-${params.darkVariables}
-  }
-
-  html {
-    @apply scroll-smooth;
-    font-size: 14px;
-
-    @variant sm {
-      font-size: 16px;
-    }
-  }
-
-  html body {
-    @apply mx-auto flex min-h-screen max-w-3xl flex-col bg-bgColor px-8 pt-8 text-textColor antialiased overflow-x-hidden;
-  }
-
-  * {
-    @apply scroll-mt-10
-  }
-
-  pre {
-    @apply rounded-md p-4 font-mono;
-  }
-
-  /* Common styles for pre elements */
-  pre.has-diff,
-  pre.has-focused,
-  pre.has-highlighted,
-  pre.has-diff code,
-  pre.has-focused code,
-  pre.has-highlighted code {
-    @apply inline-block min-w-full;
-  }
-
-  /* Styles for diff lines */
-  pre.has-diff .line.diff,
-  pre.has-highlighted .line.highlighted.error,
-  pre.has-highlighted .line.highlighted.warning {
-    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-8 pl-8 pr-4 box-border relative z-0;
-  }
-
-  pre.has-diff .line.diff::before {
-    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
-  }
-
-  pre.has-diff .line.diff.remove {
-    @apply bg-red-500/20;
-  }
-
-  pre.has-diff .line.diff.remove::before {
-    @apply content-['-'];
-  }
-
-  pre.has-diff .line.diff.add {
-    @apply bg-blue-500/20;
-  }
-
-  pre.has-diff .line.diff.add::before {
-    @apply content-['+'];
-  }
-
-  /* Styles for focused lines */
-  pre.has-focused .line {
-    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border transition-all duration-300 ease-in-out;
-  }
-
-  pre.has-focused .line:not(.focused) {
-    @apply blur-[1px] opacity-50;
-  }
-
-  pre.has-focused:hover .line:not(.focused) {
-    @apply blur-none opacity-100;
-  }
-
-  /* Styles for highlighted lines */
-  pre.has-highlighted .line.highlighted {
-    @apply inline-block w-max min-w-[calc(100%+2rem)] -ml-4 pl-4 pr-4 box-border bg-gray-500/20;
-  }
-
-  /* Styles for highlighted words */
-  .highlighted-word {
-    @apply bg-gray-500/20 rounded px-1 -mx-[2px];
-  }
-
-  pre.has-highlighted .line.highlighted.error::before,
-  pre.has-highlighted .line.highlighted.warning::before {
-    @apply content-[''] absolute left-4 top-0 bottom-0 w-4 flex items-center justify-center text-gray-400;
-  }
-
-  pre.has-highlighted .line.highlighted.error {
-    @apply bg-red-500/30;
-  }
-
-  pre.has-highlighted .line.highlighted.error::before {
-    @apply content-['x'];
-  }
-
-  pre.has-highlighted .line.highlighted.warning {
-    @apply bg-yellow-500/20;
-  }
-
-  pre.has-highlighted .line.highlighted.warning::before {
-    @apply content-['!'];
-  }
-}
-
-@utility font-accent {
-  font-family: var(--font-accent, var(--font-sans));
-}
-
+// Personality deltas merged onto base.ts: matching selectors replace the base body, new rules are appended. Shared rules belong in base.ts.
+export const neobrutalOverride = (params: ThemeTemplateParams): string => `
 @layer components {
-  .site-page-link {
-    @apply underline decoration-solid decoration-4 decoration-accent-2/70 hover:decoration-accent-2/90 underline-offset-6 uppercase tracking-[0.2em] font-bold font-accent;
-  }
-
-  .title {
-    @apply text-3xl font-black text-accent-2 uppercase tracking-[0.18em] border-b-4 border-accent-2/60 pb-2 font-accent;
-  }
-
-  .notion-h1 {
-    @apply mt-10 mb-2 cursor-pointer text-2xl font-black uppercase tracking-[0.14em] border-b-4 border-accent-2/40 pb-2 font-accent;
-  }
-
-  .notion-h2 {
-    @apply mt-8 mb-2 cursor-pointer text-xl font-bold uppercase tracking-[0.12em] border-b-2 border-accent-2/30 pb-1 font-accent;
-  }
-
-  .notion-h3 {
-    @apply mt-6 mb-2 cursor-pointer text-lg font-bold uppercase tracking-[0.1em] border-b-2 border-accent-2/20 pb-1 font-accent;
-  }
-
-  .notion-text {
-    @apply my-1 min-h-7;
-  }
-
-  .notion-list-ul {
-    @apply list-outside list-disc space-y-2 pl-7;
-  }
-
-  .notion-list-ol {
-    @apply list-outside space-y-2 pl-7;
-  }
-
-  .notion-list-item-colored {
+.ann-bg-c {
     @apply rounded-sm px-1;
+    background-color: var(--abc, transparent);
   }
-
-  /* Column List */
-  .notion-column-list {
-    @apply mx-auto my-4 block w-full max-w-full flex-wrap gap-x-4 sm:flex md:flex-nowrap;
+.annotation-underline {
+    @apply underline decoration-solid decoration-4 decoration-accent/80 underline-offset-6;
   }
-
-  .notion-column-list > .ncolumns {
-    @apply w-full max-w-full min-w-0 flex-1 basis-44 sm:w-44 md:w-auto;
+.author-icon-link {
+    @apply inline-flex items-center transition-[color,transform] duration-200 ease-out justify-center rounded-none border-2 border-gray-200 p-0.5;
+    box-shadow: 2px 2px 0 var(--nb-shadow);
   }
-
-  /* Divider */
-  .divider {
-    @apply bg-accent/30 mx-auto my-6 h-2 w-full rounded-none border-none;
+.author-icon-link:hover {
+    @apply border-gray-400;
   }
-
-  .notion-divider {
-    @apply bg-accent-2/10 mx-auto my-6 h-2 w-full rounded-none border-none;
+.author-name-link {
+    @apply transition-colors border-b-2 border-gray-200 px-1 font-bold uppercase tracking-[0.18em];
   }
-
-  /* Table */
-  .ntable {
-    @apply relative max-w-full table-auto overflow-x-auto pb-2;
-  }
-
-  .ntable table {
-    @apply w-full text-left text-sm text-textColor/90;
-  }
-
-  .ntable th {
-    @apply bg-ngray-table-header-bg-light text-textColor/90 dark:bg-ngray-table-header-bg-dark/[.03] p-2 text-xs font-semibold uppercase border-b border-gray-200/90 dark:border-gray-700/90;
-  }
-
-  .ntable table.datatable th {
-    @apply font-bold;
-  }
-
-  .ntable .table-row-header {
-    @apply whitespace-nowrap;
-  }
-
-  .ntable td {
-    @apply p-2;
-  }
-
-  .ntable tr {
-     @apply border-b border-gray-200/90 dark:border-gray-700/90;
-  }
-
-  /* Bookmark */
-  .bookmark {
-    @apply pb-2;
-  }
-
-  .bookmark-link-container {
-    @apply flex w-full max-w-full overflow-hidden text-sm;
-  }
-
-  .bookmark-card {
-    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden rounded-none border-2 border-gray-200 no-underline select-none dark:border-gray-800;
-    box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .bookmark-text {
-    @apply text-textColor/90 overflow-hidden p-3 text-left flex-[4_1_180px];
-  }
-
-  .bookmark-title {
-    @apply mb-0.5 h-6 truncate overflow-hidden leading-5 whitespace-nowrap;
-  }
-
-  .bookmark-description {
-    @apply h-8 overflow-hidden text-xs leading-4 opacity-80;
-  }
-
-  .bookmark-caption-container {
-     @apply mt-1.5 flex max-w-full items-baseline;
-  }
-
-  .bookmark-icon-container {
-    @apply mr-1.5 h-4 w-4 min-w-4;
-  }
-
-  .bookmark-link {
-    @apply truncate overflow-hidden text-xs leading-4 whitespace-nowrap;
-  }
-
-  .bookmark-image-container {
-    @apply relative hidden sm:block flex-[1_1_180px];
-  }
-
-  /* Code */
-  .code {
-    @apply relative z-0 mb-1 w-full max-w-full text-sm;
-  }
-
-  .code-scroll {
-     @apply max-h-[340px] overflow-scroll print:max-h-full min-w-0;
-  }
-
-  .code-mermaid {
-     @apply overflow-x-scroll max-h-none min-w-0;
-  }
-
-  .code button[data-code] {
-    @apply absolute top-0 right-0 z-10 cursor-pointer border-none p-2 text-gray-500 sm:opacity-100 md:opacity-0 md:transition-opacity md:duration-200 md:group-hover:opacity-100 print:hidden;
-  }
-
-  /* Quote */
-  .nquote {
-    @apply my-6 border-s-[6px] border-gray-600 px-3! py-2 bg-accent/5 dark:border-gray-300;
-  }
-
-  .quote-children {
-    @apply p-1;
-  }
-
-  /* Callout */
-  .callout {
-    @apply mx-auto my-3 flex w-full max-w-full rounded-none border-2 border-gray-200 px-3 py-4 leading-6;
-    box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-textColor) 12%, transparent);
-  }
-
-  .callout-icon {
-    @apply m-0 mr-2 leading-6;
-  }
-
-  .callout-content {
-    @apply m-0 min-w-0 leading-6;
-  }
-
-  .callout-content.simple > :first-child {
-    @apply mt-0;
-  }
-
-  /* Toggle */
-  .toggle {
-    @apply my-1;
-  }
-
-  .toggle-colored {
-    @apply rounded-sm px-1;
-  }
-
-  .toggle-summary {
-    @apply flex max-w-full cursor-pointer list-none list-image-none gap-2;
-  }
-
-  .toggle-summary::-webkit-details-marker {
-    display: none;
-  }
-
-  details.toggle[open] .toggle-icon-box > .rotate-svg {
-    @apply rotate-90;
-  }
-
-  /* ToDo */
-  .to-do {
-    @apply pl-2 leading-7;
-  }
-
-  .todo-container {
-     @apply gap-2;
-  }
-
-  .todo-item {
-    @apply flex max-w-full items-start;
-  }
-
-  .todo-item-colored {
-    @apply rounded-sm px-1;
-  }
-
-  .todo-checkbox-wrapper {
-    @apply mt-1 pr-2;
-  }
-
-  .todo-text {
-    @apply min-w-0 flex-1;
-  }
-
-  .todo-checkbox-icon {
-    @apply text-textColor/50 h-5 w-5;
-  }
-
-
-  /* Tags */
-  .notion-tag {
-    @apply inline-block text-sm;
-  }
-
-  .notion-tag,
-  a[aria-label^="View more blogs with the tag"],
-  a[aria-label^="View all posts with the tag:"],
-  a[data-pagefind-filter="tags"] {
-    @apply rounded-none border-2 border-gray-200 px-2 py-0.5 font-bold uppercase tracking-[0.18em];
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  a[aria-label^="View posts with the tag:"] > span,
-  h1.title > span {
-    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-bold uppercase tracking-[0.18em];
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 20%, transparent);
-  }
-
-  a[aria-label^="View all posts with the tag:"] > span {
-    @apply rounded-none border-2 border-gray-200 px-1 font-bold uppercase tracking-[0.12em];
-  }
-
-  /* Count Badge (for tags and authors) */
-  .count-badge {
-    @apply ml-2 rounded-none border-2 border-gray-200 bg-gray-100 px-2 py-0.5 text-rose-800 dark:border-gray-700 dark:bg-gray-800 dark:text-rose-300;
-  }
-
-  /* Image */
-  .notion-image-figure {
-    @apply mx-auto mt-1 max-w-full;
-  }
-
-  .notion-image-container {
-    @apply mx-auto min-w-0;
-  }
-
-  .notion-image {
-    @apply block max-w-full rounded-md;
-  }
-
-  /* File */
-  .notion-file-container {
-    @apply border-accent-2/20 hover:border-accent/40 inline-flex max-w-full rounded-lg border p-1;
-  }
-
-  .notion-file-link {
-    @apply underline decoration-wavy decoration-from-font decoration-accent-2/40 hover:decoration-accent-2/60 underline-offset-2 text-link inline-flex max-w-full items-center justify-center rounded-lg text-sm;
-  }
-
-  .notion-file-preview {
-    @apply decoration-accent-2/20 hover:decoration-accent/40 ml-2 inline-flex max-w-full items-center justify-center text-sm underline decoration-wavy hidden sm:inline;
-  }
-
-  /* TOC */
-  .toc-container {
-    @apply fixed top-auto right-4 ${params.tocContainerBottom} z-10 block sm:top-40 sm:bottom-auto print:hidden;
-  }
-
-  .visual-container {
-    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-500 sm:flex border-2 border-gray-200;
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 16%, transparent);
-  }
-
-  .toc-content {
-    @apply border-accent/10 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto rounded-none border-2 p-2 transition-all duration-200 sm:top-0 sm:bottom-auto sm:max-h-[68vh];
-    box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .toc-content [id^="-tocid--"] {
-    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-semibold uppercase tracking-[0.12em] transition-all duration-150;
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .toc-content [id^="-tocid--"]:hover {
+.author-name-link:hover {
     @apply bg-accent/20;
   }
-
-  .toc-content .text-quote\\! {
-    @apply border-2 border-gray-200 bg-accent/30 font-bold;
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 22%, transparent);
+.auto-imported-section {
+    @apply mt-12 border-t-4 border-accent/20 pt-4;
   }
-
-  .visual-container [id^="-vistocid--"] {
-    @apply rounded-none border-2 border-gray-200;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
+.bookmark-card {
+    @apply flex w-full max-w-full min-w-0 grow items-stretch overflow-hidden border-gray-200 no-underline select-none dark:border-gray-800 rounded-none border-2;
+    box-shadow: 6px 6px 0 var(--nb-shadow);
   }
-
-  .bottom-toc-button {
-    @apply fixed end-4 ${params.bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 text-3xl transition-all duration-300 sm:hidden print:hidden;
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 22%, transparent);
+.bottom-toc-button {
+    @apply fixed end-4 ${params.bottomTocButtonBottom} z-30 flex h-10 w-10 cursor-pointer items-center justify-center text-3xl transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] sm:hidden print:hidden rounded-none border-2;
+    box-shadow: 4px 4px 0 var(--nb-shadow);
   }
-
-  /* Social List */
-  .social-link {
-    @apply sm:hover:text-link inline-block p-1;
-  }
-
-  /* Post Preview */
-  a[aria-label="Visit external site"] {
-    @apply border-quote/60 text-quote hover:border-quote/80 hover:text-quote mr-2 inline-flex items-center gap-1 rounded border px-2 py-[2px] text-[11px] font-semibold tracking-wider uppercase transition;
-  }
-
-  [aria-label="Pinned Post"] {
-    @apply me-1 inline-block h-6 w-6;
-  }
-
-  /* To-Top Button */
-  .to-top-btn {
-    @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center rounded-none border-2 text-3xl opacity-0 transition-all duration-300 data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden;
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 22%, transparent);
-  }
-
-  .bottom-toc-button,
+.bottom-toc-button,
   .to-top-btn,
   .copy-markdown-btn {
-    background-color: color-mix(in srgb, var(--color-accent) 16%, var(--color-bgColor));
+    background-color: color-mix(in srgb, var(--color-textColor) 6%, var(--color-bgColor));
     border-color: color-mix(in srgb, var(--color-textColor) 45%, var(--color-bgColor));
     color: color-mix(in srgb, var(--color-textColor) 85%, var(--color-bgColor));
   }
-
-  .bottom-toc-button svg,
-  .to-top-btn svg,
-  .copy-markdown-btn svg {
-    opacity: 0.75;
+.callout {
+    @apply mx-auto flex w-full max-w-full px-3 py-4 leading-6 my-3 rounded-none border-2 border-gray-200;
+    box-shadow: 6px 6px 0 var(--nb-shadow);
   }
-
-
-  /* Copy Markdown Button */
-  .copy-floating-btn {
-    @apply fixed z-40 flex items-center justify-center print:hidden ${params.copyBtnPosition};
+.copy-markdown-btn {
+    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 flex justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden rounded-none border-2 shadow-none;
+    box-shadow: 4px 4px 0 var(--nb-shadow);
   }
-
-  @variant sm {
-    .copy-floating-btn {
-      @apply h-auto w-auto bottom-auto left-auto right-4 top-[7.5rem];
-    }
+.count-badge {
+    @apply ml-2 bg-gray-100 px-2 py-0.5 text-rose-800 dark:bg-gray-800 dark:text-rose-300 rounded-none border-2 border-gray-200 dark:border-gray-700;
   }
-
-  .copy-markdown-btn {
-    @apply inline-flex items-center gap-1 transition disabled:opacity-60 disabled:cursor-not-allowed h-10 w-10 rounded-none border-2 shadow-none flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 cursor-pointer backdrop-blur-md print:hidden;
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 22%, transparent);
-  }
-
-
-  .copy-markdown-btn[data-copy-state="success"] {
-    @apply border-green-500/60 dark:border-green-400/60;
-  }
-
-  .copy-markdown-btn[data-copy-state="error"] {
-    @apply border-red-500/50 dark:border-red-400/60;
-  }
-
-  /* Theme Icon */
-  .theme-toggle-btn {
-    @apply hover:text-accent relative h-10 w-10 cursor-pointer rounded-none border-2 p-2 transition-all;
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 20%, transparent);
-  }
-
-  .theme-icon {
-    @apply absolute top-1/2 left-1/2 h-7 w-7 -translate-x-1/2 -translate-y-1/2 scale-0 opacity-0 transition-all;
-  }
-
-  /* Annotations */
-  .anchor-link-dashed {
-    @apply text-link decoration-accent-2/40 underline decoration-dashed underline-offset-2;
-  }
-
-  .ann-bg-c {
-    background-color: var(--abc, transparent);
-    @apply rounded-sm px-1;
-  }
-
-  :root.dark .ann-bg-c {
-    background-color: var(--abc-dark, var(--abc, transparent));
-  }
-
-  .annotation-underline {
-    @apply underline decoration-solid decoration-4 decoration-accent/80 underline-offset-6;
-  }
-
-  .annotation-strikethrough {
-    @apply line-through decoration-slate-500/50;
-  }
-
-  /* Author Byline */
-  .author-name-link {
-    @apply border-b-2 border-gray-200 px-1 font-bold uppercase tracking-[0.18em];
-  }
-
-  .author-name-link:hover {
-    @apply bg-accent/20;
-  }
-
-  .author-icon-link {
-    @apply inline-flex items-center justify-center rounded-none border-2 border-gray-200 p-0.5;
-    box-shadow: 2px 2px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .author-icon-link:hover {
-    @apply border-gray-400;
-  }
-
-  a[aria-label^="View posts by"] {
-    @apply border-b-2 border-gray-200 uppercase tracking-[0.14em];
-  }
-
-  a[aria-label^="View posts by"] > span {
-    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-bold uppercase tracking-[0.18em];
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 20%, transparent);
-  }
-
-  .annotation-code {
-    @apply rounded-sm border-none px-1 font-mono;
-  }
-
-  .annotation-code.bg-default {
-    @apply bg-gray-100 dark:bg-gray-800;
-  }
-
-  .annotation-code.text-default {
-    @apply text-rose-800 dark:text-rose-300;
-  }
-
-  /* Recent Posts */
-  #auto-recent-posts {
-    @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-accent;
-  }
-
-  #auto-recent-posts::before {
-    content: "■";
-    position: absolute;
-    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
-    margin-left: -1.5rem;
-    display: inline-block;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  #auto-recent-posts:hover::before {
-    opacity: 1;
-  }
-
-  #auto-recent-posts + section ul {
-    @apply space-y-4 text-start;
-  }
-
-  #auto-recent-posts + section ul li {
-    @apply flex max-w-full flex-col flex-wrap gap-1.5 [&_q]:basis-full;
-  }
-
-  /* Auto-generated Section Headers & Dividers */
-  .auto-imported-section {
-    @apply mt-12 border-t-4 border-accent/20 pt-4;
-  }
-
-  .auto-imported-section > hr {
-    @apply bg-accent/40 mx-auto my-6 h-2 w-full rounded-none border-none;
-  }
-
-  .non-toggle-h2 {
-    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.14em] font-accent;
-  }
-
-  .non-toggle-h2::before {
-    content: "■";
-    position: absolute;
-    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
-    margin-left: -1.5rem;
-    display: inline-block;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .non-toggle-h2:hover::before {
-    opacity: 1;
-  }
-
-  /* Anchor Links (hasId) */
-  .hasId {
-    @apply relative;
-  }
-
-  .hasId::before {
-    content: "■";
-    position: absolute;
-    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
-    margin-left: -1.5rem;
-    display: inline-block;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  .hasId:hover::before {
-    opacity: 1;
-  }
-
-  .hasId.toggle-heading::before {
-    margin-left: -2.5rem;
-  }
-
-  .noId::before {
-    display: none;
-  }
-
-  /* Toggles */
-  .toggle > summary::-webkit-details-marker {
-    display: none;
-  }
-
-  details.toggle[open] > summary > div > .rotate-svg {
-    @apply rotate-90;
-  }
-
-  .toggle-heading-1 {
-    @apply mt-8 mb-0;
-  }
-
-  .toggle-heading-2 {
-    @apply mt-6 mb-1;
-  }
-
-  .toggle-heading-3 {
-    @apply mt-4 mb-1;
-  }
-
-  /* Pagination */
-  .pagination-nav {
-    @apply mt-8 flex items-center gap-x-4;
-  }
-
-  .pagination-nav > a {
-    @apply text-link py-2 no-underline hover:underline hover:underline-offset-4;
-  }
-
-  .pagination-nav > .prev-link {
-    @apply me-auto;
-  }
-
-  .pagination-nav > .next-link {
-    @apply ms-auto;
-  }
-
-  /* TOC Visibility for Auto-generated Sections */
-  #-tocid--autogenerated-footnotes,
-  #-vistocid--autogenerated-footnotes,
-  #-tocid--autogenerated-bibliography,
-  #-vistocid--autogenerated-bibliography,
-  #-tocid--autogenerated-interlinked-content,
-  #-vistocid--autogenerated-interlinked-content,
-  #-tocid--autogenerated-cite-this-page,
-  #-vistocid--autogenerated-cite-this-page {
-    @apply !block;
-  }
-
-  #-bottomtocid--autogenerated-footnotes,
-  #-bottomtocid--autogenerated-bibliography,
-  #-bottomtocid--autogenerated-interlinked-content,
-  #-bottomtocid--autogenerated-cite-this-page {
-    @apply !inline;
-  }
-
-  .footnote-content {
-    @apply inline;
-  }
-
-  /* CSS counter for IEEE style numbering */
-  .bibliography-ieee {
-    counter-reset: citation-counter;
-  }
-
-  .bibliography-ieee li {
-    @apply flex items-baseline;
-    counter-increment: citation-counter;
-  }
-
-  .bibliography-ieee li::before {
-    content: "[" counter(citation-counter) "] ";
-    font-weight: 400;
-    margin-right: 0.5rem;
-    font-family: monospace;
-    flex-shrink: 0;
-  }
-
-  /* Footnotes Internal */
-  .footnote-list {
-    @apply list-none;
-  }
-  .footnote-item {
-    @apply flex items-baseline gap-2;
-  }
-  .footnote-marker {
-    @apply text-accent-2/60 shrink-0 font-mono text-sm;
-  }
-
-  /* Bibliography Internal */
-  .bibliography-list {
-    @apply space-y-2 list-none;
-  }
-  .bibliography-item {
-    @apply relative;
-  }
-  .citation-back-btn {
-    @apply absolute left-0 -translate-x-full -ml-2 top-0 opacity-0 pointer-events-none w-4 h-4 rounded-full bg-accent/10 hover:bg-accent/20 flex items-center justify-center transition-all duration-200 cursor-pointer;
-  }
-  li[data-show-back-button="true"] .citation-back-btn {
-    @apply opacity-100 pointer-events-auto;
-  }
-  .citation-entry {
-    @apply inline;
-  }
-  .citation-backlinks {
-    @apply ml-1;
-  }
-
-  /* Header */
-  .site-header {
-    @apply relative mb-8 flex w-full items-center justify-between sm:ps-[4.5rem] lg:-ml-[25%] lg:w-[150%];
-  }
-  .nav-menu {
-    @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end rounded-none border-2 border-gray-200 py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4;
-    box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-textColor) 12%, transparent);
-  }
-  .nav-link {
-    @apply relative z-0 w-fit self-end px-4 py-2 text-right uppercase tracking-[0.16em] border-2 border-gray-200 bg-bgColor sm:w-auto sm:self-auto sm:py-0 sm:text-left font-accent;
-  }
-  .nav-link::before {
-    content: "";
-    position: absolute;
-    left: -0.2em;
-    right: -0.2em;
-    bottom: -0.25em;
-    height: 0.9em;
-    border-radius: 0;
-    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
-    border: 2px solid color-mix(in srgb, var(--color-textColor) 25%, transparent);
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 25%, transparent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 200ms ease;
-    z-index: -1;
-  }
-  .dark .nav-link::before {
+.dark .footer-link::before {
     background-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
     border-color: color-mix(in srgb, var(--color-textColor) 40%, transparent);
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 35%, transparent);
+    box-shadow: 3px 3px 0 var(--nb-shadow);
   }
-  .nav-link:hover::before,
-  .nav-link:focus-visible::before {
-    transform: scaleX(1);
+.dark .nav-link::before {
+    background-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+    border-color: color-mix(in srgb, var(--color-textColor) 40%, transparent);
+    box-shadow: 3px 3px 0 var(--nb-shadow);
   }
-  .nav-link[aria-current="page"]::before {
-    transform: scaleX(1);
-    height: 1.1em;
-    background-color: color-mix(in srgb, var(--color-accent-2) 22%, transparent);
-    border-color: color-mix(in srgb, var(--color-accent-2) 45%, transparent);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 30%, transparent);
+.divider {
+    @apply bg-accent/30 mx-auto w-full border-none my-6 h-2 rounded-none;
   }
-
-  /* Footer */
-  .site-footer {
-    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm border-t-4 border-gray-200 sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%];
+.footer-link {
+    @apply relative z-0 px-4 py-2 sm:px-2 sm:py-0 uppercase tracking-[0.12em] border-2 border-gray-200 bg-bgColor font-sans;
   }
-  .footer-nav {
-    @apply flex flex-wrap gap-x-2 rounded-none border-t-4 border-b-4 border-gray-200 sm:gap-x-2 sm:border-none dark:border-gray-700 print:hidden;
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-  .footer-separator {
-    @apply flex items-center text-accent/45;
-  }
-  .footer-link {
-    @apply relative z-0 px-4 py-2 uppercase tracking-[0.12em] border-2 border-gray-200 bg-bgColor sm:px-2 sm:py-0 font-accent;
-  }
-  .footer-link + .footer-link {
-    @apply sm:pl-0;
-  }
-  .footer-link::before {
+.footer-link::before {
     content: "";
     position: absolute;
     left: -0.2em;
@@ -843,166 +79,290 @@ ${params.darkVariables}
     bottom: -0.2em;
     height: 0.85em;
     border-radius: 0;
-    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
-    border: 2px solid color-mix(in srgb, var(--color-textColor) 25%, transparent);
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 25%, transparent);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 200ms ease;
     z-index: -1;
+    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    border: 2px solid color-mix(in srgb, var(--color-textColor) 25%, transparent);
+    box-shadow: 3px 3px 0 var(--nb-shadow);
   }
-  .dark .footer-link::before {
-    background-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
-    border-color: color-mix(in srgb, var(--color-textColor) 40%, transparent);
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 35%, transparent);
-  }
-  .footer-link:hover::before,
-  .footer-link:focus-visible::before {
-    transform: scaleX(1);
-  }
-  .footer-link[aria-current="page"]::before {
+.footer-link[aria-current="page"]::before {
     transform: scaleX(1);
     height: 1.1em;
     background-color: color-mix(in srgb, var(--color-accent-2) 22%, transparent);
     border-color: color-mix(in srgb, var(--color-accent-2) 45%, transparent);
-    box-shadow: 4px 4px 0 color-mix(in srgb, var(--color-textColor) 30%, transparent);
+    box-shadow: 4px 4px 0 var(--nb-shadow);
   }
-
-  /* Equation */
-  .equation {
-    @apply max-w-full overflow-x-auto overscroll-none text-center;
+.footer-nav {
+    @apply flex flex-wrap gap-x-2 border-gray-200 sm:gap-x-2 sm:border-none dark:border-gray-700 print:hidden rounded-none border-t-4 border-b-4;
+    box-shadow: 4px 4px 0 var(--nb-shadow);
   }
-
-  /* Caption */
-  .caption {
-    @apply text-textColor/70 min-w-0 pt-1 text-sm;
+.hasId::before {
+    content: "■";
+    position: absolute;
+    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+    margin-left: -1.5rem;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.15s ease;
   }
-
-  /* Search */
-  .search-btn {
-    @apply hover:text-accent flex h-10 w-10 cursor-pointer items-center justify-center rounded-none border-2 transition-all;
-    box-shadow: 3px 3px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .search-dialog {
-    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border-2 border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-none;
-    box-shadow: 8px 8px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
-  }
-
-  .search-frame {
-    @apply flex flex-col gap-4 p-6 pt-12 sm:pt-6;
-  }
-
-  .search-close-btn {
-    @apply ms-auto cursor-pointer rounded-none border-2 bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
-  }
-
-  /* Code Render/Inject */
-  .code-rendered {
-    @apply mb-1 w-full max-w-full;
-  }
-
-  .code-injected {
-    @apply mb-1 max-w-full;
-  }
-
-  .code-iframe {
-    @apply h-[340px] w-full max-w-full rounded-lg border-none print:max-h-full;
-  }
-
-  .code .mermaid {
-    @apply max-w-full rounded-sm p-4 font-mono;
-  }
-
-  /* External MDX Content */
-  .mdx-notion {
-    @apply max-w-none;
-  }
-
-  .mdx-notion h1,
+.mdx-notion h1,
   .mdx-notion h2,
   .mdx-notion h3 {
-    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-accent;
+    @apply font-bold text-textColor tracking-[-0.01em] mt-5 mb-3 font-sans;
   }
-
-  .mdx-notion h1 {
-    font-size: clamp(1.8rem, 2.6vw, 2.05rem);
-    line-height: 1.2;
+.nav-link {
+    @apply relative z-0 w-fit self-end text-right sm:w-auto sm:self-auto sm:py-0 sm:text-left px-4 py-2 uppercase tracking-[0.16em] border-2 border-gray-200 bg-bgColor font-sans;
   }
-
-  .mdx-notion h2 {
-    font-size: clamp(1.45rem, 2.3vw, 1.8rem);
-    line-height: 1.25;
+.nav-link::before {
+    content: "";
+    position: absolute;
+    left: -0.2em;
+    right: -0.2em;
+    bottom: -0.25em;
+    height: 0.9em;
+    border-radius: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 200ms ease;
+    z-index: -1;
+    background-color: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    border: 2px solid color-mix(in srgb, var(--color-textColor) 25%, transparent);
+    box-shadow: 3px 3px 0 var(--nb-shadow);
   }
-
-  .mdx-notion h3 {
-    font-size: clamp(1.2rem, 2vw, 1.55rem);
-    line-height: 1.3;
+.nav-link[aria-current="page"]::before {
+    transform: scaleX(1);
+    height: 1.1em;
+    background-color: color-mix(in srgb, var(--color-accent-2) 22%, transparent);
+    border-color: color-mix(in srgb, var(--color-accent-2) 45%, transparent);
+    box-shadow: 4px 4px 0 var(--nb-shadow);
   }
-
-  .mdx-notion p {
-    @apply mt-0 ml-0 mb-[0.9rem] text-base leading-[1.75] text-textColor;
+.nav-menu {
+    @apply bg-bgColor/90 text-accent absolute -inset-x-4 top-14 hidden flex-col items-end py-2 text-base shadow-sm backdrop-blur-sm group-[.menu-open]:z-50 group-[.menu-open]:flex sm:static sm:z-auto sm:-ms-4 sm:mt-1 sm:flex sm:flex-row sm:items-center sm:rounded-none sm:py-0 sm:text-sm sm:shadow-none sm:backdrop-blur-none lg:text-base print:hidden gap-y-3 sm:gap-y-0 lg:gap-x-4 rounded-none border-2 border-gray-200;
+    box-shadow: 6px 6px 0 var(--nb-shadow);
   }
-
-  .mdx-notion ul,
-  .mdx-notion ol {
-    @apply my-[0.2rem] mb-[1rem] ms-[1.25rem] ps-[1.25rem] leading-[1.65] list-outside;
+.non-toggle-h2 {
+    @apply relative mb-4 cursor-pointer text-2xl font-normal uppercase tracking-[0.14em] font-sans;
   }
-
-  .mdx-notion ul {
-    @apply list-disc;
+.non-toggle-h2::before {
+    content: "■";
+    position: absolute;
+    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+    margin-left: -1.5rem;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.15s ease;
   }
-
-  .mdx-notion ol {
-    @apply list-decimal;
+.notion-divider {
+    @apply bg-accent-2/10 mx-auto w-full border-none my-6 h-2 rounded-none;
   }
-
-  .mdx-notion li {
-    @apply my-[0.1rem] ps-[0.1rem];
+.notion-h1 {
+    @apply cursor-pointer text-2xl mt-10 mb-2 font-black uppercase tracking-[0.14em] border-b-4 border-accent-2/40 pb-2 font-sans;
   }
-
-  .mdx-notion blockquote {
-    @apply my-[1.1rem] px-4 py-3 rounded-r-lg;
-    border-left: 4px solid var(--theme-quote);
-    background-color: color-mix(in srgb, var(--theme-quote) 8%, transparent);
+.notion-h2 {
+    @apply cursor-pointer text-xl mt-8 mb-2 font-bold uppercase tracking-[0.12em] border-b-2 border-accent-2/30 pb-1 font-sans;
   }
-
-  .mdx-notion code {
-    /* Match Notion inline code styling */
-    @apply font-mono rounded-sm px-1 py-[0.15rem] text-[0.95rem] bg-gray-100 text-rose-800 dark:bg-gray-800 dark:text-rose-300;
+.notion-h3 {
+    @apply cursor-pointer text-lg mt-6 mb-2 font-bold uppercase tracking-[0.1em] border-b-2 border-accent-2/20 pb-1 font-sans;
   }
-
-  .mdx-notion pre {
-    @apply font-mono px-4 py-4 rounded-2xl overflow-x-auto my-[1.1rem];
+.notion-list-ol {
+    @apply list-outside space-y-2 pl-7;
   }
-
-  /* Keep block code un-tinted while preserving inline styling */
-  .mdx-notion pre code {
-    @apply bg-transparent p-0 rounded-none;
+.notion-list-ul {
+    @apply list-outside list-disc space-y-2 pl-7;
   }
-
-  .mdx-notion a {
-    @apply text-accent underline decoration-wavy decoration-1 underline-offset-[3px] transition-colors duration-200;
+.notion-tag {
+    @apply inline-block text-sm;
   }
-
-  .mdx-notion a:hover {
-    @apply text-accent-2;
+.notion-tag,
+  a[aria-label^="View more blogs with the tag"],
+  a[aria-label^="View all posts with the tag:"],
+  a[data-pagefind-filter="tags"] {
+    @apply rounded-none border-2 border-gray-200 px-2 py-0.5 font-bold uppercase tracking-[0.18em];
+    box-shadow: 3px 3px 0 var(--nb-shadow);
+  }
+.nquote {
+    @apply border-gray-600 dark:border-gray-300 my-6 border-s-[6px] px-3! py-2 bg-accent/5;
+  }
+.search-btn {
+    @apply hover:text-accent active:scale-[0.94] flex h-10 w-10 cursor-pointer items-center justify-center transition-[color,transform] duration-150 ease-out rounded-none border-2;
+    box-shadow: 3px 3px 0 var(--nb-shadow);
+  }
+.search-close-btn {
+    @apply ms-auto cursor-pointer rounded-none border-2 bg-zinc-200 p-2 font-semibold dark:bg-zinc-700;
+  }
+.search-dialog {
+    @apply bg-bgColor/90 h-full max-h-full w-full max-w-full border-2 border-zinc-400 shadow-none backdrop:backdrop-blur-sm sm:mx-auto sm:mt-16 sm:mb-auto sm:h-max sm:max-h-[calc(100%-8rem)] sm:min-h-[15rem] sm:w-5/6 sm:max-w-[48rem] sm:rounded-none;
+    box-shadow: 8px 8px 0 var(--nb-shadow);
+  }
+.search-frame {
+    @apply flex flex-col gap-4 p-6 pt-12 sm:pt-6;
+  }
+.site-footer {
+    @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t-4 border-gray-200;
+  }
+.site-page-link {
+    @apply underline decoration-solid decoration-4 decoration-accent-2/70 hover:decoration-accent-2/90 underline-offset-6 font-bold font-sans;
+  }
+.theme-toggle-btn {
+    @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-none border-2;
+    box-shadow: 3px 3px 0 var(--nb-shadow);
+  }
+.title {
+    @apply text-3xl text-accent-2 font-black uppercase tracking-[0.18em] border-b-4 border-accent-2/60 pb-2 font-sans;
+  }
+.to-top-btn {
+    @apply fixed end-4 ${params.toTopBtnBottom} z-30 flex h-10 w-10 translate-y-28 cursor-pointer items-center justify-center text-3xl opacity-0 transition-[color,background-color,border-color,transform,opacity] duration-200 ease-out active:scale-[0.94] data-[show=true]:translate-y-0 data-[show=true]:opacity-100 sm:end-8 sm:bottom-8 sm:h-12 sm:w-12 print:hidden rounded-none border-2;
+    box-shadow: 4px 4px 0 var(--nb-shadow);
+  }
+.toc-content {
+    @apply border-accent/10 bg-bgColor absolute right-1 bottom-0 max-h-[55vh] w-76 overflow-y-auto p-2 transition-[opacity,transform] duration-200 ease-out sm:top-0 sm:bottom-auto sm:max-h-[68vh] rounded-none border-2;
+    box-shadow: 6px 6px 0 var(--nb-shadow);
+  }
+.toc-content .text-quote\\! {
+    @apply border-2 border-gray-200 bg-accent/30 font-bold;
+    box-shadow: 3px 3px 0 var(--nb-shadow);
+  }
+.toc-content [id^="-tocid--"] {
+    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-semibold uppercase tracking-[0.12em] transition-all duration-150;
+    box-shadow: 3px 3px 0 var(--nb-shadow);
+  }
+.toc-content [id^="-tocid--"]:hover {
+    @apply bg-accent/20;
+  }
+.visual-container {
+    @apply bg-bgColor absolute top-6 right-0 hidden w-8 flex-col items-end space-y-2 overflow-hidden p-2 transition-opacity duration-200 sm:flex border-2 border-gray-200;
+    box-shadow: 4px 4px 0 var(--nb-shadow);
+  }
+.visual-container [id^="-vistocid--"] {
+    @apply rounded-none border-2 border-gray-200;
+    box-shadow: 2px 2px 0 var(--nb-shadow);
+  }
+#auto-recent-posts {
+    @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-sans;
+  }
+#auto-recent-posts::before {
+    content: "■";
+    position: absolute;
+    color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+    margin-left: -1.5rem;
+    display: inline-block;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+a[aria-label^="View posts by"] {
+    @apply border-b-2 border-gray-200 uppercase tracking-[0.14em];
   }
 }
-
-  /* Pagefind Overrides */
-  :root {
+@layer components {
+.auto-imported-section > hr {
+    @apply mx-auto w-full border-none bg-accent/40 my-6 h-2 rounded-none;
+  }
+}
+@layer components {
+a[aria-label^="View all posts with the tag:"] > span {
+    @apply rounded-none border-2 border-gray-200 px-1 font-bold uppercase tracking-[0.12em];
+  }
+}
+@layer components {
+a[aria-label^="View posts by"] > span {
+    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-bold uppercase tracking-[0.18em];
+    box-shadow: 4px 4px 0 var(--nb-shadow);
+  }
+}
+@layer components {
+a[aria-label^="View posts with the tag:"] > span,
+  h1.title > span {
+    @apply rounded-none border-2 border-gray-200 px-2 py-1 font-bold uppercase tracking-[0.18em];
+    box-shadow: 4px 4px 0 var(--nb-shadow);
+  }
+}
+@layer components {
+details.toggle[open] > summary > div > .rotate-svg {
+    @apply rotate-90;
+  }
+}
+@media (max-width: 640px) {
+#webtrotion__search .pagefind-ui__drawer {
+      @apply !gap-3;
+    }
+}
+:root {
     --pagefind-ui-font: inherit;
   }
-
-  #webtrotion__search .pagefind-ui__search-clear {
+.cover-hero-container {
+    @apply grid relative w-full overflow-hidden min-h-[150px] rounded-lg mb-4 isolate;
+    grid-template-areas: "stack";
+}
+.cover-hero-content {
+    @apply relative z-10 min-h-[150px] p-6 flex flex-col justify-center;
+    grid-area: stack;
+}
+.cover-hero-image {
+    @apply absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none;
+    grid-area: stack;
+}
+.cover-hero-tint {
+    @apply absolute inset-0 pointer-events-none;
+    grid-area: stack;
+    background: linear-gradient( to bottom, color-mix(in srgb, var(--color-bgColor) 70%, transparent), color-mix(in srgb, var(--color-bgColor) 50%, transparent) );
+}
+.post-card {
+    @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-none border-2 border-gray-200;
+    transition-timing-function: var(--ease-out);
+    box-shadow: 6px 6px 0 var(--nb-shadow);
+}
+.post-card-image {
+    @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-none;
+}
+.post-card-image-container {
+    @apply relative overflow-hidden aspect-[3/2] rounded-none border-2;
+    border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
+}
+.post-card-placeholder {
+    @apply flex h-full w-full items-center justify-center rounded-none;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
+    transition: transform 300ms ease, filter 300ms ease;
+}
+.post-card-tags {
+    @apply flex flex-wrap items-baseline gap-1 px-0 pb-3 pt-2 border-t-2 border-gray-200;
+}
+.post-card:hover {
+    @apply -translate-x-1 -translate-y-1;
+    box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--color-textColor) 32%, transparent);
+    transform: translateY(-3px);
+}
+[data-margin-note].highlighted {
+    @apply rounded px-[2px] -mx-[2px];
+    background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  /* This prevents the padding from shifting surrounding text */
+}
+#webtrotion__search {
+    --pagefind-ui-primary: var(--color-accent);
+    --pagefind-ui-text: var(--color-textColor);
+    --pagefind-ui-background: var(--color-bgColor);
+    --pagefind-ui-border: var(--color-zinc-400);
+    --pagefind-ui-border-width: 1px;
+  }
+#webtrotion__search .pagefind-ui__result {
+    @apply p-3 border-0 overflow-x-hidden;
+  }
+#webtrotion__search .pagefind-ui__result-link {
+    background-size: 100% 6px;
+    background-position: bottom;
+    background-repeat: repeat-x;
+    background-image: linear-gradient(transparent, transparent 5px, var(--color-textColor) 5px, var(--color-textColor));
+  }
+#webtrotion__search .pagefind-ui__result-link:hover {
+    @apply no-underline;
+    background-image: linear-gradient(transparent, transparent 4px, var(--color-link) 4px, var(--color-link));
+  }
+#webtrotion__search .pagefind-ui__search-clear {
     @apply p-0 bg-transparent overflow-hidden;
     width: calc(60px * var(--pagefind-ui-scale));
   }
-  #webtrotion__search .pagefind-ui__search-clear:focus {
-    outline: 1px solid var(--color-accent-2);
-  }
-  #webtrotion__search .pagefind-ui__search-clear::before {
+#webtrotion__search .pagefind-ui__search-clear::before {
     content: "";
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'  %3E%3Cpath d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E") center / 60% no-repeat;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' %3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M6 5v.18L8.82 8h2.4l-.72 1.68l2.1 2.1L14.21 8H20V5H6M3.27 5L2 6.27l6.97 6.97L6.5 19h3l1.57-3.66L16.73 21L18 19.73L3.55 5.27L3.27 5Z'%3E%3C/path%3E%3C/svg%3E") center / 60% no-repeat;
@@ -1011,290 +371,164 @@ ${params.darkVariables}
     width: 100%;
     height: 100%;
   }
-
-  #webtrotion__search .pagefind-ui__result {
-    @apply p-3 border-0 overflow-x-hidden;
+#webtrotion__search .pagefind-ui__search-clear:focus {
+    outline: 1px solid var(--color-accent-2);
   }
-  @media (max-width: 640px) {
-    #webtrotion__search .pagefind-ui__drawer {
-      @apply !gap-3;
-    }
-  }
-
-  #webtrotion__search .pagefind-ui__result-link {
-    background-size: 100% 6px;
-    background-position: bottom;
-    background-repeat: repeat-x;
-    background-image: linear-gradient(transparent, transparent 5px, var(--color-textColor) 5px, var(--color-textColor));
-  }
-
-  #webtrotion__search .pagefind-ui__result-link:hover {
-    @apply no-underline;
-    background-image: linear-gradient(transparent, transparent 4px, var(--color-link) 4px, var(--color-link));
-  }
-
-  #webtrotion__search mark {
+#webtrotion__search mark {
     @apply text-quote bg-transparent font-semibold;
   }
-
-  #webtrotion__search {
-    --pagefind-ui-primary: var(--color-accent);
-    --pagefind-ui-text: var(--color-textColor);
-    --pagefind-ui-background: var(--color-bgColor);
-    --pagefind-ui-border: var(--color-zinc-400);
-    --pagefind-ui-border-width: 1px;
-  }
-
-@utility transition-height {
-  @apply transition-[height];
-}
-
-
-
-.popoverEl {
-  @apply left-0 top-0 max-w-[calc(100vw-10px)];
-}
-
-.footnote-margin-note.highlighted {
-  @apply opacity-100 text-textColor;
-}
-
-[data-margin-note].highlighted {
-  background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  @apply rounded px-[2px] -mx-[2px];
-  /* This prevents the padding from shifting surrounding text */
-}
-
-.footnote-margin-note> :first-child > :nth-child(2) {
-  @apply !inline !mt-0;
-}
-
 .footnote-margin-note.highlighted > :first-child > :first-child {
-  background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
-  @apply rounded px-[2px] -mx-[2px];
+    @apply rounded px-[2px] -mx-[2px];
+    background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+    color: var(--color-quote);
   /* Prevents padding from shifting text */
-  color: var(--color-quote);
   /* Keep the quote color for the number */
 }
 
-@media (max-width: 1023px) {
-  .footnote-margin-note {
-    @apply hidden;
-  }
-}
-
-@media (min-width: 1024px) {
-  .footnote-margin-note {
-    @apply block;
-  }
-
-  .post-body {
-    @apply relative;
-  }
-}
-
-.post-preview-full-container .footnote-margin-note,
-.post-preview-full-container .cite-this-page-section,
-.post-preview-full-container .bibliography-section,
-.post-preview-full-container .footnotes-section,
-.post-preview-full-container .jump-to-bibliography {
-  @apply !hidden
-}
-
-.datatable-input {
-  @apply w-full box-border rounded-md border border-[#ccc] px-[6px] py-[3px] text-sm transition-all duration-300 ease-in-out;
-}
-
-.datatable-input:focus {
-  @apply border-[#007bff] outline-none ring-[0.2rem] ring-[rgba(0,123,255,0.25)];
-}
-
-.filter-toggle {
-  @apply bg-none border-none text-[20px] cursor-pointer px-[10px] transition-all duration-300 ease-in-out;
-}
-
-.filter-toggle:hover {
-  @apply opacity-70;
-}
-
-.filter-row,
-.search-inputs {
-  @apply transition-all duration-300 ease-in-out max-h-[50px] opacity-100 overflow-hidden;
-}
-
-.filter-row.hide,
-.search-inputs.hide {
-  @apply max-h-0 hidden opacity-0 pt-0 pb-0 mt-0 mb-0;
-}
-
-.datatable-top {
-  @apply flex flex-wrap justify-between items-center p-1 mb-[10px];
-}
-
-.datatable-top-left {
-  @apply flex items-center flex-grow;
-}
-
-.datatable-info {
-  @apply text-sm font-mono transition-all duration-300 ease-in-out whitespace-nowrap;
-}
-
-.datatable-sorter {
-  @apply relative pr-4 bg-transparent;
-  /* Reserve enough space for the sort icons */
-}
-
-.datatable-sorter::after {
-  border-bottom-color: var(--color-accent) !important;
-  top: -2px !important;
-}
-
-.datatable-sorter::before {
-  border-top-color: var(--color-accent) !important;
-}
-
-.datatable-table>tbody>tr>td,
-.datatable-table>tbody>tr>th,
-.datatable-table>tfoot>tr>td,
-.datatable-table>tfoot>tr>th,
-.datatable-table>thead>tr>td,
-.datatable-table>thead>tr>th {
-  padding: calc(var(--spacing) * 2);
-}
-
-html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorter::after,
-html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorter::before {
-  opacity: 0.3 !important;
-}
-
-.datatable-wrapper .datatable-container {
-  border: none !important;
-}
-
-.datatable-table>thead>tr>th {
-  border-bottom-color: rgba(229, 231, 235, 0.9);
-}
-
-.dark .datatable-table>thead>tr>th {
-  border-bottom-color: rgba(55, 65, 81, 0.9);
-}
-
-@media (max-width: 640px) {
-  .datatable-top {
-    @apply flex-nowrap;
-  }
-
-  .datatable-top-left {
-    @apply w-auto mb-0;
-  }
-
-  .datatable-info {
-    @apply pl-2;
-  }
-
-  .datatable-top.filter-active {
-    @apply flex-col items-stretch;
-  }
-
-  .datatable-top.filter-active .datatable-top-left {
-    @apply w-full mb-2;
-  }
-
-  .datatable-top.filter-active .datatable-info {
-    @apply w-full pr-2 text-right;
-  }
-}
-
-/* Gallery Grid Layout - 1 col sm, 2 cols md, 3 cols lg */
-.gallery-grid {
-  @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3;
-}
-
-/* Post Card for Gallery View */
+/* Post cards */
 .post-card {
-  @apply relative overflow-hidden rounded-none border-2 border-gray-200 bg-bgColor transition-[box-shadow,transform] duration-200 ease-in-out;
-  box-shadow: 6px 6px 0 color-mix(in srgb, var(--color-textColor) 18%, transparent);
+  @apply relative overflow-hidden bg-bgColor transition-[box-shadow,transform] duration-200 rounded-none border-2 border-textColor/80;
+  transition-timing-function: var(--ease-out);
+  box-shadow: 5px 5px 0 color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
-
 .post-card:hover {
-  @apply -translate-x-1 -translate-y-1;
+  box-shadow: 7px 7px 0 color-mix(in srgb, var(--color-accent) 60%, transparent);
+  transform: translateY(-3px);
 }
-
-/* Card link - covers entire card */
-.post-card-link {
-  @apply block no-underline text-inherit;
-}
-
-/* Image container with 3:2 aspect ratio */
 .post-card-image-container {
-  @apply relative overflow-hidden rounded-none border-2 aspect-[3/2];
-  border-color: color-mix(in srgb, var(--color-textColor) 6%, transparent);
+  @apply relative overflow-hidden aspect-[3/2] rounded-none border-2 border-textColor/70;
 }
-
 .post-card-image {
-  @apply h-full w-full object-cover rounded-none transition-transform duration-300 ease-in-out;
+  @apply h-full w-full object-cover transition-transform duration-300 ease-out rounded-none;
 }
-
-.post-card:hover .post-card-image {
-  @apply scale-105;
-}
-
 .post-card-placeholder {
   @apply flex h-full w-full items-center justify-center rounded-none;
   background: linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-accent) 20%, transparent));
   transition: transform 300ms ease, filter 300ms ease;
 }
-
 .post-card-placeholder span {
-  @apply text-[2.5rem] font-bold;
+  @apply text-[2.5rem] font-black;
   color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 }
-
-.post-card:hover .post-card-placeholder {
-  transform: scale(1.05);
-  filter: brightness(1.03);
+.post-card-badge {
+  @apply bg-quote/90 absolute top-2 right-2 flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold text-white rounded-none border-2 border-textColor/80 uppercase tracking-[0.14em] font-bold;
+}
+.post-card-meta-date {
+  @apply text-accent/80 mb-1 block font-mono text-[10px] uppercase tracking-[0.16em] font-bold;
+}
+.post-card-title {
+  @apply mb-1 text-sm leading-snug font-sans font-black uppercase tracking-[0.02em];
+}
+.post-card-excerpt {
+  @apply text-textColor/70 line-clamp-2 block text-xs font-medium not-italic;
+}
+.post-card-author-link {
+  @apply text-textColor/60 hover:text-accent text-[10px] transition-colors uppercase tracking-[0.1em] font-semibold;
 }
 
-/* Tags section - positioned at bottom, allows separate clicks */
-.post-card-tags {
-  @apply flex flex-wrap items-baseline gap-1 px-0 pt-2 pb-3 border-t-2 border-gray-200;
+
+/* Search modal + results */
+html {
+  --nb-ink: color-mix(in srgb, var(--color-textColor) 90%, var(--color-bgColor));
+  --nb-shadow: color-mix(in srgb, var(--color-textColor) 82%, transparent);
+}
+html site-search {
+  --pf-border-radius: 0;
+  --pf-shadow: 6px 6px 0 color-mix(in srgb, var(--color-accent) 55%, transparent);
+  --pf-border: color-mix(in srgb, var(--color-textColor) 85%, transparent);
+}
+html site-search .pf-modal,
+html site-search .pf-input,
+html site-search .pf-dropdown-menu,
+html site-search .pf-dropdown-trigger,
+html .webtrotion-search-result-card,
+html .webtrotion-search-navigation-link,
+html .webtrotion-search-pinned-link,
+html .webtrotion-search-subresult-link {
+  border-radius: 0 !important;
 }
 
-/* Authors section - positioned above tags, allows separate clicks */
-.post-card-authors {
-  @apply -mt-1 px-0 pb-1;
+
+/* Component radius (new astro-v7 components -> theme radius scale) */
+html :is(.embed-media-box, .embed-iframe-notion, .embed-iframe-maps, .notion-popover, .notion-image, .notion-file-container, .notion-file-link, .notion-tab-button, .notion-tab-button.is-active, .code-rendered, .code-iframe, .html-frame-lightbox-content .code-iframe, .code .mermaid, .datatable-input, .toc-content) {
+    border-radius: 0;
+  }
+html :is(.notion-list-item-colored, .toggle-colored, .todo-item-colored, .annotation-code, .toc-link, .toc-visual) {
+    border-radius: 0;
+  }
+
+/* Crisp ink borders on structural containers (derived from the user's text color). */
+:is(.callout, .bookmark-card, .post-card, .post-card-image-container, .nav-link,
+    .footer-nav, .search-btn, .theme-toggle-btn, .search-close-btn, .count-badge,
+    .notion-tag, .author-name-link, .author-icon-link, .bottom-toc-button,
+    .to-top-btn, .copy-markdown-btn, .search-dialog, .toc-content, .visual-container,
+    .nav-menu, .site-footer, .post-card-tags, .nquote,
+    .toc-content [id^="-tocid--"], a[data-pagefind-filter="tags"],
+    a[aria-label^="View more blogs with the tag"],
+    a[aria-label^="View all posts with the tag:"],
+    a[aria-label^="View all posts with the tag:"] > span,
+    a[aria-label^="View posts with the tag:"] > span,
+    a[aria-label^="View posts by"], a[aria-label^="View posts by"] > span,
+    h1.title > span) {
+  border-color: var(--nb-ink) !important;
 }
 
-/* Hero Background (formerly Cover Overlay) for Hero and Stream */
-.cover-hero-container {
-  @apply grid relative w-full overflow-hidden min-h-[150px] rounded-lg mb-4;
-  grid-template-areas: "stack";
-  @apply isolate;
+/* Code blocks — ink frame + hard offset shadow (border on the clipping scroll box, shadow on outer .code) */
+.code {
+  box-shadow: 6px 6px 0 var(--nb-shadow);
+}
+.code-scroll {
+  border: 2px solid var(--nb-ink);
+  border-radius: 0;
+}
+.code pre {
+  border-radius: 0 !important;
 }
 
-.cover-hero-image {
-  grid-area: stack;
-  @apply absolute inset-0 bg-cover bg-center opacity-40 pointer-events-none;
+/* Tables — ink gridlines + solid header */
+.ntable table {
+  border: 2px solid var(--nb-ink);
+}
+.ntable th {
+  border-bottom-width: 2px !important;
+  border-bottom-color: var(--nb-ink) !important;
+  background-color: color-mix(in srgb, var(--color-textColor) 10%, var(--color-bgColor));
+}
+.ntable tr {
+  border-bottom-color: color-mix(in srgb, var(--color-textColor) 28%, transparent) !important;
+}
+.ntable td:not(:last-child),
+.ntable th:not(:last-child) {
+  border-right: 1px solid color-mix(in srgb, var(--color-textColor) 18%, transparent);
 }
 
-.cover-hero-tint {
-  grid-area: stack;
-  @apply absolute inset-0 pointer-events-none;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--color-bgColor) 70%, transparent),
-    color-mix(in srgb, var(--color-bgColor) 50%, transparent)
-  );
+/* Tab block — square, thick ink frame, hard shadow; active tab boxed (transparent border on inactive avoids layout shift) */
+.notion-tab-block {
+  border-width: 2px !important;
+  border-color: var(--nb-ink) !important;
+  border-radius: 0 !important;
+  box-shadow: 5px 5px 0 var(--nb-shadow);
+}
+.notion-tab-button {
+  border: 2px solid transparent !important;
+}
+.notion-tab-button.is-active {
+  border: 2px solid var(--nb-ink) !important;
+  background-color: color-mix(in srgb, var(--color-accent) 22%, var(--color-bgColor)) !important;
+  box-shadow: 3px 3px 0 var(--nb-shadow) !important;
 }
 
-.cover-hero-content {
-  grid-area: stack;
-  @apply relative z-10 min-h-[150px] p-6 flex flex-col justify-center;
+/* Search filter dropdowns — ink border to match brutalist chrome */
+site-search .pf-dropdown-trigger {
+  border-width: 2px !important;
+  border-color: var(--nb-ink) !important;
 }
 
-.glightbox-clean .gslide-description {
-  background: var(--color-bgColor);
-}`;
+/* Visual TOC ticks — stronger ink presence */
+.visual-container [id^="-vistocid--"] {
+  border-color: color-mix(in srgb, var(--color-textColor) 55%, transparent) !important;
+}
+`;
 
 // Neobrutal theme icons - Tabler Bold style with thick strokes, geometric shapes
 // Characterized by: 2.5px+ stroke width, chunky appearance, strong geometric forms
