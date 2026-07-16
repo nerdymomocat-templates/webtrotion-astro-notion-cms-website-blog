@@ -236,8 +236,8 @@ export const neobrutalOverride = (params: ThemeTemplateParams): string => `
     box-shadow: 4px 4px 0 var(--nb-shadow);
   }
 .visual-container [id^="-vistocid--"] {
-    @apply rounded-none border-2 border-gray-200;
-    box-shadow: 2px 2px 0 var(--nb-shadow);
+    @apply rounded-none border-none;
+    box-shadow: none;
   }
 #auto-recent-posts {
     @apply relative mt-8 mb-4 cursor-pointer text-2xl font-normal font-sans;
@@ -524,9 +524,11 @@ site-search .pf-dropdown-trigger {
   border-color: var(--nb-ink) !important;
 }
 
-/* Visual TOC ticks — stronger ink presence */
-.visual-container [id^="-vistocid--"] {
-  border-color: color-mix(in srgb, var(--color-textColor) 55%, transparent) !important;
+/* Last-updated badge — square boxed to match brutalist chrome */
+.last-updated-badge {
+  border-radius: 0 !important;
+  border: 2px solid var(--nb-ink);
+  box-shadow: 2px 2px 0 var(--nb-shadow);
 }
 `;
 

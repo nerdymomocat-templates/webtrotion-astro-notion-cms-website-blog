@@ -181,7 +181,7 @@ export const newspaperOverride = (params: ThemeTemplateParams): string => `
     @apply text-accent mt-auto flex w-full flex-col items-center justify-center gap-y-2 pt-20 pb-4 text-center align-top text-sm sm:flex-row sm:justify-between lg:-ml-[25%] lg:w-[150%] border-t-2 border-b-2 border-gray-200;
   }
 .site-page-link {
-    @apply underline decoration-solid decoration-2 decoration-accent-2/50 hover:decoration-accent-2/80 underline-offset-4 uppercase tracking-[0.18em] font-accent;
+    @apply underline decoration-solid decoration-2 decoration-accent-2/50 hover:decoration-accent-2/80 underline-offset-4 font-accent;
   }
 .theme-toggle-btn {
     @apply hover:text-accent active:scale-[0.94] relative h-10 w-10 cursor-pointer p-2 transition-[color,transform] duration-150 ease-out rounded-none border-y-2 border-x-0;
