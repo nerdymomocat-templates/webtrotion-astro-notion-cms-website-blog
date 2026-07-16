@@ -338,57 +338,55 @@ export const buildURLToHTMLMap = async (urls: URL[]): Promise<{ [key: string]: s
 	for (let i = 0; i < urls.length; i += CONCURRENCY_LIMIT) {
 		const batch = urls.slice(i, i + CONCURRENCY_LIMIT);
 		const batchResults = await Promise.all(
-			batch.map(async (url: URL) => {
-				const controller = new AbortController();
-				const timeout = setTimeout(() => {
-					controller.abort();
-				}, 10000); // Timeout 10s
-
-				try {
-					const response = await fetch(url.toString(), { signal: controller.signal });
-					if (!response.body) return "";
-
-					// Stream the response and stop when we find </head> or <body
-					const reader = response.body.getReader();
-					const decoder = new TextDecoder();
-					let html = "";
-					let done = false;
-
+			batch.map((url: URL) => {
+				const fetchHtml = async (): Promise<string> => {
 					try {
-						while (!done) {
-							const { value, done: streamDone } = await reader.read();
-							if (streamDone) {
-								done = true;
-								break;
-							}
+						const response = await fetch(url.toString());
+						if (!response.body) return "";
 
-							const chunk = decoder.decode(value, { stream: true });
-							html += chunk;
+						// Stream the response and stop when we find </head> or <body
+						const reader = response.body.getReader();
+						const decoder = new TextDecoder();
+						let html = "";
+						let done = false;
 
-							// Check for end of head or start of body to stop early
-							if (html.includes("</head>") || html.includes("<body")) {
-								done = true;
-								break;
-							}
+						try {
+							while (!done) {
+								const { value, done: streamDone } = await reader.read();
+								if (streamDone) {
+									done = true;
+									break;
+								}
 
-							// Safety cap (1MB) to prevent massive memory usage if tags are missing
-							if (html.length > 1024 * 1024) {
-								done = true;
-								break;
+								const chunk = decoder.decode(value, { stream: true });
+								html += chunk;
+
+								// Check for end of head or start of body to stop early
+								if (html.includes("</head>") || html.includes("<body")) {
+									done = true;
+									break;
+								}
+
+								// Safety cap (1MB) to prevent massive memory usage if tags are missing
+								if (html.length > 1024 * 1024) {
+									done = true;
+									break;
+								}
 							}
+						} finally {
+							// Cancel the rest of the stream to save bandwidth
+							reader.cancel();
 						}
-					} finally {
-						// Cancel the rest of the stream to save bandwidth
-						reader.cancel();
-					}
 
-					return html;
-				} catch (e) {
-					console.log(`Failed to fetch ${url.toString()}:`, e.message || e);
-					return "";
-				} finally {
-					clearTimeout(timeout);
-				}
+						return html;
+					} catch (e) {
+						console.log(`Failed to fetch ${url.toString()}:`, e.message || e);
+						return "";
+					}
+				};
+				// Race: fetch vs 10s timeout; timeout resolves (not rejects) to avoid unhandled rejections
+				const timeout = new Promise<string>(resolve => setTimeout(() => resolve(""), 10000));
+				return Promise.race([fetchHtml(), timeout]);
 			}),
 		);
 		htmls.push(...batchResults);
