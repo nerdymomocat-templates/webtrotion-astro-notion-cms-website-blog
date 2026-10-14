@@ -371,7 +371,8 @@
 	},
 
 	// === URL Redirects ===
-	// Create 301 redirects for old URLs to new URLs. Useful for SEO when migrating content.
+	// Redirect old page URLs to new URLs. Static builds produce HTML redirects, not HTTP 301 responses.
+	// Use these for browser pages; feed readers need the XML feed URL to remain available.
 	// Format: "/old-path": "/new-path"
 	// Example: "/my-old-post.html": "/posts/my-new-post-slug/"
 	redirects: {},

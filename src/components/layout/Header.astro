@@ -32,7 +32,8 @@ if (shouldUseLocalLogo) {
 	}
 }
 
-const rss_path = getNavLink("/rss.xml");
+const rss_path = getNavLink("/rss/");
+const rssFeedUrl = new URL(getNavLink("/rss.xml"), Astro.site).toString();
 ---
 
 <header id="main-header" class="site-header group">
@@ -101,11 +102,11 @@ const rss_path = getNavLink("/rss.xml");
 		<div
 			class="hover:text-accent h-10 w-10 cursor-pointer items-center justify-center rounded-md p-1.5"
 		>
-			<a href={rss_path}
+			<a href={rss_path} aria-label="Subscribe via RSS" data-rss-feed-url={rssFeedUrl}
 				><Icon
 					name={"rss"}
 					class="hover:text-accent h-7 w-7 transition-colors duration-150 ease-out"
-					aria-label="Open RSS Link"
+					aria-hidden="true"
 				/></a
 			>
 		</div>
@@ -139,6 +140,22 @@ const rss_path = getNavLink("/rss.xml");
 </header>
 
 <script>
+	const rssLink = document.querySelector<HTMLAnchorElement>("[data-rss-feed-url]");
+	rssLink?.addEventListener("click", async (event) => {
+		if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+			return;
+		event.preventDefault();
+		try {
+			const feedUrl = rssLink.dataset.rssFeedUrl!;
+			await navigator.clipboard.writeText(feedUrl);
+			sessionStorage.setItem("rss-feed-copied", feedUrl);
+		} catch {
+			// Keep the subscription page accessible if clipboard permission is denied.
+		} finally {
+			window.location.assign(rssLink.href);
+		}
+	});
+
 	class MobileNavBtn extends HTMLElement {
 		constructor() {
 			super();

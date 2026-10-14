@@ -1,6 +1,6 @@
 {
 	"name": "webtrotion-astro-notion-cms-website-blog",
-	"version": "2.5.0",
+	"version": "2.5.1",
 	"private": false,
 	"engines": {
 		"node": ">=26.0.0"

@@ -7,7 +7,8 @@ import XMLBuilder from "fast-xml-builder";
 import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
 import render from "dom-serializer";
-import { LAST_BUILD_TIME, BASE_PATH, BUILD_FOLDER_PATHS } from "../constants";
+import { LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "../constants";
+import { renderFeedEntries } from "../lib/rss-page";
 
 const rssContentEnhancer = (): AstroIntegration => {
 	return {
@@ -370,12 +371,37 @@ const rssContentEnhancer = (): AstroIntegration => {
 				const builder = new XMLBuilder(builderOptions);
 				const updatedRss = builder.build(rssObject);
 
-				// Add XML declaration and stylesheet
+				// Add XML declaration
 				const xmlDeclaration = '<?xml version="1.0" encoding="UTF-8"?>\n';
-				const styleSheet = `<?xml-stylesheet href="${path.join(BASE_PATH, "/rss-styles.xsl")}" type="text/xsl"?>\n`;
-				const finalXml = xmlDeclaration + styleSheet + updatedRss;
+				const finalXml = xmlDeclaration + updatedRss;
 
 				await fs.writeFile(rssPath, finalXml);
+
+				// Fill the standalone HTML feed page with the same enriched article content.
+				const feedPagePath = path.join(distDir, "rss", "index.html");
+				const feedPage = parseDocument(await fs.readFile(feedPagePath, "utf-8"));
+				const entriesElement = DomUtils.findOne(
+					(node) => node.attribs?.id === "feed-entries",
+					feedPage.children,
+					true,
+				);
+				if (!entriesElement) throw new Error("RSS preview is missing its feed entries container.");
+				const entries = parseDocument(
+					`<main class="container" id="feed-entries">${renderFeedEntries(items)}</main>`,
+				);
+				DomUtils.replaceElement(entriesElement, entries.children[0]!);
+				const updatedElement = DomUtils.findOne(
+					(node) => node.attribs?.id === "feed-last-updated",
+					feedPage.children,
+					true,
+				);
+				if (updatedElement) {
+					const updated = parseDocument(
+						`<span id="feed-last-updated">${new Date(rssData.rss.channel.lastBuildDate).toUTCString()}</span>`,
+					);
+					DomUtils.replaceElement(updatedElement, updated.children[0]!);
+				}
+				await fs.writeFile(feedPagePath, render(feedPage));
 			},
 		},
 	};
