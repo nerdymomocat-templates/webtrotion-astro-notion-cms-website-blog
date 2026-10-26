@@ -420,7 +420,7 @@ export const normalizeNavPath = (inputPath: string, basePath = import.meta.env.B
 };
 
 export const getAnchorLinkAndBlock = async (
-	richText: RichText,
+	richText: Pick<RichText, "InternalHref" | "Href" | "Mention">,
 ): Promise<{
 	hreflink: string | null;
 	blocklinked: Block | null;

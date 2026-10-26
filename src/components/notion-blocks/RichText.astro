@@ -65,7 +65,10 @@ const { richText, blockID, block } = Astro.props;
 																/>
 															)}
 															{richText.Mention && richText.Mention.Page && (
-																<MentionPage pageId={richText.Mention.Page.PageId} />
+																<MentionPage
+																	pageId={richText.Mention.Page.PageId}
+																	blockId={richText.Mention.Page.BlockId}
+																/>
 															)}
 															{richText.Mention && richText.Mention.DateStr && (
 																<MentionDate mention_date={richText.Mention.DateStr} />
