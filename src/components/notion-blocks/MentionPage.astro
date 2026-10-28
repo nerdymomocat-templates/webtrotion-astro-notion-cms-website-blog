@@ -7,6 +7,7 @@ import {
 	getNotionImage,
 	getImageComponentFormat,
 	isExternalPost,
+	getAnchorLinkAndBlock,
 } from "@/lib/blog-helpers.ts";
 import { getIconTailwindFilterStyle } from "@/utils/style-helpers";
 import Icon from "@/components/ui/Icon.astro";
@@ -14,16 +15,25 @@ import { isNotionHostedIconUrl } from "@/lib/notion/client";
 
 export interface Props {
 	pageId: string;
+	blockId?: string | undefined;
 }
 
-const { pageId } = Astro.props;
+const { pageId, blockId } = Astro.props;
 
 let post: Post | null = null;
 if (pageId) {
 	post = await getPostByPageId(pageId);
 }
 
-const hreflink = post ? resolvePostHref(post) : null;
+const hreflink = blockId
+	? (
+			await getAnchorLinkAndBlock({
+				InternalHref: { PageId: pageId, BlockId: blockId, Type: "block" },
+			})
+		).hreflink
+	: post
+		? resolvePostHref(post)
+		: null;
 const external = isExternalPost(post);
 
 const icon = post?.Icon;

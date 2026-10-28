@@ -83,6 +83,7 @@ import { slugify } from "../../utils/slugify";
 import { writeMdxSnippet } from "./mdx-snippet-writer";
 import { extractPageContent } from "../../lib/blog-helpers";
 import superjson from "superjson";
+import { isNotionAppUrl, parseNotionPageLink } from "./urls";
 
 const client = new Client({
 	auth: NOTION_API_SECRET,
@@ -1561,12 +1562,9 @@ export function isNotionHostedIconUrl(rawUrl: string): boolean {
 
 	try {
 		const url = new URL(rawUrl);
-		const isNotionHost =
-			url.hostname === "www.notion.so" ||
-			url.hostname === "notion.so" ||
-			url.hostname === "www.notion.com" ||
-			url.hostname === "notion.com";
-		return isNotionHost && url.pathname.startsWith("/icons/") && url.pathname.endsWith(".svg");
+		return (
+			isNotionAppUrl(url) && url.pathname.startsWith("/icons/") && url.pathname.endsWith(".svg")
+		);
 	} catch {
 		return false;
 	}
@@ -2474,34 +2472,13 @@ export async function _buildRichText(richTextObject: responses.RichTextObject): 
 		Href: richTextObject.href,
 	};
 
-	if (richTextObject.href?.startsWith("/")) {
-		// Notion adds a `v=` query parameter to links copied from peek view.
-		// We need to remove it to parse the link correctly.
-		richTextObject.href = richTextObject.href.replace(/([&?])v=[^#]*/, "");
-		const [pagePart = "", blockPart] = richTextObject.href.split("#");
-		// The Notion page id is the last 32-hex-character run in the path. Matching
-		// it this way tolerates every internal-link shape Notion emits: the legacy
-		// `/<id>`, the newer `/p/<id>` (peek / "copy link"), and the full
-		// `/<workspace>/<Page-Title>-<id>` form. Previously we only stripped the
-		// leading `/`, so a `/p/<id>` link produced a mangled page id and the
-		// link (and its hover popover) silently disappeared.
-		const pageIdMatches = pagePart.replace(/-/g, "").match(/[0-9a-fA-F]{32}/g);
-		const rawPageId = pageIdMatches?.[pageIdMatches.length - 1] || pagePart.substring(1);
-		const pageId = rawPageId.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, "$1-$2-$3-$4-$5");
-		if (blockPart) {
-			const interlinkedContent: InterlinkedContent = {
-				PageId: pageId,
-				BlockId: blockPart,
-				Type: "block",
-			};
-			richText.InternalHref = interlinkedContent;
-		} else {
-			const interlinkedContent: InterlinkedContent = {
-				PageId: pageId,
-				Type: "page",
-			};
-			richText.InternalHref = interlinkedContent;
-		}
+	const notionLink = parseNotionPageLink(richTextObject.href);
+	if (
+		notionLink &&
+		richTextObject.type !== "mention" &&
+		(richTextObject.href?.startsWith("/") || (await getPostByPageId(notionLink.PageId)))
+	) {
+		richText.InternalHref = notionLink;
 	}
 
 	if (richTextObject.type === "text" && richTextObject.text) {
@@ -2527,9 +2504,12 @@ export async function _buildRichText(richTextObject: responses.RichTextObject): 
 		};
 
 		if (richTextObject.mention.type === "page" && richTextObject.mention.page) {
+			const blockId =
+				notionLink?.PageId === richTextObject.mention.page.id ? notionLink.BlockId : undefined;
 			const interlinkedContent: InterlinkedContent = {
 				PageId: richTextObject.mention.page.id,
-				Type: richTextObject.mention.type,
+				Type: blockId ? "block" : "page",
+				...(blockId ? { BlockId: blockId } : {}),
 			};
 			mention.Page = interlinkedContent;
 		} else if (richTextObject.mention.type === "date") {
