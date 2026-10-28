@@ -44,6 +44,7 @@ Acknowledgments: Thanks to [Astro Cactus](https://github.com/chrismwilliams/astr
 - [Pagefind](https://pagefind.app/) static search library integration
 - **Pinned Posts**
 - **Shiki Transformers for Code Blocks**
+- **Mermaid diagrams rendered as SVG at build time with Pele**, with website themes, converted links, equations, and zoom controls.
 - **API request output caching on Github Actions for fast build times**
 - **Mini blog streams (idea copied from [Linus’s stream](https://stream.thesephist.com/))**
 - **Auto-generated related content and pages that link to this page**

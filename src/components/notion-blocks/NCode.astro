@@ -1,10 +1,13 @@
 ---
 import * as interfaces from "@/lib/interfaces";
 import Caption from "@/components/notion-blocks/Caption.astro";
-import { ENABLE_LIGHTBOX, SHORTCODES, TRANSFORMER_FUNCTIONS_ARR } from "@/constants";
+import { ENABLE_LIGHTBOX, SHORTCODES, TRANSFORMER_FUNCTIONS_ARR, THEME } from "@/constants";
 import { highlightCodeToHtml } from "@/utils/shiki-highlighter";
 import Icon from "@/components/ui/Icon.astro";
 import { joinPlainText, resolveLeadingMarker } from "@/utils/richtext-utils";
+import { renderDiagram } from "@/lib/diagrams/render";
+import { buildDiagramLinkMap } from "@/lib/diagrams/content";
+import { resolveDiagramHref } from "@/lib/blog-helpers";
 
 export interface Props {
 	block: interfaces.Block;
@@ -192,6 +195,21 @@ if (codeBlock.RenderMode === "iframe") {
 
 const code_render = iframeSrcDoc !== null;
 const code_inject = htmlToInject !== null;
+let diagram: ReturnType<typeof renderDiagram> | null = null;
+let diagramError = "";
+if (!code_render && !code_inject && language === "mermaid") {
+	const diagramLinks = await buildDiagramLinkMap(code, resolveDiagramHref);
+	try {
+		diagram = renderDiagram(code, {
+			fontFamily: THEME["fontfamily-google-fonts"]?.["sans-font-name"],
+			linkMap: diagramLinks,
+		});
+	} catch (error) {
+		if (!(error instanceof Error)) throw error;
+		diagramError = error.message;
+		console.warn(`Unable to render Mermaid block ${block.Id}: ${error.message}`);
+	}
+}
 const shouldHighlight = !code_render && !code_inject && language !== "mermaid";
 const highlightedCodeHtml = shouldHighlight
 	? await highlightCodeToHtml({
@@ -200,8 +218,10 @@ const highlightedCodeHtml = shouldHighlight
 			defaultColor: "light",
 			transformers: TRANSFORMER_FUNCTIONS_ARR,
 		})
-		: null;
-const isWide = setId && resolveLeadingMarker(codeBlock, codeBlock.Caption!, SHORTCODES["wide-breakout"], "__wide");
+	: null;
+const isWide =
+	setId &&
+	resolveLeadingMarker(codeBlock, codeBlock.Caption!, SHORTCODES["wide-breakout"], "__wide");
 const plainTextCaption = joinPlainText(codeBlock.Caption!);
 const iframeHeight = codeBlock.IframeSizing?.Height;
 const iframeAspectRatio = iframeHeight ? undefined : codeBlock.IframeSizing?.AspectRatio;
@@ -215,61 +235,51 @@ const iframeLightboxId = `html-frame-lightbox-${block.Id}`;
 
 {
 	code_render ? (
-			<div
-				class:list={["code-rendered", { "code-rendered-aspect": iframeAspectRatio, "webtrotion-wide-breakout": isWide }]}
-				id={setId ? block.Id : undefined}
-				style={iframeStyle}
-				data-html-frame
-			>
-				{ENABLE_LIGHTBOX && (
-					<a
-						href={`#${iframeLightboxId}`}
-						class="embedglightbox html-frame-lightbox-trigger no-rss"
-						data-type="inline"
-						data-glightbox="type: inline; width: 100vw; height: 100vh;"
-						aria-label="Open HTML artifact in lightbox"
-					>
-						<Icon name={"expand"} class="h-6 w-6" aria-hidden="true" />
-					</a>
-				)}
-				<iframe
-					srcdoc={iframeSrcDoc}
-					class="code-iframe"
-					loading="lazy"
-					title={plainTextCaption}
-				/>
-				{ENABLE_LIGHTBOX && (
-					<div class="hidden">
-						<div id={iframeLightboxId} class="html-frame-lightbox-content">
-							<iframe
-								srcdoc={iframeSrcDoc}
-								class="code-iframe"
-								title={plainTextCaption}
-							/>
-						</div>
+		<div
+			class:list={[
+				"code-rendered",
+				{ "code-rendered-aspect": iframeAspectRatio, "webtrotion-wide-breakout": isWide },
+			]}
+			id={setId ? block.Id : undefined}
+			style={iframeStyle}
+			data-html-frame
+		>
+			{ENABLE_LIGHTBOX && (
+				<a
+					href={`#${iframeLightboxId}`}
+					class="embedglightbox html-frame-lightbox-trigger no-rss"
+					data-type="inline"
+					data-glightbox="type: inline; width: 100vw; height: 100vh;"
+					aria-label="Open HTML artifact in lightbox"
+				>
+					<Icon name={"expand"} class="h-6 w-6" aria-hidden="true" />
+				</a>
+			)}
+			<iframe srcdoc={iframeSrcDoc} class="code-iframe" loading="lazy" title={plainTextCaption} />
+			{ENABLE_LIGHTBOX && (
+				<div class="hidden">
+					<div id={iframeLightboxId} class="html-frame-lightbox-content">
+						<iframe srcdoc={iframeSrcDoc} class="code-iframe" title={plainTextCaption} />
 					</div>
-				)}
+				</div>
+			)}
 		</div>
 	) : code_inject ? (
-		<div class:list={["code-injected", { "webtrotion-wide-breakout": isWide }]} id={setId ? block.Id : undefined}>
+		<div
+			class:list={["code-injected", { "webtrotion-wide-breakout": isWide }]}
+			id={setId ? block.Id : undefined}
+		>
 			<Fragment set:html={htmlToInject} />
 			<Caption richTexts={codeBlock.Caption!} block={block} />
 		</div>
 	) : (
-		<div
-			class="code group"
-			id={setId ? block.Id : undefined}
-		>
+		<div class="code group" id={setId ? block.Id : undefined}>
 			<div
 				class={language === "mermaid" ? "code-mermaid" : "code-scroll"}
 				{...(language !== "mermaid" && { "data-pagefind-ignore": "all" })}
 			>
 				<div class="flex max-w-full">
-					<button
-						class="copy"
-						data-code={modifiedCode}
-						aria-label="copy code"
-					>
+					<button class="copy" data-code={modifiedCode} aria-label="copy code">
 						<Icon
 							class="copy-icon-before h-6 w-6"
 							name={"clipboard-copy-code"}
@@ -283,31 +293,28 @@ const iframeLightboxId = `html-frame-lightbox-${block.Id}`;
 					</button>
 				</div>
 				{language === "mermaid" ? (
-					<pre class="mermaid">{code}</pre>
+					<div
+						class="mermaid"
+						data-diagram-lightbox={ENABLE_LIGHTBOX ? "true" : undefined}
+						data-diagram-source={code}
+						data-diagram-search={diagram?.searchText || code}
+						data-pagefind-index-attrs="data-diagram-search"
+					>
+						{diagram ? (
+							<div class="diagram-wide" set:html={diagram.wide.svg} />
+						) : (
+							<>
+								<p class="diagram-error">{diagramError}</p>
+								<pre>{code}</pre>
+							</>
+						)}
+					</div>
 				) : (
 					highlightedCodeHtml && <Fragment set:html={highlightedCodeHtml} />
 				)}
 			</div>
 			<Caption richTexts={codeBlock.Caption!} block={block} />
 		</div>
-	)
-	}
-
-{/* prettier-ignore */}
-{
-	language === "mermaid" && (
-		<script>
-			// Only load Mermaid after page load
-			window.addEventListener("load", () => {
-				if (document.querySelector(".mermaid")) {
-					import("mermaid").then((module) => {
-						const mermaid = module.default;
-						mermaid.initialize({ startOnLoad: false, theme: "base" });
-						mermaid.run();
-					});
-				}
-			});
-		</script>
 	)
 }
 
@@ -420,8 +427,6 @@ const iframeLightboxId = `html-frame-lightbox-${block.Id}`;
 	let htmlFrameResizeRaf = 0;
 	window.addEventListener("resize", () => {
 		if (htmlFrameResizeRaf) cancelAnimationFrame(htmlFrameResizeRaf);
-		htmlFrameResizeRaf = requestAnimationFrame(() =>
-			htmlFrameRemeasures.forEach((fn) => fn()),
-		);
+		htmlFrameResizeRaf = requestAnimationFrame(() => htmlFrameRemeasures.forEach((fn) => fn()));
 	});
 </script>
