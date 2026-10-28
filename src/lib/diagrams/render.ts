@@ -5,7 +5,7 @@ import serialize from "dom-serializer";
 import { Element } from "domhandler";
 import postcss from "postcss";
 import { utils as cssValues } from "@asamuzakjp/css-color";
-import { convertDiagramTheme } from "./theme.ts";
+import { convertDiagramTheme, contrastingTextColor } from "./theme.ts";
 import { mathjax } from "@mathjax/src/js/mathjax.js";
 import { TeX } from "@mathjax/src/js/input/tex.js";
 import { SVG } from "@mathjax/src/js/output/svg.js";
@@ -98,6 +98,36 @@ export function renderDiagram(
 			if (className === "pele-node" && theme.styles["--diagram-node-text"]) {
 				element.attribs.style += ";color:var(--_fg)";
 				paint(element, "fill", "--diagram-node-text");
+			}
+			if (className === "pele-node" && !theme.hasAuthoredNodeText) {
+				const shape = DomUtils.findOne(
+					(el) => ["rect", "path", "polygon", "circle", "ellipse"].includes(el.name),
+					element.children,
+					true,
+				);
+				let background: string | undefined;
+				let opaque = [shape?.attribs["fill-opacity"], shape?.attribs.opacity].every(
+					(value) => value === undefined || Number(value) === 1,
+				);
+				if (shape?.attribs.style)
+					postcss.parse(`svg{${shape.attribs.style}}`).walkDecls((decl) => {
+						if (decl.prop === "fill") background = decl.value;
+						if (["fill-opacity", "opacity"].includes(decl.prop) && Number(decl.value) !== 1)
+							opaque = false;
+					});
+				const textColor = contrastingTextColor(
+					opaque ? background : undefined,
+					theme.styles["--diagram-node-text"] || theme.styles["--pele-fg"],
+				);
+				if (textColor)
+					for (const label of DomUtils.findAll((el) => el.name === "text", element.children)) {
+						let authoredColor = Boolean(label.attribs.fill);
+						if (label.attribs.style)
+							postcss.parse(`svg{${label.attribs.style}}`).walkDecls((decl) => {
+								if (decl.prop === "fill" || decl.prop === "color") authoredColor = true;
+							});
+						if (!authoredColor) label.attribs.fill = textColor;
+					}
 			}
 			if (className === "pele-edge-label") paint(element, "fill", "--diagram-edge-text");
 			if (className === "pele-title" && theme.styles["--diagram-title"])

@@ -1485,11 +1485,6 @@ ${createCssVariables("dark")}
     --pele-font-mono: var(--font-mono);
     --pele-bg: var(--color-bgColor);
     --pele-fg: var(--color-textColor);
-    --pele-muted: color-mix(in srgb, var(--color-textColor) 65%, var(--color-bgColor));
-    --pele-line: color-mix(in srgb, var(--color-accent-2) 65%, var(--color-bgColor));
-    --pele-surface: color-mix(in srgb, var(--color-accent) 8%, var(--color-bgColor));
-    --pele-surface-alt: color-mix(in srgb, var(--color-link) 8%, var(--color-bgColor));
-    --pele-border: color-mix(in srgb, var(--color-accent) 70%, var(--color-bgColor));
     --pele-accent: var(--color-accent);
     --pele-series-1: var(--color-accent);
     --pele-series-2: var(--color-link);
@@ -1501,6 +1496,14 @@ ${createCssVariables("dark")}
     --pele-series-8: color-mix(in srgb, var(--color-link) 85%, var(--color-bgColor));
     --diagram-on-series: #ffffff;
     --diagram-link-text: var(--color-link);
+  }
+
+  .code .mermaid svg.pele {
+    --pele-muted: color-mix(in srgb, var(--pele-fg) 65%, var(--pele-bg));
+    --pele-line: color-mix(in srgb, var(--pele-fg) 80%, var(--pele-bg));
+    --pele-surface: color-mix(in srgb, var(--color-accent) 8%, var(--pele-bg));
+    --pele-surface-alt: color-mix(in srgb, var(--color-link) 8%, var(--pele-bg));
+    --pele-border: color-mix(in srgb, var(--color-accent) 70%, var(--pele-bg));
   }
 
   :root.dark .code .mermaid {

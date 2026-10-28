@@ -441,7 +441,7 @@ export async function addDiagramFeedImages(
 		});
 	});
 	css.walkRules((rule) => {
-		if (rule.selector === ":root" || rule.selector === ".code .mermaid")
+		if ([":root", ".code .mermaid", ".code .mermaid svg.pele"].includes(rule.selector))
 			rule.walkDecls((decl) => {
 				if (decl.prop.startsWith("--")) palette[decl.prop] = decl.value;
 			});

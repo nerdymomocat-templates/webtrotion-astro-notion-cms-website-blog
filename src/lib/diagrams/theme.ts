@@ -2,7 +2,7 @@ import JSON5 from "json5";
 import { parse as parseYaml } from "yaml";
 import mermaid from "mermaid";
 import postcss from "postcss";
-import { utils as cssColor } from "@asamuzakjp/css-color";
+import { convert as color, utils as cssColor } from "@asamuzakjp/css-color";
 
 type Config = Record<string, unknown>;
 const isRecord = (value: unknown): value is Config =>
@@ -92,6 +92,31 @@ function readFontFamily(value: unknown): string | undefined {
 	} catch {
 		return;
 	}
+}
+
+export function contrastingTextColor(
+	background: string | undefined,
+	preferred?: string,
+): string | undefined {
+	if (!isThemeColor(background) || background.toLowerCase() === "currentcolor") return;
+	const [red, green, blue, alpha] = color.colorToRgb(background);
+	if (alpha !== 1) return;
+	const relativeLuminance = (channels: number[]) => {
+		const linear = channels.slice(0, 3).map((channel) => {
+			const value = channel / 255;
+			return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+		});
+		return linear[0]! * 0.2126 + linear[1]! * 0.7152 + linear[2]! * 0.0722;
+	};
+	const luminance = relativeLuminance([red, green, blue]);
+	if (isThemeColor(preferred) && preferred.toLowerCase() !== "currentcolor") {
+		const channels = color.colorToRgb(preferred);
+		const foreground = relativeLuminance(channels);
+		const ratio =
+			(Math.max(luminance, foreground) + 0.05) / (Math.min(luminance, foreground) + 0.05);
+		if (channels[3] === 1 && ratio >= 4.5) return preferred;
+	}
+	return (luminance + 0.05) / 0.05 >= 1.05 / (luminance + 0.05) ? "#000000" : "#ffffff";
 }
 
 export function convertDiagramTheme(source: string, diagramType: string) {
@@ -198,6 +223,31 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 		else put(`--pele-series-${i}`, `cScale${i - 1}`);
 		if (diagramType === "gitGraph") put(`--diagram-git-label-${i}`, `gitBranchLabel${i - 1}`);
 	}
+	if (!hasTheme) {
+		const canvasText = contrastingTextColor(styles["--pele-bg"]);
+		if (canvasText) {
+			styles["--pele-fg"] ??= canvasText;
+			styles["--pele-muted"] ??= canvasText;
+			styles["--pele-line"] ??= canvasText;
+		}
+		for (const [background, foreground] of [
+			["--pele-surface", "--diagram-node-text"],
+			["--diagram-note-bg", "--diagram-note-text"],
+		] as const) {
+			const text = contrastingTextColor(styles[background]);
+			if (text) styles[foreground] ??= text;
+		}
+	}
+	if (
+		!isThemeColor(variables.textColor) &&
+		!(diagramType === "sequence" && isThemeColor(variables.signalTextColor))
+	) {
+		const edgeText = contrastingTextColor(
+			styles["--diagram-edge-label-bg"],
+			styles["--diagram-edge-text"] || styles["--pele-fg"],
+		);
+		if (edgeText) styles["--diagram-edge-text"] = edgeText;
+	}
 	const font =
 		typeof variables.fontFamily === "string"
 			? variables.fontFamily
@@ -215,6 +265,10 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 	return {
 		styles,
 		hasTheme,
+		hasAuthoredNodeText: (diagramType === "sequence"
+			? ["actorTextColor", "textColor"]
+			: ["nodeTextColor", "textColor", "primaryTextColor"]
+		).some((key) => isThemeColor(variables[key])),
 		fontFamily,
 		fontSize: fontSize && Number.isFinite(fontSize) && fontSize > 0 ? fontSize : undefined,
 	};
