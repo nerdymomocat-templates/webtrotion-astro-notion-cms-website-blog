@@ -38,7 +38,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
       Comments
     </h2>
     <PostCommentsTabs>
-    <div class="tabs-container flex flex-col items-left w-full my-8 mx-auto">
+    <div class="tabs-container flex flex-col items-left w-full mt-4 mx-auto">
       <div class="tabs flex gap-4 mb-4">
         {filled_in_giscus && <button class="tab px-4 py-2 cursor-pointer flex items-center gap-2 border-b-2 border-transparent" data-tab="giscus"><Icon class="h-6 w-6" name={"github"} aria-label={"Github Hosted Comments"} focusable="false" />Giscus</button>}
         {use_bluesky && (
@@ -49,7 +49,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
         {filled_in_giscus && (
           <div class="tab-pane w-full" id="giscus-tab" hidden>
             <section
-              class="giscus mx-auto mt-6 w-full"
+              class="giscus mx-auto w-full"
               id="--layout-div-giscus-post-comments"
               data-giscus-comments
               data-repo={GISCUS["data-repo"]}
@@ -61,7 +61,7 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
               data-reactions-enabled={GISCUS["data-reactions-enabled"] ? "1" : "0"}
               data-emit-metadata="0"
               data-input-position={GISCUS["data-input-position"] || "bottom"}
-              data-theme="preferred_color_scheme"
+              data-theme="light"
               data-lang="en"
               data-loading="lazy"
             />
@@ -698,6 +698,10 @@ BLUESKY_COMM && Object.keys(BLUESKY_COMM).length > 0 &&
     </PostCommentsTabs>
   </section>
   <style>
+
+    .tabs:has(> .tab:only-child) {
+      display: none;
+    }
 
     .tab {
       transition:

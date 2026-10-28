@@ -1,0 +1,110 @@
+---
+import fs from "node:fs";
+import path from "node:path";
+import { getAllPosts, getDataSource } from "@/lib/notion/client";
+import { getNavLink, resolvePostHref } from "@/lib/blog-helpers";
+import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, AUTHOR, BUILD_FOLDER_PATHS } from "@/constants";
+import { getDateObject } from "@/utils";
+import { renderFeedEntries } from "@/lib/rss-page";
+import "@/styles/rss.css";
+
+const [posts, database] = await Promise.all([getAllPosts(), getDataSource()]);
+const feedPosts = HIDE_UNDERSCORE_SLUGS_IN_LISTS
+	? posts.filter((post) => !post.Slug.startsWith("_"))
+	: posts;
+const feedPath = getNavLink("/rss.xml");
+const feedUrl = new URL(feedPath, Astro.site).toString();
+const homeUrl = Astro.site!.toString();
+const entries = feedPosts.map((post) => {
+	const cachePath = path.join(BUILD_FOLDER_PATHS.rssCache, `${post.Slug}.html`);
+	return {
+		title: post.Title,
+		link: new URL(resolvePostHref(post), Astro.site).toString(),
+		pubDate: (
+			getDateObject(post.LastUpdatedDate) ?? new Date(post.LastUpdatedTimeStamp)
+		).toUTCString(),
+		description: post.Excerpt,
+		category: [
+			...(post.Collection ? [post.Collection] : []),
+			...(post.Tags ? post.Tags.map((tag) => tag.name) : []),
+		],
+		content: fs.existsSync(cachePath) ? fs.readFileSync(cachePath, "utf-8") : undefined,
+	};
+});
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{database.Title}</title>
+		<meta name="description" content={database.Description} />
+		<meta name="robots" content="noindex, follow" />
+		<link rel="alternate" type="application/rss+xml" title={database.Title} href={feedPath} />
+	</head>
+	<body data-pagefind-ignore="all">
+		<div class="header">
+			<h1>{database.Title}</h1>
+			<p>{database.Description}</p>
+			<div class="feed-info">
+				<p>
+					📫 <strong>Subscribe to this RSS feed</strong> to stay updated with the latest content!
+				</p>
+				<p>🔗 Home Link: <a href={homeUrl}>{homeUrl}</a></p>
+				<p>
+					🔗 Feed URL: <button
+						type="button"
+						id="feed-url"
+						aria-label="Copy RSS feed URL"
+						title="Click to copy feed URL">{feedUrl}</button
+					>
+					<button class="copy-button" type="button" id="copy-button" aria-label="Copy feed URL"
+						>📋</button
+					>
+					<span class="copy-status" id="copy-status" role="status"></span>
+				</p>
+				<p>🕒 Last Updated: <span id="feed-last-updated">{new Date().toUTCString()}</span></p>
+				{AUTHOR && <p>✍️ Author: {AUTHOR}</p>}
+			</div>
+		</div>
+		<main class="container" id="feed-entries" set:html={renderFeedEntries(entries)} />
+		<script>
+			const button = document.querySelector<HTMLButtonElement>("#copy-button");
+			const feedUrl = document.querySelector<HTMLElement>("#feed-url");
+			const status = document.querySelector<HTMLElement>("#copy-status");
+			let resetTimer: ReturnType<typeof setTimeout>;
+			const showCopied = () => {
+				if (!button || !status) return;
+				clearTimeout(resetTimer);
+				button.textContent = "✅";
+				button.classList.add("copied");
+				status.classList.remove("copy-error");
+				status.textContent = "Copied!";
+				resetTimer = setTimeout(() => {
+					button.textContent = "📋";
+					button.classList.remove("copied");
+					status.textContent = "";
+				}, 2000);
+			};
+			const copiedFeed = sessionStorage.getItem("rss-feed-copied");
+			if (copiedFeed) {
+				sessionStorage.removeItem("rss-feed-copied");
+				if (copiedFeed === feedUrl?.textContent?.trim()) showCopied();
+			}
+			const copyFeedUrl = async () => {
+				if (!button || !feedUrl || !status) return;
+				clearTimeout(resetTimer);
+				try {
+					await navigator.clipboard.writeText(feedUrl.textContent!.trim());
+					showCopied();
+				} catch {
+					status.classList.add("copy-error");
+					status.textContent = "Could not copy. Select and copy the feed URL above.";
+				}
+			};
+			button?.addEventListener("click", copyFeedUrl);
+			feedUrl?.addEventListener("click", copyFeedUrl);
+		</script>
+	</body>
+</html>
