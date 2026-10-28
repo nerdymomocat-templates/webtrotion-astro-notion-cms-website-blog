@@ -6,6 +6,8 @@ const configContent = fs.readFileSync("./constants-config.json5", "utf8");
 const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
 
+const diagramHtmlCache = path.join("./tmp", "blocks-html-cache", "pele-static-v4");
+
 const DEFAULT_MDX_SNIPPET_TRIGGER = "<!-- mdx inject -->";
 
 type GitHubTreeInfo = {
@@ -163,8 +165,8 @@ export const BUILD_FOLDER_PATHS = {
 	bibFilesCache: path.join("./tmp", "bib-files-cache"),
 	ogImages: path.join("./tmp", "og-images"),
 	rssCache: path.join("./tmp", "rss-cache"),
-	blocksHtmlCache: path.join("./tmp", "blocks-html-cache"),
-	interlinkedContentHtmlCache: path.join("./tmp", "blocks-html-cache", "interlinked-content"),
+	blocksHtmlCache: diagramHtmlCache,
+	interlinkedContentHtmlCache: path.join(diagramHtmlCache, "interlinked-content"),
 	markdownCache: path.join("./tmp", "markdown-cache"),
 	astroAssetsCache: path.join("./tmp", ".astro", "assets"),
 	public: path.join("./public"),

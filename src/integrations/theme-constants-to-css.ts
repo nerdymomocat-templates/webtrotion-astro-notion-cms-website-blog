@@ -1,11 +1,23 @@
 import fs from "node:fs";
 import type { AstroIntegration } from "astro";
 import JSON5 from "json5";
+import { resolve as resolveColor } from "@asamuzakjp/css-color";
+import { contrastingTextColor, readableColor } from "../lib/diagrams/theme";
 
 const configContent = fs.readFileSync("./constants-config.json5", "utf8");
 const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
+const diagramSeries = [
+	"var(--color-accent)",
+	"var(--color-link)",
+	"var(--color-accent-2)",
+	"color-mix(in srgb, var(--color-accent) 60%, var(--color-link))",
+	"color-mix(in srgb, var(--color-accent) 60%, var(--color-accent-2))",
+	"color-mix(in srgb, var(--color-link) 60%, var(--color-accent-2))",
+	"color-mix(in srgb, var(--color-accent) 70%, var(--color-bgColor))",
+	"color-mix(in srgb, var(--color-link) 85%, var(--color-bgColor))",
+];
 
 // Helper function that normalizes a color string to hex format
 function normalizeColor(value: string): string {
@@ -136,6 +148,7 @@ export default (): AstroIntegration => ({
 				const createCssVariables = (theme: "light" | "dark") => {
 				let cssContent = "";
 				let bgHex = "#ffffff";
+				const palette: Record<string, string> = {};
 
 				for (const key in theme_config.colors) {
 					let color = theme_config.colors[key][theme];
@@ -151,9 +164,20 @@ export default (): AstroIntegration => ({
 					}
 
 					if (key === "bg") bgHex = cssValue;
+					palette[`--color-${key === "bg" ? "bgColor" : key === "text" ? "textColor" : key}`] = cssValue;
 
 					cssContent += `    --theme-${key}: ${cssValue};\n`;
 				}
+				const resolve = (value: string) =>
+					resolveColor(value, { customProperty: palette, format: "hex" }) as string;
+				for (const [index, fill] of diagramSeries.entries()) {
+					cssContent += `    --diagram-on-series-${index + 1}: ${contrastingTextColor(resolve(fill))};\n`;
+					cssContent += `    --diagram-series-line-${index + 1}: ${readableColor(bgHex, resolve(fill), 3)};\n`;
+				}
+				cssContent += `    --diagram-on-accent: ${contrastingTextColor(palette["--color-accent"])};\n`;
+				cssContent += `    --diagram-on-critical: ${contrastingTextColor("#e45756")};\n`;
+				const nodeFill = resolve("color-mix(in srgb, var(--color-accent) 8%, var(--color-bgColor))");
+				cssContent += `    --diagram-site-link-text: ${readableColor(nodeFill, palette["--color-link"])};\n`;
 
 				// Compute popover-bg based on bg color
 				const refHex =
@@ -543,7 +567,7 @@ ${createCssVariables("dark")}
   }
 
   .code-mermaid {
-     @apply overflow-x-scroll max-h-none min-w-0;
+     @apply max-h-none min-w-0;
   }
 
   .code button[data-code] {
@@ -1480,7 +1504,146 @@ ${createCssVariables("dark")}
   }
 
   .code .mermaid {
-    @apply max-w-full rounded-sm p-4 font-mono;
+    @apply max-w-full rounded-sm py-4;
+    --pele-font: var(--font-sans);
+    --pele-font-mono: var(--font-mono);
+    --pele-bg: var(--color-bgColor);
+    --pele-fg: var(--color-textColor);
+    --pele-accent: var(--color-accent);
+${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`).join("\n")}
+    --diagram-link-text: var(--diagram-site-link-text);
+  }
+
+  .code .mermaid svg.pele {
+    --pele-muted: color-mix(in srgb, var(--pele-fg) 70%, var(--pele-bg));
+    --pele-line: color-mix(in srgb, var(--pele-fg) 80%, var(--pele-bg));
+    --pele-surface: color-mix(in srgb, var(--color-accent) 8%, var(--pele-bg));
+    --pele-surface-alt: color-mix(in srgb, var(--color-link) 8%, var(--pele-bg));
+    --pele-border: color-mix(in srgb, var(--color-accent) 70%, var(--pele-bg));
+  }
+
+  .diagram-controls {
+    position: absolute;
+    top: 40px;
+    right: 8px;
+    z-index: 10;
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 140ms var(--ease-out);
+  }
+
+  .diagram-controls[hidden], .diagram-controls button[hidden] { display: none; }
+
+  .diagram-controls button {
+    @apply text-gray-500;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .diagram-controls svg { width: 14px; height: 14px; }
+  .diagram-controls button:disabled { opacity: .3; cursor: default; }
+  .diagram-controls button:not(:disabled):hover {
+    color: var(--color-textColor);
+    background: color-mix(in srgb, var(--color-textColor) 7%, transparent);
+  }
+
+  .code:has(.mermaid):hover .diagram-controls,
+  .code:has(.mermaid):focus-within .diagram-controls {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .code:has(.mermaid):focus-within button[data-code] { opacity: 1; }
+
+  .diagram-controls button:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  @media (hover: none), (pointer: coarse) {
+    .diagram-controls { right: 4px; opacity: 1; pointer-events: auto; }
+    .diagram-controls button { width: 32px; height: 32px; }
+    .code:has(.mermaid) button[data-code] { opacity: 1; }
+  }
+
+  @media print {
+    .diagram-controls { display: none !important; }
+    .code:has(.mermaid), .mermaid, .diagram-wide { overflow: visible !important; break-inside: avoid; }
+    :is(h1, h2, h3, h4, h5, h6):has(+ .code .mermaid) { break-after: avoid; }
+    .mermaid svg.pele { width: auto !important; height: auto !important; max-width: 100% !important; max-height: min(8in, 80vh) !important; }
+  }
+
+  .diagram-lightbox-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    padding: 12px;
+  }
+
+  .diagram-lightbox-content :is(.code-mermaid, .mermaid, .diagram-wide) {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .diagram-lightbox-content .mermaid { padding: 24px 0 0; }
+  .diagram-lightbox-content .diagram-zoom-viewport {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .diagram-lightbox-content svg.pele { width: auto; max-height: 100%; }
+  .mermaid svg.pele:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .diagram-lightbox-content .diagram-expand { display: none; }
+  .diagram-lightbox-content .diagram-controls,
+  .diagram-lightbox-content button[data-code] { opacity: 1; pointer-events: auto; }
+
+  @media print { .diagram-lightbox { display: none !important; } }
+
+  .mermaid .pele {
+    display: block;
+    margin-inline: auto;
+  }
+
+  .mermaid .diagram-link {
+    cursor: pointer;
+    outline-offset: 3px;
+  }
+
+  .mermaid .diagram-link-themed {
+    color: var(--diagram-link-text);
+  }
+
+  .mermaid .diagram-link:hover .site-page-link,
+  .mermaid .diagram-link:focus-visible .site-page-link {
+    @apply decoration-accent-2/60;
+  }
+
+  .mermaid .diagram-link:focus-visible {
+    outline: 2px solid var(--color-accent);
+  }
+
+  .mermaid > pre {
+    overflow-x: auto;
+  }
+
+  .diagram-error {
+    color: var(--color-textColor);
+    white-space: pre-wrap;
   }
 
   /* External MDX Content */
@@ -3000,6 +3163,29 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 
 .glightbox-clean .gslide-description {
   background: var(--color-bgColor);
+}
+
+/* GLightbox's CDN styles are unlayered, so its overrides must be unlayered too. */
+.diagram-lightbox .gslide-inline {
+  width: calc(100vw - 2rem) !important;
+  height: calc(100dvh - 5rem) !important;
+  background: var(--color-bgColor);
+  border-radius: 12px;
+}
+
+.diagram-lightbox .ginlined-content {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
+.diagram-lightbox :is(.gprev, .gnext) { display: none; }
+.glightbox-container.diagram-lightbox .gclose {
+  top: 4px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
 }
 
 @media (prefers-reduced-motion: reduce) {

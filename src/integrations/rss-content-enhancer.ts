@@ -7,8 +7,18 @@ import XMLBuilder from "fast-xml-builder";
 import { parseDocument } from "htmlparser2";
 import { DomUtils } from "htmlparser2";
 import render from "dom-serializer";
-import { LAST_BUILD_TIME, BUILD_FOLDER_PATHS } from "../constants";
 import { renderFeedEntries } from "../lib/rss-page";
+import { Element, Text, type AnyNode } from "domhandler";
+import { createHash } from "node:crypto";
+import sharp from "sharp";
+import postcss from "postcss";
+import {
+	resolve as resolveColor,
+	convert as color,
+	utils as cssValues,
+} from "@asamuzakjp/css-color";
+import { LAST_BUILD_TIME, BASE_PATH, BUILD_FOLDER_PATHS, THEME } from "../constants";
+import { restoreDiagramSources } from "../lib/diagrams/content";
 
 const rssContentEnhancer = (): AstroIntegration => {
 	return {
@@ -18,6 +28,7 @@ const rssContentEnhancer = (): AstroIntegration => {
 				const distDir = "dist";
 				const tempDir = BUILD_FOLDER_PATHS["rssCache"];
 				const rssPath = path.join(distDir, "rss.xml");
+				const diagramStyles = await fs.readFile("src/styles/global.css", "utf-8");
 
 				// Read and parse RSS XML
 				const rssContent = await fs.readFile(rssPath, "utf-8");
@@ -83,7 +94,8 @@ const rssContentEnhancer = (): AstroIntegration => {
 							shouldUpdate = true;
 						}
 
-						if (shouldUpdate) {
+						// Diagram images must be emitted into every fresh dist directory.
+						if (shouldUpdate || htmlContent.includes("data-diagram-source")) {
 							// Parse the HTML content
 							const document = parseDocument(htmlContent);
 
@@ -95,6 +107,8 @@ const rssContentEnhancer = (): AstroIntegration => {
 							);
 
 							if (mainElement) {
+								await addDiagramFeedImages(mainElement, diagramStyles, distDir, item.link);
+								restoreDiagramSources(mainElement);
 								const mainContent = render(mainElement.children);
 
 								// Sanitize HTML and fix image paths
@@ -186,13 +200,14 @@ const rssContentEnhancer = (): AstroIntegration => {
 									],
 									allowedAttributes: {
 										a: ["href", "title", "target"],
-										img: ["src", "alt", "title"],
+										img: ["src", "alt", "title", "width", "style"],
 										td: ["align", "valign"],
 										th: ["align", "valign", "colspan", "rowspan", "scope"],
 										// iframe: ['src'],
 										pre: ["data-language"],
 									},
 									disallowedTagsMode: "discard",
+									allowedStyles: { img: { "max-width": [/^100%$/], height: [/^auto$/] } },
 									nonTextTags: ["style", "script", "textarea", "option", "noscript", "template"],
 									exclusiveFilter: function (frame) {
 										return (
@@ -408,6 +423,183 @@ const rssContentEnhancer = (): AstroIntegration => {
 };
 
 export default rssContentEnhancer;
+
+/** RSS readers receive a full, CSS-independent image with links back to the article. */
+export async function addDiagramFeedImages(
+	root: AnyNode,
+	stylesheet: string,
+	distDir: string,
+	pageUrl: string,
+) {
+	const diagrams = DomUtils.findAll((el) => "data-diagram-source" in el.attribs, [root]);
+	if (!diagrams.length) return;
+	const palette: Record<string, string> = {};
+	const css = postcss.parse(stylesheet);
+	css.walkAtRules("theme", (rule) => {
+		rule.walkDecls((decl) => {
+			palette[decl.prop] = decl.value;
+		});
+	});
+	css.walkRules((rule) => {
+		if ([":root", ".code .mermaid", ".code .mermaid svg.pele"].includes(rule.selector))
+			rule.walkDecls((decl) => {
+				if (decl.prop.startsWith("--")) palette[decl.prop] = decl.value;
+			});
+	});
+	palette["--font-sans"] = THEME["fontfamily-google-fonts"]?.["sans-font-name"] || "sans-serif";
+	palette["--font-mono"] = THEME["fontfamily-google-fonts"]?.["mono-font-name"] || "monospace";
+	palette["--font-serif"] = "serif";
+	const declarations = (style: string) => {
+		const result: Record<string, string> = {};
+		postcss.parse(`svg{${style}}`).walkDecls((decl) => {
+			result[decl.prop] = decl.value;
+		});
+		return result;
+	};
+	const paints = new Set([
+		"fill",
+		"stroke",
+		"color",
+		"background",
+		"stop-color",
+		"flood-color",
+		"lighting-color",
+		"text-decoration-color",
+	]);
+	for (const diagram of diagrams) {
+		const original = DomUtils.findOne((el) => el.name === "svg", diagram.children, true);
+		if (!original) continue;
+		const svg = DomUtils.findOne(
+			(el) => el.name === "svg",
+			parseDocument(render(original), { xmlMode: true }).children,
+			true,
+		)!;
+		const flatten = (
+			element: Element,
+			inherited: Record<string, string>,
+			inheritedColor: string,
+		) => {
+			const styles = declarations(element.attribs.style || "");
+			const variables = {
+				...inherited,
+				...Object.fromEntries(Object.entries(styles).filter(([name]) => name.startsWith("--"))),
+			};
+			const options = { customProperty: variables, currentColor: inheritedColor };
+			const value = (name: string, input: string) => {
+				const resolved = cssValues.cssVar(input, options);
+				return paints.has(name) && resolved !== "none" && !resolved.startsWith("url(")
+					? resolveColor(resolved, { ...options, format: "hexAlpha" }) || resolved
+					: resolved;
+			};
+			const color = value("color", styles.color || element.attribs.color || inheritedColor);
+			options.currentColor = color;
+			for (const [name, input] of Object.entries(element.attribs)) {
+				if (name !== "style" && (paints.has(name) || input.includes("var(")))
+					element.attribs[name] = value(name, input);
+			}
+			element.attribs.style = Object.entries(styles)
+				.filter(
+					([name]) =>
+						!name.startsWith("--") && !["min-width", "max-width", "height"].includes(name),
+				)
+				.map(([name, input]) => `${name}:${value(name, input)}`)
+				.join(";");
+			const computedVariables = Object.fromEntries(
+				Object.entries(variables).map(([name, input]) => [name, cssValues.cssVar(input, options)]),
+			);
+			for (const child of element.children)
+				if (DomUtils.isTag(child)) flatten(child, computedVariables, color);
+		};
+		flatten(svg, palette, "#222222");
+		const [red, green, blue, alpha] = color.colorToRgb("var(--pele-bg,var(--color-bgColor))", {
+			customProperty: { ...palette, ...declarations(original.attribs.style || "") },
+		});
+		const pageBackground = color.colorToRgb("var(--color-bgColor)", { customProperty: palette });
+		const background = {
+			r: Math.round(red * alpha + pageBackground[0] * (1 - alpha)),
+			g: Math.round(green * alpha + pageBackground[1] * (1 - alpha)),
+			b: Math.round(blue * alpha + pageBackground[2] * (1 - alpha)),
+		};
+		// Explicit backgrounds keep the preview legible in readers with their own dark mode.
+		const imageStyle = declarations(svg.attribs.style!);
+		delete imageStyle.background;
+		svg.attribs.style = Object.entries(imageStyle)
+			.map(([name, value]) => `${name}:${value}`)
+			.join(";");
+		DomUtils.prependChild(
+			svg,
+			new Element("rect", {
+				x: "0",
+				y: "0",
+				width: "100%",
+				height: "100%",
+				fill: `rgb(${background.r},${background.g},${background.b})`,
+			}),
+		);
+		const width = Number(original.attribs.width);
+		const imageSvg = render(svg);
+		const imageBytes = await sharp(Buffer.from(imageSvg), { density: 144 })
+			.resize({ width: 4096, height: 4096, fit: "inside", withoutEnlargement: true })
+			.flatten({ background })
+			.png()
+			.toBuffer();
+		// Accessibility IDs can change between renders without changing the picture.
+		const filename = `${createHash("sha256").update(imageBytes).digest("hex").slice(0, 24)}.png`;
+		const folder = path.join(distDir, "diagrams");
+		await fs.mkdir(folder, { recursive: true });
+		await fs.writeFile(path.join(folder, filename), imageBytes);
+		const block = diagram.parent && DomUtils.isTag(diagram.parent) ? diagram.parent.parent : null;
+		const href = new URL(pageUrl);
+		if (block && DomUtils.isTag(block) && block.attribs.id) href.hash = block.attribs.id;
+		const title = DomUtils.findOne((el) => el.name === "title", original.children, false);
+		const alt = title
+			? DomUtils.textContent(title)
+			: `Diagram: ${diagram.attribs["data-diagram-search"] || "Mermaid diagram"}`;
+		const image = new Element("img", {
+			src: new URL(path.posix.join(BASE_PATH || "/", "diagrams", filename), pageUrl).href,
+			alt,
+			width: String(Math.min(880, width)),
+			style: "max-width:100%;height:auto",
+		});
+		const link = new Element("a", { href: href.href }, [image]);
+		const caption = new Element("p", {}, [
+			new Element("a", { href: href.href }, [new Text("View diagram on the website")]),
+		]);
+		const children: AnyNode[] = [link, caption];
+		const links = DomUtils.findAll(
+			(el) => el.name === "a" && Boolean(el.attribs.href),
+			original.children,
+		);
+		if (links.length)
+			children.push(
+				new Element(
+					"ul",
+					{},
+					links.map(
+						(el) =>
+							new Element("li", {}, [
+								new Element("a", { href: new URL(el.attribs.href!, pageUrl).href }, [
+									new Text(
+										DomUtils.findAll((label) => label.name === "text", el.children)
+											.map((label) => DomUtils.textContent(label))
+											.join(" ") || el.attribs.href!,
+									),
+								]),
+							]),
+					),
+				),
+			);
+		const figure = new Element("figure", {}, children);
+		const setParents = (element: Element) => {
+			for (const child of element.children) {
+				child.parent = element;
+				if (DomUtils.isTag(child)) setParents(child);
+			}
+		};
+		setParents(figure);
+		DomUtils.replaceElement(diagram, figure);
+	}
+}
 
 // Helper functions
 

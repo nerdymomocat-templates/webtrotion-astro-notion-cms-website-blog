@@ -1,3 +1,4 @@
+import { parseDiagramNotionLink } from "./diagrams/content";
 import {
 	BUILD_FOLDER_PATHS,
 	HOME_PAGE_SLUG,
@@ -1091,4 +1092,15 @@ export function extractPageContent(
 		citations,
 		interlinkedContent: allInterlinkedContent,
 	};
+}
+
+export async function resolveDiagramHref(href: string): Promise<string> {
+	const link = parseDiagramNotionLink(href);
+	if (!link) return href;
+	const post = await getPostByPageId(link.pageId);
+	if (!post) return href;
+	if (!link.blockId) return resolvePostHref(post);
+	const block = await getBlock(link.blockId);
+	if (!block) return `${resolvePostHref(post)}#${link.blockId}`;
+	return (await getInterlinkedContentLink("", post.PageId, block))[0] || href;
 }

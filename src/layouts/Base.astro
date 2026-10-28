@@ -56,6 +56,9 @@ const {
 		<script src="../scripts/datatables.ts"></script>
 		<script src="../scripts/post-interactions.ts"></script>
 		<script>
+			// Article HTML is cached, so load the current bundle from the layout instead of caching its hashed URL.
+			if (document.querySelector(".mermaid svg.pele")) void import("../scripts/diagrams");
+
 			// Only load the Pagefind highlight bundle when arriving from a search result
 			// (i.e. the URL actually carries the highlight param). Otherwise this fetched
 			// and parsed pagefind-highlight.js on every single page view for nothing.

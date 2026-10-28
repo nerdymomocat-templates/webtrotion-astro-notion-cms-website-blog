@@ -25,6 +25,7 @@ import { getAllPosts, getAllPages } from "../lib/notion/client";
 import type { Post, Citation, Footnote, InterlinkedContentInPage } from "../lib/interfaces";
 import { getMachineDateISOString } from "../utils/date";
 import { slugify } from "../utils/slugify";
+import { restoreDiagramSources } from "../lib/diagrams/content";
 
 type FootnoteDefinition = {
 	marker: string;
@@ -228,6 +229,7 @@ function processContentNode(
 	footnotes: FootnoteDefinition[];
 } {
 	const footnotesInfo = collectFootnotes(target, fallbackFootnotes);
+	restoreDiagramSources(target);
 	sanitizeNode(target, {
 		pageUrl,
 		siteUrl,

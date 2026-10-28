@@ -10,8 +10,10 @@ interface FloatingUIDOMApi {
 	autoUpdate: (reference: Element, floating: HTMLElement, update: () => void) => () => void;
 }
 
-interface Window {
-	FloatingUIDOM: FloatingUIDOMApi;
+declare global {
+	interface Window {
+		FloatingUIDOM: FloatingUIDOMApi;
+	}
 }
 
 window.addEventListener("load", function () {
@@ -174,6 +176,9 @@ function initPopovers() {
 		const firstElement = template.content.firstElementChild;
 		if (!firstElement) return null;
 		const popoverEl = firstElement.cloneNode(true) as HTMLElement;
+		scopeDiagramIds(popoverEl);
+		if (popoverEl.querySelector(".mermaid svg.pele"))
+			void import("./diagrams").then(({ setupDiagramZoom }) => setupDiagramZoom(popoverEl));
 
 		// Remove data-margin-note from footnotes inside popovers so they use popover behavior instead
 		popoverEl.querySelectorAll<HTMLElement>("[data-margin-note]").forEach((footnote) => {
@@ -305,6 +310,58 @@ function initPopovers() {
 					window.location.href = href;
 				}
 			}
+		}
+	});
+}
+
+/** Cached previews can contain an SVG that is already present in the page. */
+export function scopeDiagramIds(root: ParentNode) {
+	root.querySelectorAll<SVGSVGElement>(".mermaid svg.pele").forEach((svg) => {
+		const prefix = `preview-${crypto.randomUUID()}`;
+		const ids = new Map<string, string>();
+		svg.querySelectorAll<SVGElement>("[id]").forEach((element) => {
+			ids.set(element.id, `${prefix}-${element.id}`);
+		});
+		svg.querySelectorAll<SVGElement>("*").forEach((element) => {
+			for (const attribute of element.getAttributeNames()) {
+				const value = element.getAttribute(attribute)!;
+				if (attribute === "id") {
+					element.id = ids.get(value)!;
+				} else if (attribute === "aria-labelledby" || attribute === "aria-describedby") {
+					element.setAttribute(
+						attribute,
+						value
+							.split(/\s+/)
+							.map((id) => ids.get(id) || id)
+							.join(" "),
+					);
+				} else {
+					let updated = value;
+					if (value.startsWith("#")) {
+						const replacement = ids.get(value.slice(1));
+						if (replacement) updated = `#${replacement}`;
+					} else {
+						// SVG fills, masks and inline styles can reference local resources as
+						// url(#id). Capture the ID up to ')' and leave external URLs intact.
+						updated = value.replace(/url\(#([^)]+)\)/g, (reference, resourceId) => {
+							const replacement = ids.get(resourceId);
+							return replacement ? `url(#${replacement})` : reference;
+						});
+					}
+					if (updated !== value) element.setAttribute(attribute, updated);
+				}
+			}
+		});
+		for (const attribute of ["aria-labelledby", "aria-describedby"]) {
+			const value = svg.getAttribute(attribute);
+			if (value)
+				svg.setAttribute(
+					attribute,
+					value
+						.split(/\s+/)
+						.map((id) => ids.get(id) || id)
+						.join(" "),
+				);
 		}
 	});
 }
