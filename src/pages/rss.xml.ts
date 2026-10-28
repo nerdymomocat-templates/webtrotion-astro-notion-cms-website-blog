@@ -2,7 +2,6 @@ import rss from "@astrojs/rss";
 import { getAllPosts, getDataSource } from "@/lib/notion/client";
 import { resolvePostHref } from "@/lib/blog-helpers";
 import { HIDE_UNDERSCORE_SLUGS_IN_LISTS, AUTHOR } from "@/constants";
-import { getNavLink } from "@/lib/blog-helpers";
 import { getDateObject } from "@/utils";
 
 /**
@@ -28,7 +27,6 @@ export const GET = async () => {
 	const siteAuthor = AUTHOR;
 
 	return rss({
-		stylesheet: getNavLink("/rss-styles.xsl"),
 		title: database.Title,
 		description: database.Description,
 		site: import.meta.env.SITE,

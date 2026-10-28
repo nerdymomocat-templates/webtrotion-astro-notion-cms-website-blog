@@ -3,10 +3,29 @@
 </post-comments-tabs>
 
 <script>
+	// Embed the CSS so the static site does not need to serve a cross-origin theme file.
+	const createCommentTheme = (base: "light" | "transparent_dark") =>
+		`data:text/css,${encodeURIComponent(`
+		@import url("https://giscus.app/themes/${base}.css");
+		main {
+			--color-canvas-default: transparent;
+			--color-canvas-inset: transparent;
+			--color-canvas-subtle: transparent;
+		}
+		.gsc-comment-box-textarea {
+			min-height: 64px;
+			height: 64px;
+		}
+	`)}`;
+	const transparentLightTheme = createCommentTheme("light");
+	const transparentDarkTheme = createCommentTheme("transparent_dark");
+
 	class PostCommentsTabs extends HTMLElement {
 		#initialized = false;
 		#isIntersecting = false;
 		#observer: IntersectionObserver | null = null;
+		#themeObserver: MutationObserver | null = null;
+		#giscusTheme = "";
 
 		connectedCallback() {
 			if (this.#initialized) return;
@@ -24,6 +43,14 @@
 			}
 
 			this.#initialized = true;
+			this.#syncGiscusTheme();
+			this.#themeObserver = new MutationObserver(() => this.#syncGiscusTheme());
+			this.#themeObserver.observe(document.documentElement, {
+				attributes: true,
+				attributeFilter: ["class"],
+			});
+			// Apply the current site theme even if it changed while the iframe was loading.
+			this.addEventListener("load", () => this.#syncGiscusTheme(true), true);
 
 			tabs.forEach((tab) => {
 				tab.addEventListener("click", () => {
@@ -52,6 +79,22 @@
 
 		disconnectedCallback() {
 			this.#observer?.disconnect();
+			this.#themeObserver?.disconnect();
+		}
+
+		#syncGiscusTheme(force = false) {
+			const theme = document.documentElement.classList.contains("dark")
+				? transparentDarkTheme
+				: transparentLightTheme;
+			if (!force && theme === this.#giscusTheme) return;
+			this.#giscusTheme = theme;
+			const target = this.querySelector<HTMLElement>("[data-giscus-comments]");
+			if (!target) return;
+			target.dataset.theme = theme;
+			this.querySelector<HTMLIFrameElement>(".giscus-frame")?.contentWindow?.postMessage(
+				{ giscus: { setConfig: { theme } } },
+				"https://giscus.app",
+			);
 		}
 
 		#activateTab(

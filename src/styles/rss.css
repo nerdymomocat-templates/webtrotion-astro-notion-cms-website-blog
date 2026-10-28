@@ -1,0 +1,177 @@
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+body {
+	background: #f5f5f5;
+	color: #333;
+	line-height: 1.6;
+}
+.header {
+	background: #3d3939;
+	color: white;
+	padding: 1rem;
+	text-align: center;
+}
+.header h1 {
+	font-size: 2rem;
+	margin-bottom: 1rem;
+}
+.header p {
+	color: #ccc;
+	font-size: 1.1rem;
+	margin-bottom: 0.5rem;
+}
+.header .feed-info {
+	font-size: 0.9rem;
+	color: #999;
+	margin-top: 1.5rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.header .feed-info p {
+	margin-bottom: 0.25rem;
+	font-size: 0.9rem;
+}
+.header a {
+	color: #fff;
+	text-decoration: underline;
+	text-decoration-color: rgba(255, 255, 255, 0.3);
+}
+.header a:hover {
+	text-decoration-color: rgba(255, 255, 255, 0.8);
+}
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem 1rem;
+}
+.-feed-entry-wrapper {
+	margin-bottom: 2rem;
+	overflow: hidden;
+	background: #f9f6ee;
+	border-radius: 4px;
+	border: 1px solid #e6e6e6;
+}
+.-feed-entry-wrapper header {
+	padding: 1.5rem;
+	border-bottom: 1px solid #eee;
+}
+.-feed-entry-wrapper h2 {
+	font-size: 1.5rem;
+	margin-bottom: 0.5rem;
+}
+.-feed-entry-wrapper h2 a {
+	color: #333;
+	text-decoration: none;
+}
+.-feed-entry-wrapper h2 a:hover {
+	color: #0066cc;
+}
+.-feed-entry-wrapper time {
+	color: #666;
+	font-size: 0.9rem;
+}
+.-feed-entry-content {
+	padding: 1.5rem;
+}
+.-feed-entry-content p {
+	margin-bottom: 1rem;
+}
+.-feed-entry-content img {
+	max-width: 100%;
+	height: auto;
+	border-radius: 4px;
+	margin: 1rem 0;
+}
+.-feed-entry-content pre {
+	background: #f8f8f8;
+	padding: 1rem;
+	border-radius: 4px;
+	overflow-x: auto;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+.-feed-entry-content blockquote {
+	border-left: 4px solid #eee;
+	padding-left: 1rem;
+	margin: 1rem 0;
+	color: #666;
+}
+.categories {
+	margin: 0.5rem 0;
+}
+.category {
+	display: inline-block;
+	margin: 0.2rem 0.4rem 0.2rem 0;
+	padding: 0.2rem 0.8rem;
+	border-radius: 1rem;
+	font-size: 0.9rem;
+	background: #f0f0f0;
+	color: #666;
+	text-decoration: none;
+}
+.copy-button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0.3rem 0.7rem;
+	margin-left: 0.5rem;
+	border: 1px solid #ccc;
+	border-radius: 0.5rem;
+	background: #fff;
+	cursor: pointer;
+	font-size: 0.9rem;
+	color: #666;
+	min-width: 1rem;
+}
+.copy-button:hover {
+	background: #f5f5f5;
+}
+.copy-button.copied {
+	background: #e6ffe6;
+	border-color: #99cc99;
+}
+@media (max-width: 600px) {
+	.header {
+		padding: 1.5rem 1rem;
+	}
+	.header h1 {
+		font-size: 1.5rem;
+	}
+	.-feed-entry-wrapper header {
+		padding: 1rem;
+	}
+	.-feed-entry-content {
+		padding: 1rem;
+	}
+}
+.header #feed-url {
+	overflow-wrap: anywhere;
+	border: 0;
+	padding: 0;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	max-width: 100%;
+}
+.header #feed-url:hover {
+	text-decoration: underline;
+}
+.copy-button:focus-visible,
+.header #feed-url:focus-visible {
+	outline: 2px solid #fff;
+	outline-offset: 3px;
+}
+.copy-status {
+	margin-left: 0.5rem;
+	color: #99cc99;
+}
+.copy-status:empty {
+	display: none;
+}
+.copy-status.copy-error {
+	color: #fff;
+}
