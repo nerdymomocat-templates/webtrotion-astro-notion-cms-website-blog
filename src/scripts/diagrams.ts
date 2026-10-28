@@ -46,25 +46,20 @@ export async function setupDiagramZoom(root: ParentNode) {
 			return button;
 		});
 		const host = container.closest<HTMLElement>(".code")!;
-		if (container.closest("[data-diagram-lightbox]")) {
-			const expand = document.createElement("button");
-			expand.type = "button";
-			expand.className = "diagram-expand";
-			expand.setAttribute("aria-label", "Open diagram in lightbox");
-			expand.title = "Open diagram in lightbox";
-			expand.innerHTML =
-				'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>';
+		const expand = host.querySelector<HTMLButtonElement>(".diagram-expand");
+		if (expand) {
 			expand.addEventListener("click", () => {
 				void openDiagramLightbox(host, expand, controller);
 			});
 			controls.append(expand);
+			expand.hidden = false;
 		}
 		host.append(controls);
 		const updateControls = () => {
 			const atBaseline = controller.scale <= controller.fit * 1.001;
 			buttons[0]!.disabled = controller.scale >= Math.max(controller.fit, maxScale) * 0.999;
 			buttons[1]!.disabled = atBaseline;
-			buttons[2]!.hidden = atBaseline;
+			buttons[2]!.disabled = atBaseline;
 		};
 		new MutationObserver(updateControls).observe(svg, {
 			attributes: true,
@@ -141,6 +136,32 @@ async function openDiagramLightbox(content: HTMLElement, trigger: HTMLElement, z
 	content.replaceWith(placeholder);
 	content.classList.add("diagram-lightbox-content");
 	let modal: HTMLElement;
+	const svg = content.querySelector<SVGSVGElement>("svg.pele")!;
+	const naturalWidth = Number(svg.getAttribute("width"));
+	const naturalHeight = Number(svg.getAttribute("height"));
+	const desiredScale = Math.min(3, Math.max(1, 28 / Number(svg.dataset.diagramLabelSize)));
+	const layout = () => {
+		const gutter = modal.clientWidth < 640 ? 16 : 32;
+		const availableWidth = modal.clientWidth - gutter;
+		const availableHeight = modal.clientHeight - 80;
+		const captionHeight =
+			content.querySelector<HTMLElement>(".caption")?.getBoundingClientRect().height || 0;
+		// Reserve the toolbar and caption before fitting the diagram's original aspect ratio.
+		const padding = getComputedStyle(content);
+		const chromeHeight =
+			parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom) + 8 + captionHeight;
+		const scale = Math.min(
+			desiredScale,
+			(availableWidth - 24) / naturalWidth,
+			(availableHeight - chromeHeight) / naturalHeight,
+		);
+		modal.style.setProperty("--diagram-panel-gutter", `${gutter}px`);
+		modal.style.setProperty("--diagram-panel-width", `${availableWidth}px`);
+		modal.style.setProperty("--diagram-panel-height", `${availableHeight}px`);
+		content.style.setProperty("--diagram-expanded-width", `${naturalWidth * scale}px`);
+		zoom.refresh();
+	};
+	const sizeObserver = new ResizeObserver(layout);
 	const closeForPrint = () => lightbox.close();
 	const handleKey = (event: KeyboardEvent) => {
 		if (event.key === "Escape") {
@@ -188,7 +209,7 @@ async function openDiagramLightbox(content: HTMLElement, trigger: HTMLElement, z
 	};
 	const lightbox = createLightbox({
 		selector: false,
-		elements: [{ content, type: "inline", width: "100vw", height: "100vh" }],
+		elements: [{ content, type: "inline", width: "auto", height: "auto" }],
 		// Diagram gestures and arrow keys belong to Pele, rather than gallery navigation.
 		touchNavigation: false,
 		keyboardNavigation: false,
@@ -203,16 +224,19 @@ async function openDiagramLightbox(content: HTMLElement, trigger: HTMLElement, z
 			modal.addEventListener("keydown", handleKey);
 			content.addEventListener("click", handleLink);
 			window.addEventListener("beforeprint", closeForPrint);
-			zoom.refresh();
-			content.querySelector<SVGSVGElement>("svg.pele")!.focus({ preventScroll: true });
+			layout();
+			sizeObserver.observe(modal);
+			svg.focus({ preventScroll: true });
 		},
 		onClose: () => {
 			zoom.reset();
 			content.classList.remove("diagram-lightbox-content");
+			content.style.removeProperty("--diagram-expanded-width");
 			placeholder.replaceWith(content);
 			modal.removeEventListener("keydown", handleKey);
 			content.removeEventListener("click", handleLink);
 			window.removeEventListener("beforeprint", closeForPrint);
+			sizeObserver.disconnect();
 			zoom.refresh();
 			diagramOpen = false;
 			returnFocus?.focus({ preventScroll: true });

@@ -1527,7 +1527,9 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
     top: 40px;
     right: 8px;
     z-index: 10;
-    display: flex;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 24px;
     gap: 2px;
     opacity: 0;
     pointer-events: none;
@@ -1570,7 +1572,7 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
   }
 
   @media (hover: none), (pointer: coarse) {
-    .diagram-controls { right: 4px; opacity: 1; pointer-events: auto; }
+    .diagram-controls { right: 4px; grid-auto-columns: 32px; opacity: 1; pointer-events: auto; }
     .diagram-controls button { width: 32px; height: 32px; }
     .code:has(.mermaid) button[data-code] { opacity: 1; }
   }
@@ -1585,32 +1587,35 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
   .diagram-lightbox-content {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     height: 100%;
     margin: 0;
-    padding: 12px;
+    padding: 48px 12px 12px;
   }
 
   .diagram-lightbox-content :is(.code-mermaid, .mermaid, .diagram-wide) {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    flex: 0 1 auto;
     min-height: 0;
   }
 
-  .diagram-lightbox-content .mermaid { padding: 24px 0 0; }
+  .diagram-lightbox-content .mermaid { padding: 0; }
+  .diagram-lightbox-content .caption { flex: none; max-height: min(7rem, 20vh); overflow-y: auto; overscroll-behavior: contain; color: #dddddd; text-align: center; }
   .diagram-lightbox-content .diagram-zoom-viewport {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex: 1;
+    flex: 0 1 auto;
     min-height: 0;
   }
 
-  .diagram-lightbox-content svg.pele { width: auto; max-height: 100%; }
+  .diagram-lightbox-content svg.pele { width: var(--diagram-expanded-width); max-height: 100%; background: var(--pele-bg); }
   .mermaid svg.pele:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .diagram-lightbox-content .diagram-expand { display: none; }
-  .diagram-lightbox-content .diagram-controls,
-  .diagram-lightbox-content button[data-code] { opacity: 1; pointer-events: auto; }
+  .diagram-lightbox-content :is(.diagram-expand, button[data-code]) { display: none; }
+  .diagram-lightbox-content .diagram-controls { top: 8px; opacity: 1; pointer-events: auto; }
+  .diagram-lightbox-content .diagram-controls button { color: #dddddd; }
+  .diagram-lightbox-content .diagram-controls button:not(:disabled):hover { color: #ffffff; background: #ffffff1a; }
 
   @media print { .diagram-lightbox { display: none !important; } }
 
@@ -3167,10 +3172,12 @@ html.dark :not(.datatable-ascending):not(.datatable-descending)>.datatable-sorte
 
 /* GLightbox's CDN styles are unlayered, so its overrides must be unlayered too. */
 .diagram-lightbox .gslide-inline {
-  width: calc(100vw - 2rem) !important;
-  height: calc(100dvh - 5rem) !important;
-  background: var(--color-bgColor);
-  border-radius: 12px;
+  box-sizing: border-box;
+  width: min(var(--diagram-panel-width), calc(100% - var(--diagram-panel-gutter))) !important;
+  height: var(--diagram-panel-height) !important;
+  max-height: calc(100dvh - 80px);
+  max-width: calc(100% - var(--diagram-panel-gutter));
+  background: transparent;
 }
 
 .diagram-lightbox .ginlined-content {
