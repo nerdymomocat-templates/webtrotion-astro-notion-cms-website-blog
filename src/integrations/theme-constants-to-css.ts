@@ -1528,7 +1528,8 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
     right: 8px;
     z-index: 10;
     display: grid;
-    grid-template-columns: repeat(4, 24px);
+    grid-auto-flow: column;
+    grid-auto-columns: 24px;
     gap: 2px;
     opacity: 0;
     pointer-events: none;
@@ -1571,7 +1572,7 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
   }
 
   @media (hover: none), (pointer: coarse) {
-    .diagram-controls { right: 4px; grid-template-columns: repeat(4, 32px); opacity: 1; pointer-events: auto; }
+    .diagram-controls { right: 4px; grid-auto-columns: 32px; opacity: 1; pointer-events: auto; }
     .diagram-controls button { width: 32px; height: 32px; }
     .code:has(.mermaid) button[data-code] { opacity: 1; }
   }
@@ -1589,7 +1590,7 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
     justify-content: center;
     height: 100%;
     margin: 0;
-    padding: 76px 12px 12px;
+    padding: 48px 12px 12px;
   }
 
   .diagram-lightbox-content :is(.code-mermaid, .mermaid, .diagram-wide) {
@@ -1611,10 +1612,9 @@ ${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`)
 
   .diagram-lightbox-content svg.pele { width: var(--diagram-expanded-width); max-height: 100%; background: var(--pele-bg); }
   .mermaid svg.pele:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .diagram-lightbox-content .diagram-expand { visibility: hidden; pointer-events: none; }
-  .diagram-lightbox-content .diagram-controls,
-  .diagram-lightbox-content button[data-code] { opacity: 1; pointer-events: auto; }
-  .diagram-lightbox-content :is(.diagram-controls button, button[data-code]) { color: #dddddd; }
+  .diagram-lightbox-content :is(.diagram-expand, button[data-code]) { display: none; }
+  .diagram-lightbox-content .diagram-controls { top: 8px; opacity: 1; pointer-events: auto; }
+  .diagram-lightbox-content .diagram-controls button { color: #dddddd; }
   .diagram-lightbox-content .diagram-controls button:not(:disabled):hover { color: #ffffff; background: #ffffff1a; }
 
   @media print { .diagram-lightbox { display: none !important; } }

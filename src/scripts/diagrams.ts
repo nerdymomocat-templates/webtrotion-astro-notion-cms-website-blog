@@ -147,7 +147,9 @@ async function openDiagramLightbox(content: HTMLElement, trigger: HTMLElement, z
 		const captionHeight =
 			content.querySelector<HTMLElement>(".caption")?.getBoundingClientRect().height || 0;
 		// Reserve the toolbar and caption before fitting the diagram's original aspect ratio.
-		const chromeHeight = 96 + captionHeight;
+		const padding = getComputedStyle(content);
+		const chromeHeight =
+			parseFloat(padding.paddingTop) + parseFloat(padding.paddingBottom) + 8 + captionHeight;
 		const scale = Math.min(
 			desiredScale,
 			(availableWidth - 24) / naturalWidth,
