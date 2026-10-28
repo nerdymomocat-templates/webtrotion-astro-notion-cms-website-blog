@@ -301,7 +301,20 @@ const iframeLightboxId = `html-frame-lightbox-${block.Id}`;
 						data-pagefind-index-attrs="data-diagram-search"
 					>
 						{diagram ? (
-							<div class="diagram-wide" set:html={diagram.wide.svg} />
+							<>
+								<div class="diagram-wide" set:html={diagram.wide.svg} />
+								{ENABLE_LIGHTBOX && (
+									<button
+										type="button"
+										class="diagram-expand no-rss"
+										aria-label="Open diagram in lightbox"
+										title="Open diagram in lightbox"
+										hidden
+									>
+										<Icon name="expand" aria-hidden="true" />
+									</button>
+								)}
+							</>
 						) : (
 							<>
 								<p class="diagram-error">{diagramError}</p>
