@@ -6,7 +6,7 @@ const configContent = fs.readFileSync("./constants-config.json5", "utf8");
 const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
 
-const diagramHtmlCache = path.join("./tmp", "blocks-html-cache", "pele-static-lightbox");
+const diagramHtmlCache = path.join("./tmp", "blocks-html-cache", "pele-static-v2");
 
 const DEFAULT_MDX_SNIPPET_TRIGGER = "<!-- mdx inject -->";
 

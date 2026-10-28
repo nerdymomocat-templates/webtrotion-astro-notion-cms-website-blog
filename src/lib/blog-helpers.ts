@@ -1,4 +1,4 @@
-import { notionIdToUuid, parseDiagramNotionLink } from "./diagrams/content";
+import { parseDiagramNotionLink } from "./diagrams/content";
 import {
 	BUILD_FOLDER_PATHS,
 	HOME_PAGE_SLUG,
@@ -1100,7 +1100,6 @@ export async function resolveDiagramHref(href: string): Promise<string> {
 	const post = await getPostByPageId(link.pageId);
 	if (!post) return href;
 	if (!link.blockId) return resolvePostHref(post);
-	if (!notionIdToUuid(link.blockId)) return `${resolvePostHref(post)}#${link.blockId}`;
 	const block = await getBlock(link.blockId);
 	if (!block) return `${resolvePostHref(post)}#${link.blockId}`;
 	return (await getInterlinkedContentLink("", post.PageId, block))[0] || href;
