@@ -64,13 +64,6 @@ export function renderDiagram(
 		return baseFontSize;
 	});
 	root.attribs["data-diagram-label-size"] = String(Math.min(baseFontSize, ...labelSizes));
-	if (
-		!theme.hasTheme &&
-		!Object.keys(theme.styles).some(
-			(key) => key.startsWith("--pele-series-") || key === "--pele-bg",
-		)
-	)
-		root.attribs["data-diagram-site-palette"] = "";
 	root.attribs.style += Object.entries(theme.styles)
 		.map(([key, value]) => `;${key}:${value}`)
 		.join("");
@@ -88,6 +81,14 @@ export function renderDiagram(
 	};
 	const paint = (element: Element, attribute: string, variable: string) => {
 		if (theme.styles[variable]) element.attribs[attribute] = `var(${variable})`;
+	};
+	const seriesText = (fill: string): string | undefined => {
+		const variable = cssValues.extractDashedIdent(fill)[0];
+		if (variable?.startsWith("--pele-series-"))
+			return `var(--diagram-on-series-${variable.slice("--pele-series-".length)})`;
+		if (variable === "--_c") return "var(--diagram-on-accent)";
+		if (variable === "--pele-critical") return "var(--diagram-on-critical)";
+		return undefined;
 	};
 	for (const element of DomUtils.findAll((el) => Boolean(el.attribs.class), root.children)) {
 		for (const className of element.attribs.class!.split(/\s+/)) {
@@ -225,6 +226,46 @@ export function renderDiagram(
 				}
 			}
 		}
+	}
+	for (const element of DomUtils.findAll((el) => Boolean(el.attribs.stroke), root.children)) {
+		const series = cssValues
+			.extractDashedIdent(element.attribs.stroke!)
+			.find((name) => name.startsWith("--pele-series-"));
+		if (series)
+			element.attribs.stroke = `var(--diagram-series-line-${series.slice("--pele-series-".length)})`;
+		if (model.type === "timeline" && element.attribs.class === "pele-edge")
+			element.attribs.stroke = "var(--_l)";
+	}
+	// Pele uses the canvas color for labels on solid series fills. Choose each fill's own foreground.
+	for (const group of DomUtils.findAll((el) => el.name === "g", root.children)) {
+		if (group.attribs.class === "pele-slice-labels") {
+			if (theme.hasAuthoredPieText) continue;
+			const slices = DomUtils.findAll((el) => el.attribs.class === "pele-slice", root.children);
+			const labels = group.children.filter(
+				(el): el is Element => DomUtils.isTag(el) && el.name === "text",
+			);
+			for (const [index, label] of labels.entries()) {
+				const foreground = seriesText(slices[index]?.attribs.fill || "");
+				if (foreground) label.attribs.fill = foreground;
+			}
+			continue;
+		}
+		if (theme.hasAuthoredNodeText) continue;
+		const shape = group.children.find(
+			(el): el is Element =>
+				DomUtils.isTag(el) && ["rect", "polygon", "circle", "ellipse"].includes(el.name),
+		);
+		if (!shape || Number(shape.attribs["fill-opacity"] ?? 1) !== 1) continue;
+		const foreground = seriesText(shape.attribs.fill || "");
+		if (!foreground) continue;
+		for (const label of group.children)
+			if (
+				DomUtils.isTag(label) &&
+				label.name === "text" &&
+				(label.attribs.fill === "var(--_bg)" ||
+					(!label.attribs.fill && group.attribs.class?.split(/\s+/).includes("pele-leaf")))
+			)
+				label.attribs.fill = foreground;
 	}
 	for (const link of DomUtils.findAll(
 		(el) => el.name === "a" && Boolean(el.attribs.href || el.attribs["xlink:href"]),

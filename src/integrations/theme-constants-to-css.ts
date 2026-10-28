@@ -1,11 +1,23 @@
 import fs from "node:fs";
 import type { AstroIntegration } from "astro";
 import JSON5 from "json5";
+import { resolve as resolveColor } from "@asamuzakjp/css-color";
+import { contrastingTextColor, readableColor } from "../lib/diagrams/theme";
 
 const configContent = fs.readFileSync("./constants-config.json5", "utf8");
 const config = JSON5.parse(configContent);
 const key_value_from_json = { ...config };
 const theme_config = key_value_from_json["theme"];
+const diagramSeries = [
+	"var(--color-accent)",
+	"var(--color-link)",
+	"var(--color-accent-2)",
+	"color-mix(in srgb, var(--color-accent) 60%, var(--color-link))",
+	"color-mix(in srgb, var(--color-accent) 60%, var(--color-accent-2))",
+	"color-mix(in srgb, var(--color-link) 60%, var(--color-accent-2))",
+	"color-mix(in srgb, var(--color-accent) 70%, var(--color-bgColor))",
+	"color-mix(in srgb, var(--color-link) 85%, var(--color-bgColor))",
+];
 
 // Helper function that normalizes a color string to hex format
 function normalizeColor(value: string): string {
@@ -136,6 +148,7 @@ export default (): AstroIntegration => ({
 				const createCssVariables = (theme: "light" | "dark") => {
 				let cssContent = "";
 				let bgHex = "#ffffff";
+				const palette: Record<string, string> = {};
 
 				for (const key in theme_config.colors) {
 					let color = theme_config.colors[key][theme];
@@ -151,9 +164,20 @@ export default (): AstroIntegration => ({
 					}
 
 					if (key === "bg") bgHex = cssValue;
+					palette[`--color-${key === "bg" ? "bgColor" : key === "text" ? "textColor" : key}`] = cssValue;
 
 					cssContent += `    --theme-${key}: ${cssValue};\n`;
 				}
+				const resolve = (value: string) =>
+					resolveColor(value, { customProperty: palette, format: "hex" }) as string;
+				for (const [index, fill] of diagramSeries.entries()) {
+					cssContent += `    --diagram-on-series-${index + 1}: ${contrastingTextColor(resolve(fill))};\n`;
+					cssContent += `    --diagram-series-line-${index + 1}: ${readableColor(bgHex, resolve(fill), 3)};\n`;
+				}
+				cssContent += `    --diagram-on-accent: ${contrastingTextColor(palette["--color-accent"])};\n`;
+				cssContent += `    --diagram-on-critical: ${contrastingTextColor("#e45756")};\n`;
+				const nodeFill = resolve("color-mix(in srgb, var(--color-accent) 8%, var(--color-bgColor))");
+				cssContent += `    --diagram-site-link-text: ${readableColor(nodeFill, palette["--color-link"])};\n`;
 
 				// Compute popover-bg based on bg color
 				const refHex =
@@ -1486,32 +1510,16 @@ ${createCssVariables("dark")}
     --pele-bg: var(--color-bgColor);
     --pele-fg: var(--color-textColor);
     --pele-accent: var(--color-accent);
-    --pele-series-1: var(--color-accent);
-    --pele-series-2: var(--color-link);
-    --pele-series-3: var(--color-accent-2);
-    --pele-series-4: color-mix(in srgb, var(--color-accent) 60%, var(--color-link));
-    --pele-series-5: color-mix(in srgb, var(--color-accent) 60%, var(--color-accent-2));
-    --pele-series-6: color-mix(in srgb, var(--color-link) 60%, var(--color-accent-2));
-    --pele-series-7: color-mix(in srgb, var(--color-accent) 70%, var(--color-bgColor));
-    --pele-series-8: color-mix(in srgb, var(--color-link) 85%, var(--color-bgColor));
-    --diagram-on-series: #ffffff;
-    --diagram-link-text: var(--color-link);
+${diagramSeries.map((fill, index) => `    --pele-series-${index + 1}: ${fill};`).join("\n")}
+    --diagram-link-text: var(--diagram-site-link-text);
   }
 
   .code .mermaid svg.pele {
-    --pele-muted: color-mix(in srgb, var(--pele-fg) 65%, var(--pele-bg));
+    --pele-muted: color-mix(in srgb, var(--pele-fg) 70%, var(--pele-bg));
     --pele-line: color-mix(in srgb, var(--pele-fg) 80%, var(--pele-bg));
     --pele-surface: color-mix(in srgb, var(--color-accent) 8%, var(--pele-bg));
     --pele-surface-alt: color-mix(in srgb, var(--color-link) 8%, var(--pele-bg));
     --pele-border: color-mix(in srgb, var(--color-accent) 70%, var(--pele-bg));
-  }
-
-  :root.dark .code .mermaid {
-    --diagram-on-series: var(--color-bgColor);
-  }
-
-  .pele-pie[data-diagram-site-palette] .pele-slice-labels[fill] {
-    fill: var(--diagram-on-series);
   }
 
   .diagram-controls {

@@ -97,6 +97,7 @@ function readFontFamily(value: unknown): string | undefined {
 export function contrastingTextColor(
 	background: string | undefined,
 	preferred?: string,
+	minimumContrast = 4.5,
 ): string | undefined {
 	if (!isThemeColor(background) || background.toLowerCase() === "currentcolor") return;
 	const [red, green, blue, alpha] = color.colorToRgb(background);
@@ -114,9 +115,36 @@ export function contrastingTextColor(
 		const foreground = relativeLuminance(channels);
 		const ratio =
 			(Math.max(luminance, foreground) + 0.05) / (Math.min(luminance, foreground) + 0.05);
-		if (channels[3] === 1 && ratio >= 4.5) return preferred;
+		if (channels[3] === 1 && ratio >= minimumContrast) return preferred;
 	}
 	return (luminance + 0.05) / 0.05 >= 1.05 / (luminance + 0.05) ? "#000000" : "#ffffff";
+}
+
+/** Retain the preferred hue, then mix toward a legible foreground only as needed. */
+export function readableColor(
+	background: string | undefined,
+	preferred: string | undefined,
+	minimumContrast = 4.5,
+) {
+	const target = contrastingTextColor(background);
+	if (!target || !isThemeColor(preferred) || preferred.toLowerCase() === "currentcolor") return;
+	if (contrastingTextColor(background, preferred, minimumContrast) === preferred) return preferred;
+	const canvas = color.colorToRgb(background!);
+	const original = color.colorToRgb(preferred);
+	const foreground = original
+		.slice(0, 3)
+		.map((channel, index) => channel * original[3] + canvas[index]! * (1 - original[3]));
+	const destination = color.colorToRgb(target);
+	for (let percent = 0; percent <= 100; percent += 10) {
+		const amount = percent / 100;
+		const mixed = foreground.map(
+			(channel, index) => channel * (1 - amount) + destination[index]! * amount,
+		);
+		const candidate = `rgb(${mixed.join(" ")})`;
+		if (contrastingTextColor(background, candidate, minimumContrast) === candidate)
+			return candidate;
+	}
+	return target;
 }
 
 export function convertDiagramTheme(source: string, diagramType: string) {
@@ -140,6 +168,15 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 	const put = (name: string, ...keys: string[]) => {
 		const value = keys.map((key) => resolved[key]).find(isThemeColor);
 		if (typeof value === "string") styles[name] = value;
+	};
+	const ensureTextContrast = (
+		background: string,
+		foreground: string,
+		...authoredKeys: string[]
+	) => {
+		if (authoredKeys.some((key) => isThemeColor(variables[key]))) return;
+		const text = contrastingTextColor(styles[background], styles[foreground]);
+		if (text) styles[foreground] = text;
 	};
 	put("--pele-bg", "background");
 	put("--pele-fg", "textColor");
@@ -191,6 +228,19 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 			put(`--diagram-gantt-${status}-text`, `${prefix}TextColor`, "taskTextColor", "textColor");
 			if (status === "active" || status === "done")
 				put(`--diagram-gantt-${status}-text`, "taskTextDarkColor", "taskTextColor", "textColor");
+			const textKeys = [
+				`${prefix}TextColor`,
+				...(status === "active" || status === "done" ? ["taskTextDarkColor"] : []),
+				"taskTextColor",
+				"textColor",
+			];
+			const authoredText = textKeys.map((key) => variables[key]).find(isThemeColor);
+			if (authoredText) styles[`--diagram-gantt-${status}-text`] = authoredText;
+			ensureTextContrast(
+				`--diagram-gantt-${status}-fill`,
+				`--diagram-gantt-${status}-text`,
+				...textKeys,
+			);
 		}
 	}
 	const chart = isRecord(resolved.xyChart) ? resolved.xyChart : {};
@@ -221,8 +271,35 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 		} else if (diagramType === "pie") put(`--pele-series-${i}`, `pie${i}`);
 		else if (diagramType === "gitGraph") put(`--pele-series-${i}`, `git${i - 1}`);
 		else put(`--pele-series-${i}`, `cScale${i - 1}`);
-		if (diagramType === "gitGraph") put(`--diagram-git-label-${i}`, `gitBranchLabel${i - 1}`);
+		if (diagramType === "gitGraph") {
+			put(`--diagram-git-label-${i}`, `gitBranchLabel${i - 1}`);
+			ensureTextContrast(
+				`--pele-series-${i}`,
+				`--diagram-git-label-${i}`,
+				`gitBranchLabel${i - 1}`,
+			);
+		}
+		const foreground = contrastingTextColor(styles[`--pele-series-${i}`]);
+		if (foreground) styles[`--diagram-on-series-${i}`] = foreground;
+		const series = styles[`--pele-series-${i}`];
+		const authoredSeries =
+			diagramType === "pie"
+				? variables[`pie${i}`]
+				: diagramType === "gitGraph"
+					? variables[`git${i - 1}`]
+					: variables[`cScale${i - 1}`];
+		const authoredChart =
+			diagramType === "xychart" &&
+			isRecord(variables.xyChart) &&
+			typeof variables.xyChart.plotColorPalette === "string";
+		const line =
+			isThemeColor(authoredSeries) || authoredChart
+				? series
+				: readableColor(styles["--pele-bg"], series, 3);
+		if (line) styles[`--diagram-series-line-${i}`] = line;
 	}
+	const accentText = contrastingTextColor(styles["--pele-accent"]);
+	if (accentText) styles["--diagram-on-accent"] = accentText;
 	if (!hasTheme) {
 		const canvasText = contrastingTextColor(styles["--pele-bg"]);
 		if (canvasText) {
@@ -238,6 +315,7 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 			if (text) styles[foreground] ??= text;
 		}
 	}
+	ensureTextContrast("--diagram-note-bg", "--diagram-note-text", "noteTextColor");
 	if (
 		!isThemeColor(variables.textColor) &&
 		!(diagramType === "sequence" && isThemeColor(variables.signalTextColor))
@@ -265,6 +343,7 @@ export function convertDiagramTheme(source: string, diagramType: string) {
 	return {
 		styles,
 		hasTheme,
+		hasAuthoredPieText: isThemeColor(variables.pieSectionTextColor),
 		hasAuthoredNodeText: (diagramType === "sequence"
 			? ["actorTextColor", "textColor"]
 			: ["nodeTextColor", "textColor", "primaryTextColor"]

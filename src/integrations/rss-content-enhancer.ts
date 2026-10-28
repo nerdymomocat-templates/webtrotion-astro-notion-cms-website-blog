@@ -474,12 +474,6 @@ export async function addDiagramFeedImages(
 			parseDocument(render(original), { xmlMode: true }).children,
 			true,
 		)!;
-		if ("data-diagram-site-palette" in svg.attribs)
-			for (const label of DomUtils.findAll(
-				(el) => el.attribs.class?.split(/\s+/).includes("pele-slice-labels") || false,
-				svg.children,
-			))
-				label.attribs.fill = "var(--diagram-on-series)";
 		const flatten = (
 			element: Element,
 			inherited: Record<string, string>,
