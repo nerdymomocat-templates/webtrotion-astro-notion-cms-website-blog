@@ -371,7 +371,7 @@
 	},
 
 	// === URL Redirects ===
-	// Create 301 redirects for old URLs to new URLs. Useful for SEO when migrating content.
+	// Create redirects for old URLs to new URLs. Useful for SEO when migrating content.
 	// Format: "/old-path": "/new-path"
 	// Example: "/my-old-post.html": "/posts/my-new-post-slug/"
 	redirects: {},
